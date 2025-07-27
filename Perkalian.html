@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Perkalian Online</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .container {
+            background-color: #f5f5f5;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        input, button {
+            padding: 8px;
+            margin: 5px 0;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .quiz-container {
+            display: none;
+        }
+        .soal {
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .timer {
+            font-size: 24px;
+            font-weight: bold;
+            color: #d9534f;
+            text-align: center;
+            margin: 15px 0;
+        }
+        .result {
+            display: none;
+            background-color: #dff0d8;
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .error {
+            color: red;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Kuis Perkalian Online</h1>
+        
+        <!-- Form Awal -->
+        <div id="formAwal">
+            <div class="form-group">
+                <label for="nama">Nama Lengkap:</label>
+                <input type="text" id="nama" placeholder="Masukkan nama lengkap Anda">
+                <div id="namaError" class="error"></div>
+            </div>
+            <div class="form-group">
+                <input type="checkbox" id="setuju">
+                <label for="setuju">Saya menyatakan siap memulai kuis</label>
+                <div id="setujuError" class="error"></div>
+            </div>
+            <button onclick="mulaiKuis()">Mulai Kuis</button>
+        </div>
+
+        <!-- Konten Kuis -->
+        <div id="quizContainer" class="quiz-container">
+            <div class="timer" id="timer">07:00</div>
+            <div id="soalContainer"></div>
+            <button onclick="selesaiKuis()">Selesai</button>
+        </div>
+
+        <!-- Hasil Akhir -->
+        <div id="resultContainer" class="result">
+            <h2>Hasil Kuis</h2>
+            <p>Nama: <span id="resultNama"></span></p>
+            <p>Skor: <span id="resultSkor"></span> / 100</p>
+            <p>Jawaban Benar: <span id="resultBenar"></span></p>
+            <p>Jawaban Salah: <span id="resultSalah"></span></p>
+            <p>Waktu: <span id="resultWaktu"></span></p>
+            <button onclick="ulangKuis()">Ulang Kuis</button>
+        </div>
+    </div>
+
+    <script>
+        // Variabel global
+        let soalArray = [];
+        let timerInterval;
+        let mulaiWaktu;
+        let benar = 0;
+        let salah = 0;
+
+        // Fungsi untuk menghasilkan soal acak
+        function generateSoal() {
+            soalArray = [];
+            for (let i = 0; i < 100; i++) {
+                const a = Math.floor(Math.random() * 10) + 1;
+                const b = Math.floor(Math.random() * 10) + 1;
+                soalArray.push({ a, b, jawaban: a * b });
+            }
+        }
+
+        // Fungsi untuk menampilkan soal
+        function tampilkanSoal() {
+            const container = document.getElementById('soalContainer');
+            container.innerHTML = '';
+            
+            soalArray.forEach((soal, index) => {
+                const div = document.createElement('div');
+                div.className = 'soal';
+                div.innerHTML = `
+                    <label>${index + 1}. ${soal.a} × ${soal.b} = </label>
+                    <input type="number" id="jawaban${index}" min="0" required>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // Fungsi untuk memulai kuis
+        function mulaiKuis() {
+            const nama = document.getElementById('nama').value.trim();
+            const setuju = document.getElementById('setuju').checked;
+            
+            // Validasi
+            let valid = true;
+            if (!nama) {
+                document.getElementById('namaError').textContent = 'Nama harus diisi!';
+                valid = false;
+            } else {
+                document.getElementById('namaError').textContent = '';
+            }
+            
+            if (!setuju) {
+                document.getElementById('setujuError').textContent = 'Anda harus menyetujui untuk memulai!';
+                valid = false;
+            } else {
+                document.getElementById('setujuError').textContent = '';
+            }
+            
+            if (!valid) return;
+            
+            // Sembunyikan form awal, tampilkan kuis
+            document.getElementById('formAwal').style.display = 'none';
+            document.getElementById('quizContainer').style.display = 'block';
+            
+            // Generate soal dan tampilkan
+            generateSoal();
+            tampilkanSoal();
+            
+            // Mulai timer
+            mulaiWaktu = new Date();
+            startTimer();
+        }
+
+        // Fungsi timer
+        function startTimer() {
+            let waktu = 420; // 420 detik = 7 menit
+            const timerElement = document.getElementById('timer');
+            
+            timerInterval = setInterval(() => {
+                waktu--;
+                const menit = Math.floor(waktu / 60);
+                const detik = waktu % 60;
+                timerElement.textContent = `${menit.toString().padStart(2, '0')}:${detik.toString().padStart(2, '0')}`;
+                
+                if (waktu <= 0) {
+                    clearInterval(timerInterval);
+                    selesaiKuis();
+                }
+            }, 1000);
+        }
+
+        // Fungsi untuk menyelesaikan kuis
+        function selesaiKuis() {
+            clearInterval(timerInterval);
+            
+            // Hitung jawaban
+            benar = 0;
+            salah = 0;
+            
+            soalArray.forEach((soal, index) => {
+                const jawabanUser = parseInt(document.getElementById(`jawaban${index}`).value);
+                if (jawabanUser === soal.jawaban) {
+                    benar++;
+                } else {
+                    salah++;
+                }
+            });
+            
+            // Tampilkan hasil
+            document.getElementById('quizContainer').style.display = 'none';
+            document.getElementById('resultContainer').style.display = 'block';
+            
+            document.getElementById('resultNama').textContent = document.getElementById('nama').value;
+            document.getElementById('resultSkor').textContent = benar;
+            document.getElementById('resultBenar').textContent = benar;
+            document.getElementById('resultSalah').textContent = salah;
+            
+            const selesaiWaktu = new Date();
+            const durasi = Math.floor((selesaiWaktu - mulaiWaktu) / 1000);
+            const menit = Math.floor(durasi / 60);
+            const detik = durasi % 60;
+            document.getElementById('resultWaktu').textContent = `${menit} menit ${detik} detik`;
+        }
+
+        // Fungsi untuk mengulang kuis
+        function ulangKuis() {
+            document.getElementById('nama').value = '';
+            document.getElementById('setuju').checked = false;
+            document.getElementById('namaError').textContent = '';
+            document.getElementById('setujuError').textContent = '';
+            
+            document.getElementById('resultContainer').style.display = 'none';
+            document.getElementById('formAwal').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
