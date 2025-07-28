@@ -1,5 +1,5 @@
 let soal1 = 0, soal2 = 0, sesi = 1, skor = {}, timer;
-const waktuPerSesi = 10;// nanti ubah lagi jadi 2*60 (2 menit)
+const waktuPerSesi = 3*60;// nanti ubah lagi jadi 2*60 (2 menit)
 let detik = waktuPerSesi;
 
 const info = document.getElementById("info");
@@ -51,7 +51,7 @@ function submitJawaban() {
 function updateWaktu() {
   if (detik <= 0) {
     sesi++;
-    if (sesi > 3) return selesaiUjian();
+    if (sesi > 20) return selesaiUjian();
     detik = waktuPerSesi;
   }
   const menit = Math.floor(detik / 60).toString().padStart(2, '0');
