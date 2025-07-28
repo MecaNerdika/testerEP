@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Interpretasi Data</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .quiz-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .question {
+            margin-bottom: 20px;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        .question h3 {
+            margin-top: 0;
+        }
+        .diagram {
+            margin: 15px 0;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+        }
+        .options {
+            margin: 10px 0;
+        }
+        .option {
+            padding: 8px;
+            margin: 5px 0;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .option:hover {
+            background-color: #f0f0f0;
+        }
+        .option input {
+            margin-right: 10px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            display: none;
+        }
+        .correct {
+            background-color: #dff0d8;
+            color: #3c763d;
+        }
+        .incorrect {
+            background-color: #f2dede;
+            color: #a94442;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <h1>Quiz Interpretasi Data</h1>
+        <p>Selesaikan 10 soal pilihan ganda berikut dengan memilih jawaban yang paling tepat.</p>
+        
+        <div id="quiz">
+            <!-- Soal 1 -->
+            <div class="question" id="q1">
+                <h3>1. Berdasarkan tabel penjualan produk di bawah ini, berapa persentase penurunan penjualan produk B dari Januari ke Februari?</h3>
+                <div class="diagram">
+                    <table>
+                        <tr><th>Bulan</th><th>Produk A</th><th>Produk B</th><th>Produk C</th></tr>
+                        <tr><td>Januari</td><td>120</td><td>80</td><td>150</td></tr>
+                        <tr><td>Februari</td><td>100</td><td>60</td><td>180</td></tr>
+                    </table>
+                </div>
+                <div class="options">
+                    <label class="option"><input type="radio" name="q1" value="A"> A. 20%</label>
+                    <label class="option"><input type="radio" name="q1" value="B"> B. 25%</label>
+                    <label class="option"><input type="radio" name="q1" value="C"> C. 30%</label>
+                    <label class="option"><input type="radio" name="q1" value="D"> D. 33.3%</label>
+                    <label class="option"><input type="radio" name="q1" value="E"> E. 40%</label>
+                </div>
+            </div>
+
+            <!-- Soal 2 -->
+            <div class="question" id="q2">
+                <h3>2. Diagram lingkaran berikut menunjukkan komposisi pengeluaran bulanan. Jika total pengeluaran Rp5.000.000, berapa jumlah pengeluaran untuk makanan?</h3>
+                <div class="diagram">
+                    <table>
+                        <tr><th>Kategori</th><th>Persentase</th></tr>
+                        <tr><td>Makanan</td><td>40%</td></tr>
+                        <tr><td>Transportasi</td><td>20%</td></tr>
+                        <tr><td>Hiburan</td><td>15%</td></tr>
+                        <tr><td>Lainnya</td><td>25%</td></tr>
+                    </table>
+                </div>
+                <div class="options">
+                    <label class="option"><input type="radio" name="q2" value="A"> A. Rp1.500.000</label>
+                    <label class="option"><input type="radio" name="q2" value="B"> B. Rp2.000.000</label>
+                    <label class="option"><input type="radio" name="q2" value="C"> C. Rp2.500.000</label>
+                    <label class="option"><input type="radio" name="q2" value="D"> D. Rp3.000.000</label>
+                    <label class="option"><input type="radio" name="q2" value="E"> E. Rp3.500.000</label>
+                </div>
+            </div>
+
+            <!-- Soal 3 -->
+            <div class="question" id="q3">
+                <h3>3. Grafik pertumbuhan penduduk kota X menunjukkan peningkatan dari 80.000 pada tahun 2020 menjadi 96.000 pada tahun 2022. Berapa rata-rata pertumbuhan per tahun?</h3>
+                <div class="diagram">
+                    <table>
+                        <tr><th>Tahun</th><th>Jumlah Penduduk</th></tr>
+                        <tr><td>2020</td><td>80.000</td></tr>
+                        <tr><td>2021</td><td>88.000</td></tr>
+                        <tr><td>2022</td><td>96.000</td></tr>
+                    </table>
+                </div>
+                <div class="options">
+                    <label class="option"><input type="radio" name="q3" value="A"> A. 8.000</label>
+                    <label class="option"><input type="radio" name="q3" value="B"> B. 10.000</label>
+                    <label class="option"><input type="radio" name="q3" value="C"> C. 16.000</label>
+                    <label class="option"><input type="radio" name="q3" value="D"> D. 20%</label>
+                    <label class="option"><input type="radio" name="q3" value="E"> E. 10%</label>
+                </div>
+            </div>
+
+            <!-- Soal 4 -->
+            <div class="question" id="q4">
+                <h3>4. Tabel berikut menunjukkan hasil panen jagung (dalam kg) selama 5 tahun. Berapa persentase peningkatan dari tahun 1 ke tahun 5?</h3>
+                <div class="diagram">
+                    <table>
+                        <tr><th>Tahun</th><th>Hasil Panen</th></tr>
+                        <tr><td>1</td><td>200</td></tr>
+                        <tr><td>2</td><td>250</td></tr>
+                        <tr><td>3</td><td>300</td></tr>
+                        <tr><td>4</td><td>350</td></tr>
+                        <tr><td>5</td><td>450</td></tr>
+                    </table>
+                </div>
+                <div class="options">
+                    <label class="option"><input type="radio" name="q4" value="A"> A. 55%</label>
+                    <label class="option"><input type="radio" name="q4" value="B"> B. 125%</label>
+                    <label class="option"><input type="radio" name="q4" value="C"> C. 150%</label>
+                    <label class="option"><input type="radio" name="q4" value="D"> D. 225%</label>
+                    <label class="option"><input type="radio" name="q4" value="E"> E. 450%</label>
+                </div>
+            </div>
+
+            <!-- Soal 5 -->
+            <div class="question" id="q5">
+                <h3>5. Diagram batang menunjukkan pendapatan perusahaan selama 4 kuartal. Berapa rata-rata pendapatan per kuartal?</h3>
+                <div class="diagram">
+                    <table>
+                        <tr><th>Kuartal</th><th>Pendapatan (juta)</th></tr>
+                        <tr><td>1</td><td>120</td></tr>
+                        <tr><td>2</td><td>150</td></tr>
+                        <tr><td>3</td><td>180</td></tr>
+                        <tr><td>4</td><td>210</td></tr>
+                    </table>
+                </div>
+                <div class="options">
+                    <label class="option"><input type="radio" name="q5" value="A"> A. 120 juta</label>
+                    <label class="option"><input type="radio" name="q5" value="B"> B. 150 juta</label>
+                    <label class="option"><input type="radio" name="q5" value="C"> C. 160 juta</label>
+                    <label class="option"><input type="radio" name="q5" value="D"> D. 165 juta</label>
+                    <label class="option"><input type="radio" name="q5" value="E"> E. 180 juta</label>
+                </div>
+            </div>
+
+            <!-- Soal 6 -->
+            <div class="question" id="q6">
+                <h3>6. Tabel berikut menunjukkan perbandingan siswa laki-laki dan perempuan. Jika total siswa 600, berapa selisih jumlah siswa laki-laki dan perempuan?</h3>
+                <div class="diagram">
+                    <table>
+                        <tr><th>Jenis Kelamin</th><th>Jumlah</th></tr>
+                        <tr><td>Laki-laki</td><td>55%</td></tr>
+                        <tr><td>Perempuan</td><td>45%</td></tr>
+                    </table>
+                </div>
+                <div class="options">
+                    <label class="option"><input type="radio" name="q6" value="A"> A. 30 siswa</label>
+                    <label class="option"><input type="radio" name="q6" value="B"> B. 60 siswa</label>
+                    <label class="option"><input type="radio" name="q6" value="C"> C. 120 siswa</label>
+                    <label class="option"><input type="radio" name="q6" value="D"> D. 180 siswa</label>
+                    <label class="option"><input type="radio" name="q6" value="E"> E. 240 siswa</label>
+                </div>
+            </div>
+
+            <!-- Soal 7 -->
+            <div class="question" id="q7">
+                <h3>7. Grafik penjualan tiket bioskop menunjukkan 300 tiket terjual pada hari Senin dan 450 pada hari Selasa. Berapa persentase kenaikan penjualan?</h3>
+                <div class="diagram">
+                    <table>
+                        <tr><th>Hari</th><th>Tiket Terjual</th></tr>
+                        <tr><td>Senin</td><td>300</td></tr>
+                        <tr><td>Selasa</td><td>450</td></tr>
+                    </table>
+                </div>
+                <div class="options">
+                    <label class="option"><input type="radio" name="q7" value="A"> A. 30%</label>
+                    <label class="option"><input type="radio" name="q7" value="B"> B. 50%</label>
+                    <label class="option"><input type="radio" name="q7" value="C"> C. 100%</label>
+                    <label class="option"><input type="radio" name="q7" value="D"> D. 150%</label>
+                    <label class="option"><input type="radio" name="q7" value="E"> E. 200%</label>
+                </div>
+            </div>
+
+            <!-- Soal 8 -->
+            <div class="question" id="q8">
+                <h3>8. Tabel keuntungan perusahaan menunjukkan Rp50 juta pada kuartal I dan Rp65 juta pada kuartal II. Berapa persentase pertumbuhan keuntungan?</h3>
+                <div class="diagram">
+                    <table>
+                        <tr><th>Kuartal</th><th>Keuntungan (juta)</th></tr>
+                        <tr><td>I</td><td>50</td></tr>
+                        <tr><td>II</td><td>65</td></tr>
+                    </table>
+                </div>
+                <div class="options">
+                    <label class="option"><input type="radio" name="q8" value="A"> A. 15%</label>
+                    <label class="option"><input type="radio" name="q8" value="B"> B. 25%</label>
+                    <label class="option"><input type="radio" name="q8" value="C"> C. 30%</label>
+                    <label class="option"><input type="radio" name="q8" value="D"> D. 33%</label>
+                    <label class="option"><input type="radio" name="q8" value="E"> E. 50%</label>
+                </div>
+            </div>
+
+            <!-- Soal 9 -->
+            <div class="question" id="q9">
+                <h3>9. Diagram lingkaran berikut menunjukkan alokasi anggaran sekolah. Jika total anggaran Rp100 juta, berapa jumlah untuk sarana?</h3>
+                <div class="diagram">
+                    <table>
+                        <tr><th>Kategori</th><th>Persentase</th></tr>
+                        <tr><td>Gaji</td><td>40%</td></tr>
+                        <tr><td>Sarana</td><td>25%</td></tr>
+                        <tr><td>Operasional</td><td>20%</td></tr>
+                        <tr><td>Lainnya</td><td>15%</td></tr>
+                    </table>
+                </div>
+                <div class="options">
+                    <label class="option"><input type="radio" name="q9" value="A"> A. Rp15 juta</label>
+                    <label class="option"><input type="radio" name="q9" value="B"> B. Rp20 juta</label>
+                    <label class="option"><input type="radio" name="q9" value="C"> C. Rp25 juta</label>
+                    <label class="option"><input type="radio" name="q9" value="D"> D. Rp40 juta</label>
+                    <label class="option"><input type="radio" name="q9" value="E"> E. Rp60 juta</label>
+                </div>
+            </div>
+
+            <!-- Soal 10 -->
+            <div class="question" id="q10">
+                <h3>10. Tabel pendapatan harian toko menunjukkan Rp2.000.000 pada hari I dan Rp2.500.000 pada hari II. Berapa persentase kenaikan?</h3>
+                <div class="diagram">
+                    <table>
+                        <tr><th>Hari</th><th>Pendapatan</th></tr>
+                        <tr><td>I</td><td>2.000.000</td></tr>
+                        <tr><td>II</td><td>2.500.000</td></tr>
+                    </table>
+                </div>
+                <div class="options">
+                    <label class="option"><input type="radio" name="q10" value="A"> A. 20%</label>
+                    <label class="option"><input type="radio" name="q10" value="B"> B. 25%</label>
+                    <label class="option"><input type="radio" name="q10" value="C"> C. 30%</label>
+                    <label class="option"><input type="radio" name="q10" value="D"> D. 40%</label>
+                    <label class="option"><input type="radio" name="q10" value="E"> E. 50%</label>
+                </div>
+            </div>
+
+            <button id="submit-btn">Submit Jawaban</button>
+        </div>
+
+        <div id="result"></div>
+    </div>
+
+    <script>
+        const jawabanBenar = {
+            q1: "B", // Penurunan: (80-60)/80 * 100% = 25%? Tapi tabel menunjukkan penurunan dari 80 ke 60 = 20 unit, persentase: (20/80)*100 = 25%
+            q2: "B", // 40% dari 5jt = 2jt
+            q3: "A", // (96.000 - 80.000)/2 = 8.000 per tahun? Tapi pertanyaan rata-rata per tahun, maka (96.000 - 80.000)/2 = 8.000
+            q4: "B", // (450-200)/200 * 100% = 125%
+            q5: "D", // (120+150+180+210)/4 = 660/4 = 165
+            q6: "B", // Selisih persentase 10%, 10% dari 600 = 60
+            q7: "B", // (450-300)/300 * 100% = 50%
+            q8: "C", // (65-50)/50 * 100% = 30%
+            q9: "C", // 25% dari 100jt = 25jt
+            q10: "B" // (2.500.000 - 2.000.000)/2.000.000 * 100% = 25%
+        };
+
+        document.getElementById('submit-btn').addEventListener('click', function() {
+            let score = 0;
+            let jawaban = {};
+            
+            // Ambil semua jawaban
+            for (let i = 1; i <= 10; i++) {
+                const selected = document.querySelector(`input[name="q${i}"]:checked`);
+                if (selected) {
+                    jawaban[`q${i}`] = selected.value;
+                    if (selected.value === jawabanBenar[`q${i}`]) {
+                        score++;
+                    }
+                }
+            }
+            
+            // Tampilkan hasil
+            const resultDiv = document.getElementById('result');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = `
+                <h2>Hasil Kuis</h2>
+                <p>Skor Anda: ${score}/10</p>
+                <div id="review-container"></div>
+                <button onclick="location.reload()">Ulangi Kuis</button>
+            `;
+            
+            // Tampilkan review jawaban
+            const reviewContainer = document.getElementById('review-container');
+            for (let i = 1; i <= 10; i++) {
+                const userAnswer = jawaban[`q${i}`] || 'Tidak dijawab';
+                const correctAnswer = jawabanBenar[`q${i}`];
+                const isCorrect = userAnswer === correctAnswer;
+                
+                reviewContainer.innerHTML += `
+                    <div class="${isCorrect ? 'correct' : 'incorrect'}">
+                        <p>Soal ${i}: ${isCorrect ? 'Benar' : 'Salah'} 
+                           (Jawaban Anda: ${userAnswer}, Jawaban Benar: ${correctAnswer})</p>
+                    </div>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>
