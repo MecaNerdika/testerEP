@@ -1,0 +1,44 @@
+body {
+  font-family: sans-serif;
+  text-align: center;
+  padding: 20px;
+  background-color: #f7faff;
+  color: #333;
+}
+#soal {
+  font-size: 32px;
+  margin: 20px;
+}
+#inputArea, #mobilePad {
+  margin: 10px auto;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+input[type=number], input[type=text] {
+  font-size: 24px;
+  width: 200px;
+  text-align: center;
+  margin: 10px;
+}
+button, .num {
+  font-size: 20px;
+  margin: 5px;
+  padding: 10px 20px;
+}
+#info {
+  margin-top: 10px;
+  font-weight: bold;
+}
+.directions  p{
+  font-size: 12px;
+  border: 1px solid black;
+  text-align: left;
+  margin: 10px auto;
+  width: 400px;
+  height: auto;
+  padding: 10px;
+
+
+}
+

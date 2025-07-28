@@ -1,0 +1,48 @@
+[
+    {
+        "id": "budi",
+        "date": "2025-07-27 06:13:18",
+        "score": {
+            "sesi_1": {
+                "score": 6,
+                "salah": 3
+            }
+        }
+    },
+    {
+        "id": "septi",
+        "date": "2025-07-27 06:15:47",
+        "score": {
+            "sesi_1": {
+                "score": 3,
+                "salah": 1
+            },
+            "sesi_2": {
+                "score": 6,
+                "salah": 0
+            },
+            "sesi_3": {
+                "score": 3,
+                "salah": 5
+            }
+        }
+    },
+    {
+        "id": "Suci",
+        "date": "2025-07-27 06:34:12",
+        "score": {
+            "sesi_1": {
+                "score": 2,
+                "salah": 6
+            },
+            "sesi_2": {
+                "score": 5,
+                "salah": 1
+            },
+            "sesi_3": {
+                "score": 1,
+                "salah": 2
+            }
+        }
+    }
+]
