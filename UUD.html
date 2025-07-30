@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis HOTS Undang-Undang Dasar</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .fade-in { animation: fadeIn 0.5s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .timer-warning { animation: pulse 1s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        .option-card { transition: all 0.3s ease; }
+        .option-card:hover { transform: translateY(-2px); box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+        .selected { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .correct { background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color: white; }
+        .incorrect { background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%); color: white; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <!-- Registration Screen -->
+    <div id="registrationScreen" class="min-h-screen flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full fade-in">
+            <div class="text-center mb-8">
+                <i class="fas fa-book-open text-6xl text-indigo-600 mb-4"></i>
+                <h1 class="text-3xl font-bold text-gray-800 mb-2">Kuis HOTS</h1>
+                <p class="text-gray-600">Undang-Undang Dasar Negara Republik Indonesia</p>
+            </div>
+            
+            <form id="registrationForm" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-user mr-2"></i>Nama Lengkap
+                    </label>
+                    <input type="text" id="fullName" required
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+                           placeholder="Masukkan nama lengkap Anda">
+                </div>
+                
+                <div class="flex items-start">
+                    <input type="checkbox" id="readyCheck" required
+                           class="mt-1 w-5 h-5 text-indigo-600 rounded focus:ring-indigo-500">
+                    <label for="readyCheck" class="ml-3 text-sm text-gray-700">
+                        Saya siap memulai ujian dan telah memahami bahwa waktu yang disediakan adalah 20 menit
+                    </label>
+                </div>
+                
+                <button type="submit" id="startBtn" disabled
+                        class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold py-3 px-6 rounded-lg hover:from-indigo-700 hover:to-purple-700 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                    <i class="fas fa-play mr-2"></i>Mulai Kuis
+                </button>
+            </form>
+            
+            <div class="mt-6 text-center text-sm text-gray-500">
+                <i class="fas fa-clock mr-2"></i>Waktu pengerjaan: 20 menit
+            </div>
+        </div>
+    </div>
+
+    <!-- Quiz Screen -->
+    <div id="quizScreen" class="hidden min-h-screen p-4">
+        <div class="max-w-4xl mx-auto">
+            <!-- Header -->
+            <div class="bg-white rounded-t-2xl shadow-lg p-6">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-800">
+                            <i class="fas fa-book-open text-indigo-600 mr-2"></i>Kuis HOTS UUD
+                        </h2>
+                        <p class="text-gray-600 mt-1">Peserta: <span id="participantName" class="font-semibold"></span></p>
+                    </div>
+                    <div id="timer" class="bg-indigo-100 px-6 py-3 rounded-lg">
+                        <i class="fas fa-clock text-indigo-600 mr-2"></i>
+                        <span class="text-xl font-bold text-indigo-800">20:00</span>
+                    </div>
+                </div>
+                
+                <!-- Progress Bar -->
+                <div class="mt-4">
+                    <div class="flex justify-between text-sm text-gray-600 mb-2">
+                        <span>Progress</span>
+                        <span id="progressText">1/20</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-3">
+                        <div id="progressBar" class="bg-gradient-to-r from-indigo-600 to-purple-600 h-3 rounded-full transition-all duration-300" style="width: 5%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question Container -->
+            <div class="bg-white rounded-b-2xl shadow-lg p-8">
+                <div id="questionContainer" class="space-y-6">
+                    <!-- Questions will be dynamically inserted here -->
+                </div>
+                
+                <!-- Navigation -->
+                <div class="flex justify-between mt-8">
+                    <button id="prevBtn" class="bg-gray-200 text-gray-700 font-semibold py-3 px-6 rounded-lg hover:bg-gray-300 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                        <i class="fas fa-chevron-left mr-2"></i>Sebelumnya
+                    </button>
+                    <button id="nextBtn" class="bg-indigo-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-indigo-700 transition">
+                        Selanjutnya<i class="fas fa-chevron-right ml-2"></i>
+                    </button>
+                    <button id="finishBtn" class="hidden bg-green-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-green-700 transition">
+                        <i class="fas fa-check mr-2"></i>Selesai
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Result Screen -->
+    <div id="resultScreen" class="hidden min-h-screen flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full fade-in text-center">
+            <div class="mb-6">
+                <i id="resultIcon" class="text-8xl mb-4"></i>
+                <h2 class="text-3xl font-bold text-gray-800 mb-2">Hasil Kuis</h2>
+                <p class="text-gray-600">Peserta: <span id="resultName" class="font-semibold"></span></p>
+            </div>
+            
+            <div class="bg-gray-50 rounded-xl p-6 mb-6">
+                <div class="text-5xl font-bold mb-2" id="scoreDisplay"></div>
+                <div class="text-gray-600" id="scoreDetail"></div>
+            </div>
+            
+            <div class="space-y-3 mb-6">
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-600">Jawaban Benar</span>
+                    <span class="font-semibold text-green-600" id="correctAnswers"></span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-600">Jawaban Salah</span>
+                    <span class="font-semibold text-red-600" id="wrongAnswers"></span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-600">Waktu Pengerjaan</span>
+                    <span class="font-semibold text-gray-800" id="timeSpent"></span>
+                </div>
+            </div>
+            
+            <button onclick="location.reload()" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold py-3 px-6 rounded-lg hover:from-indigo-700 hover:to-purple-700 transition">
+                <i class="fas fa-redo mr-2"></i>Kerjakan Lagi
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Quiz Data
+        const quizData = [
+            {
+                question: "Menurut Pasal 1 ayat (1) UUD 1945, kedaulatan berada di tangan rakyat. Bagaimana konsep ini diimplementasikan dalam sistem ketatanegaraan Indonesia?",
+                options: [
+                    "Melalui sistem presidensial dimana presiden dipilih langsung oleh rakyat",
+                    "Dengan adanya MPR sebagai pemegang kedaulatan rakyat tertinggi",
+                    "Melalui mekanisme pemilu umum untuk memilih wakil rakyat dan presiden",
+                    "Dengan memberikan hak veto kepada rakyat atas setiap kebijakan pemerintah",
+                    "Melalui sistem referendum untuk setiap pembuatan undang-undang"
+                ],
+                correct: 2
+            },
+            {
+                question: "Pasal 33 UUD 1945 mengatur tentang perekonomian nasional. Analisis hubungan antara ayat (1) dan ayat (4) dalam konteks pembangunan ekonomi Indonesia saat ini!",
+                options: [
+                    "Ayat (1) tentang perekonomian disusun sebagai usaha bersama bertentangan dengan ayat (4) tentang perekonomian nasional",
+                    "Kedua ayat saling melengkapi dimana ayat (1) menjamin kebebasan ekonomi sementara ayat (4) menjamin keadilan sosial",
+                    "Ayat (4) tentang kemandirian perekonomian merupakan implementasi dari prinsip dalam ayat (1)",
+                    "Tidak ada hubungan signifikan antara kedua ayat tersebut dalam praktik ekonomi",
+                    "Ayat (1) lebih penting daripada ayat (4) dalam pembangunan ekonomi modern"
+                ],
+                correct: 2
+            },
+            {
+                question: "Bagaimana UUD 1945 mengatur mekanisme checks and balances antara lembaga-lembaga negara untuk mencegah kekuasaan yang absolut?",
+                options: [
+                    "Hanya melalui pemisahan kekuasaan eksekutif, legislatif, dan yudikatif",
+                    "Dengan adanya sistem presidensial dimana presiden memiliki kekuasaan penuh",
+                    "Melalui berbagai mekanisme seperti hak angket DPR, hak interpelasi, dan judicial review oleh MK",
+                    "Dengan memberikan kekuasaan tertinggi kepada MPR untuk mengawasi semua lembaga negara",
+                    "Hanya melalui sistem pemilu setiap 5 tahun"
+                ],
+                correct: 2
+            },
+            {
+                question: "Pasal 28J ayat (2) UUD 1945 menyatakan bahwa dalam menjalankan hak dan kebebasan, wajib tunduk pada pembatasan. Evaluasi relevansi pasal ini dalam era digital!",
+                options: [
+                    "Pasal ini sudah tidak relevan karena di era digital semua kebebasan harus dijamin tanpa batasan",
+                    "Pasal ini sangat relevan untuk mengatur kebebasan berinternet dan mencegah penyalahgunaan media sosial",
+                    "Pasal ini hanya berlaku untuk kebebasan di dunia nyata, tidak untuk dunia maya",
+                    "Pasal ini bertentangan dengan prinsip demokrasi modern",
+                    "Pasal ini perlu dihapus karena menghambat perkembangan teknologi"
+                ],
+                correct: 1
+            },
+            {
+                question: "Analisis perbedaan konsep 'negara hukum' dalam UUD 1945 dengan konsep 'rechtsstaat' dalam tradisi hukum Eropa Kontinental!",
+                options: [
+                    "Tidak ada perbedaan, kedua konsep identik dalam implementasinya",
+                    "Negara hukum Indonesia lebih menekankan pada aspek spiritual dan religius dibanding rechtsstaat",
+                    "Rechtsstaat lebih mementingkan kepastian hukum formal, sedangkan negara hukum Indonesia menekankan keadilan sosial",
+                    "Negara hukum Indonesia hanya berlaku untuk pemerintah, bukan untuk rakyat",
+                    "Rechtsstaat lebih superior karena berasal dari Eropa"
+                ],
+                correct: 2
+            },
+            {
+                question: "Bagaimana implementasi prinsip kedaulatan hukum (Pasal 1 ayat 3) dalam konteks penegakan hukum terhadap pejabat negara?",
+                options: [
+                    "Pejabat negara memiliki kekebalan hukum karena statusnya",
+                    "Semua warga negara termasuk pejabat negara setara di depan hukum tanpa pengecualian",
+                    "Hukum hanya berlaku untuk rakyat biasa, bukan untuk pejabat tinggi",
+                    "Pejabat negara hanya bisa diadili setelah masa jabatan berakhir",
+                    "Penegakan hukum terhadap pejabat negara memerlukan izin presiden"
+                ],
+                correct: 1
+            },
+            {
+                question: "Evaluasi dampak perubahan UUD 1945 tahun 2001-2002 terhadap sistem ketatanegaraan Indonesia, khususnya terkait hubungan antara pusat dan daerah!",
+                options: [
+                    "Perubahan tersebut memperkuat sentralisasi kekuasaan di pemerintah pusat",
+                    "Perubahan mendorong desentralisasi dan otonomi daerah yang lebih luas",
+                    "Tidak ada dampak signifikan terhadap hubungan pusat-daerah",
+                    "Perubahan tersebut menghapuskan sistem pemerintahan daerah",
+                    "Perubahan hanya bersifat formal tanpa implementasi nyata"
+                ],
+                correct: 1
+            },
+            {
+                question: "Pasal 23E UUD 1945 tentang BPK. Analisis pentingnya fungsi pengawasan BPK dalam mencegah korupsi di Indonesia!",
+                options: [
+                    "BPK hanya bertugas mengaudit keuangan negara tanpa wewenang penindakan",
+                    "Fungsi BPK sangat penting sebagai check and balance eksternal terhadap pengelolaan keuangan negara",
+                    "BPK memiliki wewenang untuk menangkap koruptor secara langsung",
+                    "Peran BPK bisa digantikan oleh KPK dalam pemberantasan korupsi",
+                    "BPK tidak efektif karena hanya menghasilkan laporan tanpa tindak lanjut"
+                ],
+                correct: 1
+            },
+            {
+                question: "Bagaimana UUD 1945 mengatur perlindungan HAM dalam konteks keamanan nasional dan penegakan hukum?",
+                options: [
+                    "HAM bisa ditangguhkan sepenuhnya demi keamanan nasional",
+                    "Perlindungan HAM diatur secara seimbang dengan memperhatikan keamanan nasional dan ketertiban umum",
+                    "Keamanan nasional selalu diutamakan di atas HAM",
+                    "HAM hanya berlaku dalam kondisi damai, tidak dalam keadaan darurat",
+                    "UUD 1945 tidak mengatur tentang keseimbangan antara HAM dan keamanan"
+                ],
+                correct: 1
+            },
+            {
+                question: "Analisis hubungan antara Pasal 29 tentang agama dan Pasal 28I tentang HAM dalam konteks kebebasan beragama di Indonesia!",
+                options: [
+                    "Kedua pasal saling bertentangan dalam menjamin kebebasan beragama",
+                    "Pasal 29 menjamin kebebasan beragama sementara Pasal 28I memberikan dasar konstitusional yang lebih kuat",
+                    "Pasal 29 sudah cukup mengatur kebebasan beragama tanpa perlu Pasal 28I",
+                    "Pasal 28I membatasi kebebasan beragama yang diatur dalam Pasal 29",
+                    "Tidak ada hubungan antara kedua pasal tersebut"
+                ],
+                correct: 1
+            },
+            {
+                question: "Bagaimana konsep 'demokrasi ekonomi' dalam UUD 1945 (Pasal 33) diimplementasikan dalam kebijakan ekonomi kontemporer Indonesia?",
+                options: [
+                    "Melalui sistem ekonomi pasar bebas tanpa campur tangan pemerintah",
+                    "Dengan menyeimbangkan mekanisme pasar dan peran negara untuk mencapai keadilan sosial",
+                    "Hanya melalui BUMN sebagai pelaku utama ekonomi",
+                    "Dengan memberikan subsidi besar-besaran kepada semua sektor usaha",
+                    "Melalui nasionalisasi semua perusahaan swasta"
+                ],
+                correct: 1
+            },
+            {
+                question: "Evaluasi relevansi Pasal 27 tentang kewajiban membela negara dalam konteks Indonesia modern yang damai!",
+                options: [
+                    "Pasal ini sudah tidak relevan karena Indonesia dalam kondisi damai",
+                    "Pasal ini tetap relevan sebagai bentuk kesiapsiagaan dan cinta tanah air",
+                    "Kewajiban membela negara hanya berlaku saat perang",
+                    "Pasal ini hanya berlaku untuk anggota TNI dan Polri",
+                    "Pasal ini perlu dihapus karena mengancam perdamaian"
+                ],
+                correct: 1
+            },
+            {
+                question: "Bagaimana mekanisme amandemen UUD 1945 menunjukkan kemampuan konstitusi beradaptasi dengan perubahan zaman?",
+                options: [
+                    "Amandemen dilakukan melalui referendum oleh seluruh rakyat Indonesia",
+                    "Melalui proses yang ketat di MPR dengan mempertimbangkan aspirasi rakyat dan kebutuhan bangsa",
+                    "Presiden memiliki wewenang untuk mengubah UUD sesuai kebutuhan",
+                    "UUD tidak bisa diubah karena sudah final",
+                    "Amandemen hanya bisa dilakukan setiap 50 tahun"
+                ],
+                correct: 1
+            },
+            {
+                question: "Analisis peran Mahkamah Konstitusi dalam menjaga konstitusionalitas undang-undang berdasarkan UUD 1945!",
+                options: [
+                    "MK hanya berfungsi sebagai pengadilan pemilu tanpa wewenang judicial review",
+                    "MK memiliki kewenangan penting dalam menguji undang-undang terhadap UUD 1945 untuk melindungi konstitusi",
+                    "MK tidak memiliki wewenang untuk membatalkan undang-undang",
+                    "Peran MK bisa digantikan oleh Mahkamah Agung",
+                    "MK hanya berfungsi sebagai penasehat pemerintah"
+                ],
+                correct: 1
+            },
+            {
+                question: "Bagaimana UUD 1945 mengatur hubungan internasional Indonesia dalam konteks globalisasi?",
+                options: [
+                    "UUD 1945 melarang Indonesia untuk terlibat dalam hubungan internasional",
+                    "Melalui Pasal 11-13 yang mengatur landasan hubungan internasional dengan mempertahankan jati diri bangsa",
+                    "Indonesia harus mengikuti semua kebijakan internasional tanpa syarat",
+                    "Hubungan internasional hanya diatur melalui peraturan presiden",
+                    "UUD 1945 tidak mengatur tentang hubungan internasional"
+                ],
+                correct: 1
+            },
+            {
+                question: "Evaluasi implementasi prinsip pembagian kekuasaan (trias politica) dalam sistem presidensial Indonesia menurut UUD 1945!",
+                options: [
+                    "Sistem presidensial Indonesia murni menerapkan trias politica tanpa modifikasi",
+                    "Indonesia mengadopsi trias politica dengan karakteristik sendiri yang menyesuaikan dengan kondisi lokal",
+                    "Trias politica tidak berlaku dalam sistem Indonesia",
+                    "Presiden memiliki kekuasaan absolut yang mengabaikan pembagian kekuasaan",
+                    "Sistem Indonesia lebih mirip parlementer daripada presidensial"
+                ],
+                correct: 1
+            },
+            {
+                question: "Bagaimana konsep 'negara kesatuan' dalam UUD 1945 diimplementasikan dalam mengelola keberagaman Indonesia?",
+                options: [
+                    "Dengan menyeragamkan semua budaya dan adat istiadat",
+                    "Melalui prinsip Bhinneka Tunggal Ika yang mengakui keberagaman dalam kesatuan",
+                    "Dengan memberikan otonomi penuh kepada setiap suku untuk membentuk negara sendiri",
+                    "Hanya mengakui budaya Jawa sebagai budaya nasional",
+                    "Mengabaikan keberagaman untuk mencapai kesatuan"
+                ],
+                correct: 1
+            },
+            {
+                question: "Analisis pentingnya Pasal 23C tentang Bank Indonesia dalam menjaga stabilitas ekonomi nasional!",
+                options: [
+                    "Bank Indonesia hanya berfungsi sebagai bank komersial biasa",
+                    "BI memiliki peran krusial sebagai bank sentral independen dalam menjaga stabilitas moneter",
+                    "BI sepenuhnya dikendalikan oleh pemerintah untuk kebijakan fiskal",
+                    "Peran BI bisa digantikan oleh bank-bank swasta",
+                    "BI tidak relevan dalam ekonomi modern"
+                ],
+                correct: 1
+            },
+            {
+                question: "Bagaimana UUD 1945 menjamin partisipasi politik masyarakat dalam sistem demokrasi Indonesia?",
+                options: [
+                    "Hanya melalui pemilu presiden setiap 5 tahun",
+                    "Melalui berbagai mekanisme seperti pemilu, partisipasi dalam pembuatan kebijakan, dan kebebasan berorganisasi",
+                    "Partisipasi politik hanya diperbolehkan untuk partai politik yang diakui pemerintah",
+                    "Rakyat tidak memiliki hak untuk berpartisipasi dalam politik",
+                    "Partisipasi politik hanya melalui demonstrasi"
+                ],
+                correct: 1
+            },
+            {
+                question: "Evaluasi dampak perubahan UUD 1945 terhadap penguatan sistem demokrasi dan perlindungan HAM di Indonesia!",
+                options: [
+                    "Perubahan melemahkan demokrasi dan HAM di Indonesia",
+                    "Perubahan secara signifikan memperkuat demokrasi dan perlindungan HAM melalui penambahan bab khusus",
+                    "Perubahan tidak memiliki dampak terhadap demokrasi dan HAM",
+                    "Perubahan hanya bersifat kosmetik tanpa perubahan substansial",
+                    "Perubahan menghapuskan beberapa jaminan HAM yang sebelumnya ada"
+                ],
+                correct: 1
+            }
+        ];
+
+        // Global Variables
+        let currentQuestion = 0;
+        let userAnswers = [];
+        let timeLeft = 1200; // 20 minutes in seconds
+        let timerInterval;
+        let startTime;
+        let endTime;
+
+        // DOM Elements
+        const registrationScreen = document.getElementById('registrationScreen');
+        const quizScreen = document.getElementById('quizScreen');
+        const resultScreen = document.getElementById('resultScreen');
+        const registrationForm = document.getElementById('registrationForm');
+        const fullNameInput = document.getElementById('fullName');
+        const readyCheck = document.getElementById('readyCheck');
+        const startBtn = document.getElementById('startBtn');
+        const participantName = document.getElementById('participantName');
+        const timer = document.getElementById('timer');
+        const questionContainer = document.getElementById('questionContainer');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const finishBtn = document.getElementById('finishBtn');
+        const progressBar = document.getElementById('progressBar');
+        const progressText = document.getElementById('progressText');
+
+        // Registration Form Handler
+        fullNameInput.addEventListener('input', checkFormValidity);
+        readyCheck.addEventListener('change', checkFormValidity);
+
+        function checkFormValidity() {
+            const isValid = fullNameInput.value.trim() !== '' && readyCheck.checked;
+            startBtn.disabled = !isValid;
+        }
+
+        registrationForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            startQuiz();
+        });
+
+        function startQuiz() {
+            participantName.textContent = fullNameInput.value;
+            registrationScreen.classList.add('hidden');
+            quizScreen.classList.remove('hidden');
+            startTime = new Date();
+            startTimer();
+            displayQuestion();
+        }
+
+        function startTimer() {
+            updateTimerDisplay();
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                
+                if (timeLeft <= 60) {
+                    timer.classList.add('timer-warning', 'bg-red-100');
+                    timer.classList.remove('bg-indigo-100');
+                }
+                
+                if (timeLeft <= 0) {
+                    finishQuiz();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timer.querySelector('span').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function displayQuestion() {
+            const question = quizData[currentQuestion];
+            const progress = ((currentQuestion + 1) / quizData.length) * 100;
+            
+            progressBar.style.width = `${progress}%`;
+            progressText.textContent = `${currentQuestion + 1}/${quizData.length}`;
+            
+            questionContainer.innerHTML = `
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">
+                        Pertanyaan ${currentQuestion + 1}
+                    </h3>
+                    <p class="text-lg text-gray-700 leading-relaxed">${question.question}</p>
+                </div>
+                <div class="space-y-3">
+                    ${question.options.map((option, index) => `
+                        <div class="option-card bg-gray-50 border-2 border-gray-200 rounded-lg p-4 cursor-pointer hover:border-indigo-400"
+                             onclick="selectOption(${index})">
+                            <label class="flex items-center cursor-pointer">
+                                <input type="radio" name="answer" value="${index}" class="mr-3 w-5 h-5 text-indigo-600">
+                                <span class="text-gray-700">${option}</span>
+                            </label>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            
+            // Restore previous answer if exists
+            if (userAnswers[currentQuestion] !== undefined) {
+                const selectedOption = questionContainer.querySelector(`input[value="${userAnswers[currentQuestion]}"]`);
+                if (selectedOption) {
+                    selectedOption.checked = true;
+                    selectedOption.closest('.option-card').classList.add('selected');
+                }
+            }
+            
+            // Update navigation buttons
+            prevBtn.disabled = currentQuestion === 0;
+            if (currentQuestion === quizData.length - 1) {
+                nextBtn.classList.add('hidden');
+                finishBtn.classList.remove('hidden');
+            } else {
+                nextBtn.classList.remove('hidden');
+                finishBtn.classList.add('hidden');
+            }
+        }
+
+        function selectOption(index) {
+            // Remove previous selection
+            document.querySelectorAll('.option-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            // Add selection to clicked option
+            const selectedCard = document.querySelectorAll('.option-card')[index];
+            selectedCard.classList.add('selected');
+            
+            // Update radio button
+            const radio = selectedCard.querySelector('input[type="radio"]');
+            radio.checked = true;
+            
+            // Save answer
+            userAnswers[currentQuestion] = index;
+        }
+
+        // Navigation
+        prevBtn.addEventListener('click', () => {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                displayQuestion();
+            }
+        });
+
+        nextBtn.addEventListener('click', () => {
+            if (currentQuestion < quizData.length - 1) {
+                currentQuestion++;
+                displayQuestion();
+            }
+        });
+
+        finishBtn.addEventListener('click', () => {
+            if (confirm('Apakah Anda yakin ingin menyelesaikan kuis?')) {
+                finishQuiz();
+            }
+        });
+
+        function finishQuiz() {
+            clearInterval(timerInterval);
+            endTime = new Date();
+            
+            // Calculate score
+            let correctCount = 0;
+            userAnswers.forEach((answer, index) => {
+                if (answer === quizData[index].correct) {
+                    correctCount++;
+                }
+            });
+            
+            const score = Math.round((correctCount / quizData.length) * 100);
+            const timeSpent = Math.floor((endTime - startTime) / 1000);
+            
+            // Show results
+            showResults(score, correctCount, timeSpent);
+        }
+
+        function showResults(score, correctCount, timeSpent) {
+            quizScreen.classList.add('hidden');
+            resultScreen.classList.remove('hidden');
+            
+            document.getElementById('resultName').textContent = fullNameInput.value;
+            document.getElementById('scoreDisplay').textContent = `${score}%`;
+            document.getElementById('correctAnswers').textContent = correctCount;
+            document.getElementById('wrongAnswers').textContent = quizData.length - correctCount;
+            
+            // Format time spent
+            const minutes = Math.floor(timeSpent / 60);
+            const seconds = timeSpent % 60;
+            document.getElementById('timeSpent').textContent = `${minutes} menit ${seconds} detik`;
+            
+            // Set score detail and icon based on performance
+            const resultIcon = document.getElementById('resultIcon');
+            const scoreDetail = document.getElementById('scoreDetail');
+            
+            if (score >= 80) {
+                resultIcon.className = 'fas fa-trophy text-yellow-500';
+                scoreDetail.textContent = 'Luar Biasa! Anda menguasai materi dengan sangat baik';
+            } else if (score >= 60) {
+                resultIcon.className = 'fas fa-thumbs-up text-green-500';
+                scoreDetail.textContent = 'Bagus! Anda sudah memahami materi dengan baik';
+            } else if (score >= 40) {
+                resultIcon.className = 'fas fa-star-half-alt text-blue-500';
+                scoreDetail.textContent = 'Cukup Baik, perlu lebih banyak belajar';
+            } else {
+                resultIcon.className = 'fas fa-book text-red-500';
+                scoreDetail.textContent = 'Perlu belajar lebih giat lagi';
+            }
+        }
+
+        // Handle radio button changes
+        document.addEventListener('change', (e) => {
+            if (e.target.type === 'radio' && e.target.name === 'answer') {
+                const index = parseInt(e.target.value);
+                selectOption(index);
+            }
+        });
+    </script>
+</body>
+</html>
