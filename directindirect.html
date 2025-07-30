@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Direct-Indirect Speech</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .timer-warning {
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .option-card {
+            transition: all 0.3s ease;
+        }
+        
+        .option-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .option-card.selected {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: translateX(10px);
+        }
+        
+        .progress-bar {
+            transition: width 0.5s ease;
+        }
+        
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: #667eea;
+            position: absolute;
+            animation: confetti-fall 3s linear;
+        }
+        
+        @keyframes confetti-fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-purple-50 to-blue-50 min-h-screen">
+    <!-- Welcome Screen -->
+    <div id="welcomeScreen" class="min-h-screen flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full fade-in">
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full mb-4">
+                    <i class="fas fa-graduation-cap text-white text-3xl"></i>
+                </div>
+                <h1 class="text-3xl font-bold text-gray-800 mb-2">Kuis Direct-Indirect Speech</h1>
+                <p class="text-gray-600">Uji pemahamanmu tentang direct dan indirect speech dalam bahasa Inggris!</p>
+            </div>
+            
+            <div class="space-y-4 mb-6">
+                <div class="bg-purple-50 rounded-lg p-4">
+                    <div class="flex items-center space-x-3">
+                        <i class="fas fa-clock text-purple-600"></i>
+                        <span class="text-gray-700">Waktu pengerjaan: 15 menit</span>
+                    </div>
+                </div>
+                <div class="bg-blue-50 rounded-lg p-4">
+                    <div class="flex items-center space-x-3">
+                        <i class="fas fa-question-circle text-blue-600"></i>
+                        <span class="text-gray-700">Total soal: 20 pilihan ganda</span>
+                    </div>
+                </div>
+            </div>
+            
+            <form id="nameForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Nama Lengkap *</label>
+                    <input type="text" id="userName" required 
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                           placeholder="Masukkan nama lengkap Anda">
+                </div>
+                <button type="submit" 
+                        class="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition transform hover:scale-105">
+                    Mulai Kuis
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Quiz Screen -->
+    <div id="quizScreen" class="hidden min-h-screen p-4">
+        <div class="max-w-4xl mx-auto">
+            <!-- Timer and Progress -->
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-6 fade-in">
+                <div class="flex justify-between items-center mb-4">
+                    <div class="flex items-center space-x-3">
+                        <i class="fas fa-user-circle text-gray-600 text-xl"></i>
+                        <span class="text-gray-700 font-medium" id="displayName"></span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-clock text-gray-600"></i>
+                        <span id="timer" class="text-2xl font-bold text-gray-800">15:00</span>
+                    </div>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-3">
+                    <div id="progressBar" class="progress-bar bg-gradient-to-r from-purple-600 to-blue-600 h-3 rounded-full" style="width: 5%"></div>
+                </div>
+                <p class="text-sm text-gray-600 mt-2">Soal <span id="currentQuestion">1</span> dari 20</p>
+            </div>
+
+            <!-- Question Container -->
+            <div class="bg-white rounded-xl shadow-lg p-8 fade-in">
+                <h2 id="questionText" class="text-xl font-semibold text-gray-800 mb-6"></h2>
+                <div id="optionsContainer" class="space-y-3">
+                    <!-- Options will be dynamically inserted here -->
+                </div>
+                <div class="flex justify-between mt-8">
+                    <button id="prevBtn" onclick="previousQuestion()" 
+                            class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                        <i class="fas fa-arrow-left mr-2"></i>Sebelumnya
+                    </button>
+                    <button id="nextBtn" onclick="nextQuestion()" 
+                            class="px-6 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 transition">
+                        Selanjutnya<i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                    <button id="finishBtn" onclick="finishQuiz()" 
+                            class="hidden px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
+                        Selesai<i class="fas fa-check ml-2"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Screen -->
+    <div id="resultsScreen" class="hidden min-h-screen flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full fade-in text-center">
+            <div id="resultIcon" class="inline-flex items-center justify-center w-24 h-24 rounded-full mb-6">
+                <!-- Icon will be dynamically inserted -->
+            </div>
+            <h2 class="text-3xl font-bold text-gray-800 mb-2">Hasil Kuis</h2>
+            <p class="text-gray-600 mb-6">Selamat, <span id="resultName" class="font-semibold"></span>!</p>
+            
+            <div class="bg-gray-50 rounded-xl p-6 mb-6">
+                <div class="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600 mb-2">
+                    <span id="scoreDisplay">0</span>/20
+                </div>
+                <p class="text-gray-600">Jawaban Benar</p>
+                <div class="mt-4">
+                    <div class="text-2xl font-semibold text-gray-800">
+                        <span id="percentageDisplay">0</span>%
+                    </div>
+                    <p class="text-sm text-gray-600">Nilai Akhir</p>
+                </div>
+            </div>
+            
+            <div id="resultMessage" class="text-gray-700 mb-6"></div>
+            
+            <button onclick="location.reload()" 
+                    class="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition transform hover:scale-105">
+                <i class="fas fa-redo mr-2"></i>Kerjakan Lagi
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Quiz Data
+        const questions = [
+            {
+                question: "He said, 'I am happy today.'",
+                options: [
+                    "He said that he was happy today.",
+                    "He said that he is happy today.",
+                    "He said that he was happy that day.",
+                    "He said that he is happy that day.",
+                    "He said that he was happy yesterday."
+                ],
+                correct: 2
+            },
+            {
+                question: "She said to me, 'You have passed the test.'",
+                options: [
+                    "She told me that I have passed the test.",
+                    "She told me that I had passed the test.",
+                    "She told me that you have passed the test.",
+                    "She told me that you had passed the test.",
+                    "She told me that I passed the test."
+                ],
+                correct: 1
+            },
+            {
+                question: "They said, 'We will come tomorrow.'",
+                options: [
+                    "They said that they will come tomorrow.",
+                    "They said that they would come tomorrow.",
+                    "They said that they will come the next day.",
+                    "They said that they would come the next day.",
+                    "They said that they would come yesterday."
+                ],
+                correct: 3
+            },
+            {
+                question: "The teacher said, 'The earth revolves around the sun.'",
+                options: [
+                    "The teacher said that the earth revolved around the sun.",
+                    "The teacher said that the earth revolves around the sun.",
+                    "The teacher said that the earth is revolving around the sun.",
+                    "The teacher said that the earth was revolving around the sun.",
+                    "The teacher said that the earth has revolved around the sun."
+                ],
+                correct: 1
+            },
+            {
+                question: "John said, 'I can swim very well.'",
+                options: [
+                    "John said that he can swim very well.",
+                    "John said that he could swim very well.",
+                    "John said that I can swim very well.",
+                    "John said that he was able to swim very well.",
+                    "John said that he is able to swim very well."
+                ],
+                correct: 1
+            },
+            {
+                question: "Mary said, 'I have been studying for two hours.'",
+                options: [
+                    "Mary said that she has been studying for two hours.",
+                    "Mary said that she had been studying for two hours.",
+                    "Mary said that she was studying for two hours.",
+                    "Mary said that she studied for two hours.",
+                    "Mary said that she has studied for two hours."
+                ],
+                correct: 1
+            },
+            {
+                question: "The boy said, 'I broke the window yesterday.'",
+                options: [
+                    "The boy said that he broke the window yesterday.",
+                    "The boy said that he had broken the window yesterday.",
+                    "The boy said that he broke the window the day before.",
+                    "The boy said that he had broken the window the day before.",
+                    "The boy said that he breaks the window yesterday."
+                ],
+                correct: 3
+            },
+            {
+                question: "She said, 'I must finish my homework now.'",
+                options: [
+                    "She said that she must finish her homework now.",
+                    "She said that she had to finish her homework now.",
+                    "She said that she must finish her homework then.",
+                    "She said that she had to finish her homework then.",
+                    "She said that she should finish her homework now."
+                ],
+                correct: 3
+            },
+            {
+                question: "Tom said, 'I will help you if I have time.'",
+                options: [
+                    "Tom said that he will help me if he has time.",
+                    "Tom said that he would help me if he had time.",
+                    "Tom said that he would help me if he has time.",
+                    "Tom said that he will help me if he had time.",
+                    "Tom said that he would help you if he had time."
+                ],
+                correct: 1
+            },
+            {
+                question: "The doctor said, 'You should take this medicine twice a day.'",
+                options: [
+                    "The doctor said that I should take this medicine twice a day.",
+                    "The doctor said that I should take that medicine twice a day.",
+                    "The doctor said that you should take this medicine twice a day.",
+                    "The doctor said that you should take that medicine twice a day.",
+                    "The doctor said that I should take that medicine two times a day."
+                ],
+                correct: 1
+            },
+            {
+                question: "He said, 'What are you doing here?'",
+                options: [
+                    "He asked what I was doing here.",
+                    "He asked what I was doing there.",
+                    "He asked what are you doing here.",
+                    "He asked what are you doing there.",
+                    "He asked what was I doing there."
+                ],
+                correct: 1
+            },
+            {
+                question: "She said to me, 'Where do you live?'",
+                options: [
+                    "She asked me where I lived.",
+                    "She asked me where do I live.",
+                    "She asked me where did I live.",
+                    "She asked me where you live.",
+                    "She asked me where you lived."
+                ],
+                correct: 0
+            },
+            {
+                question: "The teacher said, 'Don't talk in class!'",
+                options: [
+                    "The teacher told us not to talk in class.",
+                    "The teacher told us don't talk in class.",
+                    "The teacher said us not to talk in class.",
+                    "The teacher told to us not to talk in class.",
+                    "The teacher said to not talk in class."
+                ],
+                correct: 0
+            },
+            {
+                question: "He said, 'Let's go to the cinema.'",
+                options: [
+                    "He suggested going to the cinema.",
+                    "He suggested to go to the cinema.",
+                    "He said let's go to the cinema.",
+                    "He told to go to the cinema.",
+                    "He proposed going to the cinema."
+                ],
+                correct: 0
+            },
+            {
+                question: "She said, 'I wish I were rich.'",
+                options: [
+                    "She said that she wished she were rich.",
+                    "She said that she wished she was rich.",
+                    "She said that she wishes she were rich.",
+                    "She said that she wished she is rich.",
+                    "She said that she wishes she was rich."
+                ],
+                correct: 0
+            },
+            {
+                question: "The boy said, 'I am reading a book now.'",
+                options: [
+                    "The boy said that he was reading a book now.",
+                    "The boy said that he was reading a book then.",
+                    "The boy said that he is reading a book now.",
+                    "The boy said that he is reading a book then.",
+                    "The boy said that he read a book then."
+                ],
+                correct: 1
+            },
+            {
+                question: "Mother said, 'I have cooked dinner.'",
+                options: [
+                    "Mother said that she has cooked dinner.",
+                    "Mother said that she had cooked dinner.",
+                    "Mother said that she cooked dinner.",
+                    "Mother said that she was cooking dinner.",
+                    "Mother said that she has been cooking dinner."
+                ],
+                correct: 1
+            },
+            {
+                question: "He said, 'I can't come to the party.'",
+                options: [
+                    "He said that he can't come to the party.",
+                    "He said that he couldn't come to the party.",
+                    "He said that he can not come to the party.",
+                    "He said that he was not able to come to the party.",
+                    "He said that he is not able to come to the party."
+                ],
+                correct: 1
+            },
+            {
+                question: "The manager said, 'All employees must attend the meeting.'",
+                options: [
+                    "The manager said that all employees must attend the meeting.",
+                    "The manager said that all employees had to attend the meeting.",
+                    "The manager said that all employees should attend the meeting.",
+                    "The manager said that all employees have to attend the meeting.",
+                    "The manager said that all employees were to attend the meeting."
+                ],
+                correct: 0
+            },
+            {
+                question: "She said, 'I bought this dress last week.'",
+                options: [
+                    "She said that she bought this dress last week.",
+                    "She said that she had bought that dress the week before.",
+                    "She said that she bought that dress last week.",
+                    "She said that she had bought this dress the previous week.",
+                    "She said that she buys that dress last week."
+                ],
+                correct: 1
+            }
+        ];
+
+        // Quiz State
+        let currentQuestionIndex = 0;
+        let userAnswers = new Array(questions.length).fill(null);
+        let userName = '';
+        let timeLeft = 15 * 60; // 15 minutes in seconds
+        let timerInterval;
+
+        // Initialize
+        document.getElementById('nameForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            userName = document.getElementById('userName').value;
+            if (userName.trim()) {
+                startQuiz();
+            }
+        });
+
+        function startQuiz() {
+            document.getElementById('welcomeScreen').classList.add('hidden');
+            document.getElementById('quizScreen').classList.remove('hidden');
+            document.getElementById('displayName').textContent = userName;
+            loadQuestion();
+            startTimer();
+        }
+
+        function startTimer() {
+            updateTimerDisplay();
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                
+                if (timeLeft <= 60) {
+                    document.getElementById('timer').classList.add('timer-warning', 'text-red-600');
+                }
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    finishQuiz();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            document.getElementById('timer').textContent = 
+                `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function loadQuestion() {
+            const question = questions[currentQuestionIndex];
+            document.getElementById('questionText').textContent = question.question;
+            document.getElementById('currentQuestion').textContent = currentQuestionIndex + 1;
+            
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+            
+            question.options.forEach((option, index) => {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = 'option-card bg-gray-50 p-4 rounded-lg cursor-pointer border-2 border-transparent';
+                optionDiv.innerHTML = `
+                    <label class="flex items-center cursor-pointer">
+                        <input type="radio" name="answer" value="${index}" class="mr-3">
+                        <span class="text-gray-700">${option}</span>
+                    </label>
+                `;
+                
+                optionDiv.addEventListener('click', () => selectOption(index, optionDiv));
+                optionsContainer.appendChild(optionDiv);
+                
+                // Restore selected option
+                if (userAnswers[currentQuestionIndex] === index) {
+                    optionDiv.classList.add('selected');
+                    optionDiv.querySelector('input').checked = true;
+                }
+            });
+            
+            updateProgress();
+            updateNavigationButtons();
+        }
+
+        function selectOption(index, element) {
+            userAnswers[currentQuestionIndex] = index;
+            
+            // Update UI
+            document.querySelectorAll('.option-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            element.classList.add('selected');
+            element.querySelector('input').checked = true;
+        }
+
+        function updateProgress() {
+            const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
+            document.getElementById('progressBar').style.width = `${progress}%`;
+        }
+
+        function updateNavigationButtons() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const finishBtn = document.getElementById('finishBtn');
+            
+            prevBtn.disabled = currentQuestionIndex === 0;
+            
+            if (currentQuestionIndex === questions.length - 1) {
+                nextBtn.classList.add('hidden');
+                finishBtn.classList.remove('hidden');
+            } else {
+                nextBtn.classList.remove('hidden');
+                finishBtn.classList.add('hidden');
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                loadQuestion();
+            }
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                loadQuestion();
+            }
+        }
+
+        function finishQuiz() {
+            clearInterval(timerInterval);
+            calculateResults();
+            showResults();
+        }
+
+        function calculateResults() {
+            let correctAnswers = 0;
+            questions.forEach((question, index) => {
+                if (userAnswers[index] === question.correct) {
+                    correctAnswers++;
+                }
+            });
+            
+            const percentage = Math.round((correctAnswers / questions.length) * 100);
+            
+            document.getElementById('scoreDisplay').textContent = correctAnswers;
+            document.getElementById('percentageDisplay').textContent = percentage;
+            document.getElementById('resultName').textContent = userName;
+            
+            // Set result icon and message
+            const resultIcon = document.getElementById('resultIcon');
+            const resultMessage = document.getElementById('resultMessage');
+            
+            if (percentage >= 80) {
+                resultIcon.className = 'inline-flex items-center justify-center w-24 h-24 rounded-full mb-6 bg-green-100';
+                resultIcon.innerHTML = '<i class="fas fa-trophy text-green-600 text-5xl"></i>';
+                resultMessage.textContent = 'Luar biasa! Kamu telah menguasai direct-indirect speech dengan sangat baik!';
+                createConfetti();
+            } else if (percentage >= 60) {
+                resultIcon.className = 'inline-flex items-center justify-center w-24 h-24 rounded-full mb-6 bg-blue-100';
+                resultIcon.innerHTML = '<i class="fas fa-star text-blue-600 text-5xl"></i>';
+                resultMessage.textContent = 'Bagus! Kamu sudah memahami konsep dasar direct-indirect speech.';
+            } else {
+                resultIcon.className = 'inline-flex items-center justify-center w-24 h-24 rounded-full mb-6 bg-yellow-100';
+                resultIcon.innerHTML = '<i class="fas fa-book text-yellow-600 text-5xl"></i>';
+                resultMessage.textContent = 'Tetap semangat! Kamu perlu lebih banyak berlatih untuk menguasai materi ini.';
+            }
+        }
+
+        function createConfetti() {
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.backgroundColor = ['#667eea', '#764ba2', '#f093fb', '#4facfe'][Math.floor(Math.random() * 4)];
+                    confetti.style.animationDelay = Math.random() * 0.5 + 's';
+                    document.body.appendChild(confetti);
+                    
+                    setTimeout(() => confetti.remove(), 3000);
+                }, i * 30);
+            }
+        }
+
+        function showResults() {
+            document.getElementById('quizScreen').classList.add('hidden');
+            document.getElementById('resultsScreen').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
