@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Analogi Psikotes Online</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .card-shadow {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .option-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .option-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .option-card.selected {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: scale(1.02);
+        }
+        
+        .timer-warning {
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .progress-bar {
+            transition: width 0.5s ease;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: #667eea;
+            position: absolute;
+            animation: confetti-fall 3s linear;
+        }
+        
+        @keyframes confetti-fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Welcome Page -->
+    <div id="welcomePage" class="min-h-screen flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl card-shadow p-8 md:p-12 max-w-md w-full fade-in">
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-full mb-4">
+                    <i class="fas fa-brain text-white text-3xl"></i>
+                </div>
+                <h1 class="text-3xl font-bold text-gray-800 mb-2">Kuis Analogi Psikotes</h1>
+                <p class="text-gray-600">Uji kemampuan analogi Anda dalam 15 menit!</p>
+            </div>
+            
+            <form id="startForm" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-user mr-2"></i>Nama Lengkap
+                    </label>
+                    <input type="text" id="userName" required
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-200"
+                           placeholder="Masukkan nama lengkap Anda">
+                </div>
+                
+                <div class="flex items-start">
+                    <input type="checkbox" id="readyCheck" required
+                           class="mt-1 w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500">
+                    <label for="readyCheck" class="ml-3 text-sm text-gray-700">
+                        Saya siap mengerjakan soal dan memahami bahwa waktu pengerjaan adalah 15 menit
+                    </label>
+                </div>
+                
+                <button type="submit" 
+                        class="w-full bg-gradient-to-r from-purple-500 to-indigo-600 text-white font-semibold py-3 px-6 rounded-lg hover:from-purple-600 hover:to-indigo-700 transform hover:scale-105 transition duration-200">
+                    <i class="fas fa-play mr-2"></i>Mulai Kuis
+                </button>
+            </form>
+            
+            <div class="mt-8 pt-6 border-t border-gray-200">
+                <div class="flex items-center justify-between text-sm text-gray-600">
+                    <span><i class="fas fa-clock mr-1"></i>15 Menit</span>
+                    <span><i class="fas fa-question-circle mr-1"></i>25 Soal</span>
+                    <span><i class="fas fa-trophy mr-1"></i>Skor Otomatis</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quiz Page -->
+    <div id="quizPage" class="hidden min-h-screen">
+        <!-- Header with Timer -->
+        <div class="gradient-bg text-white p-4 md:p-6">
+            <div class="max-w-4xl mx-auto">
+                <div class="flex flex-col md:flex-row items-center justify-between">
+                    <div class="mb-4 md:mb-0">
+                        <h2 class="text-xl md:text-2xl font-bold">
+                            <i class="fas fa-brain mr-2"></i>Kuis Analogi Psikotes
+                        </h2>
+                        <p class="text-purple-100">Peserta: <span id="displayName" class="font-semibold"></span></p>
+                    </div>
+                    <div class="flex items-center space-x-6">
+                        <div class="text-center">
+                            <p class="text-sm text-purple-100">Waktu Tersisa</p>
+                            <div id="timer" class="text-3xl font-bold">15:00</div>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-sm text-purple-100">Soal</p>
+                            <div class="text-2xl font-bold"><span id="currentQuestion">1</span>/25</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Progress Bar -->
+                <div class="mt-4 bg-purple-400 rounded-full h-3 overflow-hidden">
+                    <div id="progressBar" class="progress-bar bg-white h-full rounded-full" style="width: 4%"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Question Container -->
+        <div class="max-w-4xl mx-auto p-4 md:p-8">
+            <div class="bg-white rounded-2xl card-shadow p-6 md:p-8 fade-in">
+                <div id="questionContainer">
+                    <!-- Questions will be inserted here -->
+                </div>
+                
+                <div class="mt-8 flex justify-between">
+                    <button id="prevBtn" onclick="previousQuestion()" 
+                            class="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                        <i class="fas fa-chevron-left mr-2"></i>Sebelumnya
+                    </button>
+                    <button id="nextBtn" onclick="nextQuestion()" 
+                            class="px-6 py-3 bg-gradient-to-r from-purple-500 to-indigo-600 text-white rounded-lg hover:from-purple-600 hover:to-indigo-700 transition duration-200">
+                        Selanjutnya<i class="fas fa-chevron-right ml-2"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Result Page -->
+    <div id="resultPage" class="hidden min-h-screen flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl card-shadow p-8 md:p-12 max-w-md w-full text-center fade-in">
+            <div id="confettiContainer"></div>
+            
+            <div class="mb-6">
+                <div id="resultIcon" class="inline-flex items-center justify-center w-24 h-24 rounded-full mb-4">
+                    <!-- Icon will be inserted based on score -->
+                </div>
+                <h2 class="text-3xl font-bold text-gray-800 mb-2">Hasil Kuis</h2>
+                <p class="text-gray-600">Peserta: <span id="resultName" class="font-semibold"></span></p>
+            </div>
+            
+            <div class="mb-8">
+                <div class="text-5xl font-bold mb-2" id="scoreDisplay">0/25</div>
+                <div class="text-2xl font-semibold mb-4" id="percentageDisplay">0%</div>
+                <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
+                    <div id="scoreBar" class="progress-bar h-full rounded-full" style="width: 0%"></div>
+                </div>
+            </div>
+            
+            <div id="resultMessage" class="mb-8 p-4 rounded-lg">
+                <!-- Message will be inserted based on score -->
+            </div>
+            
+            <button onclick="location.reload()" 
+                    class="w-full bg-gradient-to-r from-purple-500 to-indigo-600 text-white font-semibold py-3 px-6 rounded-lg hover:from-purple-600 hover:to-indigo-700 transform hover:scale-105 transition duration-200">
+                <i class="fas fa-redo mr-2"></i>Kerjakan Lagi
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Quiz Data
+        const questions = [
+            {
+                question: "DOKTER : PASIEN :: GURU : ?",
+                options: ["Murid", "Buku", "Sekolah", "Pelajaran", "Kelas"],
+                correct: 0
+            },
+            {
+                question: "AIR : MINUM :: ROTI : ?",
+                options: ["Makan", "Tepung", "Gandum", "Roti", "Makanan"],
+                correct: 0
+            },
+            {
+                question: "BANGUNAN : ARSITEK :: BUKU : ?",
+                options: ["Penulis", "Penerbit", "Pembaca", "Toko Buku", "Perpustakaan"],
+                correct: 0
+            },
+            {
+                question: "MATAHARI : SIANG :: BULAN : ?",
+                options: ["Malam", "Terang", "Bintang", "Langit", "Gelap"],
+                correct: 0
+            },
+            {
+                question: "KUDA : TUNGANGAN :: MOBIL : ?",
+                options: ["Kendaraan", "Mesin", "Jalan", "Ban", "Mobil"],
+                correct: 0
+            },
+            {
+                question: "API : PANAS :: ES : ?",
+                options: ["Dingin", "Beku", "Air", "Es Krim", "Salju"],
+                correct: 0
+            },
+            {
+                question: "PENULIS : NOVEL :: PELUKIS : ?",
+                options: ["Lukisan", "Kanvas", "Kuas", "Cat", "Galeri"],
+                correct: 0
+            },
+            {
+                question: "BURUNG : TERBANG :: IKAN : ?",
+                options: ["Berenang", "Air", "Laut", "Sirip", "Insang"],
+                correct: 0
+            },
+            {
+                question: "DOKTER : RUMAH SAKIT :: GURU : ?",
+                options: ["Sekolah", "Kelas", "Murid", "Pelajaran", "Buku"],
+                correct: 0
+            },
+            {
+                question: "HARI : MINGGU :: BULAN : ?",
+                options: ["Tahun", "Tanggal", "Kalender", "Waktu", "Pekan"],
+                correct: 0
+            },
+            {
+                question: "KULIT : MANUSIA :: KULIT KAYU : ?",
+                options: ["Pohon", "Daun", "Akar", "Buah", "Bunga"],
+                correct: 0
+            },
+            {
+                question: "KUNCI : PINTU :: PASSWORD : ?",
+                options: ["Komputer", "Akun", "Internet", "Email", "Sistem"],
+                correct: 1
+            },
+            {
+                question: "BIBIT : TANAMAN :: TELUR : ?",
+                options: ["Ayam", "Bebek", "Unggas", "Burung", "Hewan"],
+                correct: 0
+            },
+            {
+                question: "KAPAL : LAUT :: PESAWAT : ?",
+                options: ["Udara", "Langit", "Bandara", "Pilot", "Terbang"],
+                correct: 1
+            },
+            {
+                question: "PENJAGA : KEAMANAN :: DOKTER : ?",
+                options: ["Kesehatan", "Obat", "Rumah Sakit", "Pasien", "Penyakit"],
+                correct: 0
+            },
+            {
+                question: "BUKU : PERPUSTAKAAN :: FILM : ?",
+                options: ["Bioskop", "TV", "Layar", "Aktor", "Sutradara"],
+                correct: 0
+            },
+            {
+                question: "MUSIM HUJAN : PAYUNG :: MUSIM PANAS : ?",
+                options: ["Kipas", "AC", "Topi", "Kacamata", "Baju"],
+                correct: 0
+            },
+            {
+                question: "KAKI : SEPATU :: TANGAN : ?",
+                options: ["Sarung Tangan", "Cincin", "Jam", "Gelang", "Kuku"],
+                correct: 0
+            },
+            {
+                question: "PETA : JALAN :: KAMUS : ?",
+                options: ["Kata", "Arti", "Bahasa", "Kalimat", "Tulisan"],
+                correct: 1
+            },
+            {
+                question: "LISTRIK : LAMPU :: BENSIN : ?",
+                options: ["Mobil", "Mesin", "Motor", "Kendaraan", "Jalan"],
+                correct: 0
+            },
+            {
+                question: "POLISI : KEAMANAN :: PEMADAM KEBAKARAN : ?",
+                options: ["Kebakaran", "Keselamatan", "Darurat", "Penyelamatan", "Bantuan"],
+                correct: 0
+            },
+            {
+                question: "AKU : SAYA :: ENGKAU : ?",
+                options: ["Anda", "Kamu", "Dia", "Mereka", "Kita"],
+                correct: 1
+            },
+            {
+                question: "JALAN : MOBIL :: REL : ?",
+                options: ["Kereta", "Stasiun", "Peron", "Masinis", "Gerbong"],
+                correct: 0
+            },
+            {
+                question: "MATA : MELIHAT :: TELINGA : ?",
+                options: ["Mendengar", "Suara", "Musik", "Radio", "Pembicaraan"],
+                correct: 0
+            },
+            {
+                question: "TANAMAN : AIR :: MANUSIA : ?",
+                options: ["Makanan", "Minuman", "Udara", "Oksigen", "Nutrisi"],
+                correct: 0
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let userAnswers = new Array(questions.length).fill(null);
+        let timeLeft = 900; // 15 minutes in seconds
+        let timerInterval;
+        let userName = '';
+
+        // Start Form Handler
+        document.getElementById('startForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            userName = document.getElementById('userName').value;
+            document.getElementById('displayName').textContent = userName;
+            document.getElementById('welcomePage').classList.add('hidden');
+            document.getElementById('quizPage').classList.remove('hidden');
+            startQuiz();
+        });
+
+        function startQuiz() {
+            displayQuestion();
+            startTimer();
+            updateNavigation();
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                
+                if (timeLeft <= 0) {
+                    endQuiz();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            const timerElement = document.getElementById('timer');
+            timerElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            
+            if (timeLeft <= 60) {
+                timerElement.classList.add('timer-warning', 'text-red-400');
+            }
+        }
+
+        function displayQuestion() {
+            const question = questions[currentQuestionIndex];
+            const container = document.getElementById('questionContainer');
+            
+            container.innerHTML = `
+                <h3 class="text-xl md:text-2xl font-semibold text-gray-800 mb-6">
+                    Soal ${currentQuestionIndex + 1}
+                </h3>
+                <p class="text-lg md:text-xl text-gray-700 mb-8">${question.question}</p>
+                <div class="space-y-3">
+                    ${question.options.map((option, index) => `
+                        <div class="option-card p-4 border-2 border-gray-200 rounded-lg hover:border-purple-400"
+                             onclick="selectOption(${index})">
+                            <label class="flex items-center cursor-pointer">
+                                <input type="radio" name="answer" value="${index}" 
+                                       class="hidden" ${userAnswers[currentQuestionIndex] === index ? 'checked' : ''}>
+                                <span class="w-8 h-8 rounded-full border-2 border-gray-300 flex items-center justify-center mr-3
+                                             ${userAnswers[currentQuestionIndex] === index ? 'bg-purple-500 border-purple-500 text-white' : ''}">
+                                    ${String.fromCharCode(65 + index)}
+                                </span>
+                                <span class="text-gray-700">${option}</span>
+                            </label>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            
+            // Update progress
+            document.getElementById('currentQuestion').textContent = currentQuestionIndex + 1;
+            const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
+            document.getElementById('progressBar').style.width = `${progress}%`;
+            
+            updateNavigation();
+        }
+
+        function selectOption(index) {
+            userAnswers[currentQuestionIndex] = index;
+            
+            // Update visual selection
+            const options = document.querySelectorAll('.option-card');
+            options.forEach((option, i) => {
+                if (i === index) {
+                    option.classList.add('selected');
+                    option.querySelector('span').classList.add('bg-purple-500', 'border-purple-500', 'text-white');
+                } else {
+                    option.classList.remove('selected');
+                    option.querySelector('span').classList.remove('bg-purple-500', 'border-purple-500', 'text-white');
+                }
+            });
+        }
+
+        function updateNavigation() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            prevBtn.disabled = currentQuestionIndex === 0;
+            
+            if (currentQuestionIndex === questions.length - 1) {
+                nextBtn.innerHTML = '<i class="fas fa-check mr-2"></i>Selesai';
+                nextBtn.onclick = endQuiz;
+            } else {
+                nextBtn.innerHTML = 'Selanjutnya<i class="fas fa-chevron-right ml-2"></i>';
+                nextBtn.onclick = nextQuestion;
+            }
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                displayQuestion();
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                displayQuestion();
+            }
+        }
+
+        function endQuiz() {
+            clearInterval(timerInterval);
+            
+            // Calculate score
+            let score = 0;
+            userAnswers.forEach((answer, index) => {
+                if (answer === questions[index].correct) {
+                    score++;
+                }
+            });
+            
+            // Show result page
+            document.getElementById('quizPage').classList.add('hidden');
+            document.getElementById('resultPage').classList.remove('hidden');
+            
+            // Display results
+            const percentage = Math.round((score / questions.length) * 100);
+            document.getElementById('resultName').textContent = userName;
+            document.getElementById('scoreDisplay').textContent = `${score}/${questions.length}`;
+            document.getElementById('percentageDisplay').textContent = `${percentage}%`;
+            document.getElementById('scoreBar').style.width = `${percentage}%`;
+            
+            // Set result icon and message
+            const resultIcon = document.getElementById('resultIcon');
+            const resultMessage = document.getElementById('resultMessage');
+            
+            if (percentage >= 80) {
+                resultIcon.innerHTML = '<i class="fas fa-trophy text-5xl text-yellow-500"></i>';
+                resultIcon.className = 'inline-flex items-center justify-center w-24 h-24 rounded-full mb-4 bg-yellow-100';
+                resultMessage.innerHTML = '<p class="text-green-800 font-semibold">Luar Biasa! 🎉</p><p class="text-green-700">Kemampuan analogi Anda sangat baik!</p>';
+                resultMessage.className = 'mb-8 p-4 rounded-lg bg-green-100';
+                createConfetti();
+            } else if (percentage >= 60) {
+                resultIcon.innerHTML = '<i class="fas fa-star text-5xl text-blue-500"></i>';
+                resultIcon.className = 'inline-flex items-center justify-center w-24 h-24 rounded-full mb-4 bg-blue-100';
+                resultMessage.innerHTML = '<p class="text-blue-800 font-semibold">Bagus! 👍</p><p class="text-blue-700">Kemampuan analogi Anda cukup baik.</p>';
+                resultMessage.className = 'mb-8 p-4 rounded-lg bg-blue-100';
+            } else if (percentage >= 40) {
+                resultIcon.innerHTML = '<i class="fas fa-thumbs-up text-5xl text-orange-500"></i>';
+                resultIcon.className = 'inline-flex items-center justify-center w-24 h-24 rounded-full mb-4 bg-orange-100';
+                resultMessage.innerHTML = '<p class="text-orange-800 font-semibold">Cukup Baik</p><p class="text-orange-700">Ada ruang untuk perbaikan.</p>';
+                resultMessage.className = 'mb-8 p-4 rounded-lg bg-orange-100';
+            } else {
+                resultIcon.innerHTML = '<i class="fas fa-book text-5xl text-purple-500"></i>';
+                resultIcon.className = 'inline-flex items-center justify-center w-24 h-24 rounded-full mb-4 bg-purple-100';
+                resultMessage.innerHTML = '<p class="text-purple-800 font-semibold">Perlu Latihan</p><p class="text-purple-700">Terus berlatih untuk meningkatkan kemampuan!</p>';
+                resultMessage.className = 'mb-8 p-4 rounded-lg bg-purple-100';
+            }
+        }
+
+        function createConfetti() {
+            const colors = ['#667eea', '#764ba2', '#f093fb', '#4facfe', '#fa709a'];
+            const confettiContainer = document.getElementById('confettiContainer');
+            
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.animationDelay = Math.random() * 0.5 + 's';
+                    confettiContainer.appendChild(confetti);
+                    
+                    setTimeout(() => confetti.remove(), 3000);
+                }, i * 50);
+            }
+        }
+    </script>
+</body>
+</html>
