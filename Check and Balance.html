@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis HOTS Check and Balance - Sistem Pemerintahan Indonesia</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .timer-warning {
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .option-card {
+            transition: all 0.3s ease;
+        }
+        
+        .option-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .option-card.selected {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .progress-bar {
+            transition: width 0.5s ease;
+        }
+        
+        .question-card {
+            min-height: 400px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Halaman Awal -->
+    <div id="startPage" class="min-h-screen flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full fade-in">
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full mb-4">
+                    <i class="fas fa-balance-scale text-white text-3xl"></i>
+                </div>
+                <h1 class="text-3xl font-bold text-gray-800 mb-2">Kuis HOTS</h1>
+                <p class="text-gray-600">Check and Balance dalam Sistem Pemerintahan Indonesia</p>
+            </div>
+            
+            <form id="startForm" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Nama Lengkap <span class="text-red-500">*</span>
+                    </label>
+                    <input 
+                        type="text" 
+                        id="fullName" 
+                        required
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                        placeholder="Masukkan nama lengkap Anda"
+                    >
+                </div>
+                
+                <div class="flex items-start">
+                    <input 
+                        type="checkbox" 
+                        id="readyCheck" 
+                        required
+                        class="mt-1 w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
+                    >
+                    <label for="readyCheck" class="ml-3 text-sm text-gray-700">
+                        Saya siap mengerjakan kuis dan menyetujui bahwa waktu yang tersedia adalah 20 menit
+                    </label>
+                </div>
+                
+                <div class="bg-blue-50 rounded-lg p-4">
+                    <h3 class="font-semibold text-blue-900 mb-2">Informasi Kuis:</h3>
+                    <ul class="text-sm text-blue-800 space-y-1">
+                        <li><i class="fas fa-check-circle mr-2"></i>20 soal pilihan ganda</li>
+                        <li><i class="fas fa-clock mr-2"></i>Waktu: 20 menit</li>
+                        <li><i class="fas fa-trophy mr-2"></i>Nilai maksimal: 100</li>
+                    </ul>
+                </div>
+                
+                <button 
+                    type="submit"
+                    class="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold py-3 rounded-lg hover:from-blue-600 hover:to-purple-700 transition transform hover:scale-105"
+                >
+                    Mulai Kuis
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Halaman Kuis -->
+    <div id="quizPage" class="hidden min-h-screen bg-gray-50">
+        <!-- Header -->
+        <header class="bg-white shadow-sm sticky top-0 z-10">
+            <div class="max-w-6xl mx-auto px-4 py-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-xl font-semibold text-gray-800">Kuis HOTS Check and Balance</h2>
+                        <p class="text-sm text-gray-600">Peserta: <span id="participantName" class="font-medium"></span></p>
+                    </div>
+                    <div class="flex items-center space-x-6">
+                        <div class="text-center">
+                            <p class="text-sm text-gray-600">Soal</p>
+                            <p class="text-lg font-semibold text-gray-800">
+                                <span id="currentQuestion">1</span> / 20
+                            </p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-sm text-gray-600">Waktu</p>
+                            <p id="timer" class="text-2xl font-bold text-blue-600">20:00</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Progress Bar -->
+                <div class="mt-4">
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div id="progressBar" class="progress-bar bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full" style="width: 5%"></div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Konten Kuis -->
+        <main class="max-w-4xl mx-auto px-4 py-8">
+            <div id="questionContainer" class="bg-white rounded-2xl shadow-lg p-8 question-card">
+                <!-- Soal akan dimuat di sini -->
+            </div>
+            
+            <!-- Navigasi -->
+            <div class="flex justify-between mt-8">
+                <button 
+                    id="prevBtn"
+                    class="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled
+                >
+                    <i class="fas fa-chevron-left mr-2"></i>Sebelumnya
+                </button>
+                
+                <button 
+                    id="nextBtn"
+                    class="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+                >
+                    Selanjutnya<i class="fas fa-chevron-right ml-2"></i>
+                </button>
+                
+                <button 
+                    id="finishBtn"
+                    class="hidden px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition"
+                >
+                    Selesai<i class="fas fa-check ml-2"></i>
+                </button>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Halaman Hasil -->
+    <div id="resultPage" class="hidden min-h-screen flex items-center justify-center p-4 bg-gray-50">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full fade-in text-center">
+            <div class="mb-6">
+                <div id="resultIcon" class="inline-flex items-center justify-center w-24 h-24 rounded-full mb-4">
+                    <!-- Icon akan ditampilkan berdasarkan hasil -->
+                </div>
+                <h2 class="text-3xl font-bold text-gray-800 mb-2">Hasil Kuis</h2>
+                <p class="text-gray-600">Peserta: <span id="resultName" class="font-medium"></span></p>
+            </div>
+            
+            <div class="bg-gray-50 rounded-lg p-6 mb-6">
+                <div class="text-5xl font-bold mb-2" id="scoreDisplay">0</div>
+                <p class="text-gray-600">Nilai Anda</p>
+                <div class="mt-4 text-sm text-gray-500">
+                    <p>Jawaban Benar: <span id="correctAnswers" class="font-semibold">0</span></p>
+                    <p>Jawaban Salah: <span id="wrongAnswers" class="font-semibold">0</span></p>
+                </div>
+            </div>
+            
+            <div id="performanceMessage" class="mb-6 p-4 rounded-lg">
+                <!-- Pesan performa akan ditampilkan di sini -->
+            </div>
+            
+            <button 
+                onclick="location.reload()"
+                class="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold py-3 rounded-lg hover:from-blue-600 hover:to-purple-700 transition transform hover:scale-105"
+            >
+                <i class="fas fa-redo mr-2"></i>Kerjakan Lagi
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        // Data Soal
+        const questions = [
+            {
+                question: "Mengapa sistem check and balance dalam pemerintahan Indonesia dianggap sebagai mekanisme HOTS (Higher Order Thinking Skills)?",
+                options: [
+                    "Karena memerlukan analisis mendalam tentang hubungan kekuasaan antar lembaga",
+                    "Karena hanya menghafal pasal-pasal UUD 1945",
+                    "Karena berfokus pada sejarah pembentukan negara",
+                    "Karena menekankan pada hafalan nama-nama pejabat",
+                    "Karena hanya memahami struktur organisasi pemerintah"
+                ],
+                correct: 0
+            },
+            {
+                question: "Bagaimana Mahkamah Konstitusi (MK) menjalankan fungsi check and balance terhadap kekuasaan legislatif?",
+                options: [
+                    "Dengan menyetujui semua RUU yang diajukan",
+                    "Dengan melakukan judicial review terhadap undang-undang",
+                    "Dengan mengangkat anggota DPR",
+                    "Dengan mengontrol anggaran DPR",
+                    "Dengan memberikan saran kepada DPR"
+                ],
+                correct: 1
+            },
+            {
+                question: "Apa dampak nyata dari mekanisme check and balance dalam mencegah penyalahgunaan kekuasaan di Indonesia?",
+                options: [
+                    "Mempercepat proses pembuatan kebijakan",
+                    "Menciptakan keseimbangan dan mencegah dominasi satu lembaga",
+                    "Menghilangkan konflik antar lembaga",
+                    "Mempermudah eksekutif dalam menjalankan program",
+                    "Mengurangi birokrasi pemerintahan"
+                ],
+                correct: 1
+            },
+            {
+                question: "Mengapa DPR memiliki hak interpelasi dan ini merupakan bagian dari check and balance?",
+                options: [
+                    "Untuk meningkatkan popularitas anggota DPR",
+                    "Untuk mengawasi kinerja pemerintah eksekutif",
+                    "Untuk membuat undang-undang baru",
+                    "Untuk mengangkat menteri",
+                    "Untuk mengontrol anggaran negara"
+                ],
+                correct: 1
+            },
+            {
+                question: "Bagaimana sistem presidensial di Indonesia mendukung implementasi check and balance?",
+                options: [
+                    "Dengan memberikan kekuasaan penuh kepada presiden",
+                    "Dengan memisahkan kekuasaan eksekutif dan legislatif yang seimbang",
+                    "Dengan menggabungkan semua kekuasaan pada presiden",
+                    "Dengan menghilangkan peran legislatif",
+                    "Dengan membuat presiden sebagai ketua partai"
+                ],
+                correct: 1
+            },
+            {
+                question: "Apa peran Komisi Pemberantasan Korupsi (KPK) dalam sistem check and balance Indonesia?",
+                options: [
+                    "Membuat undang-undang anti korupsi",
+                    "Mengawasi dan menindak kasus korupsi melibatkan pejabat negara",
+                    "Mengangkat pejabat pemerintah",
+                    "Mengontrol anggaran negara",
+                    "Menjadi bagian dari kabinet presiden"
+                ],
+                correct: 1
+            },
+            {
+                question: "Mengapa mekanisme check and balance dianggap penting dalam demokrasi Indonesia?",
+                options: [
+                    "Untuk mempercepat pembangunan",
+                    "Untuk mencegah tirani dan menjaga keadilan",
+                    "Untuk mengurangi biaya pemerintahan",
+                    "Untuk mempermudah investasi asing",
+                    "Untuk meningkatkan popularitas pemimpin"
+                ],
+                correct: 1
+            },
+            {
+                question: "Bagaimana Mahkamah Agung (MA) melakukan check terhadap kekuasaan eksekutif?",
+                options: [
+                    "Dengan mengangkat menteri",
+                    "Dengan melakukan pengadilan terhadap tindakan pemerintah",
+                    "Dengan membuat kebijakan eksekutif",
+                    "Dengan mengontrol anggaran presiden",
+                    "Dengan memberikan saran politik kepada presiden"
+                ],
+                correct: 1
+            },
+            {
+                question: "Apa yang terjadi jika sistem check and balance tidak berfungsi dengan baik dalam pemerintahan?",
+                options: [
+                    "Pemerintahan menjadi sangat efisien",
+                    "Terjadi penyalahgunaan kekuasaan dan dominasi satu lembaga",
+                    "Semua keputusan menjadi cepat",
+                    "Rakyat menjadi lebih puas",
+                    "Ekonomi tumbuh pesat"
+                ],
+                correct: 1
+            },
+            {
+                question: "Mengapa Dewan Perwakilan Daerah (DPD) memiliki peran dalam check and balance?",
+                options: [
+                    "Untuk mengawasi presiden secara langsung",
+                    "Untuk memperjuangkan kepentingan daerah dalam pembuatan undang-undang",
+                    "Untuk mengangkat gubernur",
+                    "Untuk mengontrol anggaran provinsi",
+                    "Untuk menjadi mitra partai politik"
+                ],
+                correct: 1
+            },
+            {
+                question: "Bagaimana hak angket DPR mencerminkan implementasi check and balance?",
+                options: [
+                    "Dengan mendukung semua program presiden",
+                    "Dengan menyelidiki dugaan pelanggaran hukum oleh presiden",
+                    "Dengan membuat RUU tanpa pertimbangan",
+                    "Dengan mengangkat wakil presiden",
+                    "Dengan mengesahkan APBN tanpa debat"
+                ],
+                correct: 1
+            },
+            {
+                question: "Apa hubungan antara checks and balances dengan prinsip demokrasi dalam konteks Indonesia?",
+                options: [
+                    "Tidak ada hubungan yang signifikan",
+                    "Merupakan inti dari demokrasi untuk mencegah kekuasaan absolut",
+                    "Hanya berlaku untuk negara maju",
+                    "Merupakan hambatan bagi demokrasi",
+                    "Hanya formalitas semata"
+                ],
+                correct: 1
+            },
+            {
+                question: "Mengapa presiden Indonesia dapat membubarkan DPR dan ini bagian dari check and balance?",
+                options: [
+                    "Presiden tidak bisa membubarkan DPR dalam sistem Indonesia",
+                    "Untuk menyeimbangkan kekuasaan jika DPR melanggar konstitusi",
+                    "Untuk mengganti anggota DPR yang tidak setia",
+                    "Untuk mempercepat pembuatan undang-undang",
+                    "Untuk menghemat anggaran negara"
+                ],
+                correct: 0
+            },
+            {
+                question: "Bagaimana Badan Pemeriksa Keuangan (BPK) menjalankan fungsi check and balance?",
+                options: [
+                    "Dengan membuat kebijakan fiskal",
+                    "Dengan memeriksa tanggung jawab keuangan negara",
+                    "Dengan mengangkat menteri keuangan",
+                    "Dengan mengontrol bank Indonesia",
+                    "Dengan menyetujui APBN"
+                ],
+                correct: 1
+            },
+            {
+                question: "Apa perbedaan mendasar antara check and balance dengan separation of powers?",
+                options: [
+                    "Tidak ada perbedaan",
+                    "Separation of powers membagi kekuasaan, check and balance mengawasi pembagian tersebut",
+                    "Check and balance hanya untuk eksekutif",
+                    "Separation of powers tidak penting",
+                    "Keduanya sama-sama menghilangkan kekuasaan"
+                ],
+                correct: 1
+            },
+            {
+                question: "Mengapa Komisi Yudisial memiliki peran penting dalam check and balance?",
+                options: [
+                    "Untuk mengawasi perilaku hakim dan menjaga independensi yudikatif",
+                    "Untuk membuat putusan pengadilan",
+                    "Untuk mengangkat jaksa agung",
+                    "Untuk mengontrol kepolisian",
+                    "Untuk menjadi bagian eksekutif"
+                ],
+                correct: 0
+            },
+            {
+                question: "Bagaimana mekanisme check and balance mempengaruhi proses pembuatan undang-undang di Indonesia?",
+                options: [
+                    "Mempercepat proses tanpa pertimbangan",
+                    "Memastikan undang-undang melalui pengawasan multi lembaga untuk kualitas",
+                    "Memberikan kekuasaan penuh kepada presiden",
+                    "Menghilangkan peran DPR",
+                    "Membuat proses menjadi tidak perlu"
+                ],
+                correct: 1
+            },
+            {
+                question: "Apa konsekuensi jika satu lembaga negara terlalu dominan tanpa check and balance?",
+                options: [
+                    "Pemerintahan menjadi sangat efisien",
+                    "Terjadi ketidakseimbangan kekuasaan dan potensi penyalahgunaan",
+                    "Rakyat menjadi lebih sejahtera",
+                    "Semua keputusan menjadi adil",
+                    "Demokrasi menjadi kuat"
+                ],
+                correct: 1
+            },
+            {
+                question: "Mengapa sistem check and balance di Indonesia sering dianggap belum optimal?",
+                options: [
+                    "Karena terlalu banyak lembaga negara",
+                    "Karena masih ada intervensi politik dan lemahnya penegakan hukum",
+                    "Karena presiden terlalu lemah",
+                    "Karena DPR terlalu kuat",
+                    "Karena mahkamah konstitusi tidak berfungsi"
+                ],
+                correct: 1
+            },
+            {
+                question: "Bagaimana rakyat Indonesia berpartisipasi dalam mekanisme check and balance?",
+                options: [
+                    "Dengan tidak ikut pemilu",
+                    "Dengan melalui pemilihan umum, pengawasan sosial, dan kontrol masyarakat",
+                    "Dengan hanya mengikuti arahan pemerintah",
+                    "Dengan menjadi aparat negara",
+                    "Dengan tidak peduli politik"
+                ],
+                correct: 1
+            }
+        ];
+        
+        // Variabel Global
+        let currentQuestionIndex = 0;
+        let userAnswers = new Array(questions.length).fill(null);
+        let timer = 20 * 60; // 20 menit dalam detik
+        let timerInterval;
+        let participantName = '';
+        
+        // Event Listeners
+        document.getElementById('startForm').addEventListener('submit', startQuiz);
+        document.getElementById('prevBtn').addEventListener('click', previousQuestion);
+        document.getElementById('nextBtn').addEventListener('click', nextQuestion);
+        document.getElementById('finishBtn').addEventListener('click', finishQuiz);
+        
+        // Fungsi Memulai Kuis
+        function startQuiz(e) {
+            e.preventDefault();
+            
+            const fullName = document.getElementById('fullName').value.trim();
+            const isReady = document.getElementById('readyCheck').checked;
+            
+            if (!fullName || !isReady) {
+                return;
+            }
+            
+            participantName = fullName;
+            document.getElementById('participantName').textContent = fullName;
+            
+            document.getElementById('startPage').classList.add('hidden');
+            document.getElementById('quizPage').classList.remove('hidden');
+            
+            startTimer();
+            displayQuestion();
+        }
+        
+        // Fungsi Timer
+        function startTimer() {
+            updateTimerDisplay();
+            
+            timerInterval = setInterval(() => {
+                timer--;
+                updateTimerDisplay();
+                
+                if (timer <= 0) {
+                    clearInterval(timerInterval);
+                    finishQuiz();
+                } else if (timer <= 60) {
+                    document.getElementById('timer').classList.add('timer-warning', 'text-red-600');
+                }
+            }, 1000);
+        }
+        
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timer / 60);
+            const seconds = timer % 60;
+            document.getElementById('timer').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+        
+        // Fungsi Menampilkan Soal
+        function displayQuestion() {
+            const question = questions[currentQuestionIndex];
+            const container = document.getElementById('questionContainer');
+            
+            container.innerHTML = `
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">
+                        Soal ${currentQuestionIndex + 1}
+                    </h3>
+                    <p class="text-lg text-gray-700 leading-relaxed">
+                        ${question.question}
+                    </p>
+                </div>
+                
+                <div class="space-y-3">
+                    ${question.options.map((option, index) => `
+                        <div class="option-card border-2 border-gray-200 rounded-lg p-4 cursor-pointer hover:border-blue-400 ${
+                            userAnswers[currentQuestionIndex] === index ? 'selected' : ''
+                        }" onclick="selectOption(${index})">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 rounded-full border-2 border-gray-300 flex items-center justify-center mr-4 ${
+                                    userAnswers[currentQuestionIndex] === index ? 'border-white bg-white/20' : ''
+                                }">
+                                    <span class="text-sm font-medium ${
+                                        userAnswers[currentQuestionIndex] === index ? 'text-white' : 'text-gray-600'
+                                    }">${String.fromCharCode(65 + index)}</span>
+                                </div>
+                                <span class="text-gray-700 ${
+                                    userAnswers[currentQuestionIndex] === index ? 'text-white' : ''
+                                }">${option}</span>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            
+            updateNavigation();
+            updateProgress();
+        }
+        
+        // Fungsi Memilih Opsi
+        function selectOption(index) {
+            userAnswers[currentQuestionIndex] = index;
+            displayQuestion();
+        }
+        
+        // Fungsi Navigasi
+        function updateNavigation() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const finishBtn = document.getElementById('finishBtn');
+            
+            prevBtn.disabled = currentQuestionIndex === 0;
+            
+            if (currentQuestionIndex === questions.length - 1) {
+                nextBtn.classList.add('hidden');
+                finishBtn.classList.remove('hidden');
+            } else {
+                nextBtn.classList.remove('hidden');
+                finishBtn.classList.add('hidden');
+            }
+            
+            document.getElementById('currentQuestion').textContent = currentQuestionIndex + 1;
+        }
+        
+        function updateProgress() {
+            const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
+            document.getElementById('progressBar').style.width = `${progress}%`;
+        }
+        
+        function previousQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                displayQuestion();
+            }
+        }
+        
+        function nextQuestion() {
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                displayQuestion();
+            }
+        }
+        
+        // Fungsi Selesai Kuis
+        function finishQuiz() {
+            clearInterval(timerInterval);
+            
+            const correctAnswers = userAnswers.filter((answer, index) => 
+                answer === questions[index].correct
+            ).length;
+            
+            const score = Math.round((correctAnswers / questions.length) * 100);
+            
+            displayResult(score, correctAnswers);
+        }
+        
+        // Fungsi Menampilkan Hasil
+        function displayResult(score, correctAnswers) {
+            document.getElementById('quizPage').classList.add('hidden');
+            document.getElementById('resultPage').classList.remove('hidden');
+            
+            document.getElementById('resultName').textContent = participantName;
+            document.getElementById('scoreDisplay').textContent = score;
+            document.getElementById('correctAnswers').textContent = correctAnswers;
+            document.getElementById('wrongAnswers').textContent = questions.length - correctAnswers;
+            
+            const resultIcon = document.getElementById('resultIcon');
+            const performanceMessage = document.getElementById('performanceMessage');
+            
+            if (score >= 80) {
+                resultIcon.innerHTML = '<i class="fas fa-trophy text-5xl text-yellow-500"></i>';
+                resultIcon.className = 'inline-flex items-center justify-center w-24 h-24 rounded-full mb-4 bg-yellow-100';
+                performanceMessage.innerHTML = `
+                    <h3 class="font-semibold text-green-800 mb-2">Sangat Baik!</h3>
+                    <p class="text-sm text-green-700">Anda memiliki pemahaman yang sangat baik tentang check and balance dalam sistem pemerintahan Indonesia.</p>
+                `;
+                performanceMessage.className = 'mb-6 p-4 rounded-lg bg-green-50';
+            } else if (score >= 60) {
+                resultIcon.innerHTML = '<i class="fas fa-medal text-5xl text-blue-500"></i>';
+                resultIcon.className = 'inline-flex items-center justify-center w-24 h-24 rounded-full mb-4 bg-blue-100';
+                performanceMessage.innerHTML = `
+                    <h3 class="font-semibold text-blue-800 mb-2">Baik!</h3>
+                    <p class="text-sm text-blue-700">Anda memiliki pemahaman yang baik, namun masih ada ruang untuk perbaikan.</p>
+                `;
+                performanceMessage.className = 'mb-6 p-4 rounded-lg bg-blue-50';
+            } else {
+                resultIcon.innerHTML = '<i class="fas fa-book-open text-5xl text-orange-500"></i>';
+                resultIcon.className = 'inline-flex items-center justify-center w-24 h-24 rounded-full mb-4 bg-orange-100';
+                performanceMessage.innerHTML = `
+                    <h3 class="font-semibold text-orange-800 mb-2">Perlu Belajar Lagi</h3>
+                    <p class="text-sm text-orange-700">Anda perlu mempelajari lebih dalam tentang sistem check and balance di Indonesia.</p>
+                `;
+                performanceMessage.className = 'mb-6 p-4 rounded-lg bg-orange-50';
+            }
+        }
+    </script>
+</body>
+</html>
