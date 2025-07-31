@@ -46,6 +46,16 @@ function submitQuiz() {
     const userAns = parseInt(document.getElementById(`q${i}`).value);
     if (userAns === q.answer) score++;
   });
+  // hapus block ini untuk lanjut ke halaman result
+  const salah = question.length-score;
+  const persen = Math.round((score/question.length)*100);
+  document.getElementById('correct').textContent = score;
+  document.getElementById('wrong').textContent = salah;
+  document.getElementById('score_percent').textContent = persen;
+  document.getElementById('remark').textContent = remark;
+  document.getElementById('result').style.display = 'block';
+    // hapus block ini untuk lanjut ke halaman result
+  // blok ini untuk mengirimkan ke spreadsheet
   const data = {
     name: user.name,
     token: user.token,
@@ -62,6 +72,6 @@ function submitQuiz() {
   .catch(error => {
   console.error('Gagal mengirim data:', error);
   // Tetap lanjut ke halaman hasil agar pengguna tidak bingung
-  window.location.href = 'result.html?score=' + score;
+  // window.location.href = 'result.html?score=' + score;
 });;
 }
