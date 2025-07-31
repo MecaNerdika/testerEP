@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UTBK EDUCATION PRIORITY</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .card-shadow {
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .countdown-warning {
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.5; }
+        }
+        
+        .option-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .option-hover:hover {
+            transform: translateX(5px);
+            background-color: #f3f4f6;
+        }
+        
+        .selected-option {
+            background-color: #e0e7ff;
+            border-color: #6366f1;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Login Screen -->
+    <div id="loginScreen" class="min-h-screen gradient-bg flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl card-shadow p-8 max-w-md w-full">
+            <div class="text-center mb-8">
+                <i class="fas fa-graduation-cap text-6xl text-purple-600 mb-4"></i>
+                <h1 class="text-3xl font-bold text-gray-800 mb-2">UTBK EDUCATION PRIORITY</h1>
+                <p class="text-gray-600">Silakan masuk untuk memulai kuis</p>
+            </div>
+            
+            <form id="loginForm" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-user mr-2"></i>Nama Lengkap
+                    </label>
+                    <input type="text" id="fullName" required
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                           placeholder="Masukkan nama lengkap Anda">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-key mr-2"></i>Token Kuis
+                    </label>
+                    <input type="text" id="quizToken" required
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                           placeholder="Masukkan token kuis">
+                </div>
+                
+                <div class="flex items-start">
+                    <input type="checkbox" id="readyCheck" required
+                           class="mt-1 w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500">
+                    <label for="readyCheck" class="ml-2 text-sm text-gray-700">
+                        Saya siap melaksanakan ujian dan telah memahami aturan yang berlaku
+                    </label>
+                </div>
+                
+                <button type="submit" 
+                        class="w-full bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 transition duration-300 pulse-animation">
+                    <i class="fas fa-sign-in-alt mr-2"></i>Mulai Kuis
+                </button>
+            </form>
+            
+            <div id="loginError" class="hidden mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+                <i class="fas fa-exclamation-circle mr-2"></i>
+                <span id="loginErrorText"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quiz Screen -->
+    <div id="quizScreen" class="hidden min-h-screen">
+        <!-- Header -->
+        <header class="bg-white shadow-sm sticky top-0 z-50">
+            <div class="max-w-6xl mx-auto px-4 py-4">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-800">UTBK EDUCATION PRIORITY</h1>
+                        <p class="text-sm text-gray-600">Peserta: <span id="userName" class="font-semibold"></span></p>
+                    </div>
+                    <div class="text-right">
+                        <div id="countdown" class="text-3xl font-bold text-purple-600"></div>
+                        <p class="text-sm text-gray-600">Sisa Waktu</p>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Progress Bar -->
+        <div class="bg-gray-200 h-2">
+            <div id="progressBar" class="bg-purple-600 h-2 transition-all duration-300" style="width: 10%"></div>
+        </div>
+
+        <!-- Quiz Content -->
+        <main class="max-w-4xl mx-auto px-4 py-8">
+            <div id="questionContainer" class="bg-white rounded-xl card-shadow p-8">
+                <!-- Question content will be dynamically inserted here -->
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="flex justify-between mt-8">
+                <button id="prevBtn" onclick="previousQuestion()" 
+                        class="px-6 py-3 bg-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-400 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                    <i class="fas fa-chevron-left mr-2"></i>Sebelumnya
+                </button>
+                <button id="nextBtn" onclick="nextQuestion()" 
+                        class="px-6 py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition">
+                    Selanjutnya<i class="fas fa-chevron-right ml-2"></i>
+                </button>
+                <button id="finishBtn" onclick="finishQuiz()" 
+                        class="hidden px-6 py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition">
+                    <i class="fas fa-check mr-2"></i>Selesai
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <!-- Result Screen -->
+    <div id="resultScreen" class="hidden min-h-screen gradient-bg flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl card-shadow p-8 max-w-md w-full text-center">
+            <i class="fas fa-trophy text-6xl text-yellow-500 mb-4"></i>
+            <h2 class="text-3xl font-bold text-gray-800 mb-4">Kuis Selesai!</h2>
+            <p class="text-lg text-gray-600 mb-2">Nilai Anda:</p>
+            <div id="finalScore" class="text-6xl font-bold text-purple-600 mb-6">0</div>
+            <div class="text-sm text-gray-500 mb-8">
+                <p>Peserta: <span id="resultName" class="font-semibold"></span></p>
+                <p>Waktu Pengerjaan: <span id="timeUsed" class="font-semibold"></span></p>
+            </div>
+            <button onclick="location.reload()" 
+                    class="px-6 py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition">
+                <i class="fas fa-redo mr-2"></i>Kerjakan Lagi
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Quiz Data
+        const questions = [
+            {
+                question: "Sebuah barang dijual dengan harga Rp 200.000. Jika diberikan diskon 15%, berapa harga yang harus dibayar?",
+                options: ["Rp 170.000", "Rp 180.000", "Rp 185.000", "Rp 190.000", "Rp 195.000"],
+                correct: 0
+            },
+            {
+                question: "Jika 5 pekerja dapat menyelesaikan proyek dalam 20 hari, berapa hari yang dibutuhkan 8 pekerja untuk menyelesaikan proyek yang sama?",
+                options: ["10 hari", "12 hari", "12.5 hari", "15 hari", "16 hari"],
+                correct: 2
+            },
+            {
+                question: "Suatu pabrik memproduksi 120 unit produk dalam 8 jam. Berapa unit produk yang dihasilkan dalam 12 jam?",
+                options: ["160 unit", "170 unit", "180 unit", "190 unit", "200 unit"],
+                correct: 2
+            },
+            {
+                question: "Harga sebuah laptop naik dari Rp 8.000.000 menjadi Rp 9.600.000. Berapa persen kenaikan harga laptop tersebut?",
+                options: ["15%", "18%", "20%", "22%", "25%"],
+                correct: 2
+            },
+            {
+                question: "Jika perbandingan uang A dan B adalah 3:5, dan jumlah uang mereka Rp 2.400.000, berapa uang yang dimiliki A?",
+                options: ["Rp 800.000", "Rp 900.000", "Rp 960.000", "Rp 1.000.000", "Rp 1.200.000"],
+                correct: 1
+            },
+            {
+                question: "Sebuah mesin dapat memproduksi 150 barang dalam 30 menit. Berapa barang yang dapat diproduksi dalam 2 jam?",
+                options: ["300 barang", "450 barang", "500 barang", "600 barang", "750 barang"],
+                correct: 2
+            },
+            {
+                question: "Dalam sebuah tes, seorang siswa menjawab benar 45 soal dari 60 soal. Berapa persentase jawaban yang benar?",
+                options: ["70%", "72%", "75%", "78%", "80%"],
+                correct: 2
+            },
+            {
+                question: "Jika 3 kg beras harganya Rp 45.000, berapa harga 5 kg beras?",
+                options: ["Rp 65.000", "Rp 70.000", "Rp 75.000", "Rp 80.000", "Rp 85.000"],
+                correct: 2
+            },
+            {
+                question: "Sebuah toko memberikan diskon 20% + 10% untuk sebuah produk. Jika harga awal Rp 500.000, berapa harga akhirnya?",
+                options: ["Rp 350.000", "Rp 360.000", "Rp 370.000", "Rp 380.000", "Rp 390.000"],
+                correct: 1
+            },
+            {
+                question: "Pabrik A memproduksi 200 unit per hari, Pabrik B memproduksi 150 unit per hari. Jika kedua pabrik bekerja selama 5 hari, berapa total produksi keduanya?",
+                options: ["1.500 unit", "1.600 unit", "1.650 unit", "1.750 unit", "1.800 unit"],
+                correct: 4
+            }
+        ];
+
+        // Global Variables
+        let currentQuestion = 0;
+        let answers = new Array(questions.length).fill(null);
+        let timeLeft = 15 * 60; // 15 minutes in seconds
+        let timerInterval;
+        let startTime;
+
+        // Login Form Handler
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const fullName = document.getElementById('fullName').value;
+            const token = document.getElementById('quizToken').value;
+            const readyCheck = document.getElementById('readyCheck').checked;
+            
+            if (token !== 'EP2JW') {
+                showLoginError('Token kuis tidak valid!');
+                return;
+            }
+            
+            if (!readyCheck) {
+                showLoginError('Harap centang pernyataan kesiapan!');
+                return;
+            }
+            
+            // Start quiz
+            document.getElementById('userName').textContent = fullName;
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('quizScreen').classList.remove('hidden');
+            
+            startTime = new Date();
+            startQuiz();
+        });
+
+        function showLoginError(message) {
+            const errorDiv = document.getElementById('loginError');
+            const errorText = document.getElementById('loginErrorText');
+            errorText.textContent = message;
+            errorDiv.classList.remove('hidden');
+            
+            setTimeout(() => {
+                errorDiv.classList.add('hidden');
+            }, 3000);
+        }
+
+        function startQuiz() {
+            displayQuestion();
+            startTimer();
+            updateNavigationButtons();
+        }
+
+        function displayQuestion() {
+            const question = questions[currentQuestion];
+            const container = document.getElementById('questionContainer');
+            
+            container.innerHTML = `
+                <div class="mb-6">
+                    <span class="text-sm text-gray-500">Soal ${currentQuestion + 1} dari ${questions.length}</span>
+                    <h2 class="text-xl font-semibold text-gray-800 mt-2">${question.question}</h2>
+                </div>
+                <div class="space-y-3">
+                    ${question.options.map((option, index) => `
+                        <label class="block option-hover p-4 border-2 border-gray-200 rounded-lg cursor-pointer ${answers[currentQuestion] === index ? 'selected-option' : ''}">
+                            <input type="radio" name="answer" value="${index}" 
+                                   ${answers[currentQuestion] === index ? 'checked' : ''}
+                                   onchange="selectAnswer(${index})"
+                                   class="mr-3 text-purple-600">
+                            <span class="text-gray-700">${option}</span>
+                        </label>
+                    `).join('')}
+                </div>
+            `;
+            
+            updateProgressBar();
+        }
+
+        function selectAnswer(index) {
+            answers[currentQuestion] = index;
+            
+            // Update visual selection
+            const labels = document.querySelectorAll('#questionContainer label');
+            labels.forEach((label, i) => {
+                if (i === index) {
+                    label.classList.add('selected-option');
+                } else {
+                    label.classList.remove('selected-option');
+                }
+            });
+        }
+
+        function updateProgressBar() {
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            document.getElementById('progressBar').style.width = `${progress}%`;
+        }
+
+        function updateNavigationButtons() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const finishBtn = document.getElementById('finishBtn');
+            
+            prevBtn.disabled = currentQuestion === 0;
+            
+            if (currentQuestion === questions.length - 1) {
+                nextBtn.classList.add('hidden');
+                finishBtn.classList.remove('hidden');
+            } else {
+                nextBtn.classList.remove('hidden');
+                finishBtn.classList.add('hidden');
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                displayQuestion();
+                updateNavigationButtons();
+            }
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                displayQuestion();
+                updateNavigationButtons();
+            }
+        }
+
+        function startTimer() {
+            updateTimerDisplay();
+            
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    finishQuiz();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            const display = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            const countdownElement = document.getElementById('countdown');
+            countdownElement.textContent = display;
+            
+            // Add warning animation when less than 2 minutes
+            if (timeLeft <= 120) {
+                countdownElement.classList.add('countdown-warning', 'text-red-600');
+                countdownElement.classList.remove('text-purple-600');
+            }
+        }
+
+        function finishQuiz() {
+            clearInterval(timerInterval);
+            
+            // Calculate score
+            let correctAnswers = 0;
+            answers.forEach((answer, index) => {
+                if (answer === questions[index].correct) {
+                    correctAnswers++;
+                }
+            });
+            
+            const score = Math.round((correctAnswers / questions.length) * 100);
+            
+            // Calculate time used
+            const endTime = new Date();
+            const timeUsed = Math.floor((endTime - startTime) / 1000);
+            const minutes = Math.floor(timeUsed / 60);
+            const seconds = timeUsed % 60;
+            const timeUsedText = `${minutes} menit ${seconds} detik`;
+            
+            // Show result
+            document.getElementById('quizScreen').classList.add('hidden');
+            document.getElementById('resultScreen').classList.remove('hidden');
+            document.getElementById('finalScore').textContent = score;
+            document.getElementById('resultName').textContent = document.getElementById('userName').textContent;
+            document.getElementById('timeUsed').textContent = timeUsedText;
+        }
+
+        // Prevent back navigation during quiz
+        window.addEventListener('popstate', function(e) {
+            if (!document.getElementById('quizScreen').classList.contains('hidden')) {
+                e.preventDefault();
+                history.pushState(null, null, location.href);
+            }
+        });
+    </script>
+</body>
+</html>
