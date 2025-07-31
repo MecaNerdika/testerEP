@@ -58,5 +58,10 @@ function submitQuiz() {
     headers: { 'Content-Type': 'application/json' }
   }).then(() => {
     window.location.href = 'result.html?score=' + score;
-  });
+  })
+  .catch(error => {
+  console.error('Gagal mengirim data:', error);
+  // Tetap lanjut ke halaman hasil agar pengguna tidak bingung
+  window.location.href = 'result.html?score=' + score;
+});;
 }
