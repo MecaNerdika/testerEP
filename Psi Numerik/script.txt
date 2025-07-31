@@ -1,0 +1,9 @@
+
+function doPost(e) {
+  var sheet = SpreadsheetApp.openById("SPREADSHEET_ID").getSheetByName("Sheet1");
+  var data = JSON.parse(e.postData.contents);
+  sheet.appendRow([
+    new Date(), data.name, data.token, data.score, data.time_spent
+  ]);
+  return ContentService.createTextOutput("OK");
+}

@@ -1,0 +1,20 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Hasil Kuiz</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <img src="EP_blue.png" alt="Logo EP" class="logo" />
+    <h1>Skor Anda: <span id="score"></span></h1>
+  </div>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    document.getElementById("score").textContent = params.get("score");
+  </script>
+</body>
+</html>
