@@ -46,7 +46,7 @@ function submitQuiz() {
     const userAns = parseInt(document.getElementById(`q${i}`).value);
     if (userAns === q.answer) score++;
   });
-  // hapus block ini untuk lanjut ke halaman result
+  /* hapus block ini untuk lanjut ke halaman result
   const salah = questions.length-score;
   const persen = Math.round((score/question.length)*100);
   document.getElementById('correct').textContent = score;
@@ -54,6 +54,7 @@ function submitQuiz() {
   document.getElementById('score_percent').textContent = persen;
   document.getElementById('remark').textContent = remark;
   document.getElementById('result').style.display = 'block';
+  */
     // hapus block ini untuk lanjut ke halaman result
   // blok ini untuk mengirimkan ke spreadsheet
   const data = {
@@ -70,7 +71,7 @@ function submitQuiz() {
     window.location.href = 'result.html?score=' + score;
   })
   .catch(error => {
-    console.warn('gagal mengirim data ke spread sheet')
+  console.warn('gagal mengirim data ke spread sheet')
   //console.error('Gagal mengirim data:', error);
   // Tetap lanjut ke halaman hasil agar pengguna tidak bingung
   // window.location.href = 'result.html?score=' + score;
