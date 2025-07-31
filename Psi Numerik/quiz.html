@@ -16,6 +16,13 @@
   <form id="quizForm"></form>
   <br>
   <button onclick="submitQuiz()">Kirim Jawaban</button>
+  <div id="result" style="display:none; margin-top: 20px; font-size: 1.2em; background: #eef; padding: 15px; border-radius: 10px;">
+  <p><strong>Jawaban Benar:</strong> <span id="correct"></span></p>
+  <p><strong>Jawaban Salah:</strong> <span id="wrong"></span></p>
+  <p><strong>Nilai:</strong> <span id="score_percent"></span>%</p>
+  <p><strong>Keterangan:</strong> <span id="remark"></span></p>
+</div>
+
   <script src="quiz.js"></script>
 </body>
 </html>
