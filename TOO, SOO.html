@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis: Too, So, Either, Neither</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .timer-warning {
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .option-card {
+            transition: all 0.3s ease;
+        }
+        
+        .option-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .progress-bar {
+            transition: width 0.3s ease;
+        }
+        
+        .correct-answer {
+            background-color: #10b981 !important;
+            color: white !important;
+        }
+        
+        .wrong-answer {
+            background-color: #ef4444 !important;
+            color: white !important;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <!-- Registration Form -->
+    <div id="registrationPage" class="min-h-screen flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full fade-in">
+            <div class="text-center mb-8">
+                <i class="fas fa-graduation-cap text-5xl text-indigo-600 mb-4"></i>
+                <h1 class="text-3xl font-bold text-gray-800">Kuis Bahasa Inggris</h1>
+                <p class="text-gray-600 mt-2">Too, So, Either, Neither</p>
+            </div>
+            
+            <form id="registrationForm" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-user mr-2"></i>Nama Lengkap
+                    </label>
+                    <input type="text" id="fullName" required
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+                           placeholder="Masukkan nama lengkap Anda">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-key mr-2"></i>Token Ujian
+                    </label>
+                    <input type="password" id="examToken" required
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+                           placeholder="Masukkan token ujian">
+                </div>
+                
+                <div class="flex items-center">
+                    <input type="checkbox" id="readyCheck" required
+                           class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                    <label for="readyCheck" class="ml-2 text-sm text-gray-700">
+                        Saya siap mengikuti ujian
+                    </label>
+                </div>
+                
+                <button type="submit"
+                        class="w-full bg-indigo-600 text-white py-3 px-4 rounded-lg hover:bg-indigo-700 transition duration-200 font-medium">
+                    <i class="fas fa-play mr-2"></i>Mulai Kuis
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Quiz Page -->
+    <div id="quizPage" class="hidden min-h-screen p-4">
+        <div class="max-w-4xl mx-auto">
+            <!-- Timer and Progress -->
+            <div class="bg-white rounded-2xl shadow-lg p-6 mb-6 fade-in">
+                <div class="flex justify-between items-center mb-4">
+                    <div class="flex items-center space-x-4">
+                        <i class="fas fa-clock text-2xl text-indigo-600"></i>
+                        <div>
+                            <p class="text-sm text-gray-600">Waktu Tersisa</p>
+                            <p id="timer" class="text-2xl font-bold text-gray-800">10:00</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm text-gray-600">Soal <span id="currentQuestion">1</span> dari 20</p>
+                        <p class="text-sm text-gray-600">Peserta: <span id="userName" class="font-semibold"></span></p>
+                    </div>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-3">
+                    <div id="progressBar" class="progress-bar bg-indigo-600 h-3 rounded-full" style="width: 5%"></div>
+                </div>
+            </div>
+
+            <!-- Question Card -->
+            <div class="bg-white rounded-2xl shadow-lg p-8 mb-6 fade-in">
+                <h2 id="questionText" class="text-xl font-semibold text-gray-800 mb-6"></h2>
+                <div id="optionsContainer" class="space-y-3">
+                    <!-- Options will be dynamically inserted here -->
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div class="flex justify-between items-center">
+                <button id="prevBtn" disabled
+                        class="px-6 py-3 bg-gray-300 text-gray-600 rounded-lg hover:bg-gray-400 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                    <i class="fas fa-arrow-left mr-2"></i>Sebelumnya
+                </button>
+                <button id="nextBtn"
+                        class="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition duration-200">
+                    Selanjutnya<i class="fas fa-arrow-right ml-2"></i>
+                </button>
+                <button id="finishBtn" class="hidden px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-200">
+                    <i class="fas fa-check mr-2"></i>Selesai
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Result Page -->
+    <div id="resultPage" class="hidden min-h-screen flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full text-center fade-in">
+            <i class="fas fa-trophy text-6xl text-yellow-500 mb-4"></i>
+            <h1 class="text-3xl font-bold text-gray-800 mb-4">Hasil Kuis</h1>
+            <p class="text-lg text-gray-600 mb-2">Selamat, <span id="resultName" class="font-semibold"></span>!</p>
+            <div class="bg-gray-100 rounded-lg p-6 mb-6">
+                <p class="text-5xl font-bold text-indigo-600 mb-2"><span id="score">0</span>/20</p>
+                <p class="text-gray-600">Jawaban Benar</p>
+            </div>
+            <div class="bg-gray-100 rounded-lg p-6 mb-6">
+                <p class="text-3xl font-bold text-green-600 mb-2"><span id="percentage">0</span>%</p>
+                <p class="text-gray-600">Nilai</p>
+            </div>
+            <button onclick="location.reload()"
+                    class="w-full bg-indigo-600 text-white py-3 px-4 rounded-lg hover:bg-indigo-700 transition duration-200 font-medium">
+                <i class="fas fa-redo mr-2"></i>Kerjakan Lagi
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Quiz Data
+        const quizData = [
+            {
+                question: "I love chocolate, and my sister ____.",
+                options: ["too", "so", "either", "neither"],
+                correct: 0
+            },
+            {
+                question: "She can't swim, and I ____.",
+                options: ["too", "so", "either", "neither"],
+                correct: 2
+            },
+            {
+                question: "He is tired, and I am ____.",
+                options: ["too", "so", "either", "neither"],
+                correct: 0
+            },
+            {
+                question: "They didn't come, and we ____.",
+                options: ["too", "so", "either", "neither"],
+                correct: 2
+            },
+            {
+                question: "I have a car, and my friend has ____.",
+                options: ["too", "so", "either", "neither"],
+                correct: 0
+            },
+            {
+                question: "She won't go, and he won't ____.",
+                options: ["too", "so", "either", "neither"],
+                correct: 2
+            },
+            {
+                question: "I am happy, and she is ____.",
+                options: ["too", "so", "either", "neither"],
+                correct: 0
+            },
+            {
+                question: "He doesn't like coffee, and I don't ____.",
+                options: ["too", "so", "either", "neither"],
+                correct: 2
+            },
+            {
+                question: "They are students, and we are ____.",
+                options: ["too", "so", "either", "neither"],
+                correct: 0
+            },
+            {
+                question: "She can speak French, and ____ can I.",
+                options: ["too", "so", "either", "neither"],
+                correct: 1
+            },
+            {
+                question: "I haven't finished my homework, and ____ has he.",
+                options: ["too", "so", "either", "neither"],
+                correct: 3
+            },
+            {
+                question: "She was late, and I was ____.",
+                options: ["too", "so", "either", "neither"],
+                correct: 0
+            },
+            {
+                question: "They won't attend, and ____ will we.",
+                options: ["too", "so", "either", "neither"],
+                correct: 3
+            },
+            {
+                question: "I need help, and ____ does she.",
+                options: ["too", "so", "either", "neither"],
+                correct: 1
+            },
+            {
+                question: "He doesn't understand, and I don't ____.",
+                options: ["too", "so", "either", "neither"],
+                correct: 2
+            },
+            {
+                question: "She is beautiful, and her sister is ____.",
+                options: ["too", "so", "either", "neither"],
+                correct: 0
+            },
+            {
+                question: "I can't dance, and ____ can he.",
+                options: ["too", "so", "either", "neither"],
+                correct: 3
+            },
+            {
+                question: "They have been to Paris, and ____ have we.",
+                options: ["too", "so", "either", "neither"],
+                correct: 1
+            },
+            {
+                question: "She didn't study, and I didn't ____.",
+                options: ["too", "so", "either", "neither"],
+                correct: 2
+            },
+            {
+                question: "I am excited, and ____ are they.",
+                options: ["too", "so", "either", "neither"],
+                correct: 1
+            }
+        ];
+
+        // Global Variables
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let timeLeft = 600; // 10 minutes in seconds
+        let timerInterval;
+        let userAnswers = [];
+        let shuffledQuestions = [];
+
+        // DOM Elements
+        const registrationPage = document.getElementById('registrationPage');
+        const quizPage = document.getElementById('quizPage');
+        const resultPage = document.getElementById('resultPage');
+        const registrationForm = document.getElementById('registrationForm');
+        const timer = document.getElementById('timer');
+        const progressBar = document.getElementById('progressBar');
+        const questionText = document.getElementById('questionText');
+        const optionsContainer = document.getElementById('optionsContainer');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const finishBtn = document.getElementById('finishBtn');
+        const currentQuestionSpan = document.getElementById('currentQuestion');
+        const userName = document.getElementById('userName');
+
+        // Registration Form Handler
+        registrationForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const fullName = document.getElementById('fullName').value;
+            const examToken = document.getElementById('examToken').value;
+            const readyCheck = document.getElementById('readyCheck').checked;
+
+            if (examToken !== 'EP12R') {
+                showNotification('Token ujian salah!', 'error');
+                return;
+            }
+
+            if (!readyCheck) {
+                showNotification('Silakan centang bahwa Anda siap mengikuti ujian!', 'error');
+                return;
+            }
+
+            userName.textContent = fullName;
+            startQuiz();
+        });
+
+        // Start Quiz
+        function startQuiz() {
+            registrationPage.classList.add('hidden');
+            quizPage.classList.remove('hidden');
+            
+            // Shuffle questions
+            shuffledQuestions = [...quizData].sort(() => Math.random() - 0.5);
+            
+            // Initialize user answers
+            userAnswers = new Array(shuffledQuestions.length).fill(null);
+            
+            startTimer();
+            loadQuestion();
+        }
+
+        // Timer
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    finishQuiz();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timer.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            
+            if (timeLeft <= 60) {
+                timer.classList.add('timer-warning', 'text-red-600');
+            }
+        }
+
+        // Load Question
+        function loadQuestion() {
+            const question = shuffledQuestions[currentQuestionIndex];
+            questionText.textContent = question.question;
+            currentQuestionSpan.textContent = currentQuestionIndex + 1;
+            
+            // Update progress bar
+            const progress = ((currentQuestionIndex + 1) / shuffledQuestions.length) * 100;
+            progressBar.style.width = `${progress}%`;
+            
+            // Clear previous options
+            optionsContainer.innerHTML = '';
+            
+            // Shuffle options
+            const shuffledOptions = [...question.options].map((option, index) => ({
+                text: option,
+                originalIndex: index
+            })).sort(() => Math.random() - 0.5);
+            
+            // Create option cards
+            shuffledOptions.forEach((option, displayIndex) => {
+                const optionCard = document.createElement('div');
+                optionCard.className = 'option-card p-4 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 border-2 border-transparent';
+                optionCard.innerHTML = `
+                    <label class="flex items-center cursor-pointer">
+                        <input type="radio" name="answer" value="${option.originalIndex}" class="mr-3">
+                        <span class="text-gray-700">${String.fromCharCode(65 + displayIndex)}. ${option.text}</span>
+                    </label>
+                `;
+                
+                optionCard.addEventListener('click', () => selectOption(option.originalIndex, optionCard));
+                optionsContainer.appendChild(optionCard);
+                
+                // Restore previous answer if exists
+                if (userAnswers[currentQuestionIndex] === option.originalIndex) {
+                    optionCard.querySelector('input').checked = true;
+                    optionCard.classList.add('border-indigo-500', 'bg-indigo-50');
+                }
+            });
+            
+            // Update navigation buttons
+            prevBtn.disabled = currentQuestionIndex === 0;
+            if (currentQuestionIndex === shuffledQuestions.length - 1) {
+                nextBtn.classList.add('hidden');
+                finishBtn.classList.remove('hidden');
+            } else {
+                nextBtn.classList.remove('hidden');
+                finishBtn.classList.add('hidden');
+            }
+        }
+
+        // Select Option
+        function selectOption(value, cardElement) {
+            userAnswers[currentQuestionIndex] = value;
+            
+            // Update visual state
+            document.querySelectorAll('.option-card').forEach(card => {
+                card.classList.remove('border-indigo-500', 'bg-indigo-50');
+            });
+            cardElement.classList.add('border-indigo-500', 'bg-indigo-50');
+        }
+
+        // Navigation
+        prevBtn.addEventListener('click', () => {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                loadQuestion();
+            }
+        });
+
+        nextBtn.addEventListener('click', () => {
+            if (currentQuestionIndex < shuffledQuestions.length - 1) {
+                currentQuestionIndex++;
+                loadQuestion();
+            }
+        });
+
+        finishBtn.addEventListener('click', finishQuiz);
+
+        // Finish Quiz
+        function finishQuiz() {
+            clearInterval(timerInterval);
+            
+            // Calculate score
+            score = 0;
+            for (let i = 0; i < shuffledQuestions.length; i++) {
+                if (userAnswers[i] === shuffledQuestions[i].correct) {
+                    score++;
+                }
+            }
+            
+            // Show result
+            quizPage.classList.add('hidden');
+            resultPage.classList.remove('hidden');
+            document.getElementById('resultName').textContent = userName.textContent;
+            document.getElementById('score').textContent = score;
+            document.getElementById('percentage').textContent = Math.round((score / 20) * 100);
+        }
+
+        // Notification
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg fade-in ${
+                type === 'error' ? 'bg-red-500 text-white' : 'bg-green-500 text-white'
+            }`;
+            notification.innerHTML = `
+                <div class="flex items-center">
+                    <i class="fas ${type === 'error' ? 'fa-exclamation-circle' : 'fa-check-circle'} mr-2"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
