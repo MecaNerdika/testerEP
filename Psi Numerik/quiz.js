@@ -48,7 +48,7 @@ function submitQuiz() {
   });
   /* hapus block ini untuk lanjut ke halaman result
   const salah = questions.length-score;
-  const persen = Math.round((score/question.length)*100);
+  const persen = Math.round((score/questions.length)*100);
   document.getElementById('correct').textContent = score;
   document.getElementById('wrong').textContent = salah;
   document.getElementById('score_percent').textContent = persen;
@@ -63,7 +63,7 @@ function submitQuiz() {
     score,
     time_spent: 300 - countdown
   };
-  fetch('https://script.google.com/macros/s/AKfycbx0OuaWDV_3d5YcrfzG2jVJEapIHFv7DydwUKd7ku4NSrmv3LhCUMCxbPj-SQSp4ouAXg/exec', {
+  fetch('https://script.google.com/macros/s/AKfycbyzTlMi5Vu8telgA-ml5HLT-rf2wwjPTASCN1lJ_-Jlbn0lCw2QgEg6kBAvcfXb0yXY3w/exec', {
     method: 'POST',
     body: JSON.stringify(data),
     headers: { 'Content-Type': 'application/json' }
