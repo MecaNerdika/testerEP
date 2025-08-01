@@ -74,6 +74,6 @@ function submitQuiz() {
   console.warn('gagal mengirim data ke spread sheet')
   //console.error('Gagal mengirim data:', error);
   // Tetap lanjut ke halaman hasil agar pengguna tidak bingung
-  window.location.href = 'result.html?score=' + score;
+  //window.location.href = 'result.html?score=' + score;
 });;
 }
