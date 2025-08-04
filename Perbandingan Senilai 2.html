@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Perbandingan Senilai - HOTS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .timer-warning {
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .option-card {
+            transition: all 0.3s ease;
+        }
+        
+        .option-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        
+        .selected {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen">
+    <!-- Halaman Login -->
+    <div id="loginPage" class="min-h-screen flex items-center justify-center p-4">
+        <div class="glass-effect rounded-2xl p-8 w-full max-w-md fade-in">
+            <div class="text-center mb-8">
+                <i class="fas fa-graduation-cap text-6xl text-white mb-4"></i>
+                <h1 class="text-3xl font-bold text-white mb-2">Kuis Perbandingan Senilai</h1>
+                <p class="text-white/80">Higher Order Thinking Skills</p>
+            </div>
+            
+            <form id="loginForm" class="space-y-6">
+                <div>
+                    <label class="block text-white font-medium mb-2">Nama Lengkap</label>
+                    <input type="text" id="namaLengkap" required 
+                           class="w-full px-4 py-3 rounded-lg bg-white/20 border border-white/30 text-white placeholder-white/60 focus:outline-none focus:border-white transition"
+                           placeholder="Masukkan nama lengkap Anda">
+                </div>
+                
+                <div>
+                    <label class="block text-white font-medium mb-2">Token Ujian</label>
+                    <input type="password" id="token" required 
+                           class="w-full px-4 py-3 rounded-lg bg-white/20 border border-white/30 text-white placeholder-white/60 focus:outline-none focus:border-white transition"
+                           placeholder="Masukkan token ujian">
+                </div>
+                
+                <button type="submit" 
+                        class="w-full bg-white text-purple-700 font-semibold py-3 rounded-lg hover:bg-white/90 transition duration-300 transform hover:scale-105">
+                    <i class="fas fa-sign-in-alt mr-2"></i>Mulai Kuis
+                </button>
+            </form>
+            
+            <div id="errorMessage" class="hidden mt-4 p-3 bg-red-500/20 border border-red-500/50 rounded-lg text-red-100 text-center">
+                <i class="fas fa-exclamation-circle mr-2"></i>
+                <span id="errorText"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Halaman Kuis -->
+    <div id="quizPage" class="hidden min-h-screen p-4">
+        <div class="max-w-4xl mx-auto">
+            <!-- Header -->
+            <div class="glass-effect rounded-2xl p-6 mb-6 fade-in">
+                <div class="flex flex-wrap justify-between items-center gap-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-white">Kuis Perbandingan Senilai</h2>
+                        <p class="text-white/80">Peserta: <span id="namaPeserta" class="font-semibold"></span></p>
+                    </div>
+                    
+                    <div class="text-center">
+                        <div id="timer" class="text-4xl font-bold text-white mb-1">15:00</div>
+                        <p class="text-white/80 text-sm">Waktu Tersisa</p>
+                    </div>
+                    
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-white mb-1">
+                            <span id="currentQuestion">1</span> / <span id="totalQuestions">10</span>
+                        </div>
+                        <p class="text-white/80 text-sm">Soal</p>
+                    </div>
+                </div>
+                
+                <!-- Progress Bar -->
+                <div class="mt-4">
+                    <div class="bg-white/20 rounded-full h-3 overflow-hidden">
+                        <div id="progressBar" class="bg-white h-full rounded-full transition-all duration-500" style="width: 10%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Soal -->
+            <div class="glass-effect rounded-2xl p-8 mb-6 fade-in">
+                <div id="questionContainer" class="mb-8">
+                    <h3 class="text-xl font-semibold text-white mb-6" id="questionText"></h3>
+                    <div id="optionsContainer" class="space-y-3">
+                        <!-- Options will be dynamically inserted here -->
+                    </div>
+                </div>
+                
+                <div class="flex justify-between">
+                    <button id="prevBtn" onclick="previousQuestion()" 
+                            class="bg-white/20 text-white px-6 py-3 rounded-lg hover:bg-white/30 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                        <i class="fas fa-arrow-left mr-2"></i>Sebelumnya
+                    </button>
+                    
+                    <button id="nextBtn" onclick="nextQuestion()" 
+                            class="bg-white text-purple-700 px-6 py-3 rounded-lg hover:bg-white/90 transition font-semibold">
+                        Selanjutnya<i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                    
+                    <button id="finishBtn" onclick="finishQuiz()" 
+                            class="hidden bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 transition font-semibold">
+                        <i class="fas fa-check mr-2"></i>Selesai
+                    </button>
+                </div>
+            </div>
+
+            <!-- Navigation Dots -->
+            <div class="glass-effect rounded-2xl p-4 fade-in">
+                <div id="navigationDots" class="flex flex-wrap gap-2 justify-center">
+                    <!-- Dots will be dynamically inserted here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Halaman Hasil -->
+    <div id="resultPage" class="hidden min-h-screen flex items-center justify-center p-4">
+        <div class="glass-effect rounded-2xl p-8 w-full max-w-md text-center fade-in">
+            <i class="fas fa-trophy text-6xl text-yellow-400 mb-4"></i>
+            <h2 class="text-3xl font-bold text-white mb-4">Kuis Selesai!</h2>
+            <p class="text-white/80 mb-2">Nama: <span id="resultNama" class="font-semibold"></span></p>
+            <div class="bg-white/20 rounded-2xl p-6 mb-6">
+                <p class="text-white/80 mb-2">Nilai Anda</p>
+                <p class="text-6xl font-bold text-white" id="finalScore">0</p>
+                <p class="text-white/80 mt-2">dari 100</p>
+            </div>
+            <p class="text-white/80 mb-6">Jawaban Benar: <span id="correctAnswers" class="font-semibold"></span> / 10</p>
+            <button onclick="location.reload()" 
+                    class="bg-white text-purple-700 px-6 py-3 rounded-lg hover:bg-white/90 transition font-semibold">
+                <i class="fas fa-redo mr-2"></i>Kerjakan Lagi
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Data Soal HOTS Perbandingan Senilai
+        const questions = [
+            {
+                question: "Sebuah peta memiliki skala 1:250.000. Jika jarak dua kota pada peta adalah 8 cm, berapa kilometer jarak sebenarnya antara kedua kota tersebut?",
+                options: ["20 km", "25 km", "30 km", "35 km", "40 km"],
+                correct: 0
+            },
+            {
+                question: "Dalam sebuah resep, perbandingan tepung terigu dan gula adalah 5:3. Jika digunakan 600 gram tepung terigu, berapa gram gula yang dibutuhkan?",
+                options: ["320 gram", "360 gram", "400 gram", "440 gram", "480 gram"],
+                correct: 1
+            },
+            {
+                question: "Perbandingan uang Ani dan Budi adalah 3:5. Jika jumlah uang mereka Rp1.600.000, berapa selisih uang mereka?",
+                options: ["Rp300.000", "Rp400.000", "Rp500.000", "Rp600.000", "Rp700.000"],
+                correct: 1
+            },
+            {
+                question: "Sebuah mobil dapat menempuh jarak 180 km dengan 12 liter bensin. Berapa liter bensin yang dibutuhkan untuk menempuh jarak 375 km?",
+                options: ["22 liter", "24 liter", "25 liter", "26 liter", "28 liter"],
+                correct: 2
+            },
+            {
+                question: "Perbandingan panjang dan lebar sebuah persegi panjang adalah 7:4. Jika kelilingnya 132 cm, berapa cm luas persegi panjang tersebut?",
+                options: ["896 cm²", "924 cm²", "968 cm²", "1.008 cm²", "1.056 cm²"],
+                correct: 2
+            },
+            {
+                question: "Dalam sebuah kelas, perbandingan siswa laki-laki dan perempuan adalah 4:5. Jika ada 12 siswa laki-laki yang tidak hadir, perbandingan menjadi 2:3. Berapa jumlah siswa perempuan?",
+                options: ["45 orang", "50 orang", "55 orang", "60 orang", "65 orang"],
+                correct: 0
+            },
+            {
+                question: "Tiga pekerja dapat menyelesaikan sebuah proyek dalam 15 hari. Berapa hari yang dibutuhkan jika ditambah 2 pekerja lagi dengan kemampuan yang sama?",
+                options: ["7 hari", "8 hari", "9 hari", "10 hari", "11 hari"],
+                correct: 2
+            },
+            {
+                question: "Perbandingan kecepatan dua mobil adalah 3:4. Jika mobil pertama menempuh jarak 240 km dalam 3 jam, berapa km jarak yang ditempuh mobil kedua dalam waktu yang sama?",
+                options: ["280 km", "300 km", "320 km", "340 km", "360 km"],
+                correct: 2
+            },
+            {
+                question: "Sebuah tangki berisi air dan minyak dengan perbandingan 5:2. Jika 14 liter minyak ditambahkan, perbandingan menjadi 5:3. Berapa liter kapasitas tangki tersebut?",
+                options: ["140 liter", "150 liter", "160 liter", "170 liter", "180 liter"],
+                correct: 0
+            },
+            {
+                question: "Perbandingan umur Ayah dan Ibu adalah 5:4. Jika 10 tahun yang lalu, perbandingan umur mereka adalah 2:1, berapa tahun umur Ayah sekarang?",
+                options: ["40 tahun", "45 tahun", "50 tahun", "55 tahun", "60 tahun"],
+                correct: 2
+            }
+        ];
+
+        // Variabel Global
+        let currentQuestionIndex = 0;
+        let userAnswers = [];
+        let shuffledQuestions = [];
+        let timeLeft = 900; // 15 menit dalam detik
+        let timerInterval;
+        let quizStarted = false;
+
+        // Fungsi Login
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const nama = document.getElementById('namaLengkap').value;
+            const token = document.getElementById('token').value;
+            
+            if (token === '3456') {
+                document.getElementById('namaPeserta').textContent = nama;
+                document.getElementById('resultNama').textContent = nama;
+                startQuiz();
+            } else {
+                showError('Token ujian tidak valid!');
+            }
+        });
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            const errorText = document.getElementById('errorText');
+            errorText.textContent = message;
+            errorDiv.classList.remove('hidden');
+            setTimeout(() => {
+                errorDiv.classList.add('hidden');
+            }, 3000);
+        }
+
+        function startQuiz() {
+            document.getElementById('loginPage').classList.add('hidden');
+            document.getElementById('quizPage').classList.remove('hidden');
+            
+            // Acak soal
+            shuffledQuestions = [...questions].sort(() => Math.random() - 0.5);
+            
+            // Initialize user answers
+            userAnswers = new Array(shuffledQuestions.length).fill(null);
+            
+            // Create navigation dots
+            createNavigationDots();
+            
+            // Load first question
+            loadQuestion();
+            
+            // Start timer
+            startTimer();
+            
+            quizStarted = true;
+        }
+
+        function createNavigationDots() {
+            const container = document.getElementById('navigationDots');
+            container.innerHTML = '';
+            
+            for (let i = 0; i < shuffledQuestions.length; i++) {
+                const dot = document.createElement('button');
+                dot.className = 'w-10 h-10 rounded-full bg-white/20 text-white hover:bg-white/30 transition';
+                dot.textContent = i + 1;
+                dot.onclick = () => goToQuestion(i);
+                container.appendChild(dot);
+            }
+        }
+
+        function updateNavigationDots() {
+            const dots = document.querySelectorAll('#navigationDots button');
+            dots.forEach((dot, index) => {
+                if (index === currentQuestionIndex) {
+                    dot.classList.add('bg-white', 'text-purple-700');
+                    dot.classList.remove('bg-white/20');
+                } else if (userAnswers[index] !== null) {
+                    dot.classList.add('bg-green-500');
+                    dot.classList.remove('bg-white/20');
+                } else {
+                    dot.classList.remove('bg-white', 'text-purple-700', 'bg-green-500');
+                    dot.classList.add('bg-white/20');
+                }
+            });
+        }
+
+        function loadQuestion() {
+            const question = shuffledQuestions[currentQuestionIndex];
+            document.getElementById('questionText').textContent = question.question;
+            
+            // Acak pilihan
+            const shuffledOptions = [...question.options].map((option, index) => ({
+                text: option,
+                originalIndex: index
+            })).sort(() => Math.random() - 0.5);
+            
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+            
+            shuffledOptions.forEach((option, index) => {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = 'option-card bg-white/10 border border-white/20 rounded-lg p-4 cursor-pointer hover:bg-white/20';
+                optionDiv.innerHTML = `
+                    <label class="flex items-center cursor-pointer">
+                        <input type="radio" name="answer" value="${option.originalIndex}" class="mr-3">
+                        <span class="text-white">${String.fromCharCode(65 + index)}. ${option.text}</span>
+                    </label>
+                `;
+                
+                optionDiv.addEventListener('click', function() {
+                    selectOption(option.originalIndex);
+                });
+                
+                optionsContainer.appendChild(optionDiv);
+            });
+            
+            // Update UI
+            document.getElementById('currentQuestion').textContent = currentQuestionIndex + 1;
+            document.getElementById('totalQuestions').textContent = shuffledQuestions.length;
+            document.getElementById('progressBar').style.width = `${((currentQuestionIndex + 1) / shuffledQuestions.length) * 100}%`;
+            
+            // Update buttons
+            document.getElementById('prevBtn').disabled = currentQuestionIndex === 0;
+            if (currentQuestionIndex === shuffledQuestions.length - 1) {
+                document.getElementById('nextBtn').classList.add('hidden');
+                document.getElementById('finishBtn').classList.remove('hidden');
+            } else {
+                document.getElementById('nextBtn').classList.remove('hidden');
+                document.getElementById('finishBtn').classList.add('hidden');
+            }
+            
+            // Load previous answer
+            if (userAnswers[currentQuestionIndex] !== null) {
+                selectOption(userAnswers[currentQuestionIndex]);
+            }
+            
+            updateNavigationDots();
+        }
+
+        function selectOption(answerIndex) {
+            userAnswers[currentQuestionIndex] = answerIndex;
+            
+            // Update visual selection
+            const options = document.querySelectorAll('.option-card');
+            options.forEach((option, index) => {
+                const radio = option.querySelector('input[type="radio"]');
+                if (radio.value == answerIndex) {
+                    radio.checked = true;
+                    option.classList.add('selected');
+                } else {
+                    radio.checked = false;
+                    option.classList.remove('selected');
+                }
+            });
+            
+            updateNavigationDots();
+        }
+
+        function goToQuestion(index) {
+            currentQuestionIndex = index;
+            loadQuestion();
+        }
+
+        function previousQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                loadQuestion();
+            }
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < shuffledQuestions.length - 1) {
+                currentQuestionIndex++;
+                loadQuestion();
+            }
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                
+                if (timeLeft <= 60) {
+                    document.getElementById('timer').classList.add('timer-warning', 'text-red-400');
+                }
+                
+                if (timeLeft <= 0) {
+                    finishQuiz();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            document.getElementById('timer').textContent = 
+                `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function finishQuiz() {
+            clearInterval(timerInterval);
+            
+            // Calculate score
+            let correctCount = 0;
+            userAnswers.forEach((answer, index) => {
+                if (answer === shuffledQuestions[index].correct) {
+                    correctCount++;
+                }
+            });
+            
+            const score = Math.round((correctCount / shuffledQuestions.length) * 100);
+            
+            // Show result
+            document.getElementById('quizPage').classList.add('hidden');
+            document.getElementById('resultPage').classList.remove('hidden');
+            document.getElementById('finalScore').textContent = score;
+            document.getElementById('correctAnswers').textContent = correctCount;
+        }
+
+        // Prevent page refresh during quiz
+        window.addEventListener('beforeunload', function(e) {
+            if (quizStarted) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
+    </script>
+</body>
+</html>
