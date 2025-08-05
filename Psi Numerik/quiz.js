@@ -63,7 +63,7 @@ function submitQuiz() {
     score,
     time_spent: 300 - countdown
   };
-  fetch('https://script.google.com/macros/s/AKfycbyzTlMi5Vu8telgA-ml5HLT-rf2wwjPTASCN1lJ_-Jlbn0lCw2QgEg6kBAvcfXb0yXY3w/exec', {
+  fetch('https://script.google.com/macros/s/AKfycby2lqZvzWVmyyB5WHl3UAoJf7e_CyP3iLcv3kwCgQy8Mi_wqrgMJUjL2SOl1BPgQyYe/exec', {
     method: 'POST',
     body: JSON.stringify(data),
     headers: { 'Content-Type': 'application/json' }
