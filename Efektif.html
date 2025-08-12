@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis HOTS Kalimat Efektif</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .card-shadow {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .timer-warning {
+            animation: pulse 1s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .option-card {
+            transition: all 0.3s ease;
+        }
+        .option-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        .option-card.selected {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Token Verification Page -->
+    <div id="tokenPage" class="min-h-screen gradient-bg flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl card-shadow p-8 max-w-md w-full fade-in">
+            <div class="text-center mb-6">
+                <i class="fas fa-lock text-6xl text-purple-600 mb-4"></i>
+                <h1 class="text-2xl font-bold text-gray-800 mb-2">Akses Kuis</h1>
+                <p class="text-gray-600">Masukkan token untuk memulai kuis</p>
+            </div>
+            <form id="tokenForm" class="space-y-4">
+                <div>
+                    <input type="password" id="tokenInput" 
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent outline-none transition"
+                           placeholder="Token akses" required>
+                </div>
+                <button type="submit" 
+                        class="w-full bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 transition duration-300 transform hover:scale-105">
+                    <i class="fas fa-arrow-right mr-2"></i>Mulai Kuis
+                </button>
+            </form>
+            <div id="tokenError" class="hidden mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg text-center">
+                <i class="fas fa-exclamation-circle mr-2"></i>Token salah!
+            </div>
+        </div>
+    </div>
+
+    <!-- Quiz Page -->
+    <div id="quizPage" class="hidden min-h-screen">
+        <!-- Header -->
+        <header class="gradient-bg text-white py-6 px-4 shadow-lg">
+            <div class="max-w-4xl mx-auto flex justify-between items-center">
+                <div>
+                    <h1 class="text-2xl font-bold">Kuis HOTS Kalimat Efektif</h1>
+                    <p class="text-purple-100">10 Soal • 5 Menit</p>
+                </div>
+                <div class="text-center">
+                    <div id="timer" class="text-3xl font-bold">05:00</div>
+                    <p class="text-sm text-purple-100">Waktu Tersisa</p>
+                </div>
+            </div>
+        </header>
+
+        <!-- Progress Bar -->
+        <div class="bg-white shadow-sm sticky top-0 z-10">
+            <div class="max-w-4xl mx-auto px-4 py-3">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-sm font-medium text-gray-700">Progress</span>
+                    <span id="progressText" class="text-sm font-medium text-gray-700">1/10</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div id="progressBar" class="bg-gradient-to-r from-purple-600 to-purple-800 h-2 rounded-full transition-all duration-300" style="width: 10%"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quiz Content -->
+        <main class="max-w-4xl mx-auto p-4 py-8">
+            <div id="questionContainer" class="bg-white rounded-2xl card-shadow p-8 fade-in">
+                <div class="mb-6">
+                    <span class="inline-block bg-purple-100 text-purple-800 text-sm font-semibold px-3 py-1 rounded-full mb-4">
+                        Soal <span id="currentQuestion">1</span>
+                    </span>
+                    <h2 id="questionText" class="text-xl font-semibold text-gray-800 leading-relaxed"></h2>
+                </div>
+                
+                <div id="optionsContainer" class="space-y-3">
+                    <!-- Options will be dynamically inserted here -->
+                </div>
+            </div>
+
+            <div class="flex justify-between mt-8">
+                <button id="prevBtn" class="hidden px-6 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition duration-300">
+                    <i class="fas fa-arrow-left mr-2"></i>Sebelumnya
+                </button>
+                <button id="nextBtn" class="ml-auto px-6 py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
+                    Selanjutnya<i class="fas fa-arrow-right ml-2"></i>
+                </button>
+                <button id="finishBtn" class="hidden ml-auto px-6 py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition duration-300">
+                    <i class="fas fa-check mr-2"></i>Selesai
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <!-- Results Page -->
+    <div id="resultsPage" class="hidden min-h-screen gradient-bg flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl card-shadow p-8 max-w-md w-full text-center fade-in">
+            <div class="mb-6">
+                <i id="resultIcon" class="text-6xl mb-4"></i>
+                <h1 class="text-3xl font-bold text-gray-800 mb-2">Hasil Kuis</h1>
+                <p class="text-gray-600">Kuis telah selesai</p>
+            </div>
+            
+            <div class="bg-gray-50 rounded-xl p-6 mb-6">
+                <div class="text-5xl font-bold text-purple-600 mb-2" id="scoreDisplay">0/10</div>
+                <div class="text-lg text-gray-700" id="percentageDisplay">0%</div>
+            </div>
+            
+            <div class="space-y-3 mb-6">
+                <div class="flex justify-between items-center p-3 bg-green-50 rounded-lg">
+                    <span class="text-green-700 font-medium">Jawaban Benar</span>
+                    <span id="correctAnswers" class="text-green-700 font-bold">0</span>
+                </div>
+                <div class="flex justify-between items-center p-3 bg-red-50 rounded-lg">
+                    <span class="text-red-700 font-medium">Jawaban Salah</span>
+                    <span id="wrongAnswers" class="text-red-700 font-bold">0</span>
+                </div>
+            </div>
+            
+            <button onclick="location.reload()" 
+                    class="w-full bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 transition duration-300">
+                <i class="fas fa-redo mr-2"></i>Kerjakan Lagi
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Quiz Data
+        const quizData = [
+            {
+                question: "Manakah kalimat berikut yang paling efektif dalam menyampaikan informasi tentang pentingnya pendidikan?",
+                options: [
+                    "Pendidikan itu penting karena dengan pendidikan kita bisa mendapatkan pengetahuan dan juga pendidikan bisa membuat kita menjadi lebih baik.",
+                    "Pentingnya pendidikan tidak bisa dipungkiri karena pendidikan memberikan pengetahuan, membentuk karakter, dan meningkatkan kualitas hidup.",
+                    "Pendidikan penting banget buat masa depan kita.",
+                    "Pendidikan adalah sesuatu yang sangat penting sekali dalam kehidupan kita semua.",
+                    "Kita harus bersekolah karena pendidikan itu penting."
+                ],
+                correct: 1
+            },
+            {
+                question: "Kalimat 'Dia pergi ke pasar kemarin pagi untuk membeli sayuran segar' sudah efektif karena...",
+                options: [
+                    "Menggunakan kata-kata yang sulit dan formal.",
+                    "Memiliki struktur kalimat yang runtut dan informasi yang lengkap.",
+                    "Sangat panjang dan detail.",
+                    "Menggunakan banyak kata sifat.",
+                    "Diulang-ulang untuk penekanan."
+                ],
+                correct: 1
+            },
+            {
+                question: "Manakah kalimat yang perlu diperbaiki agar lebih efektif?",
+                options: [
+                    "Peserta didik harus aktif dalam proses pembelajaran.",
+                    "Guru menjelaskan materi dengan jelas dan sistematis.",
+                    "Dia pergi ke sekolah setiap hari dengan naik sepeda.",
+                    "Buku ini berisi informasi yang bermanfaat bagi pembaca.",
+                    "Kegiatan ekstrakurikuler dilaksanakan setiap hari Sabtu."
+                ],
+                correct: 2
+            },
+            {
+                question: "Kalimat efektif harus menghindari...",
+                options: [
+                    "Penggunaan kata benda.",
+                    "Redundansi atau pengulangan yang tidak perlu.",
+                    "Struktur kalimat yang beragam.",
+                    "Informasi yang spesifik.",
+                    "Penggunaan tanda baca."
+                ],
+                correct: 1
+            },
+            {
+                question: "Perbaikan kalimat 'Anak-anak itu bermain-main di taman sambil tertawa-tawa' yang paling tepat adalah...",
+                options: [
+                    "Anak-anak itu bermain di taman.",
+                    "Anak-anak itu bermain dan tertawa di taman.",
+                    "Anak-anak itu sedang bermain di taman.",
+                    "Anak-anak itu sedang bermain di taman sambil tertawa.",
+                    "Anak-anak itu bermain-main di taman."
+                ],
+                correct: 3
+            },
+            {
+                question: "Kalimat 'Saya suka makan nasi goreng karena nasi goreng enak dan nasi goreng juga murah' dapat diperbaiki menjadi...",
+                options: [
+                    "Saya suka makan nasi goreng.",
+                    "Nasi goreng enak dan murah.",
+                    "Saya suka nasi goreng karena enak dan murah.",
+                    "Makanan yang saya suka adalah nasi goreng.",
+                    "Nasi goreng adalah makanan favorit saya."
+                ],
+                correct: 2
+            },
+            {
+                question: "Ciri utama kalimat efektif adalah...",
+                options: [
+                    "Menggunakan bahasa yang sangat formal.",
+                    "Memiliki panjang kalimat yang sama.",
+                    "Mengandung informasi yang jelas, padat, dan tidak ambigu.",
+                    "Selalu menggunakan kalimat aktif.",
+                    "Menghindari semua kata kerja."
+                ],
+                correct: 2
+            },
+            {
+                question: "Manakah kalimat yang paling efektif untuk menggambarkan kondisi cuaca?",
+                options: [
+                    "Cuaca hari ini sangat sangat panas sekali.",
+                    "Hari ini panas.",
+                    "Suhu udara hari ini terasa sangat panas hingga mencapai 35 derajat Celsius.",
+                    "Cuaca panas hari ini membuat saya tidak nyaman.",
+                    "Panasnya cuaca hari ini luar biasa."
+                ],
+                correct: 2
+            },
+            {
+                question: "Kalimat 'Buku yang dibaca oleh siswa tersebut adalah buku yang sangat menarik' dapat disingkat menjadi...",
+                options: [
+                    "Buku itu menarik.",
+                    "Siswa membaca buku menarik.",
+                    "Buku yang dibaca siswa itu menarik.",
+                    "Buku tersebut sangat menarik.",
+                    "Siswa tersebut membaca buku."
+                ],
+                correct: 2
+            },
+            {
+                question: "Dalam membuat kalimat efektif, kita harus memperhatikan...",
+                options: [
+                    "Jumlah kata sebanyak-banyaknya.",
+                    "Keserasian, ketepatan, dan kelengkapan informasi.",
+                    "Penggunaan kata-kata asing.",
+                    "Panjang kalimat yang sama untuk semua.",
+                    "Pengulangan kata untuk penekanan."
+                ],
+                correct: 1
+            }
+        ];
+
+        // Global Variables
+        let currentQuestionIndex = 0;
+        let userAnswers = [];
+        let timeLeft = 300; // 5 minutes in seconds
+        let timerInterval;
+        let shuffledQuestions = [];
+
+        // Token Verification
+        document.getElementById('tokenForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const token = document.getElementById('tokenInput').value;
+            if (token === 'YITO') {
+                document.getElementById('tokenPage').classList.add('hidden');
+                document.getElementById('quizPage').classList.remove('hidden');
+                initializeQuiz();
+            } else {
+                document.getElementById('tokenError').classList.remove('hidden');
+                setTimeout(() => {
+                    document.getElementById('tokenError').classList.add('hidden');
+                }, 3000);
+            }
+        });
+
+        // Initialize Quiz
+        function initializeQuiz() {
+            // Shuffle questions
+            shuffledQuestions = [...quizData].sort(() => Math.random() - 0.5);
+            
+            // Initialize user answers array
+            userAnswers = new Array(shuffledQuestions.length).fill(null);
+            
+            // Load first question
+            loadQuestion();
+            
+            // Start timer
+            startTimer();
+        }
+
+        // Load Question
+        function loadQuestion() {
+            const question = shuffledQuestions[currentQuestionIndex];
+            
+            // Update question number
+            document.getElementById('currentQuestion').textContent = currentQuestionIndex + 1;
+            document.getElementById('questionText').textContent = question.question;
+            
+            // Update progress
+            document.getElementById('progressText').textContent = `${currentQuestionIndex + 1}/${shuffledQuestions.length}`;
+            document.getElementById('progressBar').style.width = `${((currentQuestionIndex + 1) / shuffledQuestions.length) * 100}%`;
+            
+            // Shuffle options
+            const shuffledOptions = [...question.options].map((option, index) => ({
+                text: option,
+                originalIndex: index
+            })).sort(() => Math.random() - 0.5);
+            
+            // Display options
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+            
+            shuffledOptions.forEach((option, index) => {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = 'option-card p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-400';
+                optionDiv.innerHTML = `
+                    <label class="flex items-center cursor-pointer">
+                        <input type="radio" name="answer" value="${option.originalIndex}" class="mr-3 w-5 h-5 text-purple-600">
+                        <span class="text-gray-700">${String.fromCharCode(65 + index)}. ${option.text}</span>
+                    </label>
+                `;
+                
+                optionDiv.addEventListener('click', function() {
+                    // Remove selected class from all options
+                    document.querySelectorAll('.option-card').forEach(card => {
+                        card.classList.remove('selected');
+                    });
+                    
+                    // Add selected class to clicked option
+                    this.classList.add('selected');
+                    
+                    // Check the radio button
+                    this.querySelector('input[type="radio"]').checked = true;
+                    
+                    // Save answer
+                    userAnswers[currentQuestionIndex] = option.originalIndex;
+                    
+                    // Enable next button
+                    document.getElementById('nextBtn').disabled = false;
+                });
+                
+                optionsContainer.appendChild(optionDiv);
+            });
+            
+            // Restore previous answer if exists
+            if (userAnswers[currentQuestionIndex] !== null) {
+                const selectedOption = document.querySelector(`input[value="${userAnswers[currentQuestionIndex]}"]`);
+                if (selectedOption) {
+                    selectedOption.checked = true;
+                    selectedOption.closest('.option-card').classList.add('selected');
+                    document.getElementById('nextBtn').disabled = false;
+                }
+            }
+            
+            // Update navigation buttons
+            updateNavigationButtons();
+        }
+
+        // Update Navigation Buttons
+        function updateNavigationButtons() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const finishBtn = document.getElementById('finishBtn');
+            
+            if (currentQuestionIndex === 0) {
+                prevBtn.classList.add('hidden');
+            } else {
+                prevBtn.classList.remove('hidden');
+            }
+            
+            if (currentQuestionIndex === shuffledQuestions.length - 1) {
+                nextBtn.classList.add('hidden');
+                finishBtn.classList.remove('hidden');
+            } else {
+                nextBtn.classList.remove('hidden');
+                finishBtn.classList.add('hidden');
+            }
+        }
+
+        // Navigation
+        document.getElementById('prevBtn').addEventListener('click', function() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                loadQuestion();
+            }
+        });
+
+        document.getElementById('nextBtn').addEventListener('click', function() {
+            if (currentQuestionIndex < shuffledQuestions.length - 1) {
+                currentQuestionIndex++;
+                loadQuestion();
+            }
+        });
+
+        document.getElementById('finishBtn').addEventListener('click', function() {
+            finishQuiz();
+        });
+
+        // Timer
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                
+                if (timeLeft <= 60) {
+                    document.getElementById('timer').classList.add('timer-warning', 'text-red-600');
+                }
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    finishQuiz();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            document.getElementById('timer').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        // Finish Quiz
+        function finishQuiz() {
+            clearInterval(timerInterval);
+            
+            // Calculate score
+            let correctAnswers = 0;
+            userAnswers.forEach((answer, index) => {
+                if (answer === shuffledQuestions[index].correct) {
+                    correctAnswers++;
+                }
+            });
+            
+            const percentage = Math.round((correctAnswers / shuffledQuestions.length) * 100);
+            
+            // Show results
+            document.getElementById('quizPage').classList.add('hidden');
+            document.getElementById('resultsPage').classList.remove('hidden');
+            
+            // Update result display
+            document.getElementById('scoreDisplay').textContent = `${correctAnswers}/${shuffledQuestions.length}`;
+            document.getElementById('percentageDisplay').textContent = `${percentage}%`;
+            document.getElementById('correctAnswers').textContent = correctAnswers;
+            document.getElementById('wrongAnswers').textContent = shuffledQuestions.length - correctAnswers;
+            
+            // Update result icon based on score
+            const resultIcon = document.getElementById('resultIcon');
+            if (percentage >= 80) {
+                resultIcon.className = 'fas fa-trophy text-6xl mb-4 text-yellow-500';
+            } else if (percentage >= 60) {
+                resultIcon.className = 'fas fa-medal text-6xl mb-4 text-blue-500';
+            } else {
+                resultIcon.className = 'fas fa-times-circle text-6xl mb-4 text-red-500';
+            }
+        }
+    </script>
+</body>
+</html>
