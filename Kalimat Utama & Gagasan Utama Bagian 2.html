@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis HOTS - Kalimat Utama & Gagasan Utama</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .card-shadow {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .timer-warning {
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .option-hover:hover {
+            transform: translateX(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .correct-answer {
+            background-color: #d1fae5 !important;
+            border-color: #10b981 !important;
+        }
+        
+        .wrong-answer {
+            background-color: #fee2e2 !important;
+            border-color: #ef4444 !important;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Token Verification Screen -->
+    <div id="tokenScreen" class="min-h-screen gradient-bg flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl card-shadow p-8 max-w-md w-full fade-in">
+            <div class="text-center mb-6">
+                <i class="fas fa-lock text-6xl text-purple-600 mb-4"></i>
+                <h1 class="text-3xl font-bold text-gray-800 mb-2">Akses Kuis</h1>
+                <p class="text-gray-600">Masukkan token untuk memulai kuis</p>
+            </div>
+            
+            <div class="space-y-4">
+                <input 
+                    type="password" 
+                    id="tokenInput" 
+                    class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:outline-none text-lg"
+                    placeholder="Token Akses"
+                >
+                <button 
+                    onclick="verifyToken()" 
+                    class="w-full bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 transition duration-300 transform hover:scale-105"
+                >
+                    <i class="fas fa-arrow-right mr-2"></i>Mulai Kuis
+                </button>
+                <p id="tokenError" class="text-red-500 text-center hidden">Token salah! Silakan coba lagi.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quiz Screen -->
+    <div id="quizScreen" class="hidden min-h-screen">
+        <!-- Header -->
+        <header class="gradient-bg text-white p-4 shadow-lg">
+            <div class="container mx-auto flex justify-between items-center">
+                <div>
+                    <h1 class="text-2xl font-bold">Kuis HOTS - Kalimat Utama & Gagasan Utama</h1>
+                    <p class="text-purple-200">Soal 1 dari 10</p>
+                </div>
+                <div class="text-center">
+                    <div class="text-sm mb-1">Sisa Waktu</div>
+                    <div id="timer" class="text-3xl font-bold">08:00</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Progress Bar -->
+        <div class="bg-gray-200 h-2">
+            <div id="progressBar" class="bg-purple-600 h-2 transition-all duration-300" style="width: 10%"></div>
+        </div>
+
+        <!-- Quiz Content -->
+        <main class="container mx-auto p-4 max-w-4xl">
+            <div id="questionContainer" class="bg-white rounded-xl card-shadow p-8 fade-in">
+                <!-- Question will be inserted here -->
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="flex justify-between mt-6">
+                <button 
+                    id="prevBtn" 
+                    onclick="previousQuestion()" 
+                    class="px-6 py-3 bg-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-400 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled
+                >
+                    <i class="fas fa-chevron-left mr-2"></i>Sebelumnya
+                </button>
+                <button 
+                    id="nextBtn" 
+                    onclick="nextQuestion()" 
+                    class="px-6 py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition duration-300"
+                >
+                    Selanjutnya<i class="fas fa-chevron-right ml-2"></i>
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <!-- Results Screen -->
+    <div id="resultsScreen" class="hidden min-h-screen gradient-bg">
+        <div class="container mx-auto p-4 max-w-4xl">
+            <div class="bg-white rounded-2xl card-shadow p-8 fade-in">
+                <div class="text-center mb-8">
+                    <i id="resultIcon" class="text-6xl mb-4"></i>
+                    <h1 class="text-3xl font-bold text-gray-800 mb-2">Hasil Kuis</h1>
+                    <div class="text-5xl font-bold text-purple-600" id="scoreDisplay">0/10</div>
+                    <p class="text-gray-600 mt-2" id="scoreMessage"></p>
+                </div>
+
+                <div id="explanationContainer" class="space-y-4 max-h-96 overflow-y-auto">
+                    <!-- Explanations will be inserted here -->
+                </div>
+
+                <div class="mt-8 text-center">
+                    <button 
+                        onclick="restartQuiz()" 
+                        class="px-8 py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition duration-300 transform hover:scale-105"
+                    >
+                        <i class="fas fa-redo mr-2"></i>Kerjakan Lagi
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Question Bank
+        const questionBank = [
+            {
+                paragraph: "Perubahan iklim merupakan salah satu tantangan terbesar yang dihadapi manusia di abad ke-21. Pemanasan global yang disebabkan oleh emisi gas rumah kaca telah menyebabkan peningkatan suhu bumi secara drastis. Akibatnya, es di kutub mencair, permukaan air laut naik, dan cuaca menjadi semakin ekstrem. Untuk mengatasi masalah ini, diperlukan kerjasama global dalam mengurangi emisi karbon dan mengembangkan energi terbarukan.",
+                question: "Kalimat utama paragraf tersebut adalah...",
+                options: [
+                    "Pemanasan global yang disebabkan oleh emisi gas rumah kaca telah menyebabkan peningkatan suhu bumi secara drastis.",
+                    "Perubahan iklim merupakan salah satu tantangan terbesar yang dihadapi manusia di abad ke-21.",
+                    "Akibatnya, es di kutub mencair, permukaan air laut naik, dan cuaca menjadi semakin ekstrem.",
+                    "Untuk mengatasi masalah ini, diperlukan kerjasama global dalam mengurangi emisi karbon dan mengembangkan energi terbarukan."
+                ],
+                correct: 1,
+                explanation: "Kalimat utama berisi ide pokok atau gagasan utama paragraf. Dalam paragraf ini, kalimat pertama menyatakan bahwa perubahan iklim adalah tantangan terbesar, yang menjadi ide sentral seluruh paragraf."
+            },
+            {
+                paragraph: "Teknologi artificial intelligence (AI) telah merevolusi berbagai sektor industri. Di bidang kesehatan, AI membantu dokter mendiagnosis penyakit dengan akurasi tinggi. Dalam dunia pendidikan, AI memungkinkan pembelajaran personal yang disesuaikan dengan kemampuan setiap siswa. Sementara itu, di sektor manufaktur, AI meningkatkan efisiensi produksi dan mengurangi kesalahan manusia. Potensi AI untuk meningkatkan kualitas hidup manusia sangatlah besar.",
+                question: "Gagasan utama paragraf tersebut adalah...",
+                options: [
+                    "AI membantu dokter mendiagnosis penyakit dengan akurasi tinggi.",
+                    "Di dunia pendidikan, AI memungkinkan pembelajaran personal.",
+                    "Teknologi AI telah merevolusi berbagai sektor industri.",
+                    "Di sektor manufaktur, AI meningkatkan efisiensi produksi."
+                ],
+                correct: 2,
+                explanation: "Gagasan utama paragraf ini adalah bahwa teknologi AI telah merevolusi berbagai sektor industri. Kalimat-kalimat berikutnya hanya memberikan contoh spesifik penerapan AI di berbagai bidang."
+            },
+            {
+                paragraph: "Pendidikan karakter menjadi sangat penting dalam membentuk generasi masa depan yang berkualitas. Melalui pendidikan karakter, siswa diajarkan nilai-nilai moral seperti jujur, bertanggung jawab, dan menghormati orang lain. Nilai-nilai ini tidak hanya penting untuk kehidupan di sekolah, tetapi juga akan menjadi bekal mereka dalam bermasyarakat. Tanpa pendidikan karakter yang baik, generasi muda akan kehilangan pedoman dalam bersikap dan bertindak.",
+                question: "Manakah kalimat yang mengandung gagasan utama paragraf?",
+                options: [
+                    "Melalui pendidikan karakter, siswa diajarkan nilai-nilai moral seperti jujur, bertanggung jawab, dan menghormati orang lain.",
+                    "Pendidikan karakter menjadi sangat penting dalam membentuk generasi masa depan yang berkualitas.",
+                    "Nilai-nilai ini tidak hanya penting untuk kehidupan di sekolah, tetapi juga akan menjadi bekal mereka dalam bermasyarakat.",
+                    "Tanpa pendidikan karakter yang baik, generasi muda akan kehilangan pedoman dalam bersikap dan bertindak."
+                ],
+                correct: 1,
+                explanation: "Kalimat utama paragraf ini adalah kalimat pertama yang menyatakan pentingnya pendidikan karakter dalam membentuk generasi masa depan. Kalimat lainnya hanya menjelaskan atau mendukung gagasan utama tersebut."
+            },
+            {
+                paragraph: "Pola makan sehat adalah kunci untuk menjaga kesehatan tubuh secara optimal. Mengonsumsi sayuran dan buah-buahan segar setiap hari memberikan vitamin dan mineral yang dibutuhkan tubuh. Selain itu, menghindari makanan olahan dan gula berlebihan dapat mencegah berbagai penyakit. Dengan pola makan yang seimbang, tubuh akan memiliki energi yang cukup untuk beraktivitas dan sistem imun yang kuat.",
+                question: "Kalimat utama paragraf di atas adalah...",
+                options: [
+                    "Mengonsumsi sayuran dan buah-buahan segar setiap hari memberikan vitamin dan mineral yang dibutuhkan tubuh.",
+                    "Selain itu, menghindari makanan olahan dan gula berlebihan dapat mencegah berbagai penyakit.",
+                    "Dengan pola makan yang seimbang, tubuh akan memiliki energi yang cukup untuk beraktivitas dan sistem imun yang kuat.",
+                    "Pola makan sehat adalah kunci untuk menjaga kesehatan tubuh secara optimal."
+                ],
+                correct: 3,
+                explanation: "Kalimat utama adalah kalimat yang berisi ide pokok paragraf. Dalam paragraf ini, kalimat pertama menyatakan bahwa pola makan sehat adalah kunci kesehatan optimal, yang menjadi ide sentral yang dikembangkan dalam kalimat-kalimat berikutnya."
+            },
+            {
+                paragraph: "Pemanfaatan energi terbarukan menjadi solusi utama untuk mengatasi krisis energi global. Energi matahari, angin, dan air merupakan sumber energi yang tidak akan habis dan ramah lingkungan. Berbeda dengan energi fosil yang menyebabkan polusi dan akan habis suatu saat nanti. Dengan mengembangkan teknologi energi terbarukan, kita dapat menciptakan masa depan yang berkelanjutan untuk generasi mendatang.",
+                question: "Gagasan utama yang terkandung dalam paragraf adalah...",
+                options: [
+                    "Energi matahari, angin, dan air merupakan sumber energi yang tidak akan habis dan ramah lingkungan.",
+                    "Berbeda dengan energi fosil yang menyebabkan polusi dan akan habis suatu saat nanti.",
+                    "Pemanfaatan energi terbarukan menjadi solusi utama untuk mengatasi krisis energi global.",
+                    "Dengan mengembangkan teknologi energi terbarukan, kita dapat menciptakan masa depan yang berkelanjutan."
+                ],
+                correct: 2,
+                explanation: "Gagasan utama paragraf ini adalah bahwa pemanfaatan energi terbarukan menjadi solusi utama untuk mengatasi krisis energi global. Kalimat-kalimat lainnya memberikan penjelasan tentang jenis energi terbarukan dan manfaatnya."
+            },
+            {
+                paragraph: "Literasi digital menjadi kemampuan wajib di era revolusi industri 4.0. Kemampuan ini mencakup pemahaman teknologi, keamanan siber, dan etika dalam menggunakan media digital. Tanpa literasi digital yang baik, seseorang akan sulit bersaing di dunia kerja modern. Oleh karena itu, pendidikan formal maupun non-formal harus mengintegrasikan pembelajaran literasi digital dalam kurikulumnya.",
+                question: "Kalimat yang mengandung gagasan utama paragraf adalah...",
+                options: [
+                    "Kemampuan ini mencakup pemahaman teknologi, keamanan siber, dan etika dalam menggunakan media digital.",
+                    "Tanpa literasi digital yang baik, seseorang akan sulit bersaing di dunia kerja modern.",
+                    "Literasi digital menjadi kemampuan wajib di era revolusi industri 4.0.",
+                    "Oleh karena itu, pendidikan formal maupun non-formal harus mengintegrasikan pembelajaran literasi digital dalam kurikulumnya."
+                ],
+                correct: 2,
+                explanation: "Kalimat utama paragraf ini adalah kalimat pertama yang menyatakan bahwa literasi digital menjadi kemampuan wajib di era revolusi industri 4.0. Kalimat lainnya menjelaskan komponen literasi digital, konsekuensi tidak memilikinya, dan solusi untuk mengembangkannya."
+            },
+            {
+                paragraph: "Pelestarian lingkungan hidup merupakan tanggung jawab bersama seluruh elemen masyarakat. Setiap individu dapat berkontribusi dengan cara sederhana seperti mengurangi penggunaan plastik, mendaur ulang sampah, dan menanam pohon. Pemerintah juga harus membuat kebijakan yang mendukung keberlanjutan lingkungan. Dengan kerjasama yang baik, kita dapat mewariskan bumi yang hijau dan sehat kepada generasi mendatang.",
+                question: "Manakah kalimat utama dari paragraf tersebut?",
+                options: [
+                    "Setiap individu dapat berkontribusi dengan cara sederhana seperti mengurangi penggunaan plastik, mendaur ulang sampah, dan menanam pohon.",
+                    "Pemerintah juga harus membuat kebijakan yang mendukung keberlanjutan lingkungan.",
+                    "Dengan kerjasama yang baik, kita dapat mewariskan bumi yang hijau dan sehat kepada generasi mendatang.",
+                    "Pelestarian lingkungan hidup merupakan tanggung jawab bersama seluruh elemen masyarakat."
+                ],
+                correct: 3,
+                explanation: "Kalimat utama adalah kalimat yang berisi ide pokok paragraf. Dalam paragraf ini, kalimat pertama menyatakan bahwa pelestarian lingkungan adalah tanggung jawab bersama, yang menjadi ide sentral yang dikembangkan dalam kalimat-kalimat berikutnya."
+            },
+            {
+                paragraph: "Inovasi dalam dunia pendidikan terus berkembang seiring dengan kemajuan teknologi. Pembelajaran online, augmented reality, dan gamifikasi menjadi metode baru yang membuat proses belajar lebih menarik dan efektif. Metode-metode ini memungkinkan siswa untuk belajar sesuai dengan gaya dan kecepatan masing-masing. Hasilnya, motivasi belajar siswa meningkat dan pemahaman materi menjadi lebih mendalam.",
+                question: "Gagasan utama paragraf tersebut adalah...",
+                options: [
+                    "Pembelajaran online, augmented reality, dan gamifikasi menjadi metode baru yang membuat proses belajar lebih menarik dan efektif.",
+                    "Metode-metode ini memungkinkan siswa untuk belajar sesuai dengan gaya dan kecepatan masing-masing.",
+                    "Hasilnya, motivasi belajar siswa meningkat dan pemahaman materi menjadi lebih mendalam.",
+                    "Inovasi dalam dunia pendidikan terus berkembang seiring dengan kemajuan teknologi."
+                ],
+                correct: 3,
+                explanation: "Gagasan utama paragraf ini adalah bahwa inovasi dalam dunia pendidikan terus berkembang seiring dengan kemajuan teknologi. Kalimat-kalimat berikutnya memberikan contoh-contoh inovasi dan manfaatnya sebagai pengembangan dari gagasan utama tersebut."
+            },
+            {
+                paragraph: "Keseimbangan antara pekerjaan dan kehidupan pribadi sangat penting untuk kesehatan mental. Banyak orang yang terlalu fokus pada karir sehingga mengabaikan waktu untuk keluarga, hobi, dan istirahat. Padahal, kehidupan yang seimbang akan meningkatkan produktivitas dan kualitas hidup secara keseluruhan. Oleh karena itu, setiap orang perlu belajar mengatur waktu dengan bijak untuk mencapai harmoni antara pekerjaan dan kehidupan pribadi.",
+                question: "Kalimat yang mengandung gagasan utama paragraf adalah...",
+                options: [
+                    "Banyak orang yang terlalu fokus pada karir sehingga mengabaikan waktu untuk keluarga, hobi, dan istirahat.",
+                    "Keseimbangan antara pekerjaan dan kehidupan pribadi sangat penting untuk kesehatan mental.",
+                    "Padahal, kehidupan yang seimbang akan meningkatkan produktivitas dan kualitas hidup secara keseluruhan.",
+                    "Oleh karena itu, setiap orang perlu belajar mengatur waktu dengan bijak untuk mencapai harmoni."
+                ],
+                correct: 1,
+                explanation: "Kalimat utama paragraf ini adalah kalimat pertama yang menyatakan pentingnya keseimbangan antara pekerjaan dan kehidupan pribadi untuk kesehatan mental. Kalimat lainnya memberikan contoh masalah, manfaat keseimbangan, dan solusi untuk mencapainya."
+            },
+            {
+                paragraph: "Globalisasi telah membawa dampak yang signifikan terhadap budaya lokal di berbagai negara. Di satu sisi, globalisasi memungkinkan pertukaran budaya yang memperkaya khazanah kebudayaan dunia. Namun di sisi lain, banyak budaya tradisional yang terancam punah karena tergeser oleh budaya populer global. Untuk melestarikan budaya lokal, diperlukan upaya sadar dari masyarakat dan pemerintah dalam mempromosikan dan melindungi warisan budaya.",
+                question: "Kalimat utama paragraf di atas adalah...",
+                options: [
+                    "Di satu sisi, globalisasi memungkinkan pertukaran budaya yang memperkaya khazanah kebudayaan dunia.",
+                    "Namun di sisi lain, banyak budaya tradisional yang terancam punah karena tergeser oleh budaya populer global.",
+                    "Globalisasi telah membawa dampak yang signifikan terhadap budaya lokal di berbagai negara.",
+                    "Untuk melestarikan budaya lokal, diperlukan upaya sadar dari masyarakat dan pemerintah."
+                ],
+                correct: 2,
+                explanation: "Kalimat utama paragraf ini adalah kalimat pertama yang menyatakan bahwa globalisasi telah membawa dampak signifikan terhadap budaya lokal. Kalimat-kalimat berikutnya menjelaskan dampak positif dan negatif serta solusi untuk melestarikan budaya lokal."
+            }
+        ];
+
+        // Quiz Variables
+        let currentQuestion = 0;
+        let score = 0;
+        let timeLeft = 480; // 8 minutes in seconds
+        let timerInterval;
+        let userAnswers = [];
+        let shuffledQuestions = [];
+        let shuffledOptions = [];
+
+        // Token Verification
+        function verifyToken() {
+            const token = document.getElementById('tokenInput').value;
+            if (token === 'YITO') {
+                document.getElementById('tokenScreen').classList.add('hidden');
+                document.getElementById('quizScreen').classList.remove('hidden');
+                initializeQuiz();
+            } else {
+                document.getElementById('tokenError').classList.remove('hidden');
+                setTimeout(() => {
+                    document.getElementById('tokenError').classList.add('hidden');
+                }, 3000);
+            }
+        }
+
+        // Initialize Quiz
+        function initializeQuiz() {
+            // Shuffle questions
+            shuffledQuestions = [...questionBank].sort(() => Math.random() - 0.5);
+            
+            // Initialize user answers
+            userAnswers = new Array(shuffledQuestions.length).fill(null);
+            
+            // Load first question
+            loadQuestion();
+            
+            // Start timer
+            startTimer();
+        }
+
+        // Load Question
+        function loadQuestion() {
+            const question = shuffledQuestions[currentQuestion];
+            
+            // Shuffle options
+            const optionsWithIndex = question.options.map((option, index) => ({ option, index }));
+            shuffledOptions = [...optionsWithIndex].sort(() => Math.random() - 0.5);
+            
+            // Update progress
+            document.querySelector('#quizScreen p').textContent = `Soal ${currentQuestion + 1} dari ${shuffledQuestions.length}`;
+            document.getElementById('progressBar').style.width = `${((currentQuestion + 1) / shuffledQuestions.length) * 100}%`;
+            
+            // Update navigation buttons
+            document.getElementById('prevBtn').disabled = currentQuestion === 0;
+            document.getElementById('nextBtn').textContent = currentQuestion === shuffledQuestions.length - 1 ? 'Selesai' : 'Selanjutnya';
+            document.getElementById('nextBtn').innerHTML = currentQuestion === shuffledQuestions.length - 1 ? 
+                '<i class="fas fa-check mr-2"></i>Selesai' : 
+                'Selanjutnya<i class="fas fa-chevron-right ml-2"></i>';
+            
+            // Display question
+            const questionHTML = `
+                <div class="mb-6">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Bacalah paragraf berikut dengan cermat!</h2>
+                    <div class="bg-gray-50 p-6 rounded-lg border-l-4 border-purple-500">
+                        <p class="text-gray-700 leading-relaxed">${question.paragraph}</p>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">${question.question}</h3>
+                    <div class="space-y-3">
+                        ${shuffledOptions.map((item, index) => `
+                            <label class="flex items-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-400 option-hover transition-all duration-300 ${userAnswers[currentQuestion] === item.index ? 'border-purple-500 bg-purple-50' : ''}">
+                                <input type="radio" name="answer" value="${item.index}" class="mr-3 text-purple-600" 
+                                    ${userAnswers[currentQuestion] === item.index ? 'checked' : ''} 
+                                    onchange="selectAnswer(${item.index})">
+                                <span class="flex-1">${item.option}</span>
+                            </label>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('questionContainer').innerHTML = questionHTML;
+        }
+
+        // Select Answer
+        function selectAnswer(answerIndex) {
+            userAnswers[currentQuestion] = answerIndex;
+            
+            // Update visual feedback
+            const labels = document.querySelectorAll('label');
+            labels.forEach((label, index) => {
+                if (index === shuffledOptions.findIndex(item => item.index === answerIndex)) {
+                    label.classList.add('border-purple-500', 'bg-purple-50');
+                } else {
+                    label.classList.remove('border-purple-500', 'bg-purple-50');
+                }
+            });
+        }
+
+        // Navigation
+        function previousQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                loadQuestion();
+            }
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < shuffledQuestions.length - 1) {
+                currentQuestion++;
+                loadQuestion();
+            } else {
+                finishQuiz();
+            }
+        }
+
+        // Timer
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                
+                if (timeLeft <= 60) {
+                    document.getElementById('timer').classList.add('timer-warning', 'text-red-600');
+                }
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    finishQuiz();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            document.getElementById('timer').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        // Finish Quiz
+        function finishQuiz() {
+            clearInterval(timerInterval);
+            
+            // Calculate score
+            score = 0;
+            userAnswers.forEach((answer, index) => {
+                if (answer === shuffledQuestions[index].correct) {
+                    score++;
+                }
+            });
+            
+            // Show results
+            showResults();
+        }
+
+        // Show Results
+        function showResults() {
+            document.getElementById('quizScreen').classList.add('hidden');
+            document.getElementById('resultsScreen').classList.remove('hidden');
+            
+            // Update score display
+            document.getElementById('scoreDisplay').textContent = `${score}/${shuffledQuestions.length}`;
+            
+            // Update icon and message based on score
+            const percentage = (score / shuffledQuestions.length) * 100;
+            const resultIcon = document.getElementById('resultIcon');
+            const scoreMessage = document.getElementById('scoreMessage');
+            
+            if (percentage >= 80) {
+                resultIcon.className = 'fas fa-trophy text-yellow-500';
+                scoreMessage.textContent = 'Luar biasa! Anda sangat memahami konsep kalimat utama dan gagasan utama.';
+            } else if (percentage >= 60) {
+                resultIcon.className = 'fas fa-medal text-blue-500';
+                scoreMessage.textContent = 'Bagus! Anda sudah memahami konsep dasar, namun masih perlu belajar lebih banyak.';
+            } else {
+                resultIcon.className = 'fas fa-book-open text-green-500';
+                scoreMessage.textContent = 'Tetap semangat! Perbanyak latihan untuk memahami kalimat utama dan gagasan utama.';
+            }
+            
+            // Generate explanations
+            const explanationsHTML = shuffledQuestions.map((question, index) => {
+                const userAnswer = userAnswers[index];
+                const isCorrect = userAnswer === question.correct;
+                
+                return `
+                    <div class="bg-gray-50 rounded-lg p-6 border-l-4 ${isCorrect ? 'border-green-500' : 'border-red-500'}">
+                        <div class="flex items-start justify-between mb-3">
+                            <h4 class="font-semibold text-gray-800">Soal ${index + 1}</h4>
+                            <span class="px-3 py-1 rounded-full text-sm font-medium ${isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                                ${isCorrect ? 'Benar' : 'Salah'}
+                            </span>
+                        </div>
+                        <p class="text-gray-700 mb-3"><strong>Pertanyaan:</strong> ${question.question}</p>
+                        <p class="text-gray-700 mb-3"><strong>Jawaban Anda:</strong> ${userAnswer !== null ? question.options[userAnswer] : 'Tidak dijawab'}</p>
+                        <p class="text-gray-700 mb-3"><strong>Jawaban Benar:</strong> ${question.options[question.correct]}</p>
+                        <div class="bg-blue-50 p-4 rounded-lg">
+                            <p class="text-blue-800"><strong>Pembahasan:</strong> ${question.explanation}</p>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            document.getElementById('explanationContainer').innerHTML = explanationsHTML;
+        }
+
+        // Restart Quiz
+        function restartQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            timeLeft = 480;
+            userAnswers = [];
+            
+            document.getElementById('resultsScreen').classList.add('hidden');
+            document.getElementById('tokenScreen').classList.remove('hidden');
+            document.getElementById('tokenInput').value = '';
+            document.getElementById('timer').classList.remove('timer-warning', 'text-red-600');
+        }
+
+        // Handle Enter key in token input
+        document.getElementById('tokenInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                verifyToken();
+            }
+        });
+    </script>
+</body>
+</html>
