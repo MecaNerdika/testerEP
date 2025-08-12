@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Kalimat Utama & Gagasan Utama</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .card-shadow {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .timer-warning {
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .option-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .option-hover:hover {
+            transform: translateX(10px);
+            background-color: rgba(99, 102, 241, 0.1);
+        }
+        
+        .selected-option {
+            background-color: rgba(99, 102, 241, 0.2);
+            border-left: 4px solid #6366f1;
+        }
+        
+        .progress-fill {
+            transition: width 0.5s ease;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Halaman Token -->
+    <div id="tokenPage" class="min-h-screen gradient-bg flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl card-shadow p-8 max-w-md w-full fade-in">
+            <div class="text-center mb-8">
+                <i class="fas fa-lock text-6xl text-indigo-600 mb-4"></i>
+                <h1 class="text-3xl font-bold text-gray-800 mb-2">Akses Kuis</h1>
+                <p class="text-gray-600">Masukkan token untuk memulai kuis</p>
+            </div>
+            
+            <form id="tokenForm" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Token Akses</label>
+                    <input 
+                        type="password" 
+                        id="tokenInput" 
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+                        placeholder="Masukkan token..."
+                        required
+                    >
+                </div>
+                
+                <button 
+                    type="submit" 
+                    class="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition duration-300 transform hover:scale-105"
+                >
+                    <i class="fas fa-arrow-right mr-2"></i>Mulai Kuis
+                </button>
+            </form>
+            
+            <div id="tokenError" class="hidden mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+                <i class="fas fa-exclamation-circle mr-2"></i>Token salah! Silakan coba lagi.
+            </div>
+        </div>
+    </div>
+
+    <!-- Halaman Kuis -->
+    <div id="quizPage" class="hidden min-h-screen bg-gray-50">
+        <!-- Header -->
+        <header class="bg-white shadow-sm sticky top-0 z-50">
+            <div class="max-w-6xl mx-auto px-4 py-4">
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center space-x-4">
+                        <i class="fas fa-brain text-3xl text-indigo-600"></i>
+                        <div>
+                            <h1 class="text-xl font-bold text-gray-800">Kuis Kalimat Utama & Gagasan Utama</h1>
+                            <p class="text-sm text-gray-600">Soal 1-10 | HOTS Level</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center space-x-6">
+                        <!-- Timer -->
+                        <div id="timer" class="bg-gray-100 px-4 py-2 rounded-lg">
+                            <i class="fas fa-clock text-indigo-600 mr-2"></i>
+                            <span id="timeDisplay" class="font-mono font-bold text-lg">08:00</span>
+                        </div>
+                        
+                        <!-- Progress -->
+                        <div class="text-right">
+                            <p class="text-sm text-gray-600">Progress</p>
+                            <p class="font-bold text-indigo-600"><span id="currentQuestion">1</span>/10</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Progress Bar -->
+                <div class="mt-4 bg-gray-200 rounded-full h-2 overflow-hidden">
+                    <div id="progressBar" class="progress-fill bg-indigo-600 h-full" style="width: 10%"></div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Konten Kuis -->
+        <main class="max-w-4xl mx-auto px-4 py-8">
+            <div class="bg-white rounded-2xl card-shadow p-8 fade-in">
+                <div id="questionContainer">
+                    <!-- Soal akan dimuat di sini -->
+                </div>
+                
+                <div class="mt-8 flex justify-between">
+                    <button 
+                        id="prevBtn" 
+                        class="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled
+                    >
+                        <i class="fas fa-arrow-left mr-2"></i>Sebelumnya
+                    </button>
+                    
+                    <button 
+                        id="nextBtn" 
+                        class="px-6 py-3 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition"
+                    >
+                        Selanjutnya<i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                    
+                    <button 
+                        id="finishBtn" 
+                        class="hidden px-6 py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition"
+                    >
+                        <i class="fas fa-check mr-2"></i>Selesai
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Halaman Hasil -->
+    <div id="resultPage" class="hidden min-h-screen gradient-bg flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl card-shadow p-8 max-w-2xl w-full fade-in text-center">
+            <div class="mb-8">
+                <i class="fas fa-trophy text-8xl text-yellow-500 mb-4"></i>
+                <h1 class="text-4xl font-bold text-gray-800 mb-2">Kuis Selesai!</h1>
+                <p class="text-gray-600">Berikut adalah hasil kuis Anda</p>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-6 mb-8">
+                <div class="bg-indigo-50 rounded-xl p-6">
+                    <i class="fas fa-check-circle text-4xl text-green-500 mb-2"></i>
+                    <p class="text-3xl font-bold text-gray-800" id="correctAnswers">0</p>
+                    <p class="text-gray-600">Jawaban Benar</p>
+                </div>
+                
+                <div class="bg-red-50 rounded-xl p-6">
+                    <i class="fas fa-times-circle text-4xl text-red-500 mb-2"></i>
+                    <p class="text-3xl font-bold text-gray-800" id="wrongAnswers">0</p>
+                    <p class="text-gray-600">Jawaban Salah</p>
+                </div>
+            </div>
+            
+            <div class="bg-gray-100 rounded-xl p-6 mb-8">
+                <p class="text-lg text-gray-600 mb-2">Skor Akhir</p>
+                <p class="text-5xl font-bold text-indigo-600" id="finalScore">0%</p>
+            </div>
+            
+            <button 
+                onclick="location.reload()" 
+                class="px-8 py-3 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition duration-300 transform hover:scale-105"
+            >
+                <i class="fas fa-redo mr-2"></i>Kerjakan Lagi
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Data Soal
+        const questions = [
+            {
+                paragraph: "Teknologi artificial intelligence (AI) telah mengubah cara kita bekerja dan berinteraksi. Dari asisten virtual hingga sistem rekomendasi, AI memudahkan berbagai aktivitas sehari-hari. Namun, perkembangan AI juga menimbulkan kekhawatiran tentang penggantian tenaga kerja manusia. Meskipun demikian, AI tetap menjadi alat yang powerful untuk meningkatkan produktivitas jika digunakan dengan bijak.",
+                question: "Manakah kalimat utama dari paragraf tersebut?",
+                options: [
+                    "Dari asisten virtual hingga sistem rekomendasi, AI memudahkan berbagai aktivitas sehari-hari.",
+                    "Teknologi artificial intelligence (AI) telah mengubah cara kita bekerja dan berinteraksi.",
+                    "Perkembangan AI menimbulkan kekhawatiran tentang penggantian tenaga kerja manusia.",
+                    "AI tetap menjadi alat yang powerful untuk meningkatkan produktivitas."
+                ],
+                correct: 1
+            },
+            {
+                paragraph: "Pendidikan karakter merupakan fondasi penting dalam pembentukan generasi masa depan. Melalui pendidikan karakter, siswa diajarkan nilai-nilai moral seperti jujur, tanggung jawab, dan empati. Nilai-nilai ini tidak hanya penting di lingkungan sekolah, tetapi juga akan menjadi bekal mereka dalam kehidupan bermasyarakat. Oleh karena itu, integrasi pendidikan karakter dalam kurikulum sangatlah esensial.",
+                question: "Apa gagasan utama paragraf di atas?",
+                options: [
+                    "Siswa diajarkan nilai-nilai moral seperti jujur, tanggung jawab, dan empati.",
+                    "Nilai-nilai karakter penting dalam kehidupan bermasyarakat.",
+                    "Pendidikan karakter adalah fondasi penting dalam pembentukan generasi masa depan.",
+                    "Integrasi pendidikan karakter dalam kurikulum sangat esensial."
+                ],
+                correct: 2
+            },
+            {
+                paragraph: "Perubahan iklim menjadi isu global yang memerlukan perhatian serius dari semua negara. Peningkatan suhu bumi, mencairnya es di kutub, dan naiknya permukaan air laut adalah bukti nyata dampak perubahan iklim. Untuk mengatasi masalah ini, diperlukan kerjasama internasional yang kuat dan komitmen nyata dari setiap negara. Tanpa aksi kolektif, dampak perubahan iklim akan semakin parah dan mengancam kehidupan di bumi.",
+                question: "Kalimat manakah yang paling tepat sebagai kalimat utama?",
+                options: [
+                    "Peningkatan suhu bumi adalah bukti nyata dampak perubahan iklim.",
+                    "Perubahan iklim menjadi isu global yang memerlukan perhatian serius dari semua negara.",
+                    "Diperlukan kerjasama internasional yang kuat untuk mengatasi masalah ini.",
+                    "Tanpa aksi kolektif, dampak perubahan iklim akan semakin parah."
+                ],
+                correct: 1
+            },
+            {
+                paragraph: "Literasi digital menjadi kemampuan krusial di era revolusi industri 4.0. Kemampuan ini mencakup pemahaman tentang teknologi, keamanan siber, dan etika dalam menggunakan media digital. Dengan literasi digital yang baik, individu dapat memanfaatkan teknologi secara optimal dan terhindar dari risiko seperti penipuan online atau hoaks. Oleh karena itu, pendidikan literasi digital harus menjadi prioritas dalam sistem pendidikan modern.",
+                question: "Gagasan utama paragraf tersebut adalah...",
+                options: [
+                    "Literasi digital mencakup pemahaman tentang teknologi dan keamanan siber.",
+                    "Individu dapat terhindar dari penipuan online dengan literasi digital yang baik.",
+                    "Literasi digital adalah kemampuan krusial di era revolusi industri 4.0.",
+                    "Pendidikan literasi digital harus menjadi prioritas dalam sistem pendidikan."
+                ],
+                correct: 2
+            },
+            {
+                paragraph: "Kesehatan mental sama pentingnya dengan kesehatan fisik dalam menjaga kualitas hidup. Stres berkepanjangan, kecemasan, dan depresi dapat mempengaruhi produktivitas dan hubungan sosial seseorang. Untuk menjaga kesehatan mental, diperlukan keseimbangan antara pekerjaan, istirahat, dan kegiatan sosial. Selain itu, jangan ragu untuk mencari bantuan profesional jika mengalami kesulitan dalam mengelola masalah kesehatan mental.",
+                question: "Kalimat utama paragraf di atas adalah...",
+                options: [
+                    "Stres berkepanjangan dapat mempengaruhi produktivitas seseorang.",
+                    "Keseimbangan antara pekerjaan dan istirahat penting untuk kesehatan mental.",
+                    "Kesehatan mental sama pentingnya dengan kesehatan fisik dalam menjaga kualitas hidup.",
+                    "Bantuan profesional diperlukan untuk mengelola masalah kesehatan mental."
+                ],
+                correct: 2
+            },
+            {
+                paragraph: "Pariwisata berkelanjutan adalah konsep yang mengedepankan pelestarian lingkungan dan budaya lokal. Dalam pariwisata berkelanjutan, pengunjung diajak untuk menghormati kearifan lokal dan meminimalkan dampak negatif terhadap lingkungan. Pendekatan ini tidak hanya menjaga kelestarian alam dan budaya, tetapi juga memberikan manfaat ekonomi jangka panjang bagi masyarakat lokal. Dengan demikian, pariwisata berkelanjutan menjadi solusi ideal untuk industri pariwisata modern.",
+                question: "Apa gagasan pokok yang disampaikan dalam paragraf tersebut?",
+                options: [
+                    "Pengunjung harus menghormati kearifan lokal saat berwisata.",
+                    "Pariwisata berkelanjutan memberikan manfaat ekonomi bagi masyarakat lokal.",
+                    "Pariwisata berkelanjutan mengedepankan pelestarian lingkungan dan budaya lokal.",
+                    "Industri pariwisata modern memerlukan solusi yang ideal."
+                ],
+                correct: 2
+            },
+            {
+                paragraph: "Inovasi dalam bidang energi terbarukan terus berkembang pesat. Panel surya yang lebih efisien, turbin angin yang lebih silent, dan teknologi penyimpanan energi yang lebih baik adalah contoh kemajuan terkini. Inovasi-inovasi ini membuat energi terbarukan semakin kompetitif dengan energi fosil. Di masa depan, energi terbarukan diharapkan dapat menjadi sumber energi utama yang mendukung pembangunan berkelanjutan di seluruh dunia.",
+                question: "Manakah kalimat yang merupakan kalimat utama?",
+                options: [
+                    "Panel surya yang lebih efisien adalah contoh kemajuan terkini.",
+                    "Inovasi dalam bidang energi terbarukan terus berkembang pesat.",
+                    "Energi terbarukan semakin kompetitif dengan energi fosil.",
+                    "Energi terbarukan diharapkan menjadi sumber energi utama di masa depan."
+                ],
+                correct: 1
+            },
+            {
+                paragraph: "Kolaborasi antar generasi menjadi kunci sukses dalam transformasi digital. Generasi muda membawa energi, ide segar, dan keahlian teknologi, sementara generasi tua memberikan pengalaman, kebijaksanaan, dan jaringan yang luas. Ketika kedua generasi ini bekerja sama, mereka dapat menciptakan solusi inovatif yang menggabungkan keunggulan masing-masing. Sinergi ini sangat penting untuk menghadapi tantangan kompleks di era digital.",
+                question: "Gagasan utama paragraf tersebut adalah...",
+                options: [
+                    "Generasi muda membawa energi dan ide segar dalam transformasi digital.",
+                    "Generasi tua memberikan pengalaman dan kebijaksanaan yang berharga.",
+                    "Kolaborasi antar generasi menjadi kunci sukses dalam transformasi digital.",
+                    "Sinergi generasi penting untuk menghadapi tantangan era digital."
+                ],
+                correct: 2
+            },
+            {
+                paragraph: "Pembelajaran jarak jauh telah membuka akses pendidikan yang lebih luas bagi masyarakat. Dengan adanya platform online, siapa saja dapat belajar dari institusi terbaik di dunia tanpa batasan geografis. Fleksibilitas waktu dan tempat juga menjadi keunggulan utama pembelajaran jarak jauh. Meskipun memiliki tantangan seperti keterbatasan interaksi langsung, pembelajaran jarak jauh tetap menjadi alternatif pendidikan yang sangat relevan di era modern.",
+                question: "Kalimat manakah yang paling tepat sebagai kalimat utama?",
+                options: [
+                    "Platform online memungkinkan belajar dari institusi terbaik di dunia.",
+                    "Fleksibilitas waktu dan tempat adalah keunggulan pembelajaran jarak jauh.",
+                    "Pembelajaran jarak jauh telah membuka akses pendidikan yang lebih luas bagi masyarakat.",
+                    "Pembelajaran jarak jauh menjadi alternatif pendidikan yang relevan di era modern."
+                ],
+                correct: 2
+            },
+            {
+                paragraph: "Kewirausahaan sosial menggabungkan misi sosial dengan prinsip bisnis yang sehat. Para pengusaha sosial tidak hanya mengejar keuntungan finansial, tetapi juga berkomitmen untuk menyelesaikan masalah sosial di masyarakat. Model bisnis ini telah terbukti efektif dalam menciptakan dampak positif yang berkelanjutan. Dengan demikian, kewirausahaan sosial menawarkan pendekatan inovatif untuk pembangunan sosial dan ekonomi.",
+                question: "Apa gagasan pokok paragraf di atas?",
+                options: [
+                    "Pengusaha sosial berkomitmen menyelesaikan masalah sosial di masyarakat.",
+                    "Model bisnis kewirausahaan sosial efektif menciptakan dampak positif.",
+                    "Kewirausahaan sosial menggabungkan misi sosial dengan prinsip bisnis yang sehat.",
+                    "Kewirausahaan sosial menawarkan pendekatan inovatif untuk pembangunan."
+                ],
+                correct: 2
+            }
+        ];
+
+        // Variabel Global
+        let currentQuestionIndex = 0;
+        let userAnswers = [];
+        let timeLeft = 480; // 8 menit dalam detik
+        let timerInterval;
+        let shuffledQuestions = [];
+
+        // Fungsi Shuffle Array
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        // Fungsi Shuffle Options
+        function shuffleOptions(question) {
+            const shuffled = shuffleArray(question.options.map((option, index) => ({
+                text: option,
+                originalIndex: index
+            })));
+            
+            const newCorrectIndex = shuffled.findIndex(opt => opt.originalIndex === question.correct);
+            
+            return {
+                ...question,
+                options: shuffled.map(opt => opt.text),
+                correct: newCorrectIndex
+            };
+        }
+
+        // Validasi Token
+        document.getElementById('tokenForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const token = document.getElementById('tokenInput').value;
+            
+            if (token === 'YITO') {
+                document.getElementById('tokenPage').classList.add('hidden');
+                document.getElementById('quizPage').classList.remove('hidden');
+                initializeQuiz();
+            } else {
+                document.getElementById('tokenError').classList.remove('hidden');
+                document.getElementById('tokenInput').value = '';
+                setTimeout(() => {
+                    document.getElementById('tokenError').classList.add('hidden');
+                }, 3000);
+            }
+        });
+
+        // Inisialisasi Kuis
+        function initializeQuiz() {
+            // Shuffle questions dan options
+            shuffledQuestions = shuffleArray(questions).map(q => shuffleOptions(q));
+            
+            // Reset variabel
+            currentQuestionIndex = 0;
+            userAnswers = new Array(shuffledQuestions.length).fill(null);
+            timeLeft = 480;
+            
+            // Mulai timer
+            startTimer();
+            
+            // Tampilkan soal pertama
+            displayQuestion();
+            
+            // Update progress
+            updateProgress();
+        }
+
+        // Timer
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                
+                if (timeLeft <= 60) {
+                    document.getElementById('timer').classList.add('timer-warning', 'bg-red-100');
+                }
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    finishQuiz();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            document.getElementById('timeDisplay').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        // Tampilkan Soal
+        function displayQuestion() {
+            const question = shuffledQuestions[currentQuestionIndex];
+            const container = document.getElementById('questionContainer');
+            
+            container.innerHTML = `
+                <div class="mb-6">
+                    <h2 class="text-lg font-semibold text-gray-700 mb-2">Paragraf:</h2>
+                    <div class="bg-gray-50 p-6 rounded-lg border-l-4 border-indigo-500">
+                        <p class="text-gray-800 leading-relaxed">${question.paragraph}</p>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">
+                        <i class="fas fa-question-circle text-indigo-600 mr-2"></i>
+                        ${question.question}
+                    </h2>
+                </div>
+                
+                <div class="space-y-3">
+                    ${question.options.map((option, index) => `
+                        <div class="option-hover p-4 border border-gray-200 rounded-lg cursor-pointer" 
+                             onclick="selectOption(${index})" 
+                             id="option-${index}">
+                            <label class="flex items-center cursor-pointer">
+                                <input type="radio" name="answer" value="${index}" class="mr-3 text-indigo-600">
+                                <span class="text-gray-700">${option}</span>
+                            </label>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            
+            // Restore selected answer if exists
+            if (userAnswers[currentQuestionIndex] !== null) {
+                selectOption(userAnswers[currentQuestionIndex]);
+            }
+            
+            // Update navigation buttons
+            updateNavigationButtons();
+        }
+
+        // Pilih Jawaban
+        function selectOption(index) {
+            // Remove previous selection
+            document.querySelectorAll('[id^="option-"]').forEach(opt => {
+                opt.classList.remove('selected-option');
+            });
+            
+            // Add selection to clicked option
+            document.getElementById(`option-${index}`).classList.add('selected-option');
+            document.querySelector(`#option-${index} input`).checked = true;
+            
+            // Save answer
+            userAnswers[currentQuestionIndex] = index;
+        }
+
+        // Navigasi
+        function updateNavigationButtons() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const finishBtn = document.getElementById('finishBtn');
+            
+            prevBtn.disabled = currentQuestionIndex === 0;
+            
+            if (currentQuestionIndex === shuffledQuestions.length - 1) {
+                nextBtn.classList.add('hidden');
+                finishBtn.classList.remove('hidden');
+            } else {
+                nextBtn.classList.remove('hidden');
+                finishBtn.classList.add('hidden');
+            }
+        }
+
+        function updateProgress() {
+            const progress = ((currentQuestionIndex + 1) / shuffledQuestions.length) * 100;
+            document.getElementById('progressBar').style.width = `${progress}%`;
+            document.getElementById('currentQuestion').textContent = currentQuestionIndex + 1;
+        }
+
+        // Event Listeners untuk navigasi
+        document.getElementById('prevBtn').addEventListener('click', () => {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                displayQuestion();
+                updateProgress();
+            }
+        });
+
+        document.getElementById('nextBtn').addEventListener('click', () => {
+            if (currentQuestionIndex < shuffledQuestions.length - 1) {
+                currentQuestionIndex++;
+                displayQuestion();
+                updateProgress();
+            }
+        });
+
+        document.getElementById('finishBtn').addEventListener('click', finishQuiz);
+
+        // Selesai Kuis
+        function finishQuiz() {
+            clearInterval(timerInterval);
+            
+            // Hitung hasil
+            let correctCount = 0;
+            userAnswers.forEach((answer, index) => {
+                if (answer === shuffledQuestions[index].correct) {
+                    correctCount++;
+                }
+            });
+            
+            const wrongCount = shuffledQuestions.length - correctCount;
+            const score = Math.round((correctCount / shuffledQuestions.length) * 100);
+            
+            // Tampilkan hasil
+            document.getElementById('quizPage').classList.add('hidden');
+            document.getElementById('resultPage').classList.remove('hidden');
+            
+            document.getElementById('correctAnswers').textContent = correctCount;
+            document.getElementById('wrongAnswers').textContent = wrongCount;
+            document.getElementById('finalScore').textContent = `${score}%`;
+        }
+    </script>
+</body>
+</html>
