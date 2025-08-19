@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kuis Operasi Campuran</title>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    body{font-family:Arial,sans-serif;background:#f0f4f8;color:#111827;margin:0;padding:0}
+    .wrap{max-width:900px;margin:20px auto;padding:20px;background:#ffffff;border-radius:15px;box-shadow:0 5px 15px rgba(0,0,0,0.1)}
+    h2{margin-bottom:10px;color:#0f172a}
+    input{padding:8px 10px;border-radius:6px;border:1px solid #cbd5e1;width:100%;margin-bottom:10px}
+    button{padding:8px 12px;border-radius:6px;border:none;background:#06b6d4;color:#ffffff;cursor:pointer;margin-bottom:5px}
+    .hidden{display:none}
+    .question{margin:15px 0;font-size:1.2em;color:#0f172a}
+    .choices button{display:block;margin:5px 0;text-align:left}
+    .choices button.selected{background:#22c55e;color:#ffffff}
+    .result{margin-top:20px;color:#0f172a}
+    .muted{color:#64748b}
+    .nav-wrapper{display:flex;justify-content:space-between;align-items:center;margin-top:10px}
+    .nav-wrapper button{flex:1;margin:0 5px}
+    .question-indicator{margin-top:10px;text-align:center}
+    .question-indicator span{display:inline-block;width:30px;height:30px;line-height:30px;margin:0 3px;border-radius:50%;background:#cbd5e1;color:#0f172a;cursor:pointer}
+    .question-indicator span.answered{background:#22c55e;color:#ffffff}
+    .timer{font-weight:bold;color:#ef4444}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <section id="screen-start">
+    <h2>Login Kuis</h2>
+    <p class="muted">Durasi 20 menit. Masukkan nama dan token untuk mulai kuis.</p>
+    <input type="text" id="name" placeholder="Nama Anda" />
+    <input type="text" id="token" placeholder="Token" />
+    <button id="btnStart">Mulai Kuis</button>
+  </section>
+
+  <section id="screen-quiz" class="hidden">
+    <div class="nav-wrapper">
+      <div class="timer" id="timer">20:00</div>
+    </div>
+    <div id="qWrap"></div>
+    <div class="nav-wrapper">
+      <button id="btnPrev">← Sebelumnya</button>
+      <button id="btnNext">Berikutnya →</button>
+      <button id="btnSubmit">Kumpulkan</button>
+    </div>
+    <div class="question-indicator" id="qIndicator"></div>
+  </section>
+
+  <section id="screen-result" class="hidden">
+    <h2>Hasil Kuis</h2>
+    <div class="result" id="result"></div>
+    <button id="btnRestart">Mulai Ulang</button>
+  </section>
+</div>
+
+<script>
+const questions = [
+  {q:'$$3 \\times 3 \\times 3 - 3+3+3$$', options:[18,30,19,21,24], correct:30},
+  {q:'$$12- 3 \\times (2+2)$$', options:[0,1,2,36,39], correct:0},
+  {q:'$$12^2 -11^2$$', options:[21,23,25,27,29], correct:23},
+  {q:'$$2019^2 - 2021 \\times 2017$$', options:[1,2,3,4,5], correct:4},
+  {q:'$$(2025- 2012)^2 - 12^2$$', options:[24,25,26,27,28], correct:25},
+  {q:'$$\\frac{3}{4} +\\frac{1}{4}-\\frac{1}{2} +\\frac{5}{4}$$', options:['$$\\frac{3}{4}$$','$$1$$','$$1 \\frac{1}{4}$$','$$1 \\frac{1}{2}$$','$$1 \\frac{3}{4}$$'], correct:'$$1 \\frac{3}{4}$$'},
+  {q:'$$\\frac{2}{3} + \\frac{3}{4} - \\frac{5}{6}$$', options:['$$\\frac{3}{4}$$','$$\\frac{4}{12}$$','$$\\frac{6}{12}$$','$$\\frac{7}{12}$$','$$\\frac{8}{12}$$'], correct:'$$\\frac{7}{12}$$'},
+  {q:'$$\\frac{3}{6} \\times \\frac{2}{6}\\times \\frac{1}{6}$$', options:['$$\\frac{1}{36}$$','$$\\frac{1}{18}$$','$$\\frac{1}{12}$$','$$\\frac{1}{9}$$','$$\\frac{5}{36}$$'], correct:'$$\\frac{1}{36}$$'},
+  {q:'$$\\frac{5}{6} + 3$$', options:['$$\\frac{19}{6}$$','$$\\frac{20}{6}$$','$$\\frac{21}{6}$$','$$\\frac{22}{6}$$','$$\\frac{23}{6}$$'], correct:'$$\\frac{23}{6}$$'},
+  {q:'$$4 - \\frac{2}{5}$$', options:['$$3 \\frac{3}{5}$$','$$4 \\frac{3}{5}$$','$$2 \\frac{2}{5}$$','$$3 \\frac{2}{5}$$','$$3 \\frac{1}{5}$$'], correct:'$$3 \\frac{3}{5}$$'},
+  {q:'$$\\frac{3}{4} \\times 16 - \\frac{1}{5} \\div 2 + \\frac{1}{20}$$', options:[1.195,11.95,1.159,11.59,12.05], correct:11.95},
+  {q:'$$3+ \\frac{4}{5} - \\frac{3}{6} \\times 36$$', options:[-14,-13,'$$14 \\frac{1}{5}$$','$$-14 \\frac{1}{5}$$','$$13 \\frac{1}{5}$$'], correct:'$$-14 \\frac{1}{5}$$'},
+  {q:'$$(\\frac{1}{2} \\div \\frac{1}{2}) -(\\frac{1}{4} \\times \\frac{1}{4})$$', options:['$$\\frac{13}{16}$$','$$\\frac{15}{16}$$','$$\\frac{17}{16}$$','$$\\frac{19}{16}$$','$$\\frac{21}{16}$$'], correct:'$$\\frac{15}{16}$$'},
+  {q:'$$\\frac{2}{3} \\text{ dari } (\\frac{4}{5} - \\frac{2}{10})$$', options:[0.4,0.5,0.6,0.7,0.8], correct:0.4},
+  {q:'$$15 \\div \\frac{1}{3} \\times \\frac{4}{9}$$', options:[16,17,20,21,25], correct:20}
+];
+
+
+let idx=0, answers=Array(questions.length).fill(null);
+const duration=20*60; let leftSec=duration;
+const $=id=>document.getElementById(id);
+
+function renderTimer(){
+  let m=Math.floor(leftSec/60); let s=leftSec%60;
+  $('timer').textContent=(m<10?'0':'')+m+':'+(s<10?'0':'')+s;
+}
+function startTimer(){
+  renderTimer();
+  tick=setInterval(()=>{leftSec--; renderTimer(); if(leftSec<=0) submitQuiz();},1000);
+}
+
+function renderQuestion() {
+  const q = questions[idx];
+  
+  // Tambah informasi nomor soal
+  let html = '<div class="question-number">Soal No. ' + (idx + 1) + ' dari ' + questions.length + '</div>';
+  
+  html += '<div class="question">' + q.q + '</div><div class="choices">';
+  q.options.forEach((opt, i) => {
+    html += '<button class="' + (answers[idx] === i ? 'selected' : '') + '" onclick="selectChoice(' + i + ')">' + opt + '</button>';
+  });
+  html += '</div>';
+  
+  $('qWrap').innerHTML = html;
+  renderIndicators();
+  MathJax.typesetPromise();
+}
+
+
+function selectChoice(i){
+  answers[idx]=i;
+  renderQuestion();
+}
+
+function renderIndicators(){
+  let html='';
+  questions.forEach((_,i)=>{
+    html+='<span class="'+(answers[i]!==null?'answered':'')+'" onclick="gotoQ('+i+')">'+(i+1)+'</span>';
+  });
+  $('qIndicator').innerHTML=html;
+}
+
+function gotoQ(i){idx=i; renderQuestion();}
+function nextQ(){if(idx<questions.length-1){idx++; renderQuestion();}}
+function prevQ(){if(idx>0){idx--; renderQuestion();}}
+
+function submitQuiz(){
+  clearInterval(tick);
+  let correct=0;
+  questions.forEach((q,i)=>{if(q.options[answers[i]]==q.correct) correct++;});
+  $('screen-quiz').classList.add('hidden');
+  $('screen-result').classList.remove('hidden');
+  $('result').innerHTML='Skor: '+correct+'/'+questions.length;
+}
+
+$('btnStart').onclick=()=>{
+  const name=$('name').value.trim();
+  const token=$('token').value.trim();
+  if(!name||!token){alert('Isi nama dan token!'); return;}
+  $('screen-start').classList.add('hidden');
+  $('screen-quiz').classList.remove('hidden');
+  startTimer();
+  renderQuestion();
+};
+$('btnNext').onclick=nextQ;
+$('btnPrev').onclick=prevQ;
+$('btnSubmit').onclick=submitQuiz;
+$('btnRestart').onclick=()=>location.reload();
+</script>
+</body>
+</html>
