@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Perbaikan Kalimat Efektif EYD</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .login-container {
+            max-width: 500px;
+            margin: 100px auto;
+            padding: 30px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .quiz-container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 30px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .timer {
+            font-size: 24px;
+            font-weight: bold;
+            color: #dc3545;
+            text-align: center;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .question-container {
+            margin-bottom: 30px;
+        }
+        .question-number {
+            font-weight: bold;
+            color: #0d6efd;
+            margin-bottom: 15px;
+        }
+        .options-container {
+            margin-left: 20px;
+        }
+        .option-item {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .option-item:hover {
+            background-color: #f1f1f1;
+        }
+        .option-item input {
+            margin-right: 10px;
+        }
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        .result-container {
+            text-align: center;
+            padding: 30px;
+        }
+        .result-score {
+            font-size: 48px;
+            font-weight: bold;
+            color: #0d6efd;
+            margin: 20px 0;
+        }
+        .hidden {
+            display: none;
+        }
+        .progress-container {
+            margin-bottom: 20px;
+        }
+        .progress {
+            height: 10px;
+        }
+        .question-indicator {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin: 20px 0;
+        }
+        .question-dot {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .question-dot.active {
+            background-color: #0d6efd;
+            color: white;
+        }
+        .question-dot.answered {
+            background-color: #198754;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Page -->
+    <div id="loginPage" class="login-container">
+        <h2 class="text-center mb-4">Kuis Perbaikan Kalimat Efektif EYD</h2>
+        <form id="loginForm">
+            <div class="mb-3">
+                <label for="fullName" class="form-label">Nama Lengkap</label>
+                <input type="text" class="form-control" id="fullName" required>
+            </div>
+            <div class="mb-3">
+                <label for="token" class="form-label">Token Ujian</label>
+                <input type="password" class="form-control" id="token" required>
+                <div class="form-text">Token akan diberikan oleh pengawas</div>
+            </div>
+            <div class="d-grid">
+                <button type="submit" class="btn btn-primary">Mulai Kuis</button>
+            </div>
+        </form>
+        <div id="loginError" class="alert alert-danger mt-3 hidden">
+            Token yang Anda masukkan salah!
+        </div>
+    </div>
+
+    <!-- Quiz Page -->
+    <div id="quizPage" class="quiz-container hidden">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4>Kuis Perbaikan Kalimat Efektif EYD</h4>
+            <div id="userName" class="fw-bold"></div>
+        </div>
+        
+        <div class="timer">
+            <i class="bi bi-clock"></i> Sisa Waktu: <span id="timeLeft">10:00</span>
+        </div>
+        
+        <div class="progress-container">
+            <div class="progress">
+                <div id="progressBar" class="progress-bar" role="progressbar" style="width: 0%"></div>
+            </div>
+        </div>
+        
+        <div class="question-indicator" id="questionIndicator"></div>
+        
+        <div id="questionContainer" class="question-container">
+            <!-- Questions will be loaded here -->
+        </div>
+        
+        <div class="navigation">
+            <button id="prevBtn" class="btn btn-outline-primary" disabled>
+                <i class="bi bi-arrow-left"></i> Sebelumnya
+            </button>
+            <button id="nextBtn" class="btn btn-primary">
+                Selanjutnya <i class="bi bi-arrow-right"></i>
+            </button>
+            <button id="finishBtn" class="btn btn-success hidden">
+                Selesai <i class="bi bi-check-circle"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Result Page -->
+    <div id="resultPage" class="quiz-container hidden">
+        <div class="result-container">
+            <h2>Hasil Kuis</h2>
+            <p id="resultName" class="fs-5"></p>
+            <div class="result-score" id="resultScore"></div>
+            <p id="resultMessage" class="fs-5"></p>
+            <button id="restartBtn" class="btn btn-primary mt-3">
+                <i class="bi bi-arrow-clockwise"></i> Kembali ke Halaman Awal
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Data soal
+        const questions = [
+            {
+                question: "Kalimat yang kurang efektif: 'Saya pergi ke toko untuk membeli sayur-mayur.' Kalimat yang lebih efektif adalah:",
+                options: [
+                    "Saya pergi ke toko untuk membeli sayuran.",
+                    "Saya pergi ke toko untuk membeli sayur.",
+                    "Saya pergi ke toko membeli sayur-mayur.",
+                    "Saya pergi ke toko untuk beli sayur-mayur.",
+                    "Saya pergi ke toko untuk membeli sayur-sayuran."
+                ],
+                correctAnswer: 0
+            },
+            {
+                question: "Kalimat yang kurang efektif: 'Anak-anak tersebut sedang bermain-main di taman.' Kalimat yang lebih efektif adalah:",
+                options: [
+                    "Anak-anak tersebut sedang bermain di taman.",
+                    "Anak-anak tersebut sedang main-main di taman.",
+                    "Anak-anak itu sedang bermain-main di taman.",
+                    "Anak-anak tersebut sedang bermain di taman.",
+                    "Anak-anak itu sedang bermain di taman."
+                ],
+                correctAnswer: 0
+            },
+            {
+                question: "Kalimat yang kurang efektif: 'Dia pergi ke pasar-pasar untuk membeli buah-buahan.' Kalimat yang lebih efektif adalah:",
+                options: [
+                    "Dia pergi ke pasar untuk membeli buah.",
+                    "Dia pergi ke pasar untuk membeli buah-buahan.",
+                    "Dia pergi ke pasar-pasar untuk membeli buah.",
+                    "Dia pergi ke pasar untuk beli buah-buahan.",
+                    "Dia pergi ke pasar untuk membeli buah-buahan segar."
+                ],
+                correctAnswer: 1
+            },
+            {
+                question: "Kalimat yang kurang efektif: 'Saya membaca-baca buku di perpustakaan.' Kalimat yang lebih efektif adalah:",
+                options: [
+                    "Saya membaca buku di perpustakaan.",
+                    "Saya membaca buku-buku di perpustakaan.",
+                    "Saya membaca-baca buku-buku di perpustakaan.",
+                    "Saya sedang membaca buku di perpustakaan.",
+                    "Saya membaca buku di perpustakaan kemarin."
+                ],
+                correctAnswer: 0
+            },
+            {
+                question: "Kalimat yang kurang efektif: 'Mereka berdiskusi-diskusi tentang masalah tersebut.' Kalimat yang lebih efektif adalah:",
+                options: [
+                    "Mereka berdiskusi tentang masalah tersebut.",
+                    "Mereka berdiskusi-diskusi tentang masalah itu.",
+                    "Mereka mendiskusikan masalah tersebut.",
+                    "Mereka berdiskusi tentang masalah itu.",
+                    "Mereka sedang berdiskusi tentang masalah tersebut."
+                ],
+                correctAnswer: 0
+            },
+            {
+                question: "Kalimat yang kurang efektif: 'Kami menonton-nonton film di bioskop.' Kalimat yang lebih efektif adalah:",
+                options: [
+                    "Kami menonton film di bioskop.",
+                    "Kami menonton-nonton film di bioskop.",
+                    "Kami nonton film di bioskop.",
+                    "Kami sedang menonton film di bioskop.",
+                    "Kami menonton film-film di bioskop."
+                ],
+                correctAnswer: 0
+            },
+            {
+                question: "Kalimat yang kurang efektif: 'Dia menulis-nulis surat untuk ibunya.' Kalimat yang lebih efektif adalah:",
+                options: [
+                    "Dia menulis surat untuk ibunya.",
+                    "Dia menulis-nulis surat untuk ibunya.",
+                    "Dia sedang menulis surat untuk ibunya.",
+                    "Dia menulis surat untuk ibu.",
+                    "Dia menulis surat untuk ibunya kemarin."
+                ],
+                correctAnswer: 0
+            },
+            {
+                question: "Kalimat yang kurang efektif: 'Mereka membeli-beli oleh-oleh di toko suvenir.' Kalimat yang lebih efektif adalah:",
+                options: [
+                    "Mereka membeli oleh-oleh di toko suvenir.",
+                    "Mereka membeli-beli oleh-oleh di toko suvenir.",
+                    "Mereka membeli oleh-oleh di toko suvenir.",
+                    "Mereka membeli suvenir di toko.",
+                    "Mereka membeli oleh-oleh di toko suvenir kemarin."
+                ],
+                correctAnswer: 0
+            },
+            {
+                question: "Kalimat yang kurang efektif: 'Saya mencari-cari kunci yang hilang.' Kalimat yang lebih efektif adalah:",
+                options: [
+                    "Saya mencari kunci yang hilang.",
+                    "Saya mencari-cari kunci yang hilang.",
+                    "Saya sedang mencari kunci yang hilang.",
+                    "Saya mencari kunci saya yang hilang.",
+                    "Saya mencari kunci yang hilang tadi."
+                ],
+                correctAnswer: 0
+            },
+            {
+                question: "Kalimat yang kurang efektif: 'Kami berolahraga-olahraga setiap pagi.' Kalimat yang lebih efektif adalah:",
+                options: [
+                    "Kami berolahraga setiap pagi.",
+                    "Kami berolahraga-olahraga setiap pagi.",
+                    "Kami olahraga setiap pagi.",
+                    "Kami berolahraga setiap pagi hari.",
+                    "Kami selalu berolahraga setiap pagi."
+                ],
+                correctAnswer: 0
+            },
+            {
+                question: "Kalimat yang kurang efektif: 'Dia memasak-masak di dapur.' Kalimat yang lebih efektif adalah:",
+                options: [
+                    "Dia memasak di dapur.",
+                    "Dia memasak-masak di dapur.",
+                    "Dia sedang memasak di dapur.",
+                    "Dia memasak makanan di dapur.",
+                    "Dia memasak di dapur sekarang."
+                ],
+                correctAnswer: 0
+            },
+            {
+                question: "Kalimat yang kurang efektif: 'Mereka membersihkan-bersihkan rumah.' Kalimat yang lebih efektif adalah:",
+                options: [
+                    "Mereka membersihkan rumah.",
+                    "Mereka membersihkan-bersihkan rumah.",
+                    "Mereka sedang membersihkan rumah.",
+                    "Mereka membersihkan rumah mereka.",
+                    "Mereka membersihkan rumah sekarang."
+                ],
+                correctAnswer: 0
+            },
+            {
+                question: "Kalimat yang kurang efektif: 'Saya memikirkan-mikirkan keputusan itu.' Kalimat yang lebih efektif adalah:",
+                options: [
+                    "Saya memikirkan keputusan itu.",
+                    "Saya memikirkan-mikirkan keputusan itu.",
+                    "Saya sedang memikirkan keputusan itu.",
+                    "Saya mempertimbangkan keputusan itu.",
+                    "Saya memikirkan keputusan itu dengan seksama."
+                ],
+                correctAnswer: 0
+            },
+            {
+                question: "Kalimat yang kurang efektif: 'Kami mengunjungi-kunjungi museum.' Kalimat yang lebih efektif adalah:",
+                options: [
+                    "Kami mengunjungi museum.",
+                    "Kami mengunjungi-kunjungi museum.",
+                    "Kami berkunjung ke museum.",
+                    "Kami sedang mengunjungi museum.",
+                    "Kami mengunjungi museum kemarin."
+                ],
+                correctAnswer: 0
+            },
+            {
+                question: "Kalimat yang kurang efektif: 'Dia menghitung-hitung uangnya.' Kalimat yang lebih efektif adalah:",
+                options: [
+                    "Dia menghitung uangnya.",
+                    "Dia menghitung-hitung uangnya.",
+                    "Dia sedang menghitung uangnya.",
+                    "Dia menghitung uangnya sekarang.",
+                    "Dia menghitung uangnya dengan teliti."
+                ],
+                correctAnswer: 0
+            },
+            {
+                question: "Kalimat yang kurang efektif: 'Mereka memperbaiki-baiki sepeda.' Kalimat yang lebih efektif adalah:",
+                options: [
+                    "Mereka memperbaiki sepeda.",
+                    "Mereka memperbaiki-baiki sepeda.",
+                    "Mereka sedang memperbaiki sepeda.",
+                    "Mereka memperbaiki sepeda mereka.",
+                    "Mereka memperbaiki sepeda sekarang."
+                ],
+                correctAnswer: 0
+            },
+            {
+                question: "Kalimat yang kurang efektif: 'Saya mengumpulkan-kumpulkan sampah.' Kalimat yang lebih efektif adalah:",
+                options: [
+                    "Saya mengumpulkan sampah.",
+                    "Saya mengumpulkan-kumpulkan sampah.",
+                    "Saya sedang mengumpulkan sampah.",
+                    "Saya mengumpulkan sampah sekarang.",
+                    "Saya membersihkan sampah."
+                ],
+                correctAnswer: 0
+            },
+            {
+                question: "Kalimat yang kurang efektif: 'Kami memeriksa-riksa dokumen.' Kalimat yang lebih efektif adalah:",
+                options: [
+                    "Kami memeriksa dokumen.",
+                    "Kami memeriksa-riksa dokumen.",
+                    "Kami sedang memeriksa dokumen.",
+                    "Kami memeriksa dokumen-dokumen.",
+                    "Kami memeriksa dokumen dengan teliti."
+                ],
+                correctAnswer: 0
+            },
+            {
+                question: "Kalimat yang kurang efektif: 'Dia mengatur-turun acara.' Kalimat yang lebih efektif adalah:",
+                options: [
+                    "Dia mengatur acara.",
+                    "Dia mengatur-turun acara.",
+                    "Dia sedang mengatur acara.",
+                    "Dia mengatur acara tersebut.",
+                    "Dia mengatur acara dengan baik."
+                ],
+                correctAnswer: 0
+            },
+            {
+                question: "Kalimat yang kurang efektif: 'Mereka menghias-hias ruangan.' Kalimat yang lebih efektif adalah:",
+                options: [
+                    "Mereka menghias ruangan.",
+                    "Mereka menghias-hias ruangan.",
+                    "Mereka sedang menghias ruangan.",
+                    "Mereka menghias ruangan tersebut.",
+                    "Mereka menghias ruangan dengan indah."
+                ],
+                correctAnswer: 0
+            }
+        ];
+
+        // Variabel global
+        let currentQuestion = 0;
+        let userAnswers = [];
+        let shuffledQuestions = [];
+        let timeLeft = 600; // 10 menit dalam detik
+        let timerInterval;
+        let userName = '';
+
+        // DOM Elements
+        const loginPage = document.getElementById('loginPage');
+        const quizPage = document.getElementById('quizPage');
+        const resultPage = document.getElementById('resultPage');
+        const loginForm = document.getElementById('loginForm');
+        const loginError = document.getElementById('loginError');
+        const fullNameInput = document.getElementById('fullName');
+        const tokenInput = document.getElementById('token');
+        const questionContainer = document.getElementById('questionContainer');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const finishBtn = document.getElementById('finishBtn');
+        const timeLeftElement = document.getElementById('timeLeft');
+        const progressBar = document.getElementById('progressBar');
+        const questionIndicator = document.getElementById('questionIndicator');
+        const userNameElement = document.getElementById('userName');
+        const resultNameElement = document.getElementById('resultName');
+        const resultScoreElement = document.getElementById('resultScore');
+        const resultMessageElement = document.getElementById('resultMessage');
+        const restartBtn = document.getElementById('restartBtn');
+
+        // Event Listeners
+        loginForm.addEventListener('submit', handleLogin);
+        prevBtn.addEventListener('click', showPreviousQuestion);
+        nextBtn.addEventListener('click', showNextQuestion);
+        finishBtn.addEventListener('click', finishQuiz);
+        restartBtn.addEventListener('click', restartQuiz);
+
+        // Functions
+        function handleLogin(e) {
+            e.preventDefault();
+            
+            const token = tokenInput.value;
+            
+            if (token === 'HUTRI80') {
+                userName = fullNameInput.value;
+                userNameElement.textContent = userName;
+                startQuiz();
+            } else {
+                loginError.classList.remove('hidden');
+            }
+        }
+
+        function startQuiz() {
+            loginPage.classList.add('hidden');
+            quizPage.classList.remove('hidden');
+            
+            // Inisialisasi array jawaban
+            userAnswers = new Array(20).fill(null);
+            
+            // Acak soal
+            shuffledQuestions = [...questions];
+            shuffleArray(shuffledQuestions);
+            
+            // Tampilkan soal pertama
+            showQuestion(0);
+            
+            // Buat indikator soal
+            createQuestionIndicator();
+            
+            // Mulai timer
+            startTimer();
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function createQuestionIndicator() {
+            questionIndicator.innerHTML = '';
+            for (let i = 0; i < shuffledQuestions.length; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'question-dot';
+                dot.textContent = i + 1;
+                dot.addEventListener('click', () => showQuestion(i));
+                questionIndicator.appendChild(dot);
+            }
+            updateQuestionIndicator();
+        }
+
+        function updateQuestionIndicator() {
+            const dots = questionIndicator.querySelectorAll('.question-dot');
+            dots.forEach((dot, index) => {
+                dot.classList.remove('active', 'answered');
+                if (index === currentQuestion) {
+                    dot.classList.add('active');
+                }
+                if (userAnswers[index] !== null) {
+                    dot.classList.add('answered');
+                }
+            });
+        }
+
+        function showQuestion(index) {
+            // Simpan jawaban sebelum pindah
+            saveCurrentAnswer();
+            
+            currentQuestion = index;
+            const question = shuffledQuestions[index];
+            
+            // Update progress bar
+            const progress = ((index + 1) / shuffledQuestions.length) * 100;
+            progressBar.style.width = `${progress}%`;
+            
+            // Update navigation buttons
+            prevBtn.disabled = index === 0;
+            nextBtn.classList.toggle('hidden', index === shuffledQuestions.length - 1);
+            finishBtn.classList.toggle('hidden', index !== shuffledQuestions.length - 1);
+            
+            // Acak pilihan jawaban
+            const optionsWithIndex = question.options.map((option, i) => ({ option, index: i }));
+            shuffleArray(optionsWithIndex);
+            
+            // Tampilkan soal
+            questionContainer.innerHTML = `
+                <div class="question-number">Soal ${index + 1} dari ${shuffledQuestions.length}</div>
+                <div class="question-text">${question.question}</div>
+                <div class="options-container">
+                    ${optionsWithIndex.map((item, i) => `
+                        <div class="option-item">
+                            <input type="radio" id="option${i}" name="answer" value="${item.index}" ${userAnswers[index] === item.index ? 'checked' : ''}>
+                            <label for="option${i}">${item.option}</label>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            
+            // Update question indicator
+            updateQuestionIndicator();
+        }
+
+        function saveCurrentAnswer() {
+            const selectedOption = document.querySelector('input[name="answer"]:checked');
+            if (selectedOption) {
+                userAnswers[currentQuestion] = parseInt(selectedOption.value);
+            }
+        }
+
+        function showPreviousQuestion() {
+            if (currentQuestion > 0) {
+                showQuestion(currentQuestion - 1);
+            }
+        }
+
+        function showNextQuestion() {
+            if (currentQuestion < shuffledQuestions.length - 1) {
+                showQuestion(currentQuestion + 1);
+            }
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                timeLeftElement.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    finishQuiz();
+                }
+            }, 1000);
+        }
+
+        function finishQuiz() {
+            clearInterval(timerInterval);
+            
+            // Simpan jawaban terakhir
+            saveCurrentAnswer();
+            
+            // Hitung skor
+            let correctAnswers = 0;
+            for (let i = 0; i < shuffledQuestions.length; i++) {
+                if (userAnswers[i] === shuffledQuestions[i].correctAnswer) {
+                    correctAnswers++;
+                }
+            }
+            
+            // Tampilkan hasil
+            quizPage.classList.add('hidden');
+            resultPage.classList.remove('hidden');
+            resultNameElement.textContent = `Nama: ${userName}`;
+            resultScoreElement.textContent = `${correctAnswers}/${shuffledQuestions.length}`;
+            
+            // Pesan berdasarkan skor
+            let message = '';
+            const percentage = (correctAnswers / shuffledQuestions.length) * 100;
+            if (percentage >= 90) {
+                message = 'Sangat Baik! Pemahaman Anda tentang kalimat efektif sangat baik.';
+            } else if (percentage >= 75) {
+                message = 'Baik! Pemahaman Anda tentang kalimat efektif sudah baik.';
+            } else if (percentage >= 60) {
+                message = 'Cukup! Perlu lebih banyak belajar tentang kalimat efektif.';
+            } else {
+                message = 'Kurang! Disarankan untuk mempelajari lebih dalam tentang kalimat efektif.';
+            }
+            resultMessageElement.textContent = message;
+        }
+
+        function restartQuiz() {
+            // Reset variabel
+            currentQuestion = 0;
+            userAnswers = [];
+            timeLeft = 600;
+            
+            // Reset tampilan
+            loginPage.classList.remove('hidden');
+            quizPage.classList.add('hidden');
+            resultPage.classList.add('hidden');
+            loginForm.reset();
+            loginError.classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
