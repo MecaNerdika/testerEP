@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Kalimat Efektif - HOTS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .card-shadow {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .timer-warning {
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .option-card {
+            transition: all 0.3s ease;
+        }
+        
+        .option-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .selected-option {
+            background-color: #e0e7ff;
+            border-color: #4f46e5;
+        }
+        
+        .question-nav {
+            transition: all 0.3s ease;
+        }
+        
+        .question-nav:hover {
+            transform: scale(1.1);
+        }
+        
+        .question-nav.active {
+            background-color: #4f46e5;
+            color: white;
+        }
+        
+        .question-nav.answered {
+            background-color: #10b981;
+            color: white;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Halaman Login -->
+    <div id="loginPage" class="flex items-center justify-center min-h-screen gradient-bg">
+        <div class="bg-white p-8 rounded-xl card-shadow w-full max-w-md">
+            <div class="text-center mb-8">
+                <div class="mx-auto bg-indigo-100 w-16 h-16 rounded-full flex items-center justify-center mb-4">
+                    <i class="fas fa-clipboard-check text-indigo-600 text-2xl"></i>
+                </div>
+                <h1 class="text-2xl font-bold text-gray-800">Kuis Kalimat Efektif</h1>
+                <p class="text-gray-600 mt-2">HOTS - Kesatuan Gagasan, Kehematan, Paralel, Kelogisan, dan Kepaduan</p>
+            </div>
+            
+            <form id="loginForm" class="space-y-6">
+                <div>
+                    <label for="fullName" class="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap</label>
+                    <input type="text" id="fullName" name="fullName" required
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        placeholder="Masukkan nama lengkap Anda">
+                </div>
+                
+                <div>
+                    <label for="token" class="block text-sm font-medium text-gray-700 mb-1">Token Ujian</label>
+                    <input type="password" id="token" name="token" required
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        placeholder="Masukkan token ujian">
+                </div>
+                
+                <div id="errorMessage" class="hidden text-red-500 text-sm text-center"></div>
+                
+                <button type="submit" 
+                    class="w-full bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-300 font-medium">
+                    Mulai Kuis
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Halaman Kuis -->
+    <div id="quizPage" class="hidden min-h-screen">
+        <!-- Header -->
+        <header class="bg-white shadow-sm">
+            <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+                <div>
+                    <h1 class="text-xl font-bold text-gray-800">Kuis Kalimat Efektif</h1>
+                    <p class="text-sm text-gray-600">Peserta: <span id="userName" class="font-medium"></span></p>
+                </div>
+                <div id="timerContainer" class="flex items-center space-x-2">
+                    <i class="fas fa-clock text-gray-600"></i>
+                    <div id="timer" class="text-lg font-medium text-gray-800">10:00</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="max-w-6xl mx-auto px-4 py-8">
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                <!-- Navigasi Soal -->
+                <div class="lg:col-span-1">
+                    <div class="bg-white rounded-xl card-shadow p-6">
+                        <h2 class="text-lg font-semibold text-gray-800 mb-4">Navigasi Soal</h2>
+                        <div id="questionNavigation" class="grid grid-cols-5 gap-2">
+                            <!-- Akan diisi dengan JavaScript -->
+                        </div>
+                        
+                        <div class="mt-6 pt-4 border-t border-gray-200">
+                            <button id="finishQuiz" 
+                                class="w-full bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600 transition duration-300 font-medium">
+                                <i class="fas fa-stop-circle mr-2"></i>Selesai
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Konten Soal -->
+                <div class="lg:col-span-3">
+                    <div class="bg-white rounded-xl card-shadow p-6">
+                        <div class="mb-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h2 class="text-lg font-semibold text-gray-800">Soal <span id="currentQuestionNumber">1</span> dari 20</h2>
+                                <div class="text-sm text-gray-600">
+                                    <span id="answeredCount">0</span> soal terjawab
+                                </div>
+                            </div>
+                            
+                            <div id="questionContent" class="mb-6">
+                                <!-- Akan diisi dengan JavaScript -->
+                            </div>
+                            
+                            <div id="optionsContainer" class="space-y-3">
+                                <!-- Akan diisi dengan JavaScript -->
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-between mt-8 pt-4 border-t border-gray-200">
+                            <button id="prevButton" 
+                                class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition duration-300 font-medium disabled:opacity-50 disabled:cursor-not-allowed">
+                                <i class="fas fa-arrow-left mr-2"></i>Sebelumnya
+                            </button>
+                            
+                            <button id="nextButton" 
+                                class="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition duration-300 font-medium disabled:opacity-50 disabled:cursor-not-allowed">
+                                Selanjutnya<i class="fas fa-arrow-right ml-2"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Halaman Hasil -->
+    <div id="resultPage" class="hidden flex items-center justify-center min-h-screen gradient-bg">
+        <div class="bg-white p-8 rounded-xl card-shadow w-full max-w-md text-center">
+            <div class="mx-auto bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mb-4">
+                <i class="fas fa-check-circle text-green-600 text-2xl"></i>
+            </div>
+            <h1 class="text-2xl font-bold text-gray-800 mb-2">Kuis Selesai!</h1>
+            <p class="text-gray-600 mb-6">Terima kasih telah mengikuti kuis kalimat efektif</p>
+            
+            <div class="bg-gray-50 rounded-lg p-6 mb-6">
+                <p class="text-gray-600 mb-1">Nama Peserta</p>
+                <p id="resultName" class="text-lg font-semibold text-gray-800 mb-4"></p>
+                
+                <p class="text-gray-600 mb-1">Nilai Anda</p>
+                <p id="scoreResult" class="text-3xl font-bold text-indigo-600"></p>
+            </div>
+            
+            <button id="restartQuiz" 
+                class="w-full bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-300 font-medium">
+                Kembali ke Halaman Awal
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Data soal
+        const questions = [
+            {
+                id: 1,
+                question: "Kalimat berikut yang tidak efektif adalah...",
+                options: [
+                    "Ani membaca buku di perpustakaan.",
+                    "Buku yang dibaca Ani di perpustakaan.",
+                    "Ani sedang membaca buku di perpustakaan.",
+                    "Ani membaca buku ketika berada di perpustakaan.",
+                    "Di perpustakaan, Ani membaca buku."
+                ],
+                correctAnswer: 1,
+                explanation: "Kalimat 'Buku yang dibaca Ani di perpustakaan' tidak efektif karena tidak memiliki predikat dan tidak menyatakan gagasan utuh."
+            },
+            {
+                id: 2,
+                question: "Perbaikan kalimat 'Pak Guru sedang memberikan penjelasan kepada murid-muridnya yang sangat jelas' yang paling tepat adalah...",
+                options: [
+                    "Pak Guru sedang memberikan penjelasan yang sangat jelas kepada murid-muridnya.",
+                    "Pak Guru sedang memberikan penjelasan kepada murid-muridnya yang sangat jelas.",
+                    "Pak Guru yang sedang memberikan penjelasan kepada murid-muridnya sangat jelas.",
+                    "Pak Guru sedang memberikan penjelasan yang sangat jelas dan murid-muridnya.",
+                    "Pak Guru sedang memberikan penjelasan kepada murid-muridnya, dan penjelasannya sangat jelas."
+                ],
+                correctAnswer: 0,
+                explanation: "Kalimat yang diperbaiki menempatkan keterangan 'yang sangat jelas' tepat setelah 'penjelasan' untuk menghindari ambiguitas."
+            },
+            {
+                id: 3,
+                question: "Kalimat yang tidak efektif karena tidak memiliki kesatuan gagasan adalah...",
+                options: [
+                    "Saya suka membaca novel dan menonton film.",
+                    "Hari ini cuaca cerah, tetapi saya membawa payung.",
+                    "Dia pergi ke pasar untuk membeli sayuran.",
+                    "Anak-anak sedang bermain di halaman sekolah.",
+                    "Ibu memasak di dapur sambil mendengarkan musik."
+                ],
+                correctAnswer: 1,
+                explanation: "Kalimat 'Hari ini cuaca cerah, tetapi saya membawa payung' tidak memiliki kesatuan gagasan karena antara cuaca cerah dan membawa payung tidak sejalan."
+            },
+            {
+                id: 4,
+                question: "Perbaikan kalimat 'Dia tidak hanya pandai bermain piano, tetapi juga biola' yang efektif adalah...",
+                options: [
+                    "Dia tidak hanya pandai bermain piano, tetapi juga pandai bermain biola.",
+                    "Dia pandai bermain piano dan juga biola.",
+                    "Dia pandai bermain piano, tetapi juga biola.",
+                    "Dia tidak hanya pandai bermain piano, tetapi juga biola.",
+                    "Dia pandai bermain piano dan pandai bermain biola."
+                ],
+                correctAnswer: 0,
+                explanation: "Kalimat yang diperbaiki menggunakan struktur paralel 'pandai bermain piano' dan 'pandai bermain biola' untuk mencapai kehematan dan kesejajaran."
+            },
+            {
+                id: 5,
+                question: "Kalimat yang tidak efektif karena tidak logis adalah...",
+                options: [
+                    "Kucing itu sedang tidur di bawah meja.",
+                    "Dia berlari dengan cepat untuk mengejar bus.",
+                    "Air sungai mengalir dari hilir ke hulu.",
+                    "Anak itu menangis karena jatuh dari sepeda.",
+                    "Ibu membeli sayur di pasar pagi ini."
+                ],
+                correctAnswer: 2,
+                explanation: "Kalimat 'Air sungai mengalir dari hilir ke hulu' tidak logis karena secara alamiah air sungai mengalir dari hulu ke hilir."
+            },
+            {
+                id: 6,
+                question: "Perbaikan kalimat 'Setelah selesai makan, lalu dia pergi ke sekolah' yang paling tepat adalah...",
+                options: [
+                    "Setelah selesai makan, dia pergi ke sekolah.",
+                    "Dia selesai makan, lalu pergi ke sekolah.",
+                    "Setelah dia selesai makan, lalu pergi ke sekolah.",
+                    "Setelah makan, kemudian dia pergi ke sekolah.",
+                    "Dia pergi ke sekolah setelah selesai makan."
+                ],
+                correctAnswer: 0,
+                explanation: "Kalimat yang diperbaiki menghilangkan kata 'lalu' yang berlebihan setelah kata penghubung 'setelah' untuk mencapai kehematan."
+            },
+            {
+                id: 7,
+                question: "Kalimat yang tidak efektif karena tidak padu adalah...",
+                options: [
+                    "Rumah itu besar dan luas.",
+                    "Dia pergi ke kantor menggunakan mobil.",
+                    "Saya suka makan buah apel dan jeruk.",
+                    "Buku itu tebal dan berat.",
+                    "Dia memakai baju merah dan celana biru."
+                ],
+                correctAnswer: 0,
+                explanation: "Kalimat 'Rumah itu besar dan luas' tidak padu karena kata 'besar' dan 'luas' memiliki makna yang hampir sama sehingga redundan."
+            },
+            {
+                id: 8,
+                question: "Perbaikan kalimat 'Dia pergi ke toko untuk membeli buku, pulang, lalu membacanya' yang paling tepat adalah...",
+                options: [
+                    "Dia pergi ke toko untuk membeli buku, kemudian pulang dan membacanya.",
+                    "Dia pergi ke toko membeli buku, lalu pulang, lalu membacanya.",
+                    "Dia pergi ke toko untuk membeli buku, lalu pulang, dan membacanya.",
+                    "Dia pergi ke toko, membeli buku, pulang, lalu membacanya.",
+                    "Dia pergi ke toko untuk membeli buku, setelah itu pulang dan membacanya."
+                ],
+                correctAnswer: 0,
+                explanation: "Kalimat yang diperbaiki menggunakan struktur paralel dan menghilangkan pengulangan kata 'lalu' yang tidak perlu."
+            },
+            {
+                id: 9,
+                question: "Kalimat yang tidak efektif karena tidak memiliki subjek adalah...",
+                options: [
+                    "Mereka sedang bermain bola di lapangan.",
+                    "Hujan turun dengan sangat deras.",
+                    "Sedang menonton televisi di ruang tamu.",
+                    "Kucing itu sedang tidur di sofa.",
+                    "Ibu sedang memasak di dapur."
+                ],
+                correctAnswer: 2,
+                explanation: "Kalimat 'Sedang menonton televisi di ruang tamu' tidak memiliki subjek sehingga tidak efektif."
+            },
+            {
+                id: 10,
+                question: "Perbaikan kalimat 'Dia suka berenang di kolam renang yang besar dan luas' yang paling tepat adalah...",
+                options: [
+                    "Dia suka berenang di kolam renang yang besar.",
+                    "Dia suka berenang di kolam renang yang luas.",
+                    "Dia suka berenang di kolam renang.",
+                    "Dia suka berenang di kolam renang yang besar dan indah.",
+                    "Dia suka berenang di kolam renang yang luas dan dalam."
+                ],
+                correctAnswer: 2,
+                explanation: "Kalimat yang diperbaiki menghilangkan redundansi antara 'besar' dan 'luas' yang memiliki makna serupa."
+            },
+            {
+                id: 11,
+                question: "Kalimat yang tidak efektif karena tidak memiliki predikat adalah...",
+                options: [
+                    "Anak-anak di taman bermain.",
+                    "Anak-anak sedang bermain di taman.",
+                    "Di taman, anak-anak sedang bermain.",
+                    "Anak-anak bermain di taman.",
+                    "Taman itu dipenuhi anak-anak yang bermain."
+                ],
+                correctAnswer: 0,
+                explanation: "Kalimat 'Anak-anak di taman bermain' tidak memiliki predikat yang jelas sehingga tidak efektif."
+            },
+            {
+                id: 12,
+                question: "Perbaikan kalimat 'Dia pergi ke sekolah dengan naik sepeda' yang paling tepat adalah...",
+                options: [
+                    "Dia pergi ke sekolah dengan sepeda.",
+                    "Dia pergi ke sekolah naik sepeda.",
+                    "Dia pergi ke sekolah menggunakan sepeda.",
+                    "Dia bersepeda ke sekolah.",
+                    "Semua jawaban benar."
+                ],
+                correctAnswer: 4,
+                explanation: "Semua pilihan merupakan perbaikan yang efektif karena menghilangkan redundansi kata 'dengan' dan 'naik' yang tidak perlu digunakan bersamaan."
+            },
+            {
+                id: 13,
+                question: "Kalimat yang tidak efektif karena tidak paralel adalah...",
+                options: [
+                    "Dia suka membaca, menulis, dan menggambar.",
+                    "Hobi saya adalah berenang, berlari, dan bersepeda.",
+                    "Dia dapat bermain piano, biola, dan menyanyi.",
+                    "Anak itu suka makan, minum, dan tidur.",
+                    "Saya pergi ke pasar, membeli sayur, dan pulang."
+                ],
+                correctAnswer: 2,
+                explanation: "Kalimat 'Dia dapat bermain piano, biola, dan menyanyi' tidak paralel karena 'bermain piano', 'biola' (tanpa bermain), dan 'menyanyi' tidak memiliki struktur yang sama."
+            },
+            {
+                id: 14,
+                question: "Perbaikan kalimat 'Buku itu dibaca oleh saya dengan sangat teliti' yang paling tepat adalah...",
+                options: [
+                    "Saya membaca buku itu dengan sangat teliti.",
+                    "Saya membaca buku itu teliti.",
+                    "Saya sangat teliti membaca buku itu.",
+                    "Buku itu saya baca dengan sangat teliti.",
+                    "Saya dengan sangat teliti membaca buku itu."
+                ],
+                correctAnswer: 0,
+                explanation: "Kalimat yang diperbaiki menggunakan kalimat aktif yang lebih efektif dan sesuai dengan kaidah bahasa Indonesia."
+            },
+            {
+                id: 15,
+                question: "Kalimat yang tidak efektif karena tidak logis adalah...",
+                options: [
+                    "Dia bangun pagi-pagi sekali untuk berolahraga.",
+                    "Matahari terbit dari arah barat.",
+                    "Anak itu menangis karena kehilangan mainannya.",
+                    "Ibu pergi ke pasar untuk membeli kebutuhan rumah tangga.",
+                    "Kami akan pergi ke pantai besok pagi."
+                ],
+                correctAnswer: 1,
+                explanation: "Kalimat 'Matahari terbit dari arah barat' tidak logis karena secara ilmiah matahari terbit dari arah timur."
+            },
+            {
+                id: 16,
+                question: "Perbaikan kalimat 'Dia sedang duduk di kursi yang berwarna merah' yang paling tepat adalah...",
+                options: [
+                    "Dia sedang duduk di kursi merah.",
+                    "Dia sedang duduk di kursi yang merah.",
+                    "Dia sedang duduk di kursi berwarna merah.",
+                    "Dia sedang duduk di kursi, kursi itu berwarna merah.",
+                    "Dia sedang duduk di kursi. Kursi itu berwarna merah."
+                ],
+                correctAnswer: 0,
+                explanation: "Kalimat yang diperbaiki lebih efektif karena menghilangkan kata 'yang berwarna' yang tidak perlu dan mencapai kehematan."
+            },
+            {
+                id: 17,
+                question: "Kalimat yang tidak efektif karena tidak memiliki kesatuan gagasan adalah...",
+                options: [
+                    "Saya suka makan nasi goreng dan mie ayam.",
+                    "Hujan turun dengan lebatnya, sehingga jalan menjadi basah.",
+                    "Dia pergi ke sekolah dengan mengendarai sepeda.",
+                    "Anjing itu menggonggong keras di malam hari.",
+                    "Ibu sedang menyiapkan makan malam untuk keluarga."
+                ],
+                correctAnswer: 1,
+                explanation: "Kalimat 'Hujan turun dengan lebatnya, sehingga jalan menjadi basah' tidak memiliki kesatuan gagasan karena hubungan sebab-akibatnya tidak logis (hujan lebat tidak selalu membuat jalan basah, karena jalan memang akan basah jika terkena hujan)."
+            },
+            {
+                id: 18,
+                question: "Perbaikan kalimat 'Dia memakai baju berwarna biru dan celana panjang berwarna hitam' yang paling tepat adalah...",
+                options: [
+                    "Dia memakai baju biru dan celana panjang hitam.",
+                    "Dia memakai baju berwarna biru dan celana panjang hitam.",
+                    "Dia memakai baju biru dan celana hitam panjang.",
+                    "Dia memakai baju biru dan celana hitam.",
+                    "Dia memakai baju dan celana, baju berwarna biru dan celana hitam."
+                ],
+                correctAnswer: 0,
+                explanation: "Kalimat yang diperbaiki lebih efektif karena menghilangkan kata 'berwarna' yang berlebihan dan mencapai kehematan."
+            },
+            {
+                id: 19,
+                question: "Kalimat yang tidak efektif karena tidak padu adalah...",
+                options: [
+                    "Dia berlari dengan cepat sekali.",
+                    "Mobil itu berwarna merah cerah.",
+                    "Anak itu menangis dengan keras sekali.",
+                    "Dia datang terlambat sekali.",
+                    "Pria itu tinggi dan jangkung."
+                ],
+                correctAnswer: 4,
+                explanation: "Kalimat 'Pria itu tinggi dan jangkung' tidak padu karena kata 'tinggi' dan 'jangkung' memiliki makna yang sama sehingga redundan."
+            },
+            {
+                id: 20,
+                question: "Perbaikan kalimat 'Setelah pulang sekolah, lalu saya langsung mengerjakan PR' yang paling tepat adalah...",
+                options: [
+                    "Setelah pulang sekolah, saya langsung mengerjakan PR.",
+                    "Saya pulang sekolah, lalu langsung mengerjakan PR.",
+                    "Setelah saya pulang sekolah, lalu langsung mengerjakan PR.",
+                    "Saya langsung mengerjakan PR setelah pulang sekolah.",
+                    "Setelah pulang sekolah, kemudian saya langsung mengerjakan PR."
+                ],
+                correctAnswer: 0,
+                explanation: "Kalimat yang diperbaiki menghilangkan kata 'lalu' yang berlebihan setelah kata penghubung 'setelah' untuk mencapai kehematan."
+            }
+        ];
+
+        // Variabel global
+        let currentQuestionIndex = 0;
+        let userAnswers = [];
+        let shuffledQuestions = [];
+        let timeLeft = 600; // 10 menit dalam detik
+        let timerInterval;
+        let userName = '';
+
+        // DOM Elements
+        const loginPage = document.getElementById('loginPage');
+        const quizPage = document.getElementById('quizPage');
+        const resultPage = document.getElementById('resultPage');
+        const loginForm = document.getElementById('loginForm');
+        const errorMessage = document.getElementById('errorMessage');
+        const timerElement = document.getElementById('timer');
+        const timerContainer = document.getElementById('timerContainer');
+        const questionContent = document.getElementById('questionContent');
+        const optionsContainer = document.getElementById('optionsContainer');
+        const currentQuestionNumber = document.getElementById('currentQuestionNumber');
+        const answeredCount = document.getElementById('answeredCount');
+        const prevButton = document.getElementById('prevButton');
+        const nextButton = document.getElementById('nextButton');
+        const finishQuiz = document.getElementById('finishQuiz');
+        const questionNavigation = document.getElementById('questionNavigation');
+        const userNameElement = document.getElementById('userName');
+        const resultName = document.getElementById('resultName');
+        const scoreResult = document.getElementById('scoreResult');
+        const restartQuiz = document.getElementById('restartQuiz');
+
+        // Event Listeners
+        loginForm.addEventListener('submit', handleLogin);
+        prevButton.addEventListener('click', goToPreviousQuestion);
+        nextButton.addEventListener('click', goToNextQuestion);
+        finishQuiz.addEventListener('click', finishQuizHandler);
+        restartQuiz.addEventListener('click', restartQuizHandler);
+
+        // Fungsi untuk menangani login
+        function handleLogin(e) {
+            e.preventDefault();
+            
+            const fullName = document.getElementById('fullName').value;
+            const token = document.getElementById('token').value;
+            
+            if (token !== 'EFEKTIFOKE') {
+                errorMessage.textContent = 'Token ujian tidak valid!';
+                errorMessage.classList.remove('hidden');
+                return;
+            }
+            
+            userName = fullName;
+            userNameElement.textContent = fullName;
+            
+            // Acak soal
+            shuffledQuestions = [...questions];
+            shuffleArray(shuffledQuestions);
+            
+            // Inisialisasi jawaban pengguna
+            userAnswers = new Array(shuffledQuestions.length).fill(-1);
+            
+            // Tampilkan halaman kuis
+            loginPage.classList.add('hidden');
+            quizPage.classList.remove('hidden');
+            
+            // Inisialisasi navigasi soal
+            initializeQuestionNavigation();
+            
+            // Tampilkan soal pertama
+            displayQuestion(0);
+            
+            // Mulai timer
+            startTimer();
+        }
+
+        // Fungsi untuk mengacak array
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        // Fungsi untuk mengacak opsi jawaban
+        function shuffleOptions(question) {
+            const options = [...question.options];
+            const correctAnswerText = options[question.correctAnswer];
+            
+            shuffleArray(options);
+            
+            const newCorrectAnswer = options.indexOf(correctAnswerText);
+            
+            return {
+                ...question,
+                options: options,
+                correctAnswer: newCorrectAnswer
+            };
+        }
+
+        // Fungsi untuk inisialisasi navigasi soal
+        function initializeQuestionNavigation() {
+            questionNavigation.innerHTML = '';
+            
+            for (let i = 0; i < shuffledQuestions.length; i++) {
+                const navButton = document.createElement('button');
+                navButton.className = 'question-nav w-10 h-10 rounded-lg border border-gray-300 flex items-center justify-center text-sm font-medium';
+                navButton.textContent = i + 1;
+                navButton.addEventListener('click', () => goToQuestion(i));
+                
+                questionNavigation.appendChild(navButton);
+            }
+        }
+
+        // Fungsi untuk menampilkan soal
+        function displayQuestion(index) {
+            currentQuestionIndex = index;
+            
+            // Acak opsi jawaban
+            const question = shuffleOptions(shuffledQuestions[index]);
+            
+            // Update nomor soal
+            currentQuestionNumber.textContent = index + 1;
+            
+            // Update jumlah soal terjawab
+            const answered = userAnswers.filter(answer => answer !== -1).length;
+            answeredCount.textContent = answered;
+            
+            // Tampilkan pertanyaan
+            questionContent.innerHTML = `
+                <h3 class="text-lg font-medium text-gray-800 mb-4">${question.question}</h3>
+            `;
+            
+            // Tampilkan opsi jawaban
+            optionsContainer.innerHTML = '';
+            question.options.forEach((option, optionIndex) => {
+                const optionCard = document.createElement('div');
+                optionCard.className = `option-card p-4 border border-gray-300 rounded-lg cursor-pointer ${userAnswers[index] === optionIndex ? 'selected-option' : ''}`;
+                optionCard.innerHTML = `
+                    <div class="flex items-center">
+                        <div class="w-6 h-6 rounded-full border border-gray-400 flex items-center justify-center mr-3 ${userAnswers[index] === optionIndex ? 'bg-indigo-600 border-indigo-600' : ''}">
+                            ${userAnswers[index] === optionIndex ? '<i class="fas fa-check text-white text-xs"></i>' : ''}
+                        </div>
+                        <span class="text-gray-700">${option}</span>
+                    </div>
+                `;
+                
+                optionCard.addEventListener('click', () => selectOption(index, optionIndex));
+                optionsContainer.appendChild(optionCard);
+            });
+            
+            // Update navigasi
+            updateNavigation();
+            
+            // Update tombol navigasi
+            prevButton.disabled = index === 0;
+            nextButton.disabled = index === shuffledQuestions.length - 1;
+        }
+
+        // Fungsi untuk memilih opsi jawaban
+        function selectOption(questionIndex, optionIndex) {
+            userAnswers[questionIndex] = optionIndex;
+            displayQuestion(questionIndex);
+        }
+
+        // Fungsi untuk memperbarui navigasi
+        function updateNavigation() {
+            const navButtons = questionNavigation.querySelectorAll('.question-nav');
+            
+            navButtons.forEach((button, index) => {
+                button.classList.remove('active', 'answered');
+                
+                if (index === currentQuestionIndex) {
+                    button.classList.add('active');
+                } else if (userAnswers[index] !== -1) {
+                    button.classList.add('answered');
+                }
+            });
+        }
+
+        // Fungsi untuk pergi ke soal tertentu
+        function goToQuestion(index) {
+            displayQuestion(index);
+        }
+
+        // Fungsi untuk pergi ke soal sebelumnya
+        function goToPreviousQuestion() {
+            if (currentQuestionIndex > 0) {
+                displayQuestion(currentQuestionIndex - 1);
+            }
+        }
+
+        // Fungsi untuk pergi ke soal berikutnya
+        function goToNextQuestion() {
+            if (currentQuestionIndex < shuffledQuestions.length - 1) {
+                displayQuestion(currentQuestionIndex + 1);
+            }
+        }
+
+        // Fungsi untuk memulai timer
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                
+                timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                // Peringatan jika waktu kurang dari 1 menit
+                if (timeLeft < 60) {
+                    timerContainer.classList.add('timer-warning', 'text-red-600');
+                }
+                
+                // Hentikan kuis jika waktu habis
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    finishQuizHandler();
+                }
+            }, 1000);
+        }
+
+        // Fungsi untuk menyelesaikan kuis
+        function finishQuizHandler() {
+            // Konfirmasi sebelum menyelesaikan
+            const unansweredCount = userAnswers.filter(answer => answer === -1).length;
+            
+            if (unansweredCount > 0) {
+                if (!confirm(`Anda memiliki ${unansweredCount} soal yang belum dijawab. Apakah Anda yakin ingin menyelesaikan kuis?`)) {
+                    return;
+                }
+            }
+            
+            // Hentikan timer
+            clearInterval(timerInterval);
+            
+            // Hitung skor
+            let correctAnswers = 0;
+            
+            for (let i = 0; i < shuffledQuestions.length; i++) {
+                if (userAnswers[i] === shuffledQuestions[i].correctAnswer) {
+                    correctAnswers++;
+                }
+            }
+            
+            const score = Math.round((correctAnswers / shuffledQuestions.length) * 100);
+            
+            // Tampilkan halaman hasil
+            quizPage.classList.add('hidden');
+            resultPage.classList.remove('hidden');
+            
+            resultName.textContent = userName;
+            scoreResult.textContent = `${score}% (${correctAnswers}/${shuffledQuestions.length})`;
+        }
+
+        // Fungsi untuk memulai ulang kuis
+        function restartQuizHandler() {
+            // Reset variabel
+            currentQuestionIndex = 0;
+            userAnswers = [];
+            timeLeft = 600;
+            
+            // Reset tampilan
+            resultPage.classList.add('hidden');
+            loginPage.classList.remove('hidden');
+            
+            // Reset form
+            loginForm.reset();
+            errorMessage.classList.add('hidden');
+            
+            // Reset timer
+            timerContainer.classList.remove('timer-warning', 'text-red-600');
+        }
+    </script>
+</body>
+</html>
