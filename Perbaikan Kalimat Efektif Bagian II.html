@@ -518,6 +518,21 @@
             // Acak soal
             shuffledQuestions = [...questions];
             shuffleArray(shuffledQuestions);
+            for (let i = 0; i < shuffledQuestions.length; i++) {
+                const question = shuffledQuestions[i];
+                const options = [...question.options];
+                const correctAnswerText = options[question.correctAnswer];
+
+                shuffleArray(options);
+
+                const newCorrectAnswer = options.indexOf(correctAnswerText);
+
+                shuffledQuestions[i] = {
+                    ...question,
+                    options: options,
+                    correctAnswer: newCorrectAnswer
+                };
+            }
             
             // Inisialisasi jawaban pengguna
             userAnswers = new Array(shuffledQuestions.length).fill(-1);
@@ -579,8 +594,8 @@
             currentQuestionIndex = index;
             
             // Acak opsi jawaban
-            const question = shuffleOptions(shuffledQuestions[index]);
-            
+            //const question = shuffleOptions(shuffledQuestions[index]);
+            const question = shuffledQuestions[index];
             // Update nomor soal
             currentQuestionNumber.textContent = index + 1;
             
@@ -735,4 +750,5 @@
         }
     </script>
 </body>
+
 </html>
