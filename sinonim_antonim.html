@@ -371,17 +371,18 @@
         {q:'Antonim "valid" adalah …',o:['absah','batal','resmi','tepat'],a:1},
     ].map(x=>({type:'antonim', q:x.q, options:x.o, answer:x.a}));
 
-
+    S_ANTONIM = shuffle(ANTONIM)
+    S_SINONIM = shuffle(SINONIM)
     // Validasi jumlah
     if(SINONIM.length!==90||ANTONIM.length!==90){
       console.warn('Jumlah soal tidak 90/90:', SINONIM.length, ANTONIM.length);
     }
 
-    /* Gabung & acak
+    //Gabung & acak
     function shuffleOptions(q){  
-        let opts = q.o.map((opt, i) => ({opt, i}));
-        opts = shuffle(opts); // pake fungsi shuffle yang sudah kamu punya
-        let newAnswer = opts.findIndex(o => o.i === q.a);
+        let opts = q.options.map((opt, i) => ({opt, i}));
+        opts = shuffle(opts); 
+        let newAnswer = opts.findIndex(o => o.i === q.answer);
         return {
             ...q,
             o: opts.map(o => o.opt),
@@ -389,9 +390,9 @@
   };
   
 }
-*/
-   // let QUESTIONS = [...SINONIM, ...ANTONIM].map((q,i)=>({id:i+1, ...shuffleOptions(q)}));
-    let QUESTIONS = [...SINONIM, ...ANTONIM].map((q,i)=>({id:i+1, ...q }));
+//*/
+    let QUESTIONS = [...S_SINONIM, ...S_ANTONIM].map((q,i)=>({id:i+1, ...shuffleOptions(q)}));
+    //let QUESTIONS = [...SINONIM, ...ANTONIM].map((q,i)=>({id:i+1, ...q }));
     // State
     let state = {
       user:null,
@@ -575,3 +576,4 @@
   </script>
 </body>
 </html>
+
