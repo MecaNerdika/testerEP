@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Pancasila</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #1a2a6c);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 900px;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            padding: 30px;
+            margin: 20px;
+        }
+        
+        .welcome-page {
+            text-align: center;
+            padding: 40px 20px;
+        }
+        
+        .welcome-page h1 {
+            color: #1a2a6c;
+            margin-bottom: 30px;
+            font-weight: bold;
+        }
+        
+        .welcome-page p {
+            font-size: 18px;
+            margin-bottom: 30px;
+            color: #555;
+        }
+        
+        .token-input {
+            margin: 20px auto;
+            max-width: 300px;
+        }
+        
+        .token-input input {
+            text-align: center;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+        
+        .btn-start {
+            background-color: #1a2a6c;
+            color: white;
+            padding: 12px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-start:hover {
+            background-color: #0d1a4a;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 15px;
+        }
+        
+        .quiz-title {
+            color: #1a2a6c;
+            font-weight: bold;
+            margin: 0;
+        }
+        
+        .timer {
+            font-size: 24px;
+            font-weight: bold;
+            color: #dc3545;
+            display: flex;
+            align-items: center;
+        }
+        
+        .timer i {
+            margin-right: 8px;
+        }
+        
+        .question-container {
+            margin-bottom: 30px;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #f8f9fa;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .question-number {
+            color: #1a2a6c;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .question-text {
+            font-size: 18px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        
+        .options-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+        
+        .option {
+            padding: 12px 20px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .option:hover {
+            border-color: #1a2a6c;
+            background-color: #f0f4ff;
+        }
+        
+        .option.selected {
+            border-color: #1a2a6c;
+            background-color: #e6f0ff;
+        }
+        
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        
+        .btn-nav {
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-weight: bold;
+            border: none;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-prev {
+            background-color: #6c757d;
+            color: white;
+        }
+        
+        .btn-prev:hover {
+            background-color: #5a6268;
+        }
+        
+        .btn-next, .btn-submit {
+            background-color: #1a2a6c;
+            color: white;
+        }
+        
+        .btn-next:hover, .btn-submit:hover {
+            background-color: #0d1a4a;
+        }
+        
+        .progress-container {
+            margin-bottom: 30px;
+        }
+        
+        .progress {
+            height: 10px;
+            border-radius: 5px;
+        }
+        
+        .result-container {
+            text-align: center;
+            padding: 30px;
+        }
+        
+        .result-title {
+            color: #1a2a6c;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        
+        .score-display {
+            font-size: 48px;
+            font-weight: bold;
+            color: #1a2a6c;
+            margin: 20px 0;
+        }
+        
+        .score-text {
+            font-size: 24px;
+            margin-bottom: 30px;
+        }
+        
+        .btn-restart {
+            background-color: #28a745;
+            color: white;
+            padding: 12px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-restart:hover {
+            background-color: #218838;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .error-message {
+            color: #dc3545;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Welcome Page -->
+        <div id="welcomePage" class="welcome-page">
+            <h1>KUIS FUNGSI DAN KEDUDUKAN PANCASILA</h1>
+            <p>Uji pengetahuan Anda tentang Pancasila, fungsi, kedudukan, dan implementasinya dalam kehidupan sehari-hari</p>
+            <div class="token-input">
+                <label for="tokenInput" class="form-label">Masukkan Token Ujian</label>
+                <input type="text" class="form-control" id="tokenInput" placeholder="Token">
+                <div id="tokenError" class="error-message hidden">Token tidak valid!</div>
+            </div>
+            <button id="startBtn" class="btn-start">Mulai Kuis</button>
+        </div>
+        
+        <!-- Quiz Page -->
+        <div id="quizPage" class="hidden">
+            <div class="quiz-header">
+                <h2 class="quiz-title">Kuis Pancasila</h2>
+                <div class="timer">
+                    <i class="fas fa-clock"></i>
+                    <span id="timeDisplay">10:00</span>
+                </div>
+            </div>
+            
+            <div class="progress-container">
+                <div class="progress">
+                    <div id="progressBar" class="progress-bar bg-primary" role="progressbar" style="width: 5%"></div>
+                </div>
+            </div>
+            
+            <div id="questionContainer" class="question-container">
+                <!-- Questions will be dynamically inserted here -->
+            </div>
+            
+            <div class="navigation">
+                <button id="prevBtn" class="btn-nav btn-prev hidden">Sebelumnya</button>
+                <button id="nextBtn" class="btn-nav btn-next">Selanjutnya</button>
+                <button id="submitBtn" class="btn-nav btn-submit hidden">Selesai</button>
+            </div>
+        </div>
+        
+        <!-- Result Page -->
+        <div id="resultPage" class="result-container hidden">
+            <h2 class="result-title">HASIL KUIS</h2>
+            <div class="score-display" id="scoreDisplay">0</div>
+            <p class="score-text">dari 100 poin</p>
+            <button id="restartBtn" class="btn-restart">Ulangi Kuis</button>
+        </div>
+    </div>
+
+    <script>
+        // Quiz data
+        const quizData = [
+            {
+                question: "Apa fungsi utama Pancasila sebagai dasar negara Republik Indonesia?",
+                options: [
+                    "Sebagai lambang negara saja",
+                    "Sebagai ideologi negara yang mempersatukan bangsa",
+                    "Sebagai filosofi hidup masyarakat",
+                    "Sebagai alat politik pemerintah",
+                    "Sebagai simbol keagamaan"
+                ],
+                correctAnswer: 1
+            },
+            {
+                question: "Pancasila sebagai dasar negara memiliki kedudukan yang tertinggi dalam sistem hukum Indonesia. Hal ini diatur dalam...",
+                options: [
+                    "Pembukaan UUD 1945",
+                    "Batang Tubuh UUD 1945",
+                    "Ketetapan MPR",
+                    "Peraturan Pemerintah",
+                    "Undang-Undang Dasar Negara Lain"
+                ],
+                correctAnswer: 0
+            },
+            {
+                question: "Implementasi sila pertama Pancasila dalam kehidupan sehari-hari adalah...",
+                options: [
+                    "Mengikuti upacara keagamaan sesuai keyakinan",
+                    "Menghormati perbedaan agama",
+                    "Mengakui keberadaan Tuhan Yang Maha Esa",
+                    "Melaksanakan ibadah sesuai agama masing-masing",
+                    "Semua jawaban benar"
+                ],
+                correctAnswer: 4
+            },
+            {
+                question: "Bagaimana cara mengimplementasikan sila kedua Pancasila dalam lingkungan masyarakat?",
+                options: [
+                    "Mengutamakan kepentingan golongan",
+                    "Menghargai perbedaan pendapat",
+                    "Saling menghormati antar sesama manusia",
+                    "Mengadakan kerja bakti",
+                    "Membentuk organisasi sosial"
+                ],
+                correctAnswer: 2
+            },
+            {
+                question: "Sila ketiga Pancasila menekankan pentingnya...",
+                options: [
+                    "Persatuan dalam keberagaman",
+                    "Kebebasan individu",
+                    "Kekuasaan negara",
+                    "Keadilan sosial",
+                    "Kesetaraan gender"
+                ],
+                correctAnswer: 0
+            },
+            {
+                question: "Contoh implementasi sila keempat dalam kehidupan berbangsa dan bernegara adalah...",
+                options: [
+                    "Mengikuti pemilu umum",
+                    "Membayar pajak tepat waktu",
+                    "Musyawarah untuk mencapai mufakat",
+                    "Menghormati hak asasi manusia",
+                    "Menjaga kelestarian lingkungan"
+                ],
+                correctAnswer: 2
+            },
+            {
+                question: "Sila kelima Pancasila menekankan pentingnya...",
+                options: [
+                    "Kesetaraan hak dan kewajiban",
+                    "Keadilan sosial bagi seluruh rakyat Indonesia",
+                    "Pemerataan pembangunan",
+                    "Kesejahteraan sosial",
+                    "Semua jawaban benar"
+                ],
+                correctAnswer: 4
+            },
+            {
+                question: "Pancasila sebagai pandangan hidup bangsa berfungsi sebagai...",
+                options: [
+                    "Alat pemersatu bangsa",
+                    "Pedoman dalam bertingkah laku",
+                    "Dasar negara",
+                    "Ideologi terbuka",
+                    "Semua jawaban benar"
+                ],
+                correctAnswer: 4
+            },
+            {
+                question: "Nilai-nilai Pancasila dapat diimplementasikan dalam pendidikan melalui...",
+                options: [
+                    "Pembelajaran mata pelajaran PPKn",
+                    "Kegiatan ekstrakurikuler",
+                    "Pembiasaan karakter di sekolah",
+                    "Kerjasama antara sekolah dan orang tua",
+                    "Semua jawaban benar"
+                ],
+                correctAnswer: 4
+            },
+            {
+                question: "Bagaimana cara mengimplementasikan nilai Pancasila dalam dunia kerja?",
+                options: [
+                    "Mengutamakan kejujuran dan integritas",
+                    "Menghormati rekan kerja",
+                    "Bekerja keras dan profesional",
+                    "Mengutamakan kepentingan bersama",
+                    "Semua jawaban benar"
+                ],
+                correctAnswer: 4
+            },
+            {
+                question: "Pancasila sebagai ideologi terbuka berarti...",
+                options: [
+                    "Dapat diubah sesuai zaman",
+                    "Dapat disesuaikan dengan dinamika masyarakat",
+                    "Mengutamakan kebebasan individu",
+                    "Mengakui keberagaman pandangan",
+                    "Semua jawaban benar"
+                ],
+                correctAnswer: 1
+            },
+            {
+                question: "Implementasi sila pertama dalam konteks negara kesatuan Republik Indonesia adalah...",
+                options: [
+                    "Menjadikan agama tertentu sebagai agama negara",
+                    "Menjamin kebebasan beragama",
+                    "Mewajibkan semua warga negara beragama",
+                    "Mengakui enam agama resmi",
+                    "Memberikan dukungan finansial kepada rumah ibadah"
+                ],
+                correctAnswer: 1
+            },
+            {
+                question: "Contoh implementasi sila kedua di lingkungan keluarga adalah...",
+                options: [
+                    "Mengutamakan pendapat orang tua",
+                    "Menghargai pendapat anggota keluarga lain",
+                    "Memberikan kebebasan kepada anak",
+                    "Mengadakan rapat keluarga",
+                    "Membuat aturan keluarga"
+                ],
+                correctAnswer: 1
+            },
+            {
+                question: "Bagaimana cara menerapkan sila ketiga dalam kehidupan bermasyarakat?",
+                options: [
+                    "Menghindari konflik",
+                    "Mengutamakan persatuan di atas perbedaan",
+                    "Mengadakan acara kemasyarakatan",
+                    "Membentuk organisasi kemasyarakatan",
+                    "Mengikuti kegiatan sosial"
+                ],
+                correctAnswer: 1
+            },
+            {
+                question: "Penerapan sila keempat dalam pemerintahan dapat dilihat dari...",
+                options: [
+                    "Sistem pemilihan umum",
+                    "Musyawarah dalam pengambilan keputusan",
+                    "Keterbukaan informasi publik",
+                    "Partisipasi masyarakat",
+                    "Semua jawaban benar"
+                ],
+                correctAnswer: 4
+            },
+            {
+                question: "Contoh implementasi sila kelima dalam kebijakan pemerintah adalah...",
+                options: [
+                    "Program pemerataan pembangunan",
+                    "Bantuan sosial untuk masyarakat miskin",
+                    "Pendidikan gratis untuk semua",
+                    "Pelayanan kesehatan yang terjangkau",
+                    "Semua jawaban benar"
+                ],
+                correctAnswer: 4
+            },
+            {
+                question: "Pancasila memiliki peranan penting dalam menjaga keutuhan negara karena...",
+                options: [
+                    "Diakui oleh seluruh rakyat Indonesia",
+                    "Menjadi dasar filosofis negara",
+                    "Mengakui keberagaman bangsa",
+                    "Menjadi pemersatu perbedaan",
+                    "Semua jawaban benar"
+                ],
+                correctAnswer: 4
+            },
+            {
+                question: "Implementasi nilai Pancasila dalam dunia pendidikan karakter bertujuan untuk...",
+                options: [
+                    "Membentuk siswa yang berakhlak mulia",
+                    "Mencetak generasi yang cinta tanah air",
+                    "Mengembangkan sikap toleransi",
+                    "Membangun jiwa nasionalisme",
+                    "Semua jawaban benar"
+                ],
+                correctAnswer: 4
+            },
+            {
+                question: "Bagaimana cara mengimplementasikan Pancasila dalam menghadapi globalisasi?",
+                options: [
+                    "Menolak budaya asing",
+                    "Mengambil nilai-nilai positif budaya asing",
+                    "Mempertahankan identitas bangsa",
+                    "Mengembangkan budaya lokal",
+                    "Semua jawaban benar kecuali a"
+                ],
+                correctAnswer: 4
+            },
+            {
+                question: "Pancasila sebagai dasar negara memegang peranan penting dalam...",
+                options: [
+                    "Penyelenggaraan pemerintahan",
+                    "Kehidupan bermasyarakat",
+                    "Hubungan internasional",
+                    "Pembangunan nasional",
+                    "Semua jawaban benar"
+                ],
+                correctAnswer: 4
+            }
+        ];
+        
+        // Quiz state
+        let currentQuestion = 0;
+        let userAnswers = new Array(quizData.length).fill(-1);
+        let timeLeft = 600; // 10 minutes in seconds
+        let timerInterval;
+        
+        // DOM elements
+        const welcomePage = document.getElementById('welcomePage');
+        const quizPage = document.getElementById('quizPage');
+        const resultPage = document.getElementById('resultPage');
+        const tokenInput = document.getElementById('tokenInput');
+        const tokenError = document.getElementById('tokenError');
+        const startBtn = document.getElementById('startBtn');
+        const timeDisplay = document.getElementById('timeDisplay');
+        const progressBar = document.getElementById('progressBar');
+        const questionContainer = document.getElementById('questionContainer');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const submitBtn = document.getElementById('submitBtn');
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        const restartBtn = document.getElementById('restartBtn');
+        
+        // Event listeners
+        startBtn.addEventListener('click', startQuiz);
+        prevBtn.addEventListener('click', showPreviousQuestion);
+        nextBtn.addEventListener('click', showNextQuestion);
+        submitBtn.addEventListener('click', finishQuiz);
+        restartBtn.addEventListener('click', restartQuiz);
+        
+        // Functions
+        function startQuiz() {
+            const token = tokenInput.value.trim();
+            
+            if (token !== 'TWK123') {
+                tokenError.classList.remove('hidden');
+                return;
+            }
+            
+            welcomePage.classList.add('hidden');
+            quizPage.classList.remove('hidden');
+            
+            startTimer();
+            showQuestion();
+            updateNavigation();
+        }
+        
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    finishQuiz();
+                }
+            }, 1000);
+        }
+        
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timeDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            if (timeLeft <= 60) {
+                timeDisplay.style.color = '#dc3545';
+            }
+        }
+        
+        function showQuestion() {
+            const question = quizData[currentQuestion];
+            const progress = ((currentQuestion + 1) / quizData.length) * 100;
+            
+            progressBar.style.width = `${progress}%`;
+            
+            questionContainer.innerHTML = `
+                <div class="question-number">Pertanyaan ${currentQuestion + 1} dari ${quizData.length}</div>
+                <div class="question-text">${question.question}</div>
+                <div class="options-container">
+                    ${question.options.map((option, index) => `
+                        <div class="option ${userAnswers[currentQuestion] === index ? 'selected' : ''}" data-index="${index}">
+                            ${String.fromCharCode(65 + index)}. ${option}
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            
+            // Add event listeners to options
+            const options = questionContainer.querySelectorAll('.option');
+            options.forEach(option => {
+                option.addEventListener('click', selectOption);
+            });
+        }
+        
+        function selectOption(e) {
+            const selectedOption = e.target;
+            const index = parseInt(selectedOption.dataset.index);
+            
+            // Update visual selection
+            const options = questionContainer.querySelectorAll('.option');
+            options.forEach(option => option.classList.remove('selected'));
+            selectedOption.classList.add('selected');
+            
+            // Save answer
+            userAnswers[currentQuestion] = index;
+        }
+        
+        function updateNavigation() {
+            prevBtn.classList.toggle('hidden', currentQuestion === 0);
+            nextBtn.classList.toggle('hidden', currentQuestion === quizData.length - 1);
+            submitBtn.classList.toggle('hidden', currentQuestion !== quizData.length - 1);
+        }
+        
+        function showPreviousQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                showQuestion();
+                updateNavigation();
+            }
+        }
+        
+        function showNextQuestion() {
+            if (currentQuestion < quizData.length - 1) {
+                currentQuestion++;
+                showQuestion();
+                updateNavigation();
+            }
+        }
+        
+        function finishQuiz() {
+            clearInterval(timerInterval);
+            
+            // Calculate score
+            let correctAnswers = 0;
+            for (let i = 0; i < quizData.length; i++) {
+                if (userAnswers[i] === quizData[i].correctAnswer) {
+                    correctAnswers++;
+                }
+            }
+            
+            const score = Math.round((correctAnswers / quizData.length) * 100);
+            
+            // Show result
+            quizPage.classList.add('hidden');
+            resultPage.classList.remove('hidden');
+            scoreDisplay.textContent = score;
+        }
+        
+        function restartQuiz() {
+            // Reset state
+            currentQuestion = 0;
+            userAnswers = new Array(quizData.length).fill(-1);
+            timeLeft = 600;
+            
+            // Reset UI
+            resultPage.classList.add('hidden');
+            welcomePage.classList.remove('hidden');
+            tokenInput.value = '';
+            tokenError.classList.add('hidden');
+            timeDisplay.style.color = '#dc3545';
+        }
+    </script>
+</body>
+</html>
