@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Pancasila - Dasar Negara, Pedoman Hidup, dan Jiwa Bangsa</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background-color: #c7001d;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .timer-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 15px 0;
+        }
+        
+        .timer {
+            background-color: #f8f9fa;
+            color: #c7001d;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: 600;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .quiz-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .question-container {
+            margin-bottom: 25px;
+        }
+        
+        .question {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .options {
+            display: grid;
+            gap: 10px;
+        }
+        
+        .option {
+            padding: 12px 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+        
+        .option:hover {
+            background-color: #e9ecef;
+        }
+        
+        .option.selected {
+            background-color: #e7f1fd;
+            border-color: #0d6efd;
+        }
+        
+        .submit-btn {
+            background-color: #c7001d;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 30px;
+            cursor: pointer;
+            display: block;
+            margin: 30px auto 0;
+            transition: all 0.3s ease;
+        }
+        
+        .submit-btn:hover {
+            background-color: #a5001a;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .result-container {
+            display: none;
+            text-align: center;
+            padding: 30px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .result-score {
+            font-size: 48px;
+            font-weight: 700;
+            color: #c7001d;
+            margin: 20px 0;
+        }
+        
+        .result-message {
+            font-size: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .restart-btn {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .restart-btn:hover {
+            background-color: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background-color: #c7001d;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .question-number {
+            font-size: 14px;
+            color: #6c757d;
+            margin-bottom: 5px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            header {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            .quiz-container {
+                padding: 20px;
+            }
+            
+            .question {
+                font-size: 16px;
+            }
+            
+            .option {
+                padding: 10px 12px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Kuis Pancasila</h1>
+            <p>Dasar Negara, Pedoman Hidup, dan Jiwa Bangsa</p>
+            <div class="timer-container">
+                <div class="timer" id="timer">10:00</div>
+            </div>
+        </header>
+        
+        <div class="quiz-container" id="quiz-container">
+            <div class="progress-bar">
+                <div class="progress" id="progress"></div>
+            </div>
+            
+            <form id="quiz-form">
+                <!-- Pertanyaan 1 -->
+                <div class="question-container">
+                    <div class="question-number">Pertanyaan 1 dari 20</div>
+                    <div class="question">1. Pancasila sebagai dasar negara memiliki fungsi sebagai...</div>
+                    <div class="options">
+                        <div class="option" data-question="0" data-value="A">A. Landasan hukum bagi negara dalam melaksanakan pemerintahan</div>
+                        <div class="option" data-question="0" data-value="B">B. Ideologi yang hanya berlaku dalam bidang politik</div>
+                        <div class="option" data-question="0" data-value="C">C. Aturan main dalam hubungan internasional</div>
+                        <div class="option" data-question="0" data-value="D">D. Pedoman dalam membuat undang-undang saja</div>
+                        <div class="option" data-question="0" data-value="E">E. Dasar filosofis bagi negara dalam mengatur kehidupan masyarakat</div>
+                    </div>
+                </div>
+                
+                <!-- Pertanyaan 2 -->
+                <div class="question-container">
+                    <div class="question-number">Pertanyaan 2 dari 20</div>
+                    <div class="question">2. Pancasila sebagai jiwa bangsa berarti...</div>
+                    <div class="options">
+                        <div class="option" data-question="1" data-value="A">A. Pancasila hanya dihafalkan oleh seluruh rakyat Indonesia</div>
+                        <div class="option" data-question="1" data-value="B">B. Pancasila menjadi karakter dan kepribadian bangsa Indonesia</div>
+                        <div class="option" data-question="1" data-value="C">C. Pancasila hanya berlaku bagi pejabat negara</div>
+                        <div class="option" data-question="1" data-value="D">D. Pancasila adalah simbol negara saja</div>
+                        <div class="option" data-question="1" data-value="E">E. Pancasila hanya dipelajari di sekolah</div>
+                    </div>
+                </div>
+                
+                <!-- Pertanyaan 3 -->
+                <div class="question-container">
+                    <div class="question-number">Pertanyaan 3 dari 20</div>
+                    <div class="question">3. Pengamalan sila pertama Pancasila dalam kehidupan sehari-hari adalah...</div>
+                    <div class="options">
+                        <div class="option" data-question="2" data-value="A">A. Membangun tempat ibadah yang megah</div>
+                        <div class="option" data-question="2" data-value="B">B. Menyembah Tuhan sesuai dengan keyakinan masing-masing</div>
+                        <div class="option" data-question="2" data-value="C">C. Meninggalkan ibadah demi pekerjaan</div>
+                        <div class="option" data-question="2" data-value="D">D. Memaksakan kehendak agama kepada orang lain</div>
+                        <div class="option" data-question="2" data-value="E">E. Tidak mengakui adanya Tuhan Yang Maha Esa</div>
+                    </div>
+                </div>
+                
+                <!-- Pertanyaan 4 -->
+                <div class="question-container">
+                    <div class="question-number">Pertanyaan 4 dari 20</div>
+                    <div class="question">4. Nilai-nilai Pancasila yang terkandung dalam kehidupan bermasyarakat, berbangsa, dan bernegara tercermin dalam...</div>
+                    <div class="options">
+                        <div class="option" data-question="3" data-value="A">A. Hanya dalam undang-undang dasar</div>
+                        <div class="option" data-question="3" data-value="B">B. Perilaku dan sikap sehari-hari warga negara</div>
+                        <div class="option" data-question="3" data-value="C">C. Hanya dalam pidato kenegaraan</div>
+                        <div class="option" data-question="3" data-value="D">D. Hanya dalam simbol negara</div>
+                        <div class="option" data-question="3" data-value="E">E. Hanya dalam doktrin militer</div>
+                    </div>
+                </div>
+                
+                <!-- Pertanyaan 5 -->
+                <div class="question-container">
+                    <div class="question-number">Pertanyaan 5 dari 20</div>
+                    <div class="question">5. Pancasila sebagai pedoman hidup bangsa berarti...</div>
+                    <div class="options">
+                        <div class="option" data-question="4" data-value="A">A. Pancasila hanya menjadi pegangan hidup bagi pejabat negara</div>
+                        <div class="option" data-question="4" data-value="B">B. Pancasila menjadi pegangan dalam menentukan arah kebijakan negara</div>
+                        <div class="option" data-question="4" data-value="C">C. Pancasila menjadi pegangan dalam kehidupan sehari-hari baik individu maupun kolektif</div>
+                        <div class="option" data-question="4" data-value="D">D. Pancasila hanya menjadi pegangan dalam bidang ekonomi</div>
+                        <div class="option" data-question="4" data-value="E">E. Pancasila hanya menjadi pegangan dalam bidang politik</div>
+                    </div>
+                </div>
+                
+                <!-- Pertanyaan 6 -->
+                <div class="question-container">
+                    <div class="question-number">Pertanyaan 6 dari 20</div>
+                    <div class="question">6. Pengamalan sila kedua Pancasila dalam kehidupan sehari-hari adalah...</div>
+                    <div class="options">
+                        <div class="option" data-question="5" data-value="A">A. Menghargai perbedaan suku, agama, ras, dan antargolongan</div>
+                        <div class="option" data-question="5" data-value="B">B. Memaksakan kehendak pribadi kepada orang lain</div>
+                        <div class="option" data-question="5" data-value="C">C. Memilih teman berdasarkan kesamaan suku</div>
+                        <div class="option" data-question="5" data-value="D">D. Menyendiri dan tidak mau bergaul dengan orang lain</div>
+                        <div class="option" data-question="5" data-value="E">E. Membentuk kelompok eksklusif dalam masyarakat</div>
+                    </div>
+                </div>
+                
+                <!-- Pertanyaan 7 -->
+                <div class="question-container">
+                    <div class="question-number">Pertanyaan 7 dari 20</div>
+                    <div class="question">7. Makna sila ketiga "Persatuan Indonesia" dalam kehidupan berbangsa dan bernegara adalah...</div>
+                    <div class="options">
+                        <div class="option" data-question="6" data-value="A">A. Mengutamakan kepentingan daerah di atas kepentingan nasional</div>
+                        <div class="option" data-question="6" data-value="B">B. Menjaga persatuan dan kesatuan bangsa di atas kepentingan pribadi atau golongan</div>
+                        <div class="option" data-question="6" data-value="C">C. Mengabaikan perbedaan budaya yang ada di Indonesia</div>
+                        <div class="option" data-question="6" data-value="D">D. Membentuk negara federal yang terpisah-pisah</div>
+                        <div class="option" data-question="6" data-value="E">E. Menyamaratakan semua budaya di Indonesia</div>
+                    </div>
+                </div>
+                
+                <!-- Pertanyaan 8 -->
+                <div class="question-container">
+                    <div class="question-number">Pertanyaan 8 dari 20</div>
+                    <div class="question">8. Pancasila sebagai dasar negara memiliki sifat...</div>
+                    <div class="options">
+                        <div class="option" data-question="7" data-value="A">A. Mutlak dan tidak dapat diubah</div>
+                        <div class="option" data-question="7" data-value="B">B. Fleksibel dan dapat disesuaikan dengan zaman</div>
+                        <div class="option" data-question="7" data-value="C">C. Hanya berlaku untuk generasi tertentu</div>
+                        <div class="option" data-question="7" data-value="D">D. Hanya berlaku di wilayah tertentu</div>
+                        <div class="option" data-question="7" data-value="E">E. Hanya berlaku dalam keadaan darurat</div>
+                    </div>
+                </div>
+                
+                <!-- Pertanyaan 9 -->
+                <div class="question-container">
+                    <div class="question-number">Pertanyaan 9 dari 20</div>
+                    <div class="question">9. Pengamalan sila keempat Pancasila dalam kehidupan sehari-hari adalah...</div>
+                    <div class="options">
+                        <div class="option" data-question="8" data-value="A">A. Mengutamakan kepentingan pribadi di atas kepentingan umum</div>
+                        <div class="option" data-question="8" data-value="B">B. Mengutamakan kepentingan umum di atas kepentingan pribadi atau golongan</div>
+                        <div class="option" data-question="8" data-value="C">C. Mengabaikan masalah yang dihadapi masyarakat</div>
+                        <div class="option" data-question="8" data-value="D">D. Tidak peduli dengan lingkungan sekitar</div>
+                        <div class="option" data-question="8" data-value="E">E. Menolak untuk membayar pajak</div>
+                    </div>
+                </div>
+                
+                <!-- Pertanyaan 10 -->
+                <div class="question-container">
+                    <div class="question-number">Pertanyaan 10 dari 20</div>
+                    <div class="question">10. Nilai-nilai Pancasila sebagai jiwa bangsa tercermin dalam...</div>
+                    <div class="options">
+                        <div class="option" data-question="9" data-value="A">A. Perilaku dan sikap sehari-hari warga negara Indonesia</div>
+                        <div class="option" data-question="9" data-value="B">B. Hanya dalam dokumen resmi negara</div>
+                        <div class="option" data-question="9" data-value="C">C. Hanya dalam simbol-simbol negara</div>
+                        <div class="option" data-question="9" data-value="D">D. Hanya dalam pidato kenegaraan</div>
+                        <div class="option" data-question="9" data-value="E">E. Hanya dalam kurikulum pendidikan</div>
+                    </div>
+                </div>
+                
+                <!-- Pertanyaan 11 -->
+                <div class="question-container">
+                    <div class="question-number">Pertanyaan 11 dari 20</div>
+                    <div class="question">11. Pengamalan sila kelima Pancasila dalam kehidupan sehari-hari adalah...</div>
+                    <div class="options">
+                        <div class="option" data-question="10" data-value="A">A. Berusaha keras untuk mencapai kesetaraan dalam segala bidang</div>
+                        <div class="option" data-question="10" data-value="B">B. Memaksakan kehendak kepada orang lain</div>
+                        <div class="option" data-question="10" data-value="C">C. Mencari keuntungan pribadi dengan mengabaikan keadilan</div>
+                        <div class="option" data-question="10" data-value="D">D. Tidak menghargai hasil kerja orang lain</div>
+                        <div class="option" data-question="10" data-value="E">E. Mengabaikan hak-hak orang lain</div>
+                    </div>
+                </div>
+                
+                <!-- Pertanyaan 12 -->
+                <div class="question-container">
+                    <div class="question-number">Pertanyaan 12 dari 20</div>
+                    <div class="question">12. Pancasila sebagai dasar negara berfungsi sebagai...</div>
+                    <div class="options">
+                        <div class="option" data-question="11" data-value="A">A. Landasan filosofis bagi negara Indonesia</div>
+                        <div class="option" data-question="11" data-value="B">B. Aturan main dalam hubungan internasional</div>
+                        <div class="option" data-question="11" data-value="C">C. Pedoman dalam membuat undang-undang saja</div>
+                        <div class="option" data-question="11" data-value="D">D. Ideologi yang hanya berlaku dalam bidang politik</div>
+                        <div class="option" data-question="11" data-value="E">E. Dasar hukum bagi negara dalam melaksanakan pemerintahan</div>
+                    </div>
+                </div>
+                
+                <!-- Pertanyaan 13 -->
+                <div class="question-container">
+                    <div class="question-number">Pertanyaan 13 dari 20</div>
+                    <div class="question">13. Pancasila sebagai pedoman hidup bangsa berarti...</div>
+                    <div class="options">
+                        <div class="option" data-question="12" data-value="A">A. Pancasila menjadi pegangan dalam kehidupan sehari-hari baik individu maupun kolektif</div>
+                        <div class="option" data-question="12" data-value="B">B. Pancasila hanya menjadi pegangan hidup bagi pejabat negara</div>
+                        <div class="option" data-question="12" data-value="C">C. Pancasila hanya menjadi pegangan dalam bidang ekonomi</div>
+                        <div class="option" data-question="12" data-value="D">D. Pancasila hanya menjadi pegangan dalam bidang politik</div>
+                        <div class="option" data-question="12" data-value="E">E. Pancasila menjadi pegangan dalam menentukan arah kebijakan negara</div>
+                    </div>
+                </div>
+                
+                <!-- Pertanyaan 14 -->
+                <div class="question-container">
+                    <div class="question-number">Pertanyaan 14 dari 20</div>
+                    <div class="question">14. Pengamalan nilai-nilai Pancasila dalam kehidupan berbangsa dan bernegara dapat dilihat dari...</div>
+                    <div class="options">
+                        <div class="option" data-question="13" data-value="A">A. Perilaku dan sikap sehari-hari warga negara Indonesia</div>
+                        <div class="option" data-question="13" data-value="B">B. Hanya dalam dokumen resmi negara</div>
+                        <div class="option" data-question="13" data-value="C">C. Hanya dalam simbol-simbol negara</div>
+                        <div class="option" data-question="13" data-value="D">D. Hanya dalam pidato kenegaraan</div>
+                        <div class="option" data-question="13" data-value="E">E. Hanya dalam kurikulum pendidikan</div>
+                    </div>
+                </div>
+                
+                <!-- Pertanyaan 15 -->
+                <div class="question-container">
+                    <div class="question-number">Pertanyaan 15 dari 20</div>
+                    <div class="question">15. Pancasila sebagai jiwa bangsa berarti...</div>
+                    <div class="options">
+                        <div class="option" data-question="14" data-value="A">A. Pancasila menjadi karakter dan kepribadian bangsa Indonesia</div>
+                        <div class="option" data-question="14" data-value="B">B. Pancasila hanya dihafalkan oleh seluruh rakyat Indonesia</div>
+                        <div class="option" data-question="14" data-value="C">C. Pancasila hanya berlaku bagi pejabat negara</div>
+                        <div class="option" data-question="14" data-value="D">D. Pancasila adalah simbol negara saja</div>
+                        <div class="option" data-question="14" data-value="E">E. Pancasila hanya dipelajari di sekolah</div>
+                    </div>
+                </div>
+                
+                <!-- Pertanyaan 16 -->
+                <div class="question-container">
+                    <div class="question-number">Pertanyaan 16 dari 20</div>
+                    <div class="question">16. Pengamalan sila pertama Pancasila dalam kehidupan berbangsa dan bernegara adalah...</div>
+                    <div class="options">
+                        <div class="option" data-question="15" data-value="A">A. Menyembah Tuhan sesuai dengan keyakinan masing-masing</div>
+                        <div class="option" data-question="15" data-value="B">B. Membangun tempat ibadah yang megah</div>
+                        <div class="option" data-question="15" data-value="C">C. Meninggalkan ibadah demi pekerjaan</div>
+                        <div class="option" data-question="15" data-value="D">D. Memaksakan kehendak agama kepada orang lain</div>
+                        <div class="option" data-question="15" data-value="E">E. Tidak mengakui adanya Tuhan Yang Maha Esa</div>
+                    </div>
+                </div>
+                
+                <!-- Pertanyaan 17 -->
+                <div class="question-container">
+                    <div class="question-number">Pertanyaan 17 dari 20</div>
+                    <div class="question">17. Pengamalan sila kedua Pancasila dalam kehidupan berbangsa dan bernegara adalah...</div>
+                    <div class="options">
+                        <div class="option" data-question="16" data-value="A">A. Menghargai perbedaan suku, agama, ras, dan antargolongan</div>
+                        <div class="option" data-question="16" data-value="B">B. Memaksakan kehendak pribadi kepada orang lain</div>
+                        <div class="option" data-question="16" data-value="C">C. Memilih teman berdasarkan kesamaan suku</div>
+                        <div class="option" data-question="16" data-value="D">D. Menyendiri dan tidak mau bergaul dengan orang lain</div>
+                        <div class="option" data-question="16" data-value="E">E. Membentuk kelompok eksklusif dalam masyarakat</div>
+                    </div>
+                </div>
+                
+                <!-- Pertanyaan 18 -->
+                <div class="question-container">
+                    <div class="question-number">Pertanyaan 18 dari 20</div>
+                    <div class="question">18. Pengamalan sila ketiga Pancasila dalam kehidupan berbangsa dan bernegara adalah...</div>
+                    <div class="options">
+                        <div class="option" data-question="17" data-value="A">A. Menjaga persatuan dan kesatuan bangsa di atas kepentingan pribadi atau golongan</div>
+                        <div class="option" data-question="17" data-value="B">B. Mengutamakan kepentingan daerah di atas kepentingan nasional</div>
+                        <div class="option" data-question="17" data-value="C">C. Mengabaikan perbedaan budaya yang ada di Indonesia</div>
+                        <div class="option" data-question="17" data-value="D">D. Membentuk negara federal yang terpisah-pisah</div>
+                        <div class="option" data-question="17" data-value="E">E. Menyamaratakan semua budaya di Indonesia</div>
+                    </div>
+                </div>
+                
+                <!-- Pertanyaan 19 -->
+                <div class="question-container">
+                    <div class="question-number">Pertanyaan 19 dari 20</div>
+                    <div class="question">19. Pengamalan sila keempat Pancasila dalam kehidupan berbangsa dan bernegara adalah...</div>
+                    <div class="options">
+                        <div class="option" data-question="18" data-value="A">A. Mengutamakan kepentingan umum di atas kepentingan pribadi atau golongan</div>
+                        <div class="option" data-question="18" data-value="B">B. Mengutamakan kepentingan pribadi di atas kepentingan umum</div>
+                        <div class="option" data-question="18" data-value="C">C. Mengabaikan masalah yang dihadapi masyarakat</div>
+                        <div class="option" data-question="18" data-value="D">D. Tidak peduli dengan lingkungan sekitar</div>
+                        <div class="option" data-question="18" data-value="E">E. Menolak untuk membayar pajak</div>
+                    </div>
+                </div>
+                
+                <!-- Pertanyaan 20 -->
+                <div class="question-container">
+                    <div class="question-number">Pertanyaan 20 dari 20</div>
+                    <div class="question">20. Pengamalan sila kelima Pancasila dalam kehidupan berbangsa dan bernegara adalah...</div>
+                    <div class="options">
+                        <div class="option" data-question="19" data-value="A">A. Berusaha keras untuk mencapai kesetaraan dalam segala bidang</div>
+                        <div class="option" data-question="19" data-value="B">B. Memaksakan kehendak kepada orang lain</div>
+                        <div class="option" data-question="19" data-value="C">C. Mencari keuntungan pribadi dengan mengabaikan keadilan</div>
+                        <div class="option" data-question="19" data-value="D">D. Tidak menghargai hasil kerja orang lain</div>
+                        <div class="option" data-question="19" data-value="E">E. Mengabaikan hak-hak orang lain</div>
+                    </div>
+                </div>
+                
+                <button type="button" class="submit-btn" id="submit-btn">Selesaikan Kuis</button>
+            </form>
+        </div>
+        
+        <div class="result-container" id="result-container">
+            <h2>Hasil Kuis</h2>
+            <div class="result-score" id="result-score">0/20</div>
+            <div class="result-message" id="result-message"></div>
+            <button type="button" class="restart-btn" id="restart-btn">Coba Lagi</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Kunci jawaban
+            const answerKey = [
+                'E', // Pertanyaan 1
+                'B', // Pertanyaan 2
+                'B', // Pertanyaan 3
+                'B', // Pertanyaan 4
+                'C', // Pertanyaan 5
+                'A', // Pertanyaan 6
+                'B', // Pertanyaan 7
+                'A', // Pertanyaan 8
+                'B', // Pertanyaan 9
+                'A', // Pertanyaan 10
+                'A', // Pertanyaan 11
+                'A', // Pertanyaan 12
+                'A', // Pertanyaan 13
+                'A', // Pertanyaan 14
+                'A', // Pertanyaan 15
+                'A', // Pertanyaan 16
+                'A', // Pertanyaan 17
+                'A', // Pertanyaan 18
+                'A', // Pertanyaan 19
+                'A'  // Pertanyaan 20
+            ];
+            
+            // Variabel untuk menyimpan jawaban pengguna
+            const userAnswers = new Array(20).fill(null);
+            
+            // Timer
+            let timeLeft = 600; // 10 menit dalam detik
+            const timerElement = document.getElementById('timer');
+            let timerInterval;
+            
+            // Progress bar
+            const progressBar = document.getElementById('progress');
+            
+            // Update progress bar
+            function updateProgress() {
+                const answered = userAnswers.filter(answer => answer !== null).length;
+                const progress = (answered / 20) * 100;
+                progressBar.style.width = `${progress}%`;
+            }
+            
+            // Fungsi untuk timer
+            function updateTimer() {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                timerElement.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    submitQuiz();
+                } else {
+                    timeLeft--;
+                }
+            }
+            
+            // Mulai timer
+            timerInterval = setInterval(updateTimer, 1000);
+            updateTimer();
+            
+            // Event listener untuk opsi jawaban
+            const options = document.querySelectorAll('.option');
+            options.forEach(option => {
+                option.addEventListener('click', function() {
+                    const questionIndex = parseInt(this.getAttribute('data-question'));
+                    const value = this.getAttribute('data-value');
+                    
+                    // Hapus kelas 'selected' dari semua opsi untuk pertanyaan ini
+                    const questionOptions = document.querySelectorAll(`[data-question="${questionIndex}"]`);
+                    questionOptions.forEach(opt => opt.classList.remove('selected'));
+                    
+                    // Tambahkan kelas 'selected' ke opsi yang dipilih
+                    this.classList.add('selected');
+                    
+                    // Simpan jawaban pengguna
+                    userAnswers[questionIndex] = value;
+                    
+                    // Update progress bar
+                    updateProgress();
+                });
+            });
+            
+            // Event listener untuk tombol submit
+            document.getElementById('submit-btn').addEventListener('click', submitQuiz);
+            
+            // Fungsi untuk submit kuis
+            function submitQuiz() {
+                clearInterval(timerInterval);
+                
+                // Hitung skor
+                let score = 0;
+                for (let i = 0; i < 20; i++) {
+                    if (userAnswers[i] === answerKey[i]) {
+                        score++;
+                    }
+                }
+                
+                // Tampilkan hasil
+                document.getElementById('quiz-container').style.display = 'none';
+                document.getElementById('result-container').style.display = 'block';
+                document.getElementById('result-score').textContent = `${score}/20`;
+                
+                // Pesan berdasarkan skor
+                let message = '';
+                if (score >= 18) {
+                    message = 'Sangat baik! Anda memiliki pemahaman yang sangat baik tentang Pancasila.';
+                } else if (score >= 15) {
+                    message = 'Baik! Anda memiliki pemahaman yang baik tentang Pancasila.';
+                } else if (score >= 10) {
+                    message = 'Cukup. Anda perlu mempelajari lebih lanjut tentang Pancasila.';
+                } else {
+                    message = 'Kurang. Anda disarankan untuk mempelajari kembali materi tentang Pancasila.';
+                }
+                
+                document.getElementById('result-message').textContent = message;
+            }
+            
+            // Event listener untuk tombol restart
+            document.getElementById('restart-btn').addEventListener('click', function() {
+                // Reset variabel
+                userAnswers.fill(null);
+                timeLeft = 600;
+                
+                // Reset tampilan
+                document.getElementById('quiz-container').style.display = 'block';
+                document.getElementById('result-container').style.display = 'none';
+                
+                // Hapus kelas 'selected' dari semua opsi
+                options.forEach(option => option.classList.remove('selected'));
+                
+                // Reset progress bar
+                progressBar.style.width = '0%';
+                
+                // Mulai timer lagi
+                timerInterval = setInterval(updateTimer, 1000);
+                updateTimer();
+            });
+        });
+    </script>
+</body>
+</html>
