@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fungsi dan Kedudukan Pancasila</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .slide {
+            display: none;
+            min-height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .slide.active {
+            display: flex;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.8s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .slide-in-left {
+            animation: slideInLeft 0.8s ease-out;
+        }
+        
+        @keyframes slideInLeft {
+            from { transform: translateX(-100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .slide-in-right {
+            animation: slideInRight 0.8s ease-out;
+        }
+        
+        @keyframes slideInRight {
+            from { transform: translateX(100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .nav-button {
+            transition: all 0.3s ease;
+        }
+        
+        .nav-button:hover {
+            transform: scale(1.1);
+        }
+        
+        .progress-bar {
+            transition: width 0.5s ease;
+        }
+        
+        .silat-icon {
+            transition: all 0.3s ease;
+        }
+        
+        .silat-icon:hover {
+            transform: rotate(360deg) scale(1.2);
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation Bar -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-white shadow-lg">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-4">
+                    <i class="fas fa-landmark text-2xl text-purple-600"></i>
+                    <h1 class="text-xl font-bold gradient-text">Pancasila</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button onclick="previousSlide()" class="nav-button bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <span id="slideCounter" class="text-gray-600 font-medium">1 / 7</span>
+                    <button onclick="nextSlide()" class="nav-button bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="mt-2 bg-gray-200 rounded-full h-2">
+                <div id="progressBar" class="progress-bar gradient-bg h-2 rounded-full" style="width: 14.28%"></div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Slide 1: Cover -->
+    <div class="slide active gradient-bg">
+        <div class="container mx-auto px-4 flex items-center justify-center">
+            <div class="text-center text-white fade-in">
+                <div class="mb-8">
+                    <i class="fas fa-landmark text-8xl mb-6 silat-icon"></i>
+                </div>
+                <h1 class="text-5xl md:text-6xl font-bold mb-4">Fungsi dan Kedudukan Pancasila</h1>
+                <p class="text-xl md:text-2xl mb-8 opacity-90">Dasar Negara Republik Indonesia</p>
+                <div class="flex justify-center space-x-4">
+                    <div class="bg-white bg-opacity-20 backdrop-blur-sm rounded-lg px-6 py-3">
+                        <i class="fas fa-flag text-2xl mb-2"></i>
+                        <p class="text-sm">Bhineka Tunggal Ika</p>
+                    </div>
+                    <div class="bg-white bg-opacity-20 backdrop-blur-sm rounded-lg px-6 py-3">
+                        <i class="fas fa-balance-scale text-2xl mb-2"></i>
+                        <p class="text-sm">Keadilan Sosial</p>
+                    </div>
+                    <div class="bg-white bg-opacity-20 backdrop-blur-sm rounded-lg px-6 py-3">
+                        <i class="fas fa-dove text-2xl mb-2"></i>
+                        <p class="text-sm">Perdamaian Dunia</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 2: Pengantar Pancasila -->
+    <div class="slide bg-white">
+        <div class="container mx-auto px-4 py-20">
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div class="slide-in-left">
+                    <h2 class="text-4xl font-bold mb-6 gradient-text">Apa itu Pancasila?</h2>
+                    <p class="text-gray-700 text-lg mb-6">
+                        Pancasila adalah dasar negara Republik Indonesia yang terdiri dari lima sila. 
+                        Nama Pancasila berasal dari bahasa Sansekerta: <strong>panca</strong> (lima) dan <strong>sila</strong> (asas atau prinsip).
+                    </p>
+                    <div class="space-y-4">
+                        <div class="flex items-start space-x-3">
+                            <i class="fas fa-check-circle text-purple-600 mt-1"></i>
+                            <p class="text-gray-700">Dirumuskan oleh PPKI pada tanggal 18 Agustus 1945</p>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <i class="fas fa-check-circle text-purple-600 mt-1"></i>
+                            <p class="text-gray-700">Tertuang dalam Pembukaan UUD 1945 Alinea IV</p>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <i class="fas fa-check-circle text-purple-600 mt-1"></i>
+                            <p class="text-gray-700">Sebagai falsafah hidup bangsa Indonesia</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="slide-in-right">
+                    <div class="relative">
+                        <img src="https://picsum.photos/seed/pancasila/600/400" alt="Pancasila" class="rounded-lg shadow-2xl">
+                        <div class="absolute inset-0 bg-gradient-to-t from-purple-900 to-transparent rounded-lg opacity-30"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 3: Lima Sila Pancasila -->
+    <div class="slide bg-gray-50">
+        <div class="container mx-auto px-4 py-20">
+            <h2 class="text-4xl font-bold text-center mb-12 gradient-text">Lima Sila Pancasila</h2>
+            <div class="grid md:grid-cols-5 gap-4">
+                <div class="card-hover bg-white rounded-lg p-6 text-center shadow-lg">
+                    <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-2xl font-bold text-purple-600">1</span>
+                    </div>
+                    <h3 class="font-bold text-purple-600 mb-2">Ketuhanan Yang Maha Esa</h3>
+                    <p class="text-sm text-gray-600">Mengakui dan percaya adanya Tuhan Yang Maha Esa</p>
+                </div>
+                <div class="card-hover bg-white rounded-lg p-6 text-center shadow-lg">
+                    <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-2xl font-bold text-purple-600">2</span>
+                    </div>
+                    <h3 class="font-bold text-purple-600 mb-2">Kemanusiaan yang Adil dan Beradab</h3>
+                    <p class="text-sm text-gray-600">Mengakui persamaan derajat dan hak asasi manusia</p>
+                </div>
+                <div class="card-hover bg-white rounded-lg p-6 text-center shadow-lg">
+                    <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-2xl font-bold text-purple-600">3</span>
+                    </div>
+                    <h3 class="font-bold text-purple-600 mb-2">Persatuan Indonesia</h3>
+                    <p class="text-sm text-gray-600">Mempersatukan seluruh bangsa Indonesia</p>
+                </div>
+                <div class="card-hover bg-white rounded-lg p-6 text-center shadow-lg">
+                    <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-2xl font-bold text-purple-600">4</span>
+                    </div>
+                    <h3 class="font-bold text-purple-600 mb-2">Kerakyatan yang Dipimpin oleh Hikmat Kebijaksanaan</h3>
+                    <p class="text-sm text-gray-600">Pelaksanaan kedaulatan rakyat</p>
+                </div>
+                <div class="card-hover bg-white rounded-lg p-6 text-center shadow-lg">
+                    <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-2xl font-bold text-purple-600">5</span>
+                    </div>
+                    <h3 class="font-bold text-purple-600 mb-2">Keadilan Sosial bagi Seluruh Rakyat Indonesia</h3>
+                    <p class="text-sm text-gray-600">Mewujudkan keadilan sosial</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 4: Fungsi Pancasila -->
+    <div class="slide bg-white">
+        <div class="container mx-auto px-4 py-20">
+            <h2 class="text-4xl font-bold text-center mb-12 gradient-text">Fungsi Pancasila</h2>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="space-y-6">
+                    <div class="bg-purple-50 rounded-lg p-6 card-hover">
+                        <div class="flex items-start space-x-4">
+                            <div class="w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-compass text-white text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-xl mb-2 text-purple-800">Sebagai Dasar Negara</h3>
+                                <p class="text-gray-700">Menjadi fondasi utama dalam penyelenggaraan negara, termasuk dalam pembentukan UUD, pemerintahan, dan hukum.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-purple-50 rounded-lg p-6 card-hover">
+                        <div class="flex items-start space-x-4">
+                            <div class="w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-users text-white text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-xl mb-2 text-purple-800">Sebagai Pandangan Hidup</h3>
+                                <p class="text-gray-700">Menjadi pedoman dalam berperilaku, bersikap, dan bertindak dalam kehidupan sehari-hari.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-purple-50 rounded-lg p-6 card-hover">
+                        <div class="flex items-start space-x-4">
+                            <div class="w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-handshake text-white text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-xl mb-2 text-purple-800">Sebagai Alat Pemersatu</h3>
+                                <p class="text-gray-700">Mengikat keberagaman suku, agama, ras, dan budaya dalam satu kesatuan bangsa.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="space-y-6">
+                    <div class="bg-purple-50 rounded-lg p-6 card-hover">
+                        <div class="flex items-start space-x-4">
+                            <div class="w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-balance-scale text-white text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-xl mb-2 text-purple-800">Sebagai Sumber Nilai</h3>
+                                <p class="text-gray-700">Menjadi sumber segala nilai dalam kehidupan bernegara dan bermasyarakat.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-purple-50 rounded-lg p-6 card-hover">
+                        <div class="flex items-start space-x-4">
+                            <div class="w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-globe text-white text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-xl mb-2 text-purple-800">Sebagai Identitas Bangsa</h3>
+                                <p class="text-gray-700">Membedakan Indonesia dengan bangsa lain di dunia internasional.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-purple-50 rounded-lg p-6 card-hover">
+                        <div class="flex items-start space-x-4">
+                            <div class="w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-star text-white text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-xl mb-2 text-purple-800">Sebagai Jiwa Bangsa</h3>
+                                <p class="text-gray-700">Menjiwai seluruh aspek kehidupan berbangsa dan bernegara Indonesia.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 5: Kedudukan Pancasila -->
+    <div class="slide bg-gray-50">
+        <div class="container mx-auto px-4 py-20">
+            <h2 class="text-4xl font-bold text-center mb-12 gradient-text">Kedudukan Pancasila</h2>
+            <div class="max-w-4xl mx-auto">
+                <div class="bg-white rounded-lg shadow-xl p-8 mb-8 pulse">
+                    <div class="text-center mb-6">
+                        <i class="fas fa-crown text-6xl text-purple-600 mb-4"></i>
+                        <h3 class="text-2xl font-bold text-purple-800">Kedudukan Tertinggi</h3>
+                    </div>
+                    <p class="text-center text-gray-700 text-lg">
+                        Pancasila menempati kedudukan tertinggi dalam tatanan hukum dan kehidupan bernegara Indonesia
+                    </p>
+                </div>
+                
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div class="bg-white rounded-lg p-6 text-center card-hover">
+                        <div class="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-gavel text-3xl text-purple-600"></i>
+                        </div>
+                        <h4 class="font-bold text-lg mb-2">Dalam Hukum</h4>
+                        <p class="text-sm text-gray-600">Sumber dari segala sumber hukum di Indonesia</p>
+                    </div>
+                    <div class="bg-white rounded-lg p-6 text-center card-hover">
+                        <div class="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-landmark text-3xl text-purple-600"></i>
+                        </div>
+                        <h4 class="font-bold text-lg mb-2">Dalam Negara</h4>
+                        <p class="text-sm text-gray-600">Dasar filosofis negara Republik Indonesia</p>
+                    </div>
+                    <div class="bg-white rounded-lg p-6 text-center card-hover">
+                        <div class="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-heart text-3xl text-purple-600"></i>
+                        </div>
+                        <h4 class="font-bold text-lg mb-2">Dalam Masyarakat</h4>
+                        <p class="text-sm text-gray-600">Falsafah hidup masyarakat Indonesia</p>
+                    </div>
+                </div>
+                
+                <div class="mt-8 bg-purple-100 rounded-lg p-6">
+                    <h4 class="font-bold text-lg mb-3 text-purple-800">Bukti Kedudukan Pancasila:</h4>
+                    <ul class="space-y-2 text-gray-700">
+                        <li class="flex items-start space-x-2">
+                            <i class="fas fa-check text-purple-600 mt-1"></i>
+                            <span>Tertuang dalam Pembukaan UUD 1945 sebagai kalimat pembuka</span>
+                        </li>
+                        <li class="flex items-start space-x-2">
+                            <i class="fas fa-check text-purple-600 mt-1"></i>
+                            <span>Menjadi dasar pembentukan seluruh peraturan perundang-undangan</span>
+                        </li>
+                        <li class="flex items-start space-x-2">
+                            <i class="fas fa-check text-purple-600 mt-1"></i>
+                            <span>Dijunjung tinggi dalam sumpah jabatan pejabat negara</span>
+                        </li>
+                        <li class="flex items-start space-x-2">
+                            <i class="fas fa-check text-purple-600 mt-1"></i>
+                            <span>Dipelajari dalam pendidikan formal di semua jenjang</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 6: Implementasi Pancasila -->
+    <div class="slide bg-white">
+        <div class="container mx-auto px-4 py-20">
+            <h2 class="text-4xl font-bold text-center mb-12 gradient-text">Implementasi Pancasila dalam Kehidupan</h2>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="bg-gradient-to-br from-purple-500 to-purple-700 rounded-lg p-6 text-white card-hover">
+                    <i class="fas fa-vote-yea text-4xl mb-4"></i>
+                    <h3 class="font-bold text-xl mb-3">Bidang Politik</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li>• Demokrasi Pancasila</li>
+                        <li>• Musyawarah untuk mufakat</li>
+                        <li>• Kedaulatan rakyat</li>
+                        <li>• Negara hukum</li>
+                    </ul>
+                </div>
+                <div class="bg-gradient-to-br from-purple-500 to-purple-700 rounded-lg p-6 text-white card-hover">
+                    <i class="fas fa-chart-line text-4xl mb-4"></i>
+                    <h3 class="font-bold text-xl mb-3">Bidang Ekonomi</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li>• Ekonomi kerakyatan</li>
+                        <li>• Keadilan sosial</li>
+                        <li>• Kesejahteraan umum</li>
+                        <li>• Pembangunan berkelanjutan</li>
+                    </ul>
+                </div>
+                <div class="bg-gradient-to-br from-purple-500 to-purple-700 rounded-lg p-6 text-white card-hover">
+                    <i class="fas fa-book text-4xl mb-4"></i>
+                    <h3 class="font-bold text-xl mb-3">Bidang Pendidikan</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li>• Pendidikan karakter</li>
+                        <li>• Budi pekerti</li>
+                        <li>• Cinta tanah air</li>
+                        <li>• Pengamalan Pancasila</li>
+                    </ul>
+                </div>
+                <div class="bg-gradient-to-br from-purple-500 to-purple-700 rounded-lg p-6 text-white card-hover">
+                    <i class="fas fa-hand-holding-heart text-4xl mb-4"></i>
+                    <h3 class="font-bold text-xl mb-3">Bidang Sosial</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li>• Gotong royong</li>
+                        <li>• Toleransi beragama</li>
+                        <li>• Persatuan dan kesatuan</li>
+                        <li>• Kemanusiaan yang adil</li>
+                    </ul>
+                </div>
+                <div class="bg-gradient-to-br from-purple-500 to-purple-700 rounded-lg p-6 text-white card-hover">
+                    <i class="fas fa-gavel text-4xl mb-4"></i>
+                    <h3 class="font-bold text-xl mb-3">Bidang Hukum</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li>• Keadilan untuk semua</li>
+                        <li>• Perlindungan HAM</li>
+                        <li>• Supremasi hukum</li>
+                        <li>• Kepastian hukum</li>
+                    </ul>
+                </div>
+                <div class="bg-gradient-to-br from-purple-500 to-purple-700 rounded-lg p-6 text-white card-hover">
+                    <i class="fas fa-globe-asia text-4xl mb-4"></i>
+                    <h3 class="font-bold text-xl mb-3">Bidang Internasional</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li>• Perdamaian dunia</li>
+                        <li>• Hubungan bilateral</li>
+                        <li>• Kerjasama regional</li>
+                        <li>• Kehormatan bangsa</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 7: Penutup -->
+    <div class="slide gradient-bg">
+        <div class="container mx-auto px-4 flex items-center justify-center">
+            <div class="text-center text-white fade-in">
+                <i class="fas fa-flag text-8xl mb-8 pulse"></i>
+                <h2 class="text-4xl md:text-5xl font-bold mb-6">Mari Kita Amalkan Pancasila</h2>
+                <p class="text-xl mb-8 opacity-90">Dalam Setiap Aspek Kehidupan Sehari-hari</p>
+                <div class="bg-white bg-opacity-20 backdrop-blur-sm rounded-lg p-8 max-w-2xl mx-auto">
+                    <p class="text-lg mb-6">
+                        "Pancasila bukan hanya sekadar ideologi, tetapi juga jiwa dan karakter bangsa Indonesia. 
+                        Dengan mengamalkan nilai-nilai Pancasila, kita akan menjadi bangsa yang kuat, bersatu, dan bermartabat."
+                    </p>
+                    <div class="flex justify-center space-x-4">
+                        <button onclick="location.reload()" class="bg-white text-purple-600 px-6 py-3 rounded-lg font-medium hover:bg-gray-100 transition">
+                            <i class="fas fa-redo mr-2"></i> Mulai Ulang
+                        </button>
+                        <button onclick="window.print()" class="bg-transparent border-2 border-white text-white px-6 py-3 rounded-lg font-medium hover:bg-white hover:text-purple-600 transition">
+                            <i class="fas fa-print mr-2"></i> Cetak
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (n + totalSlides) % totalSlides;
+            slides[currentSlide].classList.add('active');
+            
+            // Update counter
+            document.getElementById('slideCounter').textContent = `${currentSlide + 1} / ${totalSlides}`;
+            
+            // Update progress bar
+            const progress = ((currentSlide + 1) / totalSlides) * 100;
+            document.getElementById('progressBar').style.width = `${progress}%`;
+        }
+
+        function nextSlide() {
+            showSlide(currentSlide + 1);
+        }
+
+        function previousSlide() {
+            showSlide(currentSlide - 1);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') nextSlide();
+            if (e.key === 'ArrowLeft') previousSlide();
+        });
+
+        // Touch/swipe support
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+
+        document.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            if (touchEndX < touchStartX - 50) nextSlide();
+            if (touchEndX > touchStartX + 50) previousSlide();
+        }
+
+        // Auto-advance slides (optional - comment out if not needed)
+        // setInterval(nextSlide, 10000);
+    </script>
+</body>
+</html>
