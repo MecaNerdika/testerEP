@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Concord Mastery Quiz - TOEFL Level</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .card-shadow {
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .timer-warning {
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .question-card {
+            transition: all 0.3s ease;
+        }
+        
+        .question-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .option-label {
+            transition: all 0.2s ease;
+        }
+        
+        .option-label:hover {
+            background-color: #f3f4f6;
+            transform: translateX(5px);
+        }
+        
+        .progress-fill {
+            transition: width 0.5s ease;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Token Verification Page -->
+    <div id="tokenPage" class="min-h-screen gradient-bg flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl card-shadow p-8 max-w-md w-full">
+            <div class="text-center mb-8">
+                <i class="fas fa-shield-alt text-6xl text-purple-600 mb-4"></i>
+                <h1 class="text-3xl font-bold text-gray-800 mb-2">Concord Mastery Quiz</h1>
+                <p class="text-gray-600">TOEFL Level Assessment</p>
+            </div>
+            
+            <div class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Masukkan Token Akses</label>
+                    <input type="password" id="tokenInput" 
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent transition-all"
+                           placeholder="••••••••••••">
+                </div>
+                
+                <button onclick="verifyToken()" 
+                        class="w-full bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors transform hover:scale-105">
+                    <i class="fas fa-arrow-right mr-2"></i>Mulai Kuis
+                </button>
+                
+                <div id="tokenError" class="hidden text-red-600 text-sm text-center">
+                    <i class="fas fa-exclamation-circle mr-1"></i>Token tidak valid!
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quiz Page -->
+    <div id="quizPage" class="hidden min-h-screen">
+        <!-- Header -->
+        <header class="bg-white shadow-sm sticky top-0 z-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-16">
+                    <div class="flex items-center">
+                        <i class="fas fa-graduation-cap text-purple-600 text-2xl mr-3"></i>
+                        <h1 class="text-xl font-bold text-gray-800">Concord Mastery Quiz</h1>
+                    </div>
+                    
+                    <div class="flex items-center space-x-6">
+                        <!-- Timer -->
+                        <div id="timerContainer" class="flex items-center space-x-2">
+                            <i class="fas fa-clock text-gray-600"></i>
+                            <span id="timer" class="font-semibold text-lg">15:00</span>
+                        </div>
+                        
+                        <!-- Progress -->
+                        <div class="flex items-center space-x-2">
+                            <span class="text-sm text-gray-600">Progress:</span>
+                            <div class="w-32 bg-gray-200 rounded-full h-2">
+                                <div id="progressBar" class="progress-fill bg-purple-600 h-2 rounded-full" style="width: 0%"></div>
+                            </div>
+                            <span id="progressText" class="text-sm font-semibold text-gray-700">0/30</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Quiz Content -->
+        <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div id="questionContainer" class="space-y-6">
+                <!-- Questions will be dynamically inserted here -->
+            </div>
+            
+            <!-- Navigation -->
+            <div class="mt-8 flex justify-between items-center">
+                <button id="prevBtn" onclick="previousQuestion()" 
+                        class="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                    <i class="fas fa-chevron-left mr-2"></i>Previous
+                </button>
+                
+                <div id="questionNumbers" class="flex space-x-2">
+                    <!-- Question numbers will be dynamically inserted here -->
+                </div>
+                
+                <button id="nextBtn" onclick="nextQuestion()" 
+                        class="px-6 py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition-colors">
+                    Next<i class="fas fa-chevron-right ml-2"></i>
+                </button>
+            </div>
+            
+            <!-- Submit Button -->
+            <div class="mt-8 text-center">
+                <button id="submitBtn" onclick="submitQuiz()" 
+                        class="hidden px-8 py-4 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-colors transform hover:scale-105">
+                    <i class="fas fa-check-circle mr-2"></i>Submit Quiz
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <!-- Results Page -->
+    <div id="resultsPage" class="hidden min-h-screen gradient-bg flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl card-shadow p-8 max-w-2xl w-full">
+            <div class="text-center mb-8">
+                <i class="fas fa-trophy text-6xl text-yellow-500 mb-4"></i>
+                <h1 class="text-3xl font-bold text-gray-800 mb-2">Quiz Completed!</h1>
+                <p class="text-gray-600">Here are your results</p>
+            </div>
+            
+            <div class="space-y-6">
+                <div class="bg-gray-50 rounded-lg p-6">
+                    <div class="grid grid-cols-2 gap-4 text-center">
+                        <div>
+                            <div class="text-3xl font-bold text-purple-600" id="scoreDisplay">0</div>
+                            <div class="text-sm text-gray-600">Correct Answers</div>
+                        </div>
+                        <div>
+                            <div class="text-3xl font-bold text-gray-700" id="percentageDisplay">0%</div>
+                            <div class="text-sm text-gray-600">Accuracy</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="resultMessage" class="text-center p-4 rounded-lg">
+                    <!-- Message will be dynamically inserted here -->
+                </div>
+                
+                <div class="flex space-x-4">
+                    <button onclick="restartQuiz()" 
+                            class="flex-1 px-6 py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition-colors">
+                        <i class="fas fa-redo mr-2"></i>Try Again
+                    </button>
+                    <button onclick="showAnswers()" 
+                            class="flex-1 px-6 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition-colors">
+                        <i class="fas fa-eye mr-2"></i>Review Answers
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Quiz Data
+        const questions = [
+            {
+                question: "Neither of the students _____ completed the assignment yet.",
+                options: ["have", "has", "are", "is", "were"],
+                correct: 1
+            },
+            {
+                question: "Each of the participants _____ to bring their own laptop.",
+                options: ["need", "needs", "needing", "is needing", "are needing"],
+                correct: 1
+            },
+            {
+                question: "The number of students enrolled in the program _____ increased significantly.",
+                options: ["have", "has", "are", "is", "were"],
+                correct: 1
+            },
+            {
+                question: "A number of protesters _____ arrested during the demonstration.",
+                options: ["was", "were", "is", "are", "has been"],
+                correct: 1
+            },
+            {
+                question: "Either the manager or his assistants _____ responsible for the mistake.",
+                options: ["is", "are", "was", "were", "have been"],
+                correct: 1
+            },
+            {
+                question: "Ten miles _____ a long distance to walk in one day.",
+                options: ["are", "were", "is", "have been", "has been"],
+                correct: 2
+            },
+            {
+                question: "Some of the water in the lake _____ contaminated.",
+                options: ["are", "were", "is", "have been", "has been"],
+                correct: 2
+            },
+            {
+                question: "Some of the students _____ already submitted their reports.",
+                options: ["has", "was", "is", "have", "having"],
+                correct: 3
+            },
+            {
+                question: "Every man, woman, and child _____ required to wear a mask.",
+                options: ["are", "were", "is", "have been", "has been"],
+                correct: 2
+            },
+            {
+                question: "Neither the teacher nor the students _____ satisfied with the results.",
+                options: ["was", "is", "are", "has been", "have been"],
+                correct: 2
+            },
+            {
+                question: "Five hundred dollars _____ too much for this old computer.",
+                options: ["are", "were", "is", "have been", "has been"],
+                correct: 2
+            },
+            {
+                question: "The majority of the committee members _____ in favor of the proposal.",
+                options: ["is", "was", "are", "has been", "have been"],
+                correct: 2
+            },
+            {
+                question: "Each of the books on the shelf _____ a unique story to tell.",
+                options: ["have", "has", "are having", "is having", "were having"],
+                correct: 1
+            },
+            {
+                question: "Either John or his brothers _____ going to attend the meeting.",
+                options: ["is", "are", "was", "were", "has been"],
+                correct: 1
+            },
+            {
+                question: "A number of factors _____ contributed to the company's success.",
+                options: ["has", "was", "is", "have", "having"],
+                correct: 3
+            },
+            {
+                question: "Two weeks _____ enough time to complete the project.",
+                options: ["aren't", "weren't", "isn't", "hasn't been", "haven't been"],
+                correct: 2
+            },
+            {
+                question: "Some of the information in the report _____ inaccurate.",
+                options: ["are", "were", "is", "have been", "has been"],
+                correct: 2
+            },
+            {
+                question: "Neither the price nor the quality _____ acceptable to the customers.",
+                options: ["are", "were", "is", "have been", "has been"],
+                correct: 2
+            },
+            {
+                question: "The number of applicants _____ this year's record.",
+                options: ["break", "breaks", "are breaking", "is breaking", "were breaking"],
+                correct: 1
+            },
+            {
+                question: "Every student and teacher _____ to follow the new regulations.",
+                options: ["need", "needs", "needing", "are needing", "were needing"],
+                correct: 1
+            },
+            {
+                question: "A number of solutions _____ proposed during the brainstorming session.",
+                options: ["was", "were", "is", "are", "has been"],
+                correct: 1
+            },
+            {
+                question: "Three kilograms of rice _____ enough for the family for a week.",
+                options: ["aren't", "weren't", "isn't", "hasn't been", "haven't been"],
+                correct: 2
+            },
+            {
+                question: "Some of the equipment in the laboratory _____ outdated.",
+                options: ["are", "were", "is", "have been", "has been"],
+                correct: 2
+            },
+            {
+                question: "Either the cat or the dogs _____ making that noise.",
+                options: ["is", "are", "was", "were", "has been"],
+                correct: 1
+            },
+            {
+                question: "The majority of the population _____ living below the poverty line.",
+                options: ["is", "are", "was", "were", "has been"],
+                correct: 0
+            },
+            {
+                question: "Each of the candidates _____ given equal opportunity to speak.",
+                options: ["was", "were", "is", "are", "have been"],
+                correct: 0
+            },
+            {
+                question: "Neither time nor money _____ available for this project.",
+                options: ["are", "were", "is", "have been", "has been"],
+                correct: 2
+            },
+            {
+                question: "A number of issues _____ raised during the meeting.",
+                options: ["was", "were", "is", "are", "has been"],
+                correct: 1
+            },
+            {
+                question: "Twenty minutes _____ all I need to explain the concept.",
+                options: ["aren't", "weren't", "isn't", "hasn't been", "haven't been"],
+                correct: 2
+            },
+            {
+                question: "Some of the advice she gave _____ very helpful.",
+                options: ["are", "were", "is", "have been", "has been"],
+                correct: 2
+            },
+            {
+                question: "Every cloud _____ a silver lining.",
+                options: ["have", "has", "are having", "is having", "were having"],
+                correct: 1
+            }
+        ];
+
+        // Quiz State
+        let currentQuestion = 0;
+        let userAnswers = new Array(questions.length).fill(null);
+        let timeRemaining = 15 * 60; // 15 minutes in seconds
+        let timerInterval;
+        let quizStarted = false;
+
+        // Token Verification
+        function verifyToken() {
+            const token = document.getElementById('tokenInput').value;
+            if (token === 'POLRIGANTENG') {
+                document.getElementById('tokenPage').classList.add('hidden');
+                document.getElementById('quizPage').classList.remove('hidden');
+                startQuiz();
+            } else {
+                document.getElementById('tokenError').classList.remove('hidden');
+                setTimeout(() => {
+                    document.getElementById('tokenError').classList.add('hidden');
+                }, 3000);
+            }
+        }
+
+        // Start Quiz
+        function startQuiz() {
+            quizStarted = true;
+            renderQuestionNumbers();
+            renderQuestion();
+            startTimer();
+            updateProgress();
+        }
+
+        // Timer Functions
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeRemaining--;
+                updateTimerDisplay();
+                
+                if (timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    submitQuiz();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeRemaining / 60);
+            const seconds = timeRemaining % 60;
+            const timerElement = document.getElementById('timer');
+            timerElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            
+            if (timeRemaining <= 60) {
+                timerElement.classList.add('text-red-600', 'timer-warning');
+            }
+        }
+
+        // Question Rendering
+        function renderQuestion() {
+            const container = document.getElementById('questionContainer');
+            const question = questions[currentQuestion];
+            
+            container.innerHTML = `
+                <div class="question-card bg-white rounded-xl p-8 card-shadow">
+                    <div class="mb-6">
+                        <span class="text-sm font-semibold text-purple-600">Question ${currentQuestion + 1} of ${questions.length}</span>
+                        <h2 class="text-2xl font-semibold text-gray-800 mt-2">${question.question}</h2>
+                    </div>
+                    
+                    <div class="space-y-3">
+                        ${question.options.map((option, index) => `
+                            <label class="option-label flex items-center p-4 rounded-lg cursor-pointer border-2 border-gray-200 hover:border-purple-400 ${userAnswers[currentQuestion] === index ? 'border-purple-600 bg-purple-50' : ''}">
+                                <input type="radio" name="answer" value="${index}" 
+                                       ${userAnswers[currentQuestion] === index ? 'checked' : ''}
+                                       onchange="selectAnswer(${index})"
+                                       class="mr-3 text-purple-600 focus:ring-purple-500">
+                                <span class="text-gray-700">${String.fromCharCode(65 + index)}. ${option}</span>
+                            </label>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            
+            updateNavigationButtons();
+        }
+
+        function renderQuestionNumbers() {
+            const container = document.getElementById('questionNumbers');
+            container.innerHTML = questions.map((_, index) => `
+                <button onclick="goToQuestion(${index})" 
+                        class="w-10 h-10 rounded-full font-semibold transition-all ${
+                            userAnswers[index] !== null 
+                                ? 'bg-purple-600 text-white' 
+                                : index === currentQuestion 
+                                    ? 'bg-purple-100 text-purple-600 border-2 border-purple-600' 
+                                    : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                        }">
+                    ${index + 1}
+                </button>
+            `).join('');
+        }
+
+        // Answer Selection
+        function selectAnswer(answerIndex) {
+            userAnswers[currentQuestion] = answerIndex;
+            renderQuestion();
+            renderQuestionNumbers();
+            updateProgress();
+        }
+
+        // Navigation
+        function previousQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                renderQuestion();
+                renderQuestionNumbers();
+            }
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                renderQuestion();
+                renderQuestionNumbers();
+            }
+        }
+
+        function goToQuestion(index) {
+            currentQuestion = index;
+            renderQuestion();
+            renderQuestionNumbers();
+        }
+
+        function updateNavigationButtons() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const submitBtn = document.getElementById('submitBtn');
+            
+            prevBtn.disabled = currentQuestion === 0;
+            
+            if (currentQuestion === questions.length - 1) {
+                nextBtn.classList.add('hidden');
+                submitBtn.classList.remove('hidden');
+            } else {
+                nextBtn.classList.remove('hidden');
+                submitBtn.classList.add('hidden');
+            }
+        }
+
+        function updateProgress() {
+            const answered = userAnswers.filter(answer => answer !== null).length;
+            const percentage = (answered / questions.length) * 100;
+            
+            document.getElementById('progressBar').style.width = `${percentage}%`;
+            document.getElementById('progressText').textContent = `${answered}/${questions.length}`;
+        }
+
+        // Submit Quiz
+        function submitQuiz() {
+            clearInterval(timerInterval);
+            
+            let score = 0;
+            userAnswers.forEach((answer, index) => {
+                if (answer === questions[index].correct) {
+                    score++;
+                }
+            });
+            
+            const percentage = Math.round((score / questions.length) * 100);
+            
+            document.getElementById('quizPage').classList.add('hidden');
+            document.getElementById('resultsPage').classList.remove('hidden');
+            document.getElementById('scoreDisplay').textContent = score;
+            document.getElementById('percentageDisplay').textContent = `${percentage}%`;
+            
+            const resultMessage = document.getElementById('resultMessage');
+            if (percentage >= 80) {
+                resultMessage.innerHTML = '<i class="fas fa-star text-yellow-500 mr-2"></i>Excellent! You have mastered English concord rules!';
+                resultMessage.className = 'text-center p-4 rounded-lg bg-green-100 text-green-800';
+            } else if (percentage >= 60) {
+                resultMessage.innerHTML = '<i class="fas fa-thumbs-up text-blue-500 mr-2"></i>Good job! Keep practicing to improve your concord skills.';
+                resultMessage.className = 'text-center p-4 rounded-lg bg-blue-100 text-blue-800';
+            } else {
+                resultMessage.innerHTML = '<i class="fas fa-book text-orange-500 mr-2"></i>Keep studying! Review the concord rules and try again.';
+                resultMessage.className = 'text-center p-4 rounded-lg bg-orange-100 text-orange-800';
+            }
+        }
+
+        // Restart Quiz
+        function restartQuiz() {
+            currentQuestion = 0;
+            userAnswers = new Array(questions.length).fill(null);
+            timeRemaining = 15 * 60;
+            
+            document.getElementById('resultsPage').classList.add('hidden');
+            document.getElementById('tokenPage').classList.remove('hidden');
+            document.getElementById('tokenInput').value = '';
+            document.getElementById('timer').classList.remove('text-red-600', 'timer-warning');
+        }
+
+        // Show Answers (Placeholder for review functionality)
+        function showAnswers() {
+            alert('Review functionality would show detailed answers and explanations for each question.');
+        }
+
+        // Keyboard Navigation
+        document.addEventListener('keydown', (e) => {
+            if (!quizStarted) return;
+            
+            if (e.key === 'ArrowLeft' && currentQuestion > 0) {
+                previousQuestion();
+            } else if (e.key === 'ArrowRight' && currentQuestion < questions.length - 1) {
+                nextQuestion();
+            } else if (e.key >= '1' && e.key <= '5') {
+                const answerIndex = parseInt(e.key) - 1;
+                if (answerIndex < questions[currentQuestion].options.length) {
+                    selectAnswer(answerIndex);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
