@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Modal Verbs - TOEFL Style</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container-custom {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Token Page Styles */
+        .token-container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .token-title {
+            color: #333;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .token-input {
+            width: 100%;
+            max-width: 300px;
+            padding: 15px 20px;
+            font-size: 1.2rem;
+            border: 2px solid #ddd;
+            border-radius: 50px;
+            margin: 20px 0;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .token-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn-start {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .btn-start:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        /* Quiz Container Styles */
+        .quiz-container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            display: none;
+        }
+
+        /* Timer Styles */
+        .timer-container {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+            position: sticky;
+            top: 20px;
+            z-index: 100;
+        }
+
+        .timer {
+            font-size: 2.5rem;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .timer.warning {
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* Question Styles */
+        .question-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .question-card:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .question-number {
+            background: #667eea;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            color: #333;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .option {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .option:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .option.selected {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+
+        .option-letter {
+            background: #e0e0e0;
+            color: #333;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        .option.selected .option-letter {
+            background: white;
+            color: #667eea;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            margin-bottom: 30px;
+        }
+
+        .progress {
+            height: 25px;
+            border-radius: 50px;
+            background: #e0e0e0;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        /* Result Page */
+        .result-container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            display: none;
+        }
+
+        .score-display {
+            font-size: 4rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 20px 0;
+        }
+
+        .score-label {
+            font-size: 1.5rem;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .result-message {
+            font-size: 1.3rem;
+            color: #333;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        /* Navigation */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+
+        .btn-nav {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-prev {
+            background: #e0e0e0;
+            color: #333;
+        }
+
+        .btn-next {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-finish {
+            background: #28a745;
+            color: white;
+            padding: 15px 40px;
+            font-size: 1.1rem;
+        }
+
+        .btn-nav:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .token-title, .timer {
+                font-size: 2rem;
+            }
+            
+            .question-text {
+                font-size: 1.1rem;
+            }
+            
+            .nav-buttons {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .btn-nav {
+                width: 100%;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-custom">
+        <!-- Token Page -->
+        <div id="tokenPage" class="token-container">
+            <i class="fas fa-lock fa-4x" style="color: #667eea; margin-bottom: 20px;"></i>
+            <h1 class="token-title">Kuis Modal Verbs</h1>
+            <p style="font-size: 1.2rem; color: #666; margin-bottom: 30px;">Masukkan token akses untuk memulai kuis</p>
+            <input type="text" id="tokenInput" class="token-input" placeholder="Token Akses" maxlength="10">
+            <br>
+            <button onclick="validateToken()" class="btn-start">
+                <i class="fas fa-arrow-right"></i> Mulai Kuis
+            </button>
+            <div id="tokenError" style="color: #dc3545; margin-top: 15px; display: none;">
+                <i class="fas fa-exclamation-circle"></i> Token salah! Silakan coba lagi.
+            </div>
+        </div>
+
+        <!-- Loading -->
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p style="font-size: 1.2rem; color: #666;">Memuat soal...</p>
+        </div>
+
+        <!-- Quiz Container -->
+        <div id="quizContainer" class="quiz-container">
+            <!-- Timer -->
+            <div class="timer-container">
+                <h3 style="margin-bottom: 10px;"><i class="fas fa-clock"></i> Waktu Tersisa</h3>
+                <div id="timer" class="timer">12:00</div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="progress-container">
+                <div class="progress">
+                    <div id="progressBar" class="progress-bar" style="width: 0%">0%</div>
+                </div>
+            </div>
+
+            <!-- Question Container -->
+            <div id="questionContainer"></div>
+
+            <!-- Navigation -->
+            <div class="nav-buttons">
+                <button id="prevBtn" onclick="previousQuestion()" class="btn-nav btn-prev" style="display: none;">
+                    <i class="fas fa-arrow-left"></i> Sebelumnya
+                </button>
+                <button id="nextBtn" onclick="nextQuestion()" class="btn-nav btn-next">
+                    Selanjutnya <i class="fas fa-arrow-right"></i>
+                </button>
+                <button id="finishBtn" onclick="finishQuiz()" class="btn-nav btn-finish" style="display: none;">
+                    <i class="fas fa-check"></i> Selesai
+                </button>
+            </div>
+        </div>
+
+        <!-- Result Page -->
+        <div id="resultContainer" class="result-container">
+            <i class="fas fa-trophy fa-4x" style="color: #ffd700; margin-bottom: 20px;"></i>
+            <h2 style="color: #333; margin-bottom: 20px;">Kuis Selesai!</h2>
+            <div class="score-display" id="scoreDisplay">0</div>
+            <div class="score-label">Skor Anda dari 100</div>
+            <div id="resultMessage" class="result-message"></div>
+            <button onclick="restartQuiz()" class="btn-start">
+                <i class="fas fa-redo"></i> Kerjakan Lagi
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Questions Database
+        const questions = [
+            {
+                question: "You _____ finish your homework before watching TV.",
+                options: ["must", "can", "may", "should", "might"],
+                correct: 0
+            },
+            {
+                question: "_____ I borrow your pen for a moment?",
+                options: ["Must", "Should", "Could", "Need", "Ought"],
+                correct: 2
+            },
+            {
+                question: "It's raining heavily. You _____ take an umbrella.",
+                options: ["might", "could", "should", "may", "would"],
+                correct: 2
+            },
+            {
+                question: "Students _____ respect their teachers.",
+                options: ["must", "can", "may", "might", "could"],
+                correct: 0
+            },
+            {
+                question: "I _____ speak three languages fluently.",
+                options: ["must", "should", "can", "ought to", "need"],
+                correct: 2
+            },
+            {
+                question: "You _____ smoke in this building. It's prohibited.",
+                options: ["mustn't", "don't have to", "needn't", "shouldn't", "couldn't"],
+                correct: 0
+            },
+            {
+                question: "_____ you please help me carry these boxes?",
+                options: ["Must", "Should", "Could", "Need", "Ought"],
+                correct: 2
+            },
+            {
+                question: "The weather is nice. We _____ have a picnic tomorrow.",
+                options: ["must", "should", "can", "need to", "ought to"],
+                correct: 2
+            },
+            {
+                question: "You _____ tell anyone about this secret.",
+                options: ["mustn't", "don't have to", "needn't", "shouldn't", "couldn't"],
+                correct: 0
+            },
+            {
+                question: "I _____ be at the meeting by 9 AM tomorrow.",
+                options: ["can", "may", "must", "might", "could"],
+                correct: 2
+            },
+            {
+                question: "_____ I use your phone? Mine is out of battery.",
+                options: ["Must", "Should", "Could", "Need", "Ought"],
+                correct: 2
+            },
+            {
+                question: "You _____ wear a helmet when riding a motorcycle.",
+                options: ["must", "can", "may", "might", "could"],
+                correct: 0
+            },
+            {
+                question: "It _____ rain later. The sky is getting dark.",
+                options: ["must", "should", "can", "might", "need to"],
+                correct: 3
+            },
+            {
+                question: "You _____ finish all the questions. Just do your best.",
+                options: ["mustn't", "don't have to", "needn't", "shouldn't", "couldn't"],
+                correct: 1
+            },
+            {
+                question: "I _____ believe my eyes when I saw the surprise party.",
+                options: ["mustn't", "couldn't", "shouldn't", "wouldn't", "needn't"],
+                correct: 1
+            },
+            {
+                question: "_____ you mind if I open the window?",
+                options: ["Must", "Should", "Could", "Would", "Ought"],
+                correct: 3
+            },
+            {
+                question: "Children _____ play with matches. It's dangerous.",
+                options: ["mustn't", "don't have to", "needn't", "shouldn't", "couldn't"],
+                correct: 0
+            },
+            {
+                question: "I _____ swim when I was five years old.",
+                options: ["must", "should", "can", "could", "may"],
+                correct: 3
+            },
+            {
+                question: "You _____ see a doctor if your headache gets worse.",
+                options: ["must", "should", "can", "may", "might"],
+                correct: 1
+            },
+            {
+                question: "_____ we go to the cinema tonight?",
+                options: ["Must", "Should", "Could", "Would", "Shall"],
+                correct: 4
+            },
+            {
+                question: "You _____ worry about me. I'll be fine.",
+                options: ["mustn't", "don't have to", "needn't", "shouldn't", "couldn't"],
+                correct: 1
+            },
+            {
+                question: "I wish I _____ fly like a bird.",
+                options: ["must", "should", "can", "could", "may"],
+                correct: 3
+            },
+            {
+                question: "You _____ be quiet in the library.",
+                options: ["must", "can", "may", "might", "could"],
+                correct: 0
+            },
+            {
+                question: "_____ you like some coffee?",
+                options: ["Must", "Should", "Could", "Would", "Ought"],
+                correct: 3
+            },
+            {
+                question: "It's getting late. We _____ go home now.",
+                options: ["must", "should", "can", "may", "might"],
+                correct: 1
+            },
+            {
+                question: "You _____ drive without a license.",
+                options: ["mustn't", "don't have to", "needn't", "shouldn't", "couldn't"],
+                correct: 0
+            },
+            {
+                question: "I _____ hear what they were saying from across the room.",
+                options: ["must", "should", "can", "could", "may"],
+                correct: 3
+            },
+            {
+                question: "_____ I have your attention, please?",
+                options: ["Must", "Should", "Could", "Would", "May"],
+                correct: 4
+            },
+            {
+                question: "You _____ apologize for what you said. It was rude.",
+                options: ["must", "should", "can", "may", "might"],
+                correct: 1
+            },
+            {
+                question: "I _____ be there, but I'm not sure yet.",
+                options: ["must", "should", "can", "may", "might"],
+                correct: 4
+            },
+            {
+                question: "You _____ touch that wire. It's live!",
+                options: ["mustn't", "don't have to", "needn't", "shouldn't", "couldn't"],
+                correct: 0
+            }
+        ];
+
+        // Global Variables
+        let currentQuestion = 0;
+        let userAnswers = [];
+        let shuffledQuestions = [];
+        let timer;
+        let timeLeft = 720; // 12 minutes in seconds
+
+        // Token Validation
+        function validateToken() {
+            const token = document.getElementById('tokenInput').value;
+            if (token === 'MODAL123') {
+                document.getElementById('tokenPage').style.display = 'none';
+                document.getElementById('loading').style.display = 'block';
+                
+                setTimeout(() => {
+                    initializeQuiz();
+                }, 1500);
+            } else {
+                document.getElementById('tokenError').style.display = 'block';
+                document.getElementById('tokenInput').value = '';
+            }
+        }
+
+        // Initialize Quiz
+        function initializeQuiz() {
+            // Shuffle questions
+            shuffledQuestions = [...questions].sort(() => Math.random() - 0.5);
+            
+            // Initialize user answers array
+            userAnswers = new Array(shuffledQuestions.length).fill(-1);
+            
+            // Hide loading, show quiz
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('quizContainer').style.display = 'block';
+            
+            // Start timer
+            startTimer();
+            
+            // Display first question
+            displayQuestion();
+        }
+
+        // Timer Functions
+        function startTimer() {
+            timer = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    finishQuiz();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            const timerElement = document.getElementById('timer');
+            
+            timerElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            
+            if (timeLeft <= 60) {
+                timerElement.classList.add('warning');
+            }
+        }
+
+        // Display Question
+        function displayQuestion() {
+            const question = shuffledQuestions[currentQuestion];
+            const container = document.getElementById('questionContainer');
+            
+            // Shuffle options
+            const shuffledOptions = [...question.options].map((option, index) => ({
+                text: option,
+                originalIndex: index
+            })).sort(() => Math.random() - 0.5);
+            
+            container.innerHTML = `
+                <div class="question-card">
+                    <div class="question-number">${currentQuestion + 1}</div>
+                    <div class="question-text">${question.question}</div>
+                    <div class="options-container">
+                        ${shuffledOptions.map((option, index) => `
+                            <div class="option" onclick="selectOption(${index})" data-index="${index}">
+                                <div class="option-letter">${String.fromCharCode(65 + index)}</div>
+                                <div class="option-text">${option.text}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            
+            // Update navigation buttons
+            updateNavigation();
+            
+            // Update progress bar
+            updateProgress();
+            
+            // Restore selected option if any
+            if (userAnswers[currentQuestion] !== -1) {
+                const selectedOption = container.querySelector(`[data-index="${userAnswers[currentQuestion]}"]`);
+                if (selectedOption) {
+                    selectedOption.classList.add('selected');
+                }
+            }
+        }
+
+        // Select Option
+        function selectOption(optionIndex) {
+            // Remove previous selection
+            const options = document.querySelectorAll('.option');
+            options.forEach(opt => opt.classList.remove('selected'));
+            
+            // Add selection to clicked option
+            const selectedOption = document.querySelector(`[data-index="${optionIndex}"]`);
+            selectedOption.classList.add('selected');
+            
+            // Store answer
+            userAnswers[currentQuestion] = optionIndex;
+        }
+
+        // Navigation Functions
+        function updateNavigation() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const finishBtn = document.getElementById('finishBtn');
+            
+            if (currentQuestion === 0) {
+                prevBtn.style.display = 'none';
+            } else {
+                prevBtn.style.display = 'block';
+            }
+            
+            if (currentQuestion === shuffledQuestions.length - 1) {
+                nextBtn.style.display = 'none';
+                finishBtn.style.display = 'block';
+            } else {
+                nextBtn.style.display = 'block';
+                finishBtn.style.display = 'none';
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                displayQuestion();
+            }
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < shuffledQuestions.length - 1) {
+                currentQuestion++;
+                displayQuestion();
+            }
+        }
+
+        // Progress Bar
+        function updateProgress() {
+            const progress = ((currentQuestion + 1) / shuffledQuestions.length) * 100;
+            const progressBar = document.getElementById('progressBar');
+            progressBar.style.width = progress + '%';
+            progressBar.textContent = Math.round(progress) + '%';
+        }
+
+        // Finish Quiz
+        function finishQuiz() {
+            clearInterval(timer);
+            
+            // Calculate score
+            let correctAnswers = 0;
+            for (let i = 0; i < shuffledQuestions.length; i++) {
+                if (userAnswers[i] !== -1) {
+                    const selectedOption = document.querySelectorAll('#questionContainer .option')[userAnswers[i]];
+                    const optionText = selectedOption.querySelector('.option-text').textContent;
+                    const correctOptionText = shuffledQuestions[i].options[shuffledQuestions[i].correct];
+                    
+                    if (optionText === correctOptionText) {
+                        correctAnswers++;
+                    }
+                }
+            }
+            
+            const score = Math.round((correctAnswers / shuffledQuestions.length) * 100);
+            
+            // Display result
+            document.getElementById('quizContainer').style.display = 'none';
+            document.getElementById('resultContainer').style.display = 'block';
+            document.getElementById('scoreDisplay').textContent = score;
+            
+            // Result message
+            let message = '';
+            if (score >= 90) {
+                message = 'Luar biasa! Anda sangat menguasai modal verbs!';
+            } else if (score >= 70) {
+                message = 'Bagus! Anda sudah memahami modal verbs dengan baik.';
+            } else if (score >= 50) {
+                message = 'Cukup baik, tapi masih perlu banyak belajar.';
+            } else {
+                message = 'Anda perlu mempelajari modal verbs lebih intensif.';
+            }
+            
+            document.getElementById('resultMessage').innerHTML = `
+                <strong>Jawaban Benar:</strong> ${correctAnswers} dari ${shuffledQuestions.length} soal<br>
+                ${message}
+            `;
+        }
+
+        // Restart Quiz
+        function restartQuiz() {
+            // Reset variables
+            currentQuestion = 0;
+            userAnswers = [];
+            timeLeft = 720;
+            
+            // Hide result, show token page
+            document.getElementById('resultContainer').style.display = 'none';
+            document.getElementById('tokenPage').style.display = 'block';
+            document.getElementById('tokenInput').value = '';
+            document.getElementById('tokenError').style.display = 'none';
+            
+            // Remove warning class from timer
+            document.getElementById('timer').classList.remove('warning');
+        }
+
+        // Enter key support for token input
+        document.getElementById('tokenInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                validateToken();
+            }
+        });
+    </script>
+</body>
+</html>
