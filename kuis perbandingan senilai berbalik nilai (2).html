@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kuis perbandingan </title>
+  <style>
+    :root{
+      --bg:#060000;       /* slate-900 */
+      --card:#111827;     /* gray-900 */
+      --muted:#334155;    /* slate-600 */
+      --text:#ffffff;     /* gray-200 */
+      --accent:#38bdf8;   /* sky-400 */
+      --accent-2:#22c55e; /* green-500 */
+      --danger:#ef4444;   /* red-500 */
+      --warn:#f59e0b;     /* amber-500 */
+      --shadow: 0 8px 24px rgba(0,0,0,.35);
+      --radius: 16px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
+      background: radial-gradient(1200px 800px at 10% -10%, #1e293b, transparent),
+                  radial-gradient(800px 600px at 120% 0%, #0b3b47, transparent),
+                  var(--bg);
+      color:var(--text);
+      min-height:100svh; display:flex; align-items:center; justify-content:center; padding:24px;
+    }
+    .app{width:100%; max-width:980px}
+    header{
+      display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:16px;
+    }
+    .brand{font-weight:800; letter-spacing:.5px; font-size:clamp(18px,3.5vw,24px)}
+    .timer{font-variant-numeric:tabular-nums; font-weight:700; padding:10px 14px; border-radius:999px; background:#0b1220; border:1px solid #1f2a44; box-shadow:var(--shadow)}
+    .card{background:linear-gradient(180deg,#0b1220,#0a1020); border:1px solid #1f2a44; border-radius:var(--radius); box-shadow:var(--shadow)}
+    .section{display:none}
+    .active{display:block}
+    .card-inner{padding:20px}
+    .grid{display:grid; gap:16px}
+    .grid-2{grid-template-columns: 1fr 1fr}
+    .grid-responsive{grid-template-columns: 1fr;}
+    @media (min-width:720px){ .grid-responsive{grid-template-columns: 1fr 320px} }
+
+    input[type="text"], input[type="password"]{
+      width:100%; padding:12px 14px; border-radius:12px; border:1px solid #26314d; background:#0b1220; color:var(--text);
+      outline:none; box-shadow:inset 0 0 0 9999px rgba(255,255,255,0);
+    }
+    label{font-size:14px; color:#cbd5e1}
+    .btn{cursor:pointer; padding:12px 16px; border-radius:14px; background:var(--accent); color:#001219; border:none; font-weight:700; box-shadow:var(--shadow); transition:.2s transform ease;}
+    .btn:active{transform:translateY(1px)}
+    .btn.secondary{background:#1f2937; color:#e2e8f0; border:1px solid #334155}
+    .btn.warn{background:var(--warn); color:#0b1220}
+    .btn.danger{background:var(--danger); color:#0b1220}
+    .muted{color:#94a3b8}
+    .pill{display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border-radius:999px; background:#0b1220; border:1px solid #223156; font-size:12px; color:#cbd5e1}
+
+    .question-area{display:flex; flex-direction:column; gap:14px}
+    .q-title{font-weight:800; font-size:18px}
+    .choices{display:grid; gap:10px}
+    .choice{display:flex; gap:10px; align-items:flex-start; border:1px solid #1f2a44; background:#0b1220; padding:12px; border-radius:12px; cursor:pointer}
+    .choice input{margin-top:4px}
+
+    .nav{display:flex; gap:10px; flex-wrap:wrap; max-height:240px; overflow:auto; padding:10px}
+    .nav button{width:44px; height:40px; border-radius:10px; border:1px solid #1f2a44; background:#0b1220; color:#cbd5e1; font-weight:700; cursor:pointer}
+    .nav button.active{outline:2px solid var(--accent); color:#0ea5e9}
+    .nav button.done{background:#07291f; border-color:#0b7a53; color:#34d399}
+
+    .footer-actions{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:10px}
+
+    .legend{display:flex; gap:8px; flex-wrap:wrap}
+
+    .results{display:grid; gap:12px}
+    .score-box{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+    .score-card{background:#0b1220; border:1px solid #1f2a44; border-radius:14px; padding:14px}
+
+    .info-row{display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between}
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="brand">kuis perbandingan </div>
+      <div class="pill" id="infoUser">Belum login</div>
+      <div class="timer" id="timer">20:00</div>
+    </header>
+
+    <!-- SECTION 1: FORM MINIMAL -->
+    <section id="section-form" class="section active">
+      <div class="card">
+        <div class="card-inner grid">
+          <div>
+            <h2 style="margin:0 0 10px 0">Masuk Kuis</h2>
+            <p class="muted" style="margin-top:0">Masukkan nama dan password untuk memulai. Tidak ada pengaturan tambahan.</p>
+            <div class="grid">
+              <div>
+                <label for="nama">Nama</label>
+                <input id="nama" type="text" placeholder="Nama peserta" />
+              </div>
+              <div>
+                <label for="pass">Password</label>
+                <input id="pass" type="password" placeholder="Password" />
+              </div>
+              <button class="btn" id="btnMulai">Mulai Kuis</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: QUIZ -->
+    <section id="section-quiz" class="section">
+      <div class="grid grid-responsive">
+        <div class="card">
+          <div class="card-inner">
+            <div class="info-row">
+              <div class="pill" id="infoKategori">Kategori: -</div>
+              <div class="pill" id="infoSoal">Soal 0 / 180</div>
+            </div>
+            <div class="question-area" id="questionArea">
+              <!-- Question inject here -->
+            </div>
+            <div class="footer-actions">
+              <button class="btn secondary" id="prevBtn">Prev</button>
+              <div class="legend">
+                <span class="pill">• Biru = aktif</span>
+                <span class="pill" style="background:#07291f; color:#34d399; border-color:#0b7a53">• Hijau = terjawab</span>
+              </div>
+              <button class="btn" id="nextBtn">Next</button>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-inner">
+            <h3 style="margin-top:0">Navigasi Soal</h3>
+            <div class="nav" id="nav">
+              <!-- Nav buttons injected here -->
+            </div>
+            <div class="grid" style="margin-top:8px">
+              <button class="btn warn" id="btnSubmit">Kumpulkan Jawaban</button>
+              <button class="btn danger" id="btnReset">Reset Jawaban</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: HASIL -->
+    <section id="section-result" class="section">
+      <div class="card">
+        <div class="card-inner results">
+          <h2 style="margin:0">Hasil Ujian</h2>
+          <p class="muted" id="resultUser">Peserta: -</p>
+          <div class="score-box">
+            <div class="score-card" style="grid-column: span 2">
+              <div class="muted">Total Skor</div>
+              <div id="scoreTotal" style="font-size:30px; font-weight:900">0 / 180</div>
+            </div>
+          </div>
+          <div>
+            <button class="btn" id="btnUlang">Mulai Lagi</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    /** UTIL **/
+    const el = (sel) => document.querySelector(sel);
+    const els = (sel) => Array.from(document.querySelectorAll(sel));
+    const shuffle = (arr) => arr.map(v=>[Math.random(),v]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]);
+
+    /** BANK SOAL (40/40/40) **/
+    // Format: {type:'sinonim'|'antonim'|'hiponim', q:'', options:['','','',''], answer: index}
+
+    const SOAL_fungsi = [
+    {
+    q: "Satu kotak telur berisi 6 butir telur seharga Rp18.000,00. Jika Budi membeli 2 butir, berapakah uang yang harus dibayar?",
+    o: [
+      "\\(\\text{Rp }3.000,00\\)",
+      "\\(\\text{Rp }4.000,00\\)",
+      "\\(\\text{Rp }5.000,00\\)",
+      "\\(\\text{Rp }6.000,00\\)"
+    ],
+    a: 3
+  },
+  {
+    q: "Tiga lusin pensil dijual Rp72.000,00. Jika Budi membeli 1 kodi pensil dengan uang Rp50.000,00, berapa kembaliannya?",
+    o: [
+      "\\(\\text{Rp }10.000,00\\)",
+      "\\(\\text{Rp }15.000,00\\)",
+      "\\(\\text{Rp }13.000,00\\)",
+      "\\(\\text{Rp }14.000,00\\)",
+      "\\(\\text{Rp }8.000,00\\)"
+    ],
+    a: 0
+  },
+  {
+    q: "Sebuah motor menempuh \\(120 \\, \\text{km}\\) dalam \\(2 \\, \\text{jam}\\). Berapa waktu untuk menempuh \\(240 \\, \\text{km}\\) dengan kecepatan sama?",
+    o: [
+      "\\(3 \\, \\text{jam}\\)",
+      "\\(4 \\, \\text{jam}\\)",
+      "\\(5 \\, \\text{jam}\\)",
+      "\\(6 \\, \\text{jam}\\)",
+      "\\(8 \\, \\text{jam}\\)"
+    ],
+    a: 1
+  },
+  {
+    q: "10 pekerja menyelesaikan dinding dalam \\(8 \\, \\text{hari}\\). Jika ingin selesai \\(5 \\, \\text{hari}\\), berapa pekerja dibutuhkan?",
+    o: ["\\(12\\)", "\\(14\\)", "\\(16\\)", "\\(18\\)", "\\(20\\)"],
+    a: 2
+  },
+  {
+    q: "3 mesin produksi menghasilkan 600 unit/jam. Berapa unit dihasilkan 5 mesin dalam setengah jam?",
+    o: ["\\(500\\)", "\\(700\\)", "\\(1300\\)", "\\(1100\\)", "\\(1200\\)"],
+    a: 0
+  },
+  {
+    q: "Enzo membaca 2 novel dalam 4 minggu. Jika 1 seri terdiri dari 5 novel, berapa lama waktu yang dibutuhkan?",
+    o: [
+      "\\(2 \\, \\text{bulan}\\)",
+      "\\(3 \\, \\text{bulan}\\)",
+      "\\(2 \\, \\text{bulan } 2 \\, \\text{minggu}\\)",
+      "\\(3 \\, \\text{bulan } 3 \\, \\text{minggu}\\)",
+      "\\(\\text{Enzo dak suko baco buku}\\)"
+    ],
+    a: 2
+  },
+  {
+    q: "Persediaan pakan cukup untuk 60 ayam selama 10 hari. Jika ayam dijual 10 ekor, berapa lama pakan habis?",
+    o: [
+      "\\(8 \\, \\text{hari}\\)",
+      "\\(11 \\, \\text{hari}\\)",
+      "\\(12 \\, \\text{hari}\\)",
+      "\\(13 \\, \\text{hari}\\)",
+      "\\(15 \\, \\text{hari}\\)"
+    ],
+    a: 2
+  },
+  {
+    q: "Mobil butuh \\(5 \\, \\text{liter}\\) bensin untuk \\(75 \\, \\text{km}\\). Berapa liter bensin untuk \\(225 \\, \\text{km}\\)?",
+    o: ["\\(10\\)", "\\(12\\)", "\\(15\\)", "\\(20\\)", "\\(25\\)"],
+    a: 2
+  },
+  {
+    q: "Untuk membuat 12 loyang kue diperlukan \\(6 \\, \\text{kg}\\) tepung. Berapa kg tepung untuk 30 loyang?",
+    o: ["\\(10\\)", "\\(12\\)", "\\(15\\)", "\\(18\\)", "\\(20\\)"],
+    a: 2
+  },
+  {
+    q: "Proyek selesai oleh 20 pekerja dalam 15 hari. Jika harus selesai 12 hari, berapa tambahan pekerja?",
+    o: ["\\(3\\)", "\\(5\\)", "\\(8\\)", "\\(10\\)", "\\(15\\)"],
+    a: 1
+  },
+  {
+    q: "12 orang menyelesaikan pekerjaan 8 hari. Jika dikerjakan 6 orang, berapa hari diperlukan?",
+    o: ["\\(10\\)", "\\(12\\)", "\\(14\\)", "\\(16\\)", "\\(18\\)"],
+    a: 3
+  },
+  {
+    q: "4 orang mengecat 1 dinding dalam 5 jam. Berapa waktu yang dibutuhkan 10 orang untuk mengecat 2 dinding?",
+    o: ["\\(2\\)", "\\(4\\)", "\\(5\\)", "\\(6\\)", "\\(8\\)"],
+    a: 1
+  },
+  {
+    q: "Harga 4 kg apel adalah  Rp80.000,00. Manakah hubungan yang benar antara kuantitas P dan Q berikut? petunjuk ( P: harga 7 kg apel, Q: Rp145.000,00.)",
+    o: ["\\(P>Q\\)", "\\(Q>P\\)", "\\(P=Q\\)", "\\(P=2Q\\)", "\\(\\text{Tidak dapat ditentukan}\\)"],
+    a: 1
+  },
+  {
+    q: "8 mesin fotokopi menghasilkan 2000 lembar/10 menit. Berapa lembar dihasilkan 4 mesin dalam 15 menit?",
+    o: ["\\(1000\\)", "\\(1200\\)", "\\(1500\\)", "\\(1800\\)", "\\(2000\\)"],
+    a: 2
+  },
+  {
+    q: "18 orang menyelesaikan pekerjaan dalam 6 hari. Jika ingin selesai 9 hari, berapa pekerja diperlukan?",
+    o: ["\\(10\\)", "\\(12\\)", "\\(15\\)", "\\(24\\)", "\\(27\\)"],
+    a: 1
+  },
+  {
+    q: "Untuk mengisi \\(\\tfrac{1}{4}\\) tangki butuh 5 menit. Berapa menit untuk mengisi sisa tangki?",
+    o: ["\\(10\\)", "\\(15\\)", "\\(20\\)", "\\(25\\)", "\\(30\\)"],
+    a: 1
+  },
+  {
+    q: "Seorang penjahit membuat 3 kemeja dalam 6 jam. Berapa kemeja dibuat dalam 24 jam?",
+    o: ["\\(9\\)", "\\(10\\)", "\\(12\\)", "\\(15\\)", "\\(18\\)"],
+    a: 2
+  },
+  {
+    q: "Jika 15 pekerja menyelesaikan \\(\\tfrac{2}{3}\\) bagian proyek dalam waktu 10 hari. Berapa hari seluruh proyek akan selesai jika dikerjakan 9 pekerja?",
+    o: ["\\(15\\)", "\\(20\\)", "\\(25\\)", "\\(30\\)", "\\(35\\)"],
+    a: 2
+  },
+  {
+    q: "Harga 5 buku Rp75.000,00. Dengan uang Rp120.000,00 berapa buku bisa dibeli?",
+    o: ["\\(6\\)", "\\(8\\)", "\\(10\\)", "\\(12\\)", "\\(15\\)"],
+    a: 1
+  },
+  {
+    q: "Pabrik punya bahan baku untuk 10 hari (200 unit/hari). Jika produksi jadi 250 unit/hari, berapa hari bertahan?",
+    o: ["\\(6\\)", "\\(8\\)", "\\(10\\)", "\\(12\\)", "\\(15\\)"],
+    a: 1
+  },
+  {
+    q: "Mobil menempuh 150 km dalam 2,5 jam. Berapa kecepatan rata-rata?",
+    o: ["\\(50\\)", "\\(60\\)", "\\(75\\)", "\\(80\\)", "\\(90\\)"],
+    a: 1
+  },
+  {
+    q: "Proyek direncanakan selesai 12 hari oleh 10 pekerja. Jika 2 pekerja berhenti, berapa hari tambahan diperlukan?",
+    o: ["\\(3\\)", "\\(4\\)", "\\(5\\)", "\\(6\\)", "\\(8\\)"],
+    a: 0
+  },
+  {
+    q: "Pabrik mengurangi jam kerja dari 50 menjadi 45 jam per minggu tanpa potong gaji. Jika gaji lama Rp25.000/jam, berapa gaji per jam baru?",
+    o: ["\\(\\text{Rp}22.500\\)", "\\(\\text{Rp}27.778\\)", "\\(\\text{Rp}28.000\\)", "\\(\\text{Rp}30.000\\)", "\\(\\text{Rp}32.500\\)"],
+    a: 1
+  },
+  {
+    q: "12 orang membangun 2 jembatan dalam 6 hari. Berapa hari dibutuhkan 8 orang untuk 4 jembatan?",
+    o: ["\\(9\\)", "\\(12\\)", "\\(15\\)", "\\(18\\)", "\\(20\\)"],
+    a: 3
+  },
+  {
+    q: "Proyek 15 pekerja selesai dalam 20 hari. Setelah 8 hari terhenti 4 hari. Agar tepat waktu, berapa tambahan pekerja diperlukan?",
+    o: ["\\(5\\)", "\\(8\\)", "\\(10\\)", "\\(12\\)", "\\(15\\)"],
+    a: 1
+  }
+].map(x=>({type:'perbandingan', q:x.q, options:x.o, answer:x.a}));
+
+    
+    
+    S_fungsi = shuffle(SOAL_fungsi)
+
+    /*  Validasi jumlah
+    if(SINONIM.length!==90||ANTONIM.length!==90){
+      console.warn('Jumlah soal tidak 90/90:', SINONIM.length, ANTONIM.length);
+    }  */
+
+    // /* Gabung & acak
+    function shuffleOptions(q){  
+        let opts = q.options.map((opt, i) => ({opt, i}));
+        opts = shuffle(opts); // pake fungsi shuffle yang sudah kamu punya
+        let newAnswer = opts.findIndex(o => o.i === q.answer);
+        return {
+            ...q,
+            options: opts.map(o => o.opt),
+            answer: newAnswer
+  };
+  
+}
+//*/
+    let QUESTIONS = [...S_fungsi].map((q,i)=>({id:i+1, ...shuffleOptions(q)}));
+    // let QUESTIONS = [...SINONIM, ...ANTONIM].map((q,i)=>({id:i+1, ...q }));
+    // State
+    let state = {
+      user:null,
+      timeLeft: 45*60, // 25 menit
+      currentIndex: 0,
+      answers: Array(180).fill(null), // simpan index jawaban (0..3) atau null
+    };
+
+    /** RENDERING **/
+    function formatTime(s){
+      const m = Math.floor(s/60).toString().padStart(2,'0');
+      const r = (s%60).toString().padStart(2,'0');
+      return `${m}:${r}`;
+    }
+
+    function renderTimer(){
+      el('#timer').textContent = formatTime(state.timeLeft);
+      if(state.timeLeft <= 60){ el('#timer').style.background = '#331a1a'; el('#timer').style.borderColor = '#7f1d1d'; }
+      if(state.timeLeft <= 0){
+        submitQuiz();
+      }
+    }
+
+    let tick = null;
+    function startTimer(){
+      if(tick) clearInterval(tick);
+      tick = setInterval(()=>{ state.timeLeft--; renderTimer(); if(state.timeLeft<=0) clearInterval(tick); }, 1000);
+    }
+
+    function mountNav(){
+      const nav = el('#nav');
+      nav.innerHTML = '';
+      QUESTIONS.forEach((q,idx)=>{
+        const b = document.createElement('button');
+        b.textContent = idx+1;
+        b.addEventListener('click', ()=>{ goTo(idx); });
+        nav.appendChild(b);
+      });
+      updateNavActive();
+    }
+
+    function updateNavActive(){
+      const buttons = els('#nav button');
+      buttons.forEach((b,idx)=>{
+        b.classList.toggle('active', idx===state.currentIndex);
+        b.classList.toggle('done', state.answers[idx]!==null);
+      });
+      el('#infoSoal').textContent = `Soal ${state.currentIndex+1} / ${QUESTIONS.length}`;
+      el('#infoKategori').textContent = `Kategori: ${QUESTIONS[state.currentIndex].type.toUpperCase()}`;
+    }
+
+    function renderQuestion(){
+      const q = QUESTIONS[state.currentIndex];
+      const container = el('#questionArea');
+      container.innerHTML = '';
+      const title = document.createElement('div');
+      title.className = 'q-title';
+
+      title.innerHTML = q.q;
+      container.appendChild(title);
+
+      const list = document.createElement('div');
+      list.className = 'choices';
+      q.options.forEach((opt, i)=>{
+        const row = document.createElement('label');
+        row.className = 'choice';
+        const input = document.createElement('input');
+        input.type = 'radio'; input.name = 'choice'; input.value = i;
+        input.checked = state.answers[state.currentIndex]===i;
+        input.addEventListener('change', ()=>{
+          state.answers[state.currentIndex]=i;
+          updateNavActive();
+        });
+        const span = document.createElement('div');
+        span.innerHTML = opt;
+        row.appendChild(input); row.appendChild(span); list.appendChild(row);
+      });
+      container.appendChild(list);
+      MathJax.typeset();
+    }
+
+    function goTo(idx){
+      state.currentIndex = Math.max(0, Math.min(QUESTIONS.length-1, idx));
+      updateNavActive();
+      renderQuestion();
+    }
+
+    function next(){ if(state.currentIndex < QUESTIONS.length-1){ goTo(state.currentIndex+1); } }
+    function prev(){ if(state.currentIndex > 0){ goTo(state.currentIndex-1); } }
+
+    function resetAnswers(){
+      if(!confirm('Yakin reset semua jawaban?')) return;
+      state.answers = Array(QUESTIONS.length).fill(null);
+      updateNavActive();
+      renderQuestion();
+    }
+
+    function submitQuiz(){
+      // hitung skor per kategori
+      let sSin=0, sAnt=0, sHip=0;
+      QUESTIONS.forEach((q,idx)=>{
+        const pick = state.answers[idx];
+        const correct = q.answer;
+        if(pick===correct){
+          if(q.type==='perbandingan') sSin++;
+        }
+      });
+      const total = sSin + sAnt + sHip;
+
+      // tampilkan
+      let total_question= QUESTIONS.length
+
+      el('#scoreTotal').textContent = `${total} / ${total_question}`;
+      el('#resultUser').textContent = `Peserta: ${state.user?.nama || '-'} (waktu habis/kumpul)`;
+
+      // stop timer, ganti section
+      if(tick) clearInterval(tick);
+      showSection('result');
+      window.scrollTo({top:0, behavior:'smooth'});
+    }
+
+    function showSection(which){
+      el('#section-form').classList.remove('active');
+      el('#section-quiz').classList.remove('active');
+      el('#section-result').classList.remove('active');
+      if(which==='form') el('#section-form').classList.add('active');
+      if(which==='quiz') el('#section-quiz').classList.add('active');
+      if(which==='result') el('#section-result').classList.add('active');
+    }
+
+    // EVENTS
+    el('#btnMulai').addEventListener('click', ()=>{
+      const nama = el('#nama').value.trim();
+      const pass = el('#pass').value.trim();
+      if(!nama || !pass){ alert('Nama dan password wajib diisi.'); return; }
+      if(pass!=="MUDAH"){
+        alert("password salah! tanya password ke sir hardi. klo sir hardi dak tau tanya ke sir meca");
+        return;
+      }
+      state.user = {nama, pass};
+      el('#infoUser').textContent = `Peserta: ${nama}`;
+      showSection('quiz');
+      startTimer();
+      mountNav();
+      goTo(0);
+      renderTimer();
+    });
+
+    el('#prevBtn').addEventListener('click', prev);
+    el('#nextBtn').addEventListener('click', next);
+    el('#btnReset').addEventListener('click', resetAnswers);
+    el('#btnSubmit').addEventListener('click', ()=>{
+      if(confirm('Kumpulkan jawaban sekarang?')) submitQuiz();
+    });
+
+    // Keyboard nav: panah kiri/kanan, angka 1-4 untuk memilih A-D
+    window.addEventListener('keydown', (e)=>{
+      if(!el('#section-quiz').classList.contains('active')) return;
+      if(e.key==='ArrowRight') next();
+      if(e.key==='ArrowLeft') prev();
+      if(['1','2','3','4'].includes(e.key)){
+        const idx = parseInt(e.key)-1;
+        state.answers[state.currentIndex]=idx;
+        updateNavActive();
+        renderQuestion();
+      }
+    });
+
+    // Ulang dari hasil
+    el('#btnUlang').addEventListener('click', ()=>{
+      state = { user: state.user, timeLeft: 15*60, currentIndex: 0, answers: Array(180).fill(null)};
+      QUESTIONS = shuffle(QUESTIONS); // acak ulang urutan
+      showSection('quiz');
+      startTimer();
+      mountNav();
+      goTo(0);
+      renderTimer();
+    });
+
+  </script>
+</body>
+</html>
