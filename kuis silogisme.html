@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kuis silogisme</title>
+    <style>
+      :root {
+        --bg: #060000; /* slate-900 */
+        --card: #111827; /* gray-900 */
+        --muted: #334155; /* slate-600 */
+        --text: #ffffff; /* gray-200 */
+        --accent: #38bdf8; /* sky-400 */
+        --accent-2: #22c55e; /* green-500 */
+        --danger: #ef4444; /* red-500 */
+        --warn: #f59e0b; /* amber-500 */
+        --shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+        --radius: 16px;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto,
+          "Helvetica Neue", Arial;
+        background: radial-gradient(
+            1200px 800px at 10% -10%,
+            #1e293b,
+            transparent
+          ),
+          radial-gradient(800px 600px at 120% 0%, #0b3b47, transparent),
+          var(--bg);
+        color: var(--text);
+        min-height: 100svh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+      }
+      .app {
+        width: 100%;
+        max-width: 980px;
+      }
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+      .brand {
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        font-size: clamp(18px, 3.5vw, 24px);
+      }
+      .timer {
+        font-variant-numeric: tabular-nums;
+        font-weight: 700;
+        padding: 10px 14px;
+        border-radius: 999px;
+        background: #0b1220;
+        border: 1px solid #1f2a44;
+        box-shadow: var(--shadow);
+      }
+      .card {
+        background: linear-gradient(180deg, #0b1220, #0a1020);
+        border: 1px solid #1f2a44;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+      }
+      .section {
+        display: none;
+      }
+      .active {
+        display: block;
+      }
+      .card-inner {
+        padding: 20px;
+      }
+      .grid {
+        display: grid;
+        gap: 16px;
+      }
+      .grid-2 {
+        grid-template-columns: 1fr 1fr;
+      }
+      .grid-responsive {
+        grid-template-columns: 1fr;
+      }
+      @media (min-width: 720px) {
+        .grid-responsive {
+          grid-template-columns: 1fr 320px;
+        }
+      }
+
+      input[type="text"],
+      input[type="password"] {
+        width: 100%;
+        padding: 12px 14px;
+        border-radius: 12px;
+        border: 1px solid #26314d;
+        background: #0b1220;
+        color: var(--text);
+        outline: none;
+        box-shadow: inset 0 0 0 9999px rgba(255, 255, 255, 0);
+      }
+      label {
+        font-size: 14px;
+        color: #cbd5e1;
+      }
+      .btn {
+        cursor: pointer;
+        padding: 12px 16px;
+        border-radius: 14px;
+        background: var(--accent);
+        color: #001219;
+        border: none;
+        font-weight: 700;
+        box-shadow: var(--shadow);
+        transition: 0.2s transform ease;
+      }
+      .btn:active {
+        transform: translateY(1px);
+      }
+      .btn.secondary {
+        background: #1f2937;
+        color: #e2e8f0;
+        border: 1px solid #334155;
+      }
+      .btn.warn {
+        background: var(--warn);
+        color: #0b1220;
+      }
+      .btn.danger {
+        background: var(--danger);
+        color: #0b1220;
+      }
+      .muted {
+        color: #94a3b8;
+      }
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: #0b1220;
+        border: 1px solid #223156;
+        font-size: 12px;
+        color: #cbd5e1;
+      }
+
+      .question-area {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+      .q-title {
+        font-weight: 800;
+        font-size: 18px;
+      }
+      .choices {
+        display: grid;
+        gap: 10px;
+      }
+      .choice {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        border: 1px solid #1f2a44;
+        background: #0b1220;
+        padding: 12px;
+        border-radius: 12px;
+        cursor: pointer;
+      }
+      .choice input {
+        margin-top: 4px;
+      }
+
+      .nav {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        max-height: 240px;
+        overflow: auto;
+        padding: 10px;
+      }
+      .nav button {
+        width: 44px;
+        height: 40px;
+        border-radius: 10px;
+        border: 1px solid #1f2a44;
+        background: #0b1220;
+        color: #cbd5e1;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .nav button.active {
+        outline: 2px solid var(--accent);
+        color: #0ea5e9;
+      }
+      .nav button.done {
+        background: #07291f;
+        border-color: #0b7a53;
+        color: #34d399;
+      }
+
+      .footer-actions {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-top: 10px;
+      }
+
+      .legend {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .results {
+        display: grid;
+        gap: 12px;
+      }
+      .score-box {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      .score-card {
+        background: #0b1220;
+        border: 1px solid #1f2a44;
+        border-radius: 14px;
+        padding: 14px;
+      }
+
+      .info-row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  </head>
+  <body>
+    <div class="app">
+      <header>
+        <div class="brand">kuis silogisme</div>
+        <div class="pill" id="infoUser">Belum login</div>
+        <div class="timer" id="timer">20:00</div>
+      </header>
+
+      <!-- SECTION 1: FORM MINIMAL -->
+      <section id="section-form" class="section active">
+        <div class="card">
+          <div class="card-inner grid">
+            <div>
+              <h2 style="margin: 0 0 10px 0">Masuk Kuis</h2>
+              <p class="muted" style="margin-top: 0">
+                Masukkan nama dan password untuk memulai. Tidak ada pengaturan
+                tambahan.
+              </p>
+              <div class="grid">
+                <div>
+                  <label for="nama">Nama</label>
+                  <input id="nama" type="text" placeholder="Nama peserta" />
+                </div>
+                <div>
+                  <label for="pass">Password</label>
+                  <input id="pass" type="password" placeholder="Password" />
+                </div>
+                <button class="btn" id="btnMulai">Mulai Kuis</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 2: QUIZ -->
+      <section id="section-quiz" class="section">
+        <div class="grid grid-responsive">
+          <div class="card">
+            <div class="card-inner">
+              <div class="info-row">
+                <div class="pill" id="infoKategori">Kategori: -</div>
+                <div class="pill" id="infoSoal">Soal 0 / 180</div>
+              </div>
+              <div class="question-area" id="questionArea">
+                <!-- Question inject here -->
+              </div>
+              <div class="footer-actions">
+                <button class="btn secondary" id="prevBtn">Prev</button>
+                <div class="legend">
+                  <span class="pill">• Biru = aktif</span>
+                  <span
+                    class="pill"
+                    style="
+                      background: #07291f;
+                      color: #34d399;
+                      border-color: #0b7a53;
+                    "
+                    >• Hijau = terjawab</span
+                  >
+                </div>
+                <button class="btn" id="nextBtn">Next</button>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-inner">
+              <h3 style="margin-top: 0">Navigasi Soal</h3>
+              <div class="nav" id="nav">
+                <!-- Nav buttons injected here -->
+              </div>
+              <div class="grid" style="margin-top: 8px">
+                <button class="btn warn" id="btnSubmit">
+                  Kumpulkan Jawaban
+                </button>
+                <button class="btn danger" id="btnReset">Reset Jawaban</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 3: HASIL -->
+      <section id="section-result" class="section">
+        <div class="card">
+          <div class="card-inner results">
+            <h2 style="margin: 0">Hasil Ujian</h2>
+            <p class="muted" id="resultUser">Peserta: -</p>
+            <div class="score-box">
+              <div class="score-card" style="grid-column: span 2">
+                <div class="muted">Total Skor</div>
+                <div id="scoreTotal" style="font-size: 30px; font-weight: 900">
+                  0 / 180
+                </div>
+              </div>
+            </div>
+            <div>
+              <button class="btn" id="btnUlang">Mulai Lagi</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      /** UTIL **/
+      const el = (sel) => document.querySelector(sel);
+      const els = (sel) => Array.from(document.querySelectorAll(sel));
+      const shuffle = (arr) =>
+        arr
+          .map((v) => [Math.random(), v])
+          .sort((a, b) => a[0] - b[0])
+          .map((x) => x[1]);
+
+      /** BANK SOAL (40/40/40) **/
+      // Format: {type:'sinonim'|'antonim'|'hiponim', q:'', options:['','','',''], answer: index}
+
+      const SOAL_fungsi = [
+        {
+          q: "Rina diterima bekerja di Bank atau di Kantor Pajak. Ternyata Rina tidak bekerja di Kantor Pajak.",
+          o: [
+            "Rina tidak bekerja di Bank",
+            "Rina bekerja di Kantor Pajak",
+            "Rina bekerja di Bank",
+            "Jika Rina diterima di Bank maka Pajak tidak dipilih",
+            "Jika Rina diterima di Kantor Pajak maka Bank tidak dipilih",
+          ],
+          a: "Rina bekerja di Bank",
+        },
+        {
+          q: "Belajar giat atau mendapat nilai jelek. Tidak mendapat nilai jelek.",
+          o: [
+            "Tidak belajar giat",
+            "Belajar giat",
+            "Mendapat nilai jelek",
+            "Tidak belajar giat dan tidak mendapat nilai jelek",
+            "Mendapat nilai bagus karena belajar giat",
+          ],
+          a: "Belajar giat",
+        },
+        {
+          q: "Jika mandi maka harus memakai sabun atau sampo. Bima sedang mandi.",
+          o: [
+            "Bima memakai sabun",
+            "Bima memakai sabun atau sampo",
+            "Bima tidak memakai sabun maupun sampo",
+            "Bima hanya memakai air",
+            "Bima tidak sedang mandi",
+          ],
+          a: "Bima memakai sabun atau sampo",
+        },
+        {
+          q: "Setelah kuliah, mahasiswa hanya boleh ikut satu kegiatan: Basket atau Paduan Suara. Dani ikut Basket setelah kuliah.",
+          o: [
+            "Dani ikut Basket dan Paduan Suara",
+            "Dani tidak ikut kegiatan apa pun",
+            "Dani ikut Paduan Suara",
+            "Dani tidak ikut Paduan Suara",
+            "Dani ikut Paduan Suara setelah ikut Basket",
+          ],
+          a: "Dani tidak ikut Paduan Suara",
+        },
+        {
+          q: "Semua pasar ramai dan kotor. Ani berada di tempat yang tidak ramai dan tidak kotor.",
+          o: [
+            "Ani berada di pasar ramai",
+            "Ani berada di pasar kotor",
+            "Ani tidak berada di pasar",
+            "Ani berada di pasar tetapi tidak kotor",
+            "Ani berada di pasar yang bersih",
+          ],
+          a: "Ani tidak berada di pasar",
+        },
+        {
+          q: "Semua danau dalam dan luas. Fajar berada di tempat yang tidak dalam dan tidak luas.",
+          o: [
+            "Fajar berada di danau dalam",
+            "Fajar berada di danau tidak luas",
+            "Fajar tidak berada di danau",
+            "Fajar berada di danau tetapi tidak dalam",
+            "Fajar berada di danau yang sempit",
+          ],
+          a: "Fajar tidak berada di danau",
+        },
+        {
+          q: "Jika saya memiliki motor, maka saya punya helm dan jaket. Saat ini saya memiliki motor.",
+          o: [
+            "Saya punya helm saja",
+            "Saya punya jaket saja",
+            "Saya punya helm dan jaket",
+            "Saya hanya punya helm atau jaket",
+            "Saya tidak punya helm dan jaket",
+          ],
+          a: "Saya punya helm dan jaket",
+        },
+        {
+          q: "Toko mengumumkan ada diskon atau hadiah voucher. Ternyata voucher tidak tersedia.",
+          o: [
+            "Tidak ada diskon maupun voucher",
+            "Tidak ada program khusus",
+            "Tidak ada hadiah voucher bagi pembeli",
+            "Toko membatalkan promo",
+            "Hanya ada hadiah voucher",
+          ],
+          a: "Tidak ada hadiah voucher bagi pembeli",
+        },
+        {
+          q: "Negasi dari: 'Semua siswa belajar sebelum ujian.'",
+          o: [
+            "Semua siswa tidak belajar sebelum ujian",
+            "Beberapa siswa belajar sebelum ujian",
+            "Beberapa siswa tidak belajar sebelum ujian",
+            "Tidak ada siswa yang belajar sebelum ujian",
+            "Semua siswa belajar setelah ujian",
+          ],
+          a: "Beberapa siswa tidak belajar sebelum ujian",
+        },
+        {
+          q: "Negasi dari: 'Jika saya lapar maka saya makan.'",
+          o: [
+            "Saya lapar dan saya tidak makan",
+            "Saya tidak lapar dan tidak makan",
+            "Jika saya tidak lapar maka saya tidak makan",
+            "Jika saya tidak makan maka saya lapar",
+            "Saya makan maka saya lapar",
+          ],
+          a: "Saya lapar dan saya tidak makan",
+        },
+        {
+          q: "Ingkaran dari: 'Matematika sulit atau membosankan.'",
+          o: [
+            "Matematika sulit dan membosankan",
+            "Matematika tidak sulit dan tidak membosankan",
+            "Matematika sulit tetapi menyenangkan",
+            "Matematika mudah tetapi membosankan",
+            "Matematika mudah atau membosankan",
+          ],
+          a: "Matematika tidak sulit dan tidak membosankan",
+        },
+        {
+          q: "Ingkaran dari: 'Semua pasien sembuh dan sehat.'",
+          o: [
+            "Beberapa pasien sembuh dan sehat",
+            "Beberapa pasien tidak sembuh atau tidak sehat",
+            "Semua pasien tidak sehat",
+            "Semua pasien sehat tetapi tidak sembuh",
+            "Semua pasien sakit",
+          ],
+          a: "Beberapa pasien tidak sembuh atau tidak sehat",
+        },
+        {
+          q: "Ingkaran dari: 'Jika Andi berlari maka ia berkeringat.'",
+          o: [
+            "Jika Andi tidak berlari maka ia tidak berkeringat",
+            "Jika Andi berkeringat maka ia berlari",
+            "Andi berlari tetapi tidak berkeringat",
+            "Andi tidak berlari dan tidak berkeringat",
+            "Jika Andi tidak berkeringat maka ia tidak berlari",
+          ],
+          a: "Andi berlari tetapi tidak berkeringat",
+        },
+        {
+          q: "Negasi dari: 'Jika Rudi belajar maka ia lulus ujian.'",
+          o: [
+            "Rudi lulus ujian maka ia belajar",
+            "Rudi belajar tetapi tidak lulus",
+            "Rudi tidak belajar dan tidak lulus",
+            "Jika Rudi tidak belajar maka ia tidak lulus",
+            "Jika Rudi tidak lulus maka ia tidak belajar",
+          ],
+          a: "Rudi belajar tetapi tidak lulus",
+        },
+        {
+          q: "Negasi dari: 'Jika semua pegawai rajin maka kantor bersih.'",
+          o: [
+            "Semua pegawai rajin dan kantor tidak bersih",
+            "Semua pegawai tidak rajin dan kantor bersih",
+            "Ada pegawai rajin dan kantor tidak bersih",
+            "Ada pegawai tidak rajin dan kantor bersih",
+            "Jika kantor bersih maka semua pegawai rajin",
+          ],
+          a: "Semua pegawai rajin dan kantor tidak bersih",
+        },
+        {
+          q: "Negasi dari: 'Jika ada ujian maka semua siswa belajar.'",
+          o: [
+            "Ada ujian dan semua siswa tidak belajar",
+            "Ada ujian dan beberapa siswa tidak belajar",
+            "Ada ujian dan semua siswa belajar",
+            "Tidak ada ujian dan semua siswa belajar",
+            "Tidak ada ujian dan semua siswa tidak belajar",
+          ],
+          a: "Ada ujian dan beberapa siswa tidak belajar",
+        },
+        {
+          q: "Ingkaran dari: 'Pada hari Senin siswa memakai seragam lengkap dan dasi.'",
+          o: [
+            "Senin siswa tidak pakai seragam lengkap dan dasi",
+            "Senin siswa tidak pakai seragam lengkap atau tidak pakai dasi",
+            "Senin siswa pakai seragam lengkap dan tidak pakai dasi",
+            "Selain Senin siswa pakai dasi",
+            "Semua siswa pakai seragam lengkap dan dasi",
+          ],
+          a: "Senin siswa tidak pakai seragam lengkap atau tidak pakai dasi",
+        },
+        {
+          q: "Jika hari hujan maka jalan licin. Jika jalan licin maka banyak kecelakaan.",
+          o: [
+            "Jika hari hujan maka banyak kecelakaan",
+            "Jika tidak ada kecelakaan maka tidak hujan",
+            "Jika tidak licin maka tidak hujan",
+            "Jika hujan maka jalan tidak licin",
+            "Jalan licin tetapi tidak hujan",
+          ],
+          a: "Jika hari hujan maka banyak kecelakaan",
+        },
+        {
+          q: "Premis 1: Jika harga BBM naik maka ongkos naik. Premis 2: Jika ongkos naik maka masyarakat mengeluh.",
+          o: [
+            "Jika harga BBM tidak naik maka masyarakat mengeluh",
+            "Jika harga BBM naik maka masyarakat mengeluh",
+            "Jika harga BBM naik maka masyarakat tidak mengeluh",
+            "Masyarakat mengeluh maka harga BBM tidak naik",
+            "Ongkos naik maka BBM turun",
+          ],
+          a: "Jika harga BBM naik maka masyarakat mengeluh",
+        },
+        {
+          q: "Jika rajin menabung maka kaya. Jika kaya maka bahagia.",
+          o: [
+            "Jika tidak rajin menabung maka bahagia",
+            "Jika rajin menabung maka bahagia",
+            "Jika bahagia maka rajin menabung",
+            "Semua yang bahagia pasti menabung",
+            "Tidak bahagia maka tidak rajin menabung",
+          ],
+          a: "Jika rajin menabung maka bahagia",
+        },
+        {
+          q: "Jika Ani belajar maka ia naik kelas. Jika Ani tidak naik kelas maka ia tidak belajar.",
+          o: [
+            "Pernyataan ekuivalen",
+            "Tidak berkaitan",
+            "Hanya benar jika Ani belajar",
+            "Hanya benar jika Ani tidak belajar",
+            "Semua jawaban salah",
+          ],
+          a: "Pernyataan ekuivalen",
+        },
+        {
+          q: "Jika Edo lapar maka ia makan. Jika Edo makan maka ia kenyang.",
+          o: [
+            "Jika Edo lapar maka ia kenyang",
+            "Jika Edo tidak kenyang maka Edo lapar",
+            "Edo kenyang maka Edo tidak makan",
+            "Edo lapar maka Edo tidak makan",
+            "Edo tidak kenyang maka Edo makan",
+          ],
+          a: "Jika Edo lapar maka ia kenyang",
+        },
+        {
+          q: "Jika guru masuk kelas maka siswa tenang. Guru masuk kelas.",
+          o: [
+            "Siswa tidak tenang",
+            "Siswa gaduh",
+            "Siswa tenang",
+            "Siswa keluar kelas",
+            "Siswa ribut",
+          ],
+          a: "Siswa tenang",
+        },
+        {
+          q: "Jika listrik padam maka rumah gelap. Rumah tidak gelap.",
+          o: [
+            "Listrik padam",
+            "Listrik tidak padam",
+            "Rumah gelap",
+            "Rumah terang karena lilin",
+            "Rumah terang tetapi listrik padam",
+          ],
+          a: "Listrik tidak padam",
+        },
+        {
+          q: "Jika semua siswa masuk sekolah maka pelajaran berjalan baik. Pelajaran tidak berjalan baik.",
+          o: [
+            "Semua siswa masuk sekolah",
+            "Tidak semua siswa masuk sekolah",
+            "Semua siswa belajar rajin",
+            "Tidak ada siswa yang masuk",
+            "Semua siswa masuk tetapi tetap tidak baik",
+          ],
+          a: "Tidak semua siswa masuk sekolah",
+        },
+        {
+          q: "Jika cuaca cerah maka Sinta bersepeda. Hari ini Sinta tidak bersepeda.",
+          o: [
+            "Cuaca cerah",
+            "Cuaca tidak cerah",
+            "Semua cerah pasti bersepeda",
+            "Cuaca mendung dan Sinta bersepeda",
+            "Sinta tetap bersepeda walau mendung",
+          ],
+          a: "Cuaca tidak cerah",
+        },
+        {
+          q: "Jika adzan berkumandang maka shalat dimulai. Shalat tidak dimulai.",
+          o: [
+            "Adzan berkumandang",
+            "Adzan tidak berkumandang",
+            "Adzan dan shalat tetap berjalan",
+            "Shalat dimulai tanpa adzan",
+            "Semua benar",
+          ],
+          a: "Adzan tidak berkumandang",
+        },
+        {
+          q: "Jika udara bersih maka sehat. Jika sehat maka bahagia.",
+          o: [
+            "Jika udara bersih maka bahagia",
+            "Jika bahagia maka udara bersih",
+            "Bahagia berarti tidak sehat",
+            "Sehat tetapi tidak bahagia",
+            "Udara kotor maka bahagia",
+          ],
+          a: "Jika udara bersih maka bahagia",
+        },
+        {
+          q: "Jika mobil rusak maka tidak bisa jalan. Mobil bisa jalan.",
+          o: [
+            "Mobil rusak",
+            "Mobil tidak rusak",
+            "Mobil rusak dan jalan",
+            "Mobil tidak jalan",
+            "Mobil rusak ringan",
+          ],
+          a: "Mobil tidak rusak",
+        },
+        {
+          q: "Jika Budi menabung maka dia kaya. Jika Budi kaya maka dia dermawan. Budi tidak dermawan.",
+          o: [
+            "Budi tidak menabung",
+            "Budi kaya",
+            "Budi dermawan",
+            "Budi tidak kaya",
+            "Semua siswa menabung",
+          ],
+          a: "Budi tidak menabung",
+        },
+      ].map((x) => ({
+        type: "silogisme",
+        q: x.q,
+        options: x.o,
+        answer: x.a,
+      }));
+
+      S_fungsi = shuffle(SOAL_fungsi);
+
+      /*  Validasi jumlah
+          if(SINONIM.length!==90||ANTONIM.length!==90){
+            console.warn('Jumlah soal tidak 90/90:', SINONIM.length, ANTONIM.length);
+          }  */
+
+      // /* Gabung & acak
+      function shuffleOptions(q) {
+        let opts = q.options.map((opt, i) => ({ opt, i }));
+        opts = shuffle(opts); // pake fungsi shuffle yang sudah kamu punya
+        let newAnswer = opts.findIndex((o) => o.i === q.answer);
+        return {
+          ...q,
+          options: opts.map((o) => o.opt),
+          answer: newAnswer,
+        };
+      }
+      //*/
+      let QUESTIONS = [...S_fungsi].map((q, i) => ({
+        id: i + 1,
+        ...shuffleOptions(q),
+      }));
+      // let QUESTIONS = [...SINONIM, ...ANTONIM].map((q,i)=>({id:i+1, ...q }));
+      // State
+      let state = {
+        user: null,
+        timeLeft: 45 * 60, // 25 menit
+        currentIndex: 0,
+        answers: Array(180).fill(null), // simpan index jawaban (0..3) atau null
+      };
+
+      /** RENDERING **/
+      function formatTime(s) {
+        const m = Math.floor(s / 60)
+          .toString()
+          .padStart(2, "0");
+        const r = (s % 60).toString().padStart(2, "0");
+        return `${m}:${r}`;
+      }
+
+      function renderTimer() {
+        el("#timer").textContent = formatTime(state.timeLeft);
+        if (state.timeLeft <= 60) {
+          el("#timer").style.background = "#331a1a";
+          el("#timer").style.borderColor = "#7f1d1d";
+        }
+        if (state.timeLeft <= 0) {
+          submitQuiz();
+        }
+      }
+
+      let tick = null;
+      function startTimer() {
+        if (tick) clearInterval(tick);
+        tick = setInterval(() => {
+          state.timeLeft--;
+          renderTimer();
+          if (state.timeLeft <= 0) clearInterval(tick);
+        }, 1000);
+      }
+
+      function mountNav() {
+        const nav = el("#nav");
+        nav.innerHTML = "";
+        QUESTIONS.forEach((q, idx) => {
+          const b = document.createElement("button");
+          b.textContent = idx + 1;
+          b.addEventListener("click", () => {
+            goTo(idx);
+          });
+          nav.appendChild(b);
+        });
+        updateNavActive();
+      }
+
+      function updateNavActive() {
+        const buttons = els("#nav button");
+        buttons.forEach((b, idx) => {
+          b.classList.toggle("active", idx === state.currentIndex);
+          b.classList.toggle("done", state.answers[idx] !== null);
+        });
+        el("#infoSoal").textContent = `Soal ${state.currentIndex + 1} / ${
+          QUESTIONS.length
+        }`;
+        el("#infoKategori").textContent = `Kategori: ${QUESTIONS[
+          state.currentIndex
+        ].type.toUpperCase()}`;
+      }
+
+      function renderQuestion() {
+        const q = QUESTIONS[state.currentIndex];
+        const container = el("#questionArea");
+        container.innerHTML = "";
+        const title = document.createElement("div");
+        title.className = "q-title";
+
+        title.innerHTML = q.q;
+        container.appendChild(title);
+
+        const list = document.createElement("div");
+        list.className = "choices";
+        q.options.forEach((opt, i) => {
+          const row = document.createElement("label");
+          row.className = "choice";
+          const input = document.createElement("input");
+          input.type = "radio";
+          input.name = "choice";
+          input.value = i;
+          input.checked = state.answers[state.currentIndex] === i;
+          input.addEventListener("change", () => {
+            state.answers[state.currentIndex] = i;
+            updateNavActive();
+          });
+          const span = document.createElement("div");
+          span.innerHTML = opt;
+          row.appendChild(input);
+          row.appendChild(span);
+          list.appendChild(row);
+        });
+        container.appendChild(list);
+        MathJax.typeset();
+      }
+
+      function goTo(idx) {
+        state.currentIndex = Math.max(0, Math.min(QUESTIONS.length - 1, idx));
+        updateNavActive();
+        renderQuestion();
+      }
+
+      function next() {
+        if (state.currentIndex < QUESTIONS.length - 1) {
+          goTo(state.currentIndex + 1);
+        }
+      }
+      function prev() {
+        if (state.currentIndex > 0) {
+          goTo(state.currentIndex - 1);
+        }
+      }
+
+      function resetAnswers() {
+        if (!confirm("Yakin reset semua jawaban?")) return;
+        state.answers = Array(QUESTIONS.length).fill(null);
+        updateNavActive();
+        renderQuestion();
+      }
+
+      function submitQuiz() {
+        // hitung skor per kategori
+        let sSin = 0,
+          sAnt = 0,
+          sHip = 0;
+        QUESTIONS.forEach((q, idx) => {
+          const pick = state.answers[idx];
+          const correct = q.answer;
+          if (pick === correct) {
+            if (q.type === "silogisme") sSin++;
+          }
+        });
+        const total = sSin + sAnt + sHip;
+
+        // tampilkan
+        let total_question = QUESTIONS.length;
+
+        el("#scoreTotal").textContent = `${total} / ${total_question}`;
+        el("#resultUser").textContent = `Peserta: ${
+          state.user?.nama || "-"
+        } (waktu habis/kumpul)`;
+
+        // stop timer, ganti section
+        if (tick) clearInterval(tick);
+        showSection("result");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      function showSection(which) {
+        el("#section-form").classList.remove("active");
+        el("#section-quiz").classList.remove("active");
+        el("#section-result").classList.remove("active");
+        if (which === "form") el("#section-form").classList.add("active");
+        if (which === "quiz") el("#section-quiz").classList.add("active");
+        if (which === "result") el("#section-result").classList.add("active");
+      }
+
+      // EVENTS
+      el("#btnMulai").addEventListener("click", () => {
+        const nama = el("#nama").value.trim();
+        const pass = el("#pass").value.trim();
+        if (!nama || !pass) {
+          alert("Nama dan password wajib diisi.");
+          return;
+        }
+        if (pass !== "MUDAH") {
+          alert(
+            "password salah! tanya password ke sir hardi. klo sir hardi dak tau tanya ke sir meca"
+          );
+          return;
+        }
+        state.user = { nama, pass };
+        el("#infoUser").textContent = `Peserta: ${nama}`;
+        showSection("quiz");
+        startTimer();
+        mountNav();
+        goTo(0);
+        renderTimer();
+      });
+
+      el("#prevBtn").addEventListener("click", prev);
+      el("#nextBtn").addEventListener("click", next);
+      el("#btnReset").addEventListener("click", resetAnswers);
+      el("#btnSubmit").addEventListener("click", () => {
+        if (confirm("Kumpulkan jawaban sekarang?")) submitQuiz();
+      });
+
+      // Keyboard nav: panah kiri/kanan, angka 1-4 untuk memilih A-D
+      window.addEventListener("keydown", (e) => {
+        if (!el("#section-quiz").classList.contains("active")) return;
+        if (e.key === "ArrowRight") next();
+        if (e.key === "ArrowLeft") prev();
+        if (["1", "2", "3", "4"].includes(e.key)) {
+          const idx = parseInt(e.key) - 1;
+          state.answers[state.currentIndex] = idx;
+          updateNavActive();
+          renderQuestion();
+        }
+      });
+
+      // Ulang dari hasil
+      el("#btnUlang").addEventListener("click", () => {
+        state = {
+          user: state.user,
+          timeLeft: 15 * 60,
+          currentIndex: 0,
+          answers: Array(180).fill(null),
+        };
+        QUESTIONS = shuffle(QUESTIONS); // acak ulang urutan
+        showSection("quiz");
+        startTimer();
+        mountNav();
+        goTo(0);
+        renderTimer();
+      });
+    </script>
+  </body>
+</html>
