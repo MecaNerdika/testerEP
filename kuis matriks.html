@@ -362,58 +362,58 @@
       /** BANK SOAL (40/40/40) **/
       // Format: {type:'sinonim'|'antonim'|'hiponim', q:'', options:['','','',''], answer: index}
 
-      const SOAL_fungsi = [
-        {
-          q: "Diketahui matriks A = \\begin{pmatrix} 2 & x \\\\ 3 & 4 \\end{pmatrix} dan B = \\begin{pmatrix} 2 & 3 \\\\ y & 4 \\end{pmatrix}. Jika \\(A + B^T\\) = \\begin{pmatrix} 6 & 8 \\\\ 6 & 10 \\end{pmatrix}, maka nilai x + y adalah ...",
-          o: ["4", "5", "6", "7", "8"],
-          a: "7",
-        },
-        {
-          q: "Jika A = \\begin{pmatrix} x & 2 \\\\ 1 & y \\end{pmatrix} dan \\(A^T\\) = \\begin{pmatrix} 4 & 1 \\\\ 2 & 3 \\end{pmatrix}, maka nilai x + y adalah ...",
-          o: ["5", "6", "7", "8", "9"],
-          a: "7",
-        },
-        {
-          q: "Diketahui A = \\begin{pmatrix} 1 & 2 \\\\ 3 & 4 \\end{pmatrix} dan B = \\begin{pmatrix} 2 & -1 \\\\ 1 & 0 \\end{pmatrix}. Jika C = 2A - 3B, maka determinan C adalah ...",
-          o: ["-4", "-6", "-8", "-10", "-12"],
-          a: "-8",
-        },
-        {
-          q: "Jika A = \\begin{pmatrix} 2 & 3 \\\\ x & 5 \\end{pmatrix} dan det(A) = 7, maka nilai x adalah ...",
-          o: ["-1", "0", "1", "2", "3"],
-          a: "1",
-        },
-        {
-          q: "Diketahui A = \\begin{pmatrix} 1 & 2 \\\\ 3 & 4 \\end{pmatrix}, B = \\begin{pmatrix} 2 & 0 \\\\ 1 & -1 \\end{pmatrix}. Jika C = A \\times B, maka elemen C_{21} + C_{22} adalah ...",
-          o: ["1", "2", "3", "4", "5"],
-          a: "2",
-        },
-        {
-          q: "Jika A = \\begin{pmatrix} 1 & 2 \\\\ 3 & 5 \\end{pmatrix}, maka \\(A^{-1}\\) ada dan determinannya adalah ...",
-          o: ["-1", "1", "2", "3", "4"],
-          a: "-1",
-        },
-        {
-          q: "Diketahui A = \\begin{pmatrix} 2 & 1 \\\\ 3 & x \\end{pmatrix} dan det(A) = 5. Maka nilai x adalah ...",
-          o: ["1", "2", "3", "4", "5"],
-          a: "1",
-        },
-        {
-          q: "Jika A = \\begin{pmatrix} 3 & -2 \\\\ 1 & 0 \\end{pmatrix} dan B = \\begin{pmatrix} 2 & 1 \\\\ 0 & 3 \\end{pmatrix}, maka det(AB) = ...",
-          o: ["6", "8", "9", "10", "12"],
-          a: "9",
-        },
-        {
-          q: "Diketahui A = \\begin{pmatrix} 2 & 1 \\\\ 0 & 3 \\end{pmatrix} dan B = \\begin{pmatrix} 1 & 4 \\\\ -2 & 1 \\end{pmatrix}. Jika C = A + 2B, maka det(C) adalah ...",
-          o: ["5", "6", "7", "8", "9"],
-          a: "5",
-        },
-        {
-          q: "Jika A = \\begin{pmatrix} 2 & 3 \\\\ 4 & 5 \\end{pmatrix}, maka nilai det(2A) adalah ...",
-          o: ["16", "20", "24", "40", "80"],
-          a: "40",
-        },
-      ].map((x) => ({
+      const SOAL_fungsi =[
+  {
+    "q": "Diketahui matriks A = \\begin{pmatrix} 2 & x \\\\ 3 & 4 \\end{pmatrix} dan B = \\begin{pmatrix} 2 & 3 \\\\ y & 4 \\end{pmatrix}. Jika A + B^T = \\begin{pmatrix} 4 & 8 \\\\ 6 & 8 \\end{pmatrix}, maka nilai x + y adalah ...",
+    "o": ["4", "5", "6", "7", "8"],
+    "a": "8"
+  },
+  {
+    "q": "Jika A = \\begin{pmatrix} x & 2 \\\\ 1 & y \\end{pmatrix} dan A^T = \\begin{pmatrix} 4 & 1 \\\\ 2 & 3 \\end{pmatrix}, maka nilai x + y adalah ...",
+    "o": ["5", "6", "7", "8", "9"],
+    "a": "7"
+  },
+  {
+    "q": "Diketahui A = \\begin{pmatrix} 1 & 2 \\\\ 3 & 4 \\end{pmatrix} dan B = \\begin{pmatrix} 2 & -1 \\\\ 1 & 0 \\end{pmatrix}. Jika C = 2A - 3B, maka determinan C adalah ...",
+    "o": ["-53", "-32", "-21", "-8", "0"],
+    "a": "-53"
+  },
+  {
+    "q": "Jika A = \\begin{pmatrix} 2 & 3 \\\\ x & 5 \\end{pmatrix} dan det(A) = 7, maka nilai x adalah ...",
+    "o": ["-1", "0", "1", "2", "3"],
+    "a": "1"
+  },
+  {
+    "q": "Diketahui A = \\begin{pmatrix} 1 & 2 \\\\ 3 & 4 \\end{pmatrix}, B = \\begin{pmatrix} 2 & 0 \\\\ 1 & -1 \\end{pmatrix}. Jika C = A \\times B, maka elemen C_{21} + C_{22} adalah ...",
+    "o": ["1", "2", "3", "4", "6"],
+    "a": "6"
+  },
+  {
+    "q": "Jika A = \\begin{pmatrix} 1 & 2 \\\\ 3 & 5 \\end{pmatrix}, maka A^{-1} ada dan determinannya adalah ...",
+    "o": ["-1", "1", "2", "3", "4"],
+    "a": "-1"
+  },
+  {
+    "q": "Diketahui A = \\begin{pmatrix} 2 & 1 \\\\ 3 & x \\end{pmatrix} dan det(A) = 5. Maka nilai x adalah ...",
+    "o": ["1", "2", "3", "4", "5"],
+    "a": "4"
+  },
+  {
+    "q": "Jika A = \\begin{pmatrix} 3 & -2 \\\\ 1 & 0 \\end{pmatrix} dan B = \\begin{pmatrix} 2 & 1 \\\\ 0 & 3 \\end{pmatrix}, maka det(AB) = ...",
+    "o": ["6", "8", "9", "10", "12"],
+    "a": "12"
+  },
+  {
+    "q": "Diketahui A = \\begin{pmatrix} 2 & 1 \\\\ 0 & 3 \\end{pmatrix} dan B = \\begin{pmatrix} 1 & 4 \\\\ -2 & 1 \\end{pmatrix}. Jika C = A + 2B, maka det(C) adalah ...",
+    "o": ["5", "6", "7", "8", "56"],
+    "a": "56"
+  },
+  {
+    "q": "Jika A = \\begin{pmatrix} 2 & 3 \\\\ 4 & 5 \\end{pmatrix}, maka nilai det(2A) adalah ...",
+    "o": ["-8", "-4", "4", "8", "40"],
+    "a": "-8"
+  }
+  ].map((x) => ({
         type: "matriks",
         q: x.q,
         options: x.o,
@@ -666,5 +666,6 @@
     </script>
   </body>
 </html>
+
 
 
