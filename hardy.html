@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cerdas cermat</title>
+    <style>
+      :root {
+        --bg: #060000; /* slate-900 */
+        --card: #111827; /* gray-900 */
+        --muted: #334155; /* slate-600 */
+        --text: #ffffff; /* gray-200 */
+        --accent: #38bdf8; /* sky-400 */
+        --accent-2: #22c55e; /* green-500 */
+        --danger: #ef4444; /* red-500 */
+        --warn: #f59e0b; /* amber-500 */
+        --shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+        --radius: 16px;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto,
+          "Helvetica Neue", Arial;
+        background: radial-gradient(
+            1200px 800px at 10% -10%,
+            #1e293b,
+            transparent
+          ),
+          radial-gradient(800px 600px at 120% 0%, #0b3b47, transparent),
+          var(--bg);
+        color: var(--text);
+        min-height: 100svh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+      }
+      .app {
+        width: 100%;
+        max-width: 980px;
+      }
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+      .brand {
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        font-size: clamp(18px, 3.5vw, 24px);
+      }
+      .timer {
+        font-variant-numeric: tabular-nums;
+        font-weight: 700;
+        padding: 10px 14px;
+        border-radius: 999px;
+        background: #0b1220;
+        border: 1px solid #1f2a44;
+        box-shadow: var(--shadow);
+      }
+      .card {
+        background: linear-gradient(180deg, #0b1220, #0a1020);
+        border: 1px solid #1f2a44;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+      }
+      .section {
+        display: none;
+      }
+      .active {
+        display: block;
+      }
+      .card-inner {
+        padding: 20px;
+      }
+      .grid {
+        display: grid;
+        gap: 16px;
+      }
+      .grid-2 {
+        grid-template-columns: 1fr 1fr;
+      }
+      .grid-responsive {
+        grid-template-columns: 1fr;
+      }
+      @media (min-width: 720px) {
+        .grid-responsive {
+          grid-template-columns: 1fr 320px;
+        }
+      }
+
+      input[type="text"],
+      input[type="password"] {
+        width: 100%;
+        padding: 12px 14px;
+        border-radius: 12px;
+        border: 1px solid #26314d;
+        background: #0b1220;
+        color: var(--text);
+        outline: none;
+        box-shadow: inset 0 0 0 9999px rgba(255, 255, 255, 0);
+      }
+      label {
+        font-size: 14px;
+        color: #cbd5e1;
+      }
+      .btn {
+        cursor: pointer;
+        padding: 12px 16px;
+        border-radius: 14px;
+        background: var(--accent);
+        color: #001219;
+        border: none;
+        font-weight: 700;
+        box-shadow: var(--shadow);
+        transition: 0.2s transform ease;
+      }
+      .btn:active {
+        transform: translateY(1px);
+      }
+      .btn.secondary {
+        background: #1f2937;
+        color: #e2e8f0;
+        border: 1px solid #334155;
+      }
+      .btn.warn {
+        background: var(--warn);
+        color: #0b1220;
+      }
+      .btn.danger {
+        background: var(--danger);
+        color: #0b1220;
+      }
+      .muted {
+        color: #94a3b8;
+      }
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: #0b1220;
+        border: 1px solid #223156;
+        font-size: 12px;
+        color: #cbd5e1;
+      }
+
+      .question-area {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+      .q-title {
+        font-weight: 800;
+        font-size: 18px;
+      }
+      .choices {
+        display: grid;
+        gap: 10px;
+      }
+      .choice {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        border: 1px solid #1f2a44;
+        background: #0b1220;
+        padding: 12px;
+        border-radius: 12px;
+        cursor: pointer;
+      }
+      .choice input {
+        margin-top: 4px;
+      }
+
+      .nav {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        max-height: 240px;
+        overflow: auto;
+        padding: 10px;
+      }
+      .nav button {
+        width: 44px;
+        height: 40px;
+        border-radius: 10px;
+        border: 1px solid #1f2a44;
+        background: #0b1220;
+        color: #cbd5e1;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .nav button.active {
+        outline: 2px solid var(--accent);
+        color: #0ea5e9;
+      }
+      .nav button.done {
+        background: #07291f;
+        border-color: #0b7a53;
+        color: #34d399;
+      }
+
+      .footer-actions {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-top: 10px;
+      }
+
+      .legend {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .results {
+        display: grid;
+        gap: 12px;
+      }
+      .score-box {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      .score-card {
+        background: #0b1220;
+        border: 1px solid #1f2a44;
+        border-radius: 14px;
+        padding: 14px;
+      }
+
+      .info-row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  </head>
+  <body>
+    <div class="app">
+      <header>
+        <div class="brand">kuis cerdas cermat</div>
+        <div class="pill" id="infoUser">Belum login</div>
+        <div class="timer" id="timer">20:00</div>
+      </header>
+
+      <!-- SECTION 1: FORM MINIMAL -->
+      <section id="section-form" class="section active">
+        <div class="card">
+          <div class="card-inner grid">
+            <div>
+              <h2 style="margin: 0 0 10px 0">Masuk Kuis</h2>
+              <p class="muted" style="margin-top: 0">
+                Masukkan nama dan password untuk memulai. Tidak ada pengaturan
+                tambahan.
+              </p>
+              <div class="grid">
+                <div>
+                  <label for="nama">Nama</label>
+                  <input id="nama" type="text" placeholder="Nama peserta" />
+                </div>
+                <div>
+                  <label for="pass">Password</label>
+                  <input id="pass" type="password" placeholder="Password" />
+                </div>
+                <button class="btn" id="btnMulai">Mulai Kuis</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 2: QUIZ -->
+      <section id="section-quiz" class="section">
+        <div class="grid grid-responsive">
+          <div class="card">
+            <div class="card-inner">
+              <div class="info-row">
+                <div class="pill" id="infoKategori">Kategori: -</div>
+                <div class="pill" id="infoSoal">Soal 0 / 180</div>
+              </div>
+              <div class="question-area" id="questionArea">
+                <!-- Question inject here -->
+              </div>
+              <div class="footer-actions">
+                <button class="btn secondary" id="prevBtn">Prev</button>
+                <div class="legend">
+                  <span class="pill">• Biru = aktif</span>
+                  <span
+                    class="pill"
+                    style="
+                      background: #07291f;
+                      color: #34d399;
+                      border-color: #0b7a53;
+                    "
+                    >• Hijau = terjawab</span
+                  >
+                </div>
+                <button class="btn" id="nextBtn">Next</button>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-inner">
+              <h3 style="margin-top: 0">Navigasi Soal</h3>
+              <div class="nav" id="nav">
+                <!-- Nav buttons injected here -->
+              </div>
+              <div class="grid" style="margin-top: 8px">
+                <button class="btn warn" id="btnSubmit">
+                  Kumpulkan Jawaban
+                </button>
+                <button class="btn danger" id="btnReset">Reset Jawaban</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 3: HASIL -->
+      <section id="section-result" class="section">
+        <div class="card">
+          <div class="card-inner results">
+            <h2 style="margin: 0">Hasil Ujian</h2>
+            <p class="muted" id="resultUser">Peserta: -</p>
+            <div class="score-box">
+              <div class="score-card" style="grid-column: span 2">
+                <div class="muted">Total Skor</div>
+                <div id="scoreTotal" style="font-size: 30px; font-weight: 900">
+                  0 / 180
+                </div>
+              </div>
+            </div>
+            <div>
+              <button class="btn" id="btnUlang">Mulai Lagi</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      /** UTIL **/
+      const el = (sel) => document.querySelector(sel);
+      const els = (sel) => Array.from(document.querySelectorAll(sel));
+      const shuffle = (arr) =>
+        arr
+          .map((v) => [Math.random(), v])
+          .sort((a, b) => a[0] - b[0])
+          .map((x) => x[1]);
+
+      /** BANK SOAL (40/40/40) **/
+      // Format: {type:'sinonim'|'antonim'|'hiponim', q:'', options:['','','',''], answer: index}
+
+      const SOAL_fungsi = [
+        {
+          q: "Alat kelamin jantan pada bunga adalah...",
+          o: ["Benang sari", "Putik", "Kelopak", "Mahkota"],
+          a: 0,
+        },
+        {
+          q: "Hewan amfibi adalah hewan yang dapat hidup di dua alam. Yang termasuk hewan amfibi adalah...",
+          o: ["Katak", "Ikan", "Ayam", "Kelelawar"],
+          a: 0,
+        },
+        {
+          q: "Ikan bernapas dengan...",
+          o: ["Insang", "Paru-paru", "Kulit", "Trakea"],
+          a: 0,
+        },
+        {
+          q: "Planet terbesar dalam tata surya adalah...",
+          o: ["Jupiter", "Saturnus", "Bumi", "Neptunus"],
+          a: 0,
+        },
+        {
+          q: "Bumi berputar mengelilingi porosnya disebut...",
+          o: ["Rotasi bumi", "Revolusi bumi", "Gravitasi bumi", "Orbit bumi"],
+          a: 0,
+        },
+        {
+          q: "Waktu yang diperlukan bumi untuk mengelilingi matahari adalah...",
+          o: ["365 hari", "30 hari", "24 jam", "12 bulan"],
+          a: 0,
+        },
+        {
+          q: "Hewan yang termasuk golongan reptil adalah...",
+          o: ["Buaya", "Cacing", "Siput", "Katak"],
+          a: 0,
+        },
+        {
+          q: "Hewan yang berkembang biak dengan cara melahirkan anak disebut berkembang biak secara...",
+          o: ["Vivipar", "Ovipar", "Ovovivipar", "Aseksual"],
+          a: 0,
+        },
+        {
+          q: "Contoh hewan yang berkembang biak secara ovipar adalah...",
+          o: ["Penyu", "Kucing", "Sapi", "Kelelawar"],
+          a: 0,
+        },
+        {
+          q: "Jenis hewan yang termasuk pemakan tumbuhan disebut...",
+          o: ["Herbivora", "Karnivora", "Omnivora", "Insektivora"],
+          a: 0,
+        },
+        {
+          q: "Contoh hewan yang termasuk karnivora adalah...",
+          o: ["Harimau", "Sapi", "Kuda", "Kambing"],
+          a: 0,
+        },
+        {
+          q: "Ikan lumba-lumba bernapas dengan...",
+          o: ["Paru-paru", "Insang", "Kulit", "Trakea"],
+          a: 0,
+        },
+        {
+          q: "Cumi-cumi melindungi dirinya dengan cara...",
+          o: [
+            "Mengeluarkan tinta",
+            "Mengubah warna tubuh",
+            "Bersembunyi di pasir",
+            "Mengeluarkan bau busuk",
+          ],
+          a: 0,
+        },
+        {
+          q: "Hewan yang melindungi diri dengan cara mengubah warna tubuhnya sesuai tempat tinggal adalah...",
+          o: ["Bunglon", "Cicak", "Ular", "Kupu-kupu"],
+          a: 0,
+        },
+        {
+          q: "Tanaman wortel menyimpan cadangan makanannya pada...",
+          o: ["Akar", "Batang", "Daun", "Buah"],
+          a: 0,
+        },
+        {
+          q: "Contoh tanaman yang menyimpan cadangan makanannya pada batang adalah...",
+          o: ["Tebu", "Wortel", "Singkong", "Kentang"],
+          a: 0,
+        },
+        {
+          q: "Unta menyimpan cadangan air di dalam tubuhnya pada...",
+          o: ["Punuknya", "Perutnya", "Kepalanya", "Kakinya"],
+          a: 0,
+        },
+        {
+          q: "Sumber tenaga terdapat dalam makanan yang mengandung...",
+          o: ["Karbohidrat", "Protein", "Vitamin", "Mineral"],
+          a: 0,
+        },
+        {
+          q: "Makanan seperti ubi kayu berfungsi untuk...",
+          o: [
+            "Sumber tenaga",
+            "Menambah selera makan",
+            "Membangun sel tubuh",
+            "Mengatur daya tahan tubuh",
+          ],
+          a: 0,
+        },
+        {
+          q: "Jantung adalah organ tubuh yang bertugas untuk...",
+          o: [
+            "Memompa darah",
+            "Menghirup oksigen",
+            "Mencerna makanan",
+            "Mengeluarkan keringat",
+          ],
+          a: 0,
+        },
+        {
+          q: "Proses fotosintesis pada tanaman dipengaruhi oleh...",
+          o: ["Cahaya", "Air", "Panas", "Suhu"],
+          a: 0,
+        },
+        {
+          q: "Hewan beruang kutub dapat menyesuaikan diri terhadap lingkungan dingin dengan...",
+          o: [
+            "Memiliki lapisan lemak tebal",
+            "Memiliki rambut tipis",
+            "Memiliki ekor panjang",
+            "Memiliki sisik",
+          ],
+          a: 0,
+        },
+        {
+          q: "Salah satu sifat air adalah...",
+          o: [
+            "Mengalir dari tempat tinggi ke rendah",
+            "Tidak memiliki massa",
+            "Tidak dapat berubah wujud",
+            "Tidak berwarna",
+          ],
+          a: 0,
+        },
+        {
+          q: "Perubahan wujud es batu menjadi air disebut...",
+          o: ["Mencair", "Membeku", "Menguap", "Menyublim"],
+          a: 0,
+        },
+        {
+          q: "Rumput memiliki jenis akar...",
+          o: ["Serabut", "Tunggang", "Gantung", "Napas"],
+          a: 0,
+        },
+        {
+          q: "Tanaman yang memiliki akar tunggang adalah...",
+          o: ["Pohon rambutan", "Pohon jagung", "Pohon pepaya", "Padi"],
+          a: 0,
+        },
+        {
+          q: "Sel telur biasa disebut...",
+          o: ["Ovum", "Ovarium", "Sperma", "Testis"],
+          a: 0,
+        },
+        {
+          q: "Apakah satuan dari gaya?",
+          o: ["Joule", "Kilogram", "Newton", "Milimeter"],
+          a: 2,
+        },
+        {
+          q: "Gaya yang menyebabkan benda yang dilempar ke atas kemudian jatuh ke bumi adalah...",
+          o: ["Rotasi", "Gravitasi", "Refleksi", "Revolusi"],
+          a: 1,
+        },
+        {
+          q: "Gerak bumi yang mengitari porosnya disebut...",
+          o: ["Rotasi", "Revolusi", "Distorsi", "Refleksi"],
+          a: 0,
+        },
+        {
+          q: "Hewan yang berkembang biak dengan cara beranak adalah...",
+          o: ["Ovipar", "Ovovivipar", "Membelah diri", "Vivipar"],
+          a: 3,
+        },
+        {
+          q: "Benda yang menghantarkan panas dengan baik disebut...",
+          o: ["Isolator", "Konduktor", "Radiasi", "Konduksi"],
+          a: 1,
+        },
+        {
+          q: "Punuk unta berfungsi untuk...",
+          o: [
+            "Menyimpan cadangan air",
+            "Mengangkut barang",
+            "Memperindah tubuh",
+            "Menyimpan makanan",
+          ],
+          a: 0,
+        },
+        {
+          q: "Cairan di dalam kantong semar berfungsi untuk...",
+          o: [
+            "Mencerna serangga",
+            "Menarik hewan penyerbuk",
+            "Menghasilkan nektar",
+            "Menyimpan air",
+          ],
+          a: 0,
+        },
+        {
+          q: "Penyakit gondok disebabkan karena tubuh kekurangan zat...",
+          o: ["Yodium", "Besi", "Fosfor", "Kalsium"],
+          a: 0,
+        },
+        {
+          q: "Tumbuhan yang memakan serangga adalah...",
+          o: ["Kantung semar", "Kaktus", "Eceng gondok", "Salak"],
+          a: 0,
+        },
+        {
+          q: "Dua kutub magnet yang sama jika didekatkan akan...",
+          o: ["Tolak-menolak", "Tarik-menarik", "Diam saja", "Menempel terus"],
+          a: 0,
+        },
+        {
+          q: "Pesawat sederhana berfungsi untuk...",
+          o: [
+            "Memudahkan pekerjaan",
+            "Menambah tenaga",
+            "Menambah beban",
+            "Meniadakan gaya",
+          ],
+          a: 0,
+        },
+        {
+          q: "Bagian alat pernapasan manusia yang berfungsi sebagai tempat pertukaran gas adalah...",
+          o: ["Alveolus", "Trakea", "Bronkus", "Tenggorokan"],
+          a: 0,
+        },
+        {
+          q: "Gas yang diperlukan dalam proses fotosintesis adalah...",
+          o: ["Karbondioksida", "Oksigen", "Karbon monoksida", "Cahaya lampu"],
+          a: 0,
+        },
+        {
+          q: "Alat pernapasan pada belalang adalah...",
+          o: ["Trakea", "Paru-paru", "Kulit", "Selaput lender"],
+          a: 0,
+        },
+        {
+          q: "Zat hijau daun pada tumbuhan disebut...",
+          o: ["Klorofil", "Karoten", "Karbon monoksida", "Oksigen"],
+          a: 0,
+        },
+        {
+          q: "Bagian lidah yang peka terhadap rasa pahit adalah...",
+          o: [
+            "Pangkal lidah",
+            "Ujung lidah",
+            "Tepi belakang lidah",
+            "Tepi depan lidah",
+          ],
+          a: 0,
+        },
+        {
+          q: "Herbivora memiliki susunan gigi berupa...",
+          o: [
+            "Geraham dan seri",
+            "Seri dan taring",
+            "Geraham dan taring",
+            "Geraham saja",
+          ],
+          a: 0,
+        },
+        {
+          q: "Penghubung antar rangka disebut...",
+          o: ["Sendi", "Otot", "Tulang", "Daging"],
+          a: 0,
+        },
+        {
+          q: "Rangsangan yang dapat diterima hidung adalah...",
+          o: ["Bau", "Getaran", "Larutan", "Cahaya"],
+          a: 0,
+        },
+        {
+          q: "Hewan yang mengalami metamorfosis sempurna adalah...",
+          o: ["Kupu-kupu", "Belalang", "Katak", "Kecoa"],
+          a: 0,
+        },
+        {
+          q: "Padi dimakan burung, burung dimakan ular. Urutan ini disebut...",
+          o: [
+            "Rantai makanan",
+            "Jaring-jaring makanan",
+            "Siklus kehidupan",
+            "Rantai kehidupan",
+          ],
+          a: 0,
+        },
+        {
+          q: "Telur kupu-kupu yang menetas menjadi...",
+          o: ["Ulat", "Kepompong", "Berudu", "Pupa"],
+          a: 0,
+        },
+        {
+          q: "Perubahan wujud benda dari cair menjadi padat disebut...",
+          o: ["Membeku", "Mengembun", "Mencair", "Menyublim"],
+          a: 0,
+        },
+        {
+          q: "Benda yang mengikuti bentuk wadahnya adalah...",
+          o: ["Cair", "Padat", "Gas", "Campuran"],
+          a: 0,
+        },
+      ].map((x) => ({
+        type: "matriks",
+        q: x.q,
+        options: x.o,
+        answer: x.a,
+      }));
+
+      S_fungsi = shuffle(SOAL_fungsi);
+
+      /*  Validasi jumlah
+          if(SINONIM.length!==90||ANTONIM.length!==90){
+            console.warn('Jumlah soal tidak 90/90:', SINONIM.length, ANTONIM.length);
+          }  */
+
+      // /* Gabung & acak
+      function shuffleOptions(q) {
+        let opts = q.options.map((opt, i) => ({ opt, i }));
+        opts = shuffle(opts); // pake fungsi shuffle yang sudah kamu punya
+        let newAnswer = opts.findIndex((o) => o.i === q.answer);
+        return {
+          ...q,
+          options: opts.map((o) => o.opt),
+          answer: newAnswer,
+        };
+      }
+      //*/
+      let QUESTIONS = [...S_fungsi].map((q, i) => ({
+        id: i + 1,
+        ...shuffleOptions(q),
+      }));
+      // let QUESTIONS = [...SINONIM, ...ANTONIM].map((q,i)=>({id:i+1, ...q }));
+      // State
+      let state = {
+        user: null,
+        timeLeft: 50 * 60, // 25 menit
+        currentIndex: 0,
+        answers: Array(180).fill(null), // simpan index jawaban (0..3) atau null
+      };
+
+      /** RENDERING **/
+      function formatTime(s) {
+        const m = Math.floor(s / 60)
+          .toString()
+          .padStart(2, "0");
+        const r = (s % 60).toString().padStart(2, "0");
+        return `${m}:${r}`;
+      }
+
+      function renderTimer() {
+        el("#timer").textContent = formatTime(state.timeLeft);
+        if (state.timeLeft <= 60) {
+          el("#timer").style.background = "#331a1a";
+          el("#timer").style.borderColor = "#7f1d1d";
+        }
+        if (state.timeLeft <= 0) {
+          submitQuiz();
+        }
+      }
+
+      let tick = null;
+      function startTimer() {
+        if (tick) clearInterval(tick);
+        tick = setInterval(() => {
+          state.timeLeft--;
+          renderTimer();
+          if (state.timeLeft <= 0) clearInterval(tick);
+        }, 1000);
+      }
+
+      function mountNav() {
+        const nav = el("#nav");
+        nav.innerHTML = "";
+        QUESTIONS.forEach((q, idx) => {
+          const b = document.createElement("button");
+          b.textContent = idx + 1;
+          b.addEventListener("click", () => {
+            goTo(idx);
+          });
+          nav.appendChild(b);
+        });
+        updateNavActive();
+      }
+
+      function updateNavActive() {
+        const buttons = els("#nav button");
+        buttons.forEach((b, idx) => {
+          b.classList.toggle("active", idx === state.currentIndex);
+          b.classList.toggle("done", state.answers[idx] !== null);
+        });
+        el("#infoSoal").textContent = `Soal ${state.currentIndex + 1} / ${
+          QUESTIONS.length
+        }`;
+        el("#infoKategori").textContent = `Kategori: ${QUESTIONS[
+          state.currentIndex
+        ].type.toUpperCase()}`;
+      }
+
+      function renderQuestion() {
+        const q = QUESTIONS[state.currentIndex];
+        const container = el("#questionArea");
+        container.innerHTML = "";
+        const title = document.createElement("div");
+        title.className = "q-title";
+
+        title.innerHTML = q.q;
+        container.appendChild(title);
+
+        const list = document.createElement("div");
+        list.className = "choices";
+        q.options.forEach((opt, i) => {
+          const row = document.createElement("label");
+          row.className = "choice";
+          const input = document.createElement("input");
+          input.type = "radio";
+          input.name = "choice";
+          input.value = i;
+          input.checked = state.answers[state.currentIndex] === i;
+          input.addEventListener("change", () => {
+            state.answers[state.currentIndex] = i;
+            updateNavActive();
+          });
+          const span = document.createElement("div");
+          span.innerHTML = opt;
+          row.appendChild(input);
+          row.appendChild(span);
+          list.appendChild(row);
+        });
+        container.appendChild(list);
+        MathJax.typeset();
+      }
+
+      function goTo(idx) {
+        state.currentIndex = Math.max(0, Math.min(QUESTIONS.length - 1, idx));
+        updateNavActive();
+        renderQuestion();
+      }
+
+      function next() {
+        if (state.currentIndex < QUESTIONS.length - 1) {
+          goTo(state.currentIndex + 1);
+        }
+      }
+      function prev() {
+        if (state.currentIndex > 0) {
+          goTo(state.currentIndex - 1);
+        }
+      }
+
+      function resetAnswers() {
+        if (!confirm("Yakin reset semua jawaban?")) return;
+        state.answers = Array(QUESTIONS.length).fill(null);
+        updateNavActive();
+        renderQuestion();
+      }
+
+      function submitQuiz() {
+        // hitung skor per kategori
+        let sSin = 0,
+          sAnt = 0,
+          sHip = 0;
+        QUESTIONS.forEach((q, idx) => {
+          const pick = state.answers[idx];
+          const correct = q.answer;
+          if (pick === correct) {
+            if (q.type === "matriks") sSin++;
+          }
+        });
+        const total = sSin + sAnt + sHip;
+
+        // tampilkan
+        let total_question = QUESTIONS.length;
+
+        el("#scoreTotal").textContent = `${total} / ${total_question}`;
+        el("#resultUser").textContent = `Peserta: ${
+          state.user?.nama || "-"
+        } (waktu habis/kumpul)`;
+
+        // stop timer, ganti section
+        if (tick) clearInterval(tick);
+        showSection("result");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      function showSection(which) {
+        el("#section-form").classList.remove("active");
+        el("#section-quiz").classList.remove("active");
+        el("#section-result").classList.remove("active");
+        if (which === "form") el("#section-form").classList.add("active");
+        if (which === "quiz") el("#section-quiz").classList.add("active");
+        if (which === "result") el("#section-result").classList.add("active");
+      }
+
+      // EVENTS
+      el("#btnMulai").addEventListener("click", () => {
+        const nama = el("#nama").value.trim();
+        const pass = el("#pass").value.trim();
+        if (!nama || !pass) {
+          alert("Nama dan password wajib diisi.");
+          return;
+        }
+        if (pass !== "IPAITUASIK") {
+          alert(
+            "password salah! tanya password ke sir hardi. klo sir hardi dak tau tanya ke sir meca"
+          );
+          return;
+        }
+        state.user = { nama, pass };
+        el("#infoUser").textContent = `Peserta: ${nama}`;
+        showSection("quiz");
+        startTimer();
+        mountNav();
+        goTo(0);
+        renderTimer();
+      });
+
+      el("#prevBtn").addEventListener("click", prev);
+      el("#nextBtn").addEventListener("click", next);
+      el("#btnReset").addEventListener("click", resetAnswers);
+      el("#btnSubmit").addEventListener("click", () => {
+        if (confirm("Kumpulkan jawaban sekarang?")) submitQuiz();
+      });
+
+      // Keyboard nav: panah kiri/kanan, angka 1-4 untuk memilih A-D
+      window.addEventListener("keydown", (e) => {
+        if (!el("#section-quiz").classList.contains("active")) return;
+        if (e.key === "ArrowRight") next();
+        if (e.key === "ArrowLeft") prev();
+        if (["1", "2", "3", "4"].includes(e.key)) {
+          const idx = parseInt(e.key) - 1;
+          state.answers[state.currentIndex] = idx;
+          updateNavActive();
+          renderQuestion();
+        }
+      });
+
+      // Ulang dari hasil
+      el("#btnUlang").addEventListener("click", () => {
+        state = {
+          user: state.user,
+          timeLeft: 15 * 60,
+          currentIndex: 0,
+          answers: Array(180).fill(null),
+        };
+        QUESTIONS = shuffle(QUESTIONS); // acak ulang urutan
+        showSection("quiz");
+        startTimer();
+        mountNav();
+        goTo(0);
+        renderTimer();
+      });
+    </script>
+  </body>
+</html>
