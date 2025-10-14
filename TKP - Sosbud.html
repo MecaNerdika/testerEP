@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis TKP - Sosial Budaya CPNS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        
+        .login-container {
+            max-width: 500px;
+            margin: 100px auto;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            background-color: white;
+        }
+        
+        .quiz-container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            background-color: white;
+        }
+        
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        .timer {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #dc3545;
+            padding: 10px 20px;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+            display: flex;
+            align-items: center;
+        }
+        
+        .question-card {
+            margin-bottom: 25px;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+        
+        .question-card:hover {
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .question-number {
+            font-weight: bold;
+            color: #0d6efd;
+            margin-bottom: 10px;
+        }
+        
+        .options-container {
+            margin-top: 15px;
+        }
+        
+        .option-item {
+            margin-bottom: 10px;
+            padding: 12px 15px;
+            border-radius: 5px;
+            border: 1px solid #e9ecef;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .option-item:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .option-item.selected {
+            background-color: #e7f5ff;
+            border-color: #0d6efd;
+        }
+        
+        .btn-submit {
+            background-color: #0d6efd;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-weight: bold;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-submit:hover {
+            background-color: #0b5ed7;
+            color: white;
+        }
+        
+        .result-container {
+            max-width: 700px;
+            margin: 50px auto;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            background-color: white;
+            text-align: center;
+        }
+        
+        .score-display {
+            font-size: 3rem;
+            font-weight: bold;
+            margin: 20px 0;
+            color: #0d6efd;
+        }
+        
+        .score-category {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            border-radius: 5px;
+            display: inline-block;
+        }
+        
+        .score-excellent {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .score-good {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .score-average {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .score-poor {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+        }
+        
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+        }
+        
+        .progress-container {
+            margin-bottom: 20px;
+        }
+        
+        .progress {
+            height: 10px;
+        }
+        
+        .quiz-title {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #0d6efd;
+        }
+        
+        .token-info {
+            background-color: #e7f5ff;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Page -->
+    <div id="loginPage" class="login-container">
+        <div class="text-center mb-4">
+            <h2 class="text-primary">Kuis TKP - Sosial Budaya CPNS</h2>
+            <p class="text-muted">Silakan masukkan token untuk memulai kuis</p>
+        </div>
+        
+        <div class="token-info">
+            <p><strong>Informasi:</strong> Token akan diberikan oleh pengawas</p>
+        </div>
+        
+        <div class="mb-3">
+            <label for="tokenInput" class="form-label">Token Akses</label>
+            <input type="text" class="form-control" id="tokenInput" placeholder="Masukkan token">
+        </div>
+        
+        <div class="d-grid">
+            <button class="btn btn-primary" id="loginBtn">Masuk</button>
+        </div>
+        
+        <div class="alert alert-danger mt-3 hidden" id="loginError">
+            Token yang Anda masukkan salah. Silakan coba lagi.
+        </div>
+    </div>
+
+    <!-- Quiz Page -->
+    <div id="quizPage" class="quiz-container hidden">
+        <div class="quiz-title">
+            <h2>Kuis TKP - Sosial Budaya CPNS</h2>
+            <p class="text-muted">Tes Karakteristik Pribadi - Sub Materi Sosial Budaya</p>
+        </div>
+        
+        <div class="quiz-header">
+            <div>
+                <h4>Soal <span id="currentQuestion">1</span> dari 20</h4>
+            </div>
+            <div class="timer">
+                <i class="bi bi-clock-fill me-2"></i>
+                <span id="timeLeft">10:00</span>
+            </div>
+        </div>
+        
+        <div class="progress-container">
+            <div class="progress">
+                <div class="progress-bar" id="progressBar" role="progressbar" style="width: 5%"></div>
+            </div>
+        </div>
+        
+        <div id="questionsContainer">
+            <!-- Questions will be dynamically loaded here -->
+        </div>
+        
+        <div class="d-flex justify-content-between mt-4">
+            <button class="btn btn-outline-primary" id="prevBtn" disabled>
+                <i class="bi bi-arrow-left me-1"></i> Sebelumnya
+            </button>
+            <button class="btn btn-primary" id="nextBtn">
+                Selanjutnya <i class="bi bi-arrow-right ms-1"></i>
+            </button>
+            <button class="btn btn-success hidden" id="submitBtn">
+                <i class="bi bi-check-circle me-1"></i> Selesai
+            </button>
+        </div>
+    </div>
+
+    <!-- Loading Page -->
+    <div id="loadingPage" class="loading hidden">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
+    <!-- Result Page -->
+    <div id="resultPage" class="result-container hidden">
+        <h2 class="text-primary mb-4">Hasil Kuis TKP - Sosial Budaya</h2>
+        
+        <div class="score-display" id="totalScore">0</div>
+        <div class="mb-4">
+            <p>Skor maksimum: 100</p>
+        </div>
+        
+        <div id="scoreCategory" class="score-category"></div>
+        
+        <div class="mt-5">
+            <h5>Interpretasi Hasil:</h5>
+            <p id="scoreInterpretation"></p>
+        </div>
+        
+        <div class="mt-4">
+            <button class="btn btn-primary" id="restartBtn">
+                <i class="bi bi-arrow-clockwise me-1"></i> Kembali ke Halaman Utama
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Questions data
+        const questions = [
+            {
+                question: "Anda adalah seorang PNS di kantor yang memiliki pegawai dari berbagai suku dan agama. Rekan kerja Anda mengusulkan untuk mengadakan acara makan bersama dengan menu yang hanya sesuai dengan agama mayoritas di kantor tersebut. Sikap Anda adalah...",
+                options: [
+                    "Menerima usulan tersebut karena mayoritas harus diutamakan.",
+                    "Menolak usulan tersebut dan meminta agar menu yang disediakan mengakomodasi semua pegawai.",
+                    "Mengusulkan agar acara dibatalkan dan diganti dengan acara lain yang tidak melibatkan makanan.",
+                    "Mengusulkan agar setiap pegawai membawa makanan sendiri sesuai dengan kebutuhan masing-masing.",
+                    "Menyarankan agar panitia menyediakan beberapa pilihan menu yang sesuai dengan kebutuhan semua pegawai."
+                ],
+                values: [1, 3, 2, 3, 5]
+            },
+            {
+                question: "Sebagai kepala desa, Anda dihadapkan pada situasi di mana ada tradisi lokal yang dianggap bertentangan dengan nilai-nilai modernisasi. Sebagian warga ingin melestarikan tradisi tersebut, sementara sebagian lainnya ingin menggantinya dengan praktik yang lebih modern. Tindakan terbaik yang Anda lakukan adalah...",
+                options: [
+                    "Menghapus tradisi tersebut secara paksa karena dianggap tidak relevan dengan zaman.",
+                    "Mengabaikan permintaan warga yang ingin modernisasi dan tetap mempertahankan tradisi.",
+                    "Mengadakan dialog antara kedua kelompok untuk mencari solusi terbaik yang mengakomodasi kedua kepentingan.",
+                    "Menyerahkan sepenuhnya keputusan kepada tokoh masyarakat tanpa intervensi pemerintah desa.",
+                    "Membuat kebijakan yang membatasi pelaksanaan tradisi tersebut hanya pada acara-acara tertentu saja."
+                ],
+                values: [1, 2, 5, 2, 3]
+            },
+            {
+                question: "Anda ditunjuk sebagai ketua panitia perayaan hari kemerdekaan di lingkungan RT Anda. Dalam rapat panitia, terjadi perbedaan pendapat mengenai jenis hiburan yang akan ditampilkan. Sebagian menginginkan hiburan modern, sebagian lainnya menginginkan hiburan tradisional. Langkah terbaik yang Anda ambil adalah...",
+                options: [
+                    "Memutuskan sendiri jenis hiburan berdasarkan suara terbanyak dalam rapat.",
+                    "Membatalkan rencana hiburan untuk menghindari konflik.",
+                    "Menyediakan dua panggung terpisah untuk hiburan modern dan tradisional.",
+                    "Menggabungkan elemen modern dan tradisional dalam satu pertunjukan yang harmonis.",
+                    "Menyerahkan sepenuhnya keputusan kepada ketua RT."
+                ],
+                values: [2, 1, 4, 5, 2]
+            },
+            {
+                question: "Sebagai PNS di kantor yang multikultural, Anda mendapat tugas untuk menyelenggarakan pelatihan keterampilan bagi masyarakat. Namun, Anda mengetahui bahwa ada beberapa kelompok masyarakat yang memiliki kebiasaan dan norma sosial yang berbeda. Pendekatan terbaik yang Anda lakukan adalah...",
+                options: [
+                    "Menyelenggarakan pelatihan dengan standar yang sama untuk semua peserta tanpa mempertimbangkan perbedaan.",
+                    "Membatasi peserta hanya dari kelompok masyarakat yang memiliki norma sosial yang dominan.",
+                    "Menyelenggarakan pelatihan terpisah untuk setiap kelompok masyarakat berdasarkan norma sosial mereka.",
+                    "Mengkaji kebutuhan dan norma setiap kelompok terlebih dahulu, kemudian merancang pelatihan yang inklusif.",
+                    "Menunda pelaksanaan pelatihan hingga ada kesepakatan dari semua kelompok masyarakat."
+                ],
+                values: [1, 1, 3, 5, 2]
+            },
+            {
+                question: "Anda adalah seorang PNS yang ditugaskan di daerah perbatasan yang memiliki keragaman suku dan budaya. Dalam melaksanakan tugas, Anda sering dihadapkan pada perbedaan persepsi mengenai waktu, di mana masyarakat setempat memiliki konsep waktu yang lebih fleksibel dibandingkan dengan standar pemerintah. Sikap terbaik Anda adalah...",
+                options: [
+                    "Memaksakan standar waktu pemerintah tanpa kompromi karena aturan harus diikuti.",
+                    "Mengabaikan standar waktu pemerintah dan menyesuaikan sepenuhnya dengan kebiasaan lokal.",
+                    "Mencari jalan tengah dengan memberikan toleransi waktu tertentu, tetapi tetap menjaga efektivitas pelaksanaan tugas.",
+                    "Menolak bertugas di daerah tersebut dan meminta penugasan di daerah lain.",
+                    "Mengajukan proposal untuk mengubah standar waktu pemerintah agar sesuai dengan kebiasaan lokal."
+                ],
+                values: [1, 2, 5, 1, 2]
+            },
+            {
+                question: "Sebagai kepala sekolah di daerah yang memiliki keragaman agama, Anda dihadapkan pada permintaan dari beberapa orang tua murid untuk menyediakan ruang ibadah khusus untuk agama mereka di sekolah. Namun, sekolah memiliki keterbatasan ruang. Tindakan terbaik yang Anda lakukan adalah...",
+                options: [
+                    "Menolak permintaan tersebut dengan alasan keterbatasan ruang.",
+                    "Mengalihkan fungsi ruang yang sudah ada untuk memenuhi permintaan tersebut.",
+                    "Menyediakan ruang multiagama yang dapat digunakan bergantian oleh semua pemeluk agama.",
+                    "Meminta siswa untuk beribadah di rumah masing-masing.",
+                    "Menggalang dana dari orang tua murid untuk membangun ruang ibadah baru."
+                ],
+                values: [1, 2, 5, 1, 3]
+            },
+            {
+                question: "Anda adalah seorang PNS di kementerian sosial yang bertugas menangani masalah pengungsi dari daerah konflik. Banyak pengungsi yang mengalami trauma dan memiliki latar belakang budaya yang berbeda dengan masyarakat lokal. Pendekatan terbaik dalam memberikan bantuan adalah...",
+                options: [
+                    "Memberikan bantuan standar yang sama untuk semua pengungsi tanpa membedakan latar belakang mereka.",
+                    "Mengisolasi pengungsi dalam camp khusus untuk mencegah konflik dengan masyarakat lokal.",
+                    "Melakukan penilaian kebutuhan individual dan kelompok, serta menyediakan bantuan yang sesuai dengan latar belakang budaya mereka.",
+                    "Menyerahkan penanganan pengungsi kepada organisasi internasional.",
+                    "Memindahkan pengungsi ke daerah lain yang memiliki kesamaan budaya dengan mereka."
+                ],
+                values: [2, 1, 5, 1, 2]
+            },
+            {
+                question: "Sebagai PNS di kantor yang sedang mengimplementasikan program digitalisasi, Anda menemukan bahwa beberapa rekan kerja yang lebih tua mengalami kesulitan dalam mengadaptasi teknologi baru. Sikap terbaik yang Anda tunjukkan adalah...",
+                options: [
+                    "Mengabaikan kesulitan mereka karena setiap pegawai harus mampu beradaptasi dengan perubahan.",
+                    "Melaporkan mereka kepada atasan karena dianggap tidak mampu mengikuti perkembangan.",
+                    "Menawarkan bantuan dan pelatihan tambahan secara sukarela di luar jam kerja.",
+                    "Mendesak manajemen untuk mengganti pegawai yang tidak mampu beradaptasi dengan teknologi.",
+                    "Membentuk kelompok belajar informal di mana pegawai yang lebih mahir dapat membantu yang kurang mahli."
+                ],
+                values: [1, 1, 4, 1, 5]
+            },
+            {
+                question: "Anda ditunjuk sebagai ketua tim untuk menyusun kebijakan baru terkait pengelolaan situs bersejarah yang juga dianggap sakral oleh masyarakat setempat. Dalam prosesnya, Anda menemukan bahwa ada ketegangan antara kepentingan pelestarian sejarah dan kepentingan religius masyarakat. Langkah terbaik yang Anda ambil adalah...",
+                options: [
+                    "Mengutamakan kepentingan pelestarian sejarah karena itu adalah tugas utama tim.",
+                    "Mengutamakan kepentingan religius masyarakat untuk menghindari konflik sosial.",
+                    "Membatasi akses masyarakat ke situs tersebut untuk mencegah kerusakan.",
+                    "Melibatkan perwakilan masyarakat, sejarawan, dan pakar budaya dalam diskusi untuk mencari solusi yang seimbang.",
+                    "Menyerahkan sepenuhnya keputusan kepada pemerintah pusat."
+                ],
+                values: [2, 2, 1, 5, 2]
+            },
+            {
+                question: "Sebagai PNS di bidang pariwisata, Anda ditugaskan untuk mengembangkan destinasi wisata di daerah tertinggal yang memiliki kearifan lokal unik. Namun, Anda khawatir bahwa pengembangan pariwisata massal dapat mengancam kelestarian budaya lokal. Pendekatan terbaik yang Anda lakukan adalah...",
+                options: [
+                    "Mengembangkan pariwisata massal untuk meningkatkan perekonomian daerah secara cepat.",
+                    "Membatasi pengembangan pariwisata untuk melindungi budaya lokal meskipun berdampak pada perekonomian.",
+                    "Mengembangkan konsep pariwisata berbasis komunitas yang melibatkan masyarakat lokal dalam pengelolaan dan memberdayakan kearifan lokal.",
+                    "Menunda pengembangan pariwisata hingga ada jaminan bahwa budaya lokal tidak akan terpengaruh.",
+                    "Mengalihkan fokus pengembangan ke sektor lain selain pariwisata."
+                ],
+                values: [1, 2, 5, 3, 2]
+            },
+            {
+                question: "Anda adalah seorang PNS di kantor yang sedang merayakan hari besar keagamaan tertentu. Sebagai minoritas di kantor tersebut, Anda merasa tidak nyaman dengan beberapa kegiatan yang dilaksanakan. Sikap terbaik yang Anda tunjukkan adalah...",
+                options: [
+                    "Memilih untuk tidak hadir dalam perayaan tersebut.",
+                    "Mengajukan protes formal kepada atasan mengenai kegiatan yang membuat Anda tidak nyaman.",
+                    "Menghadiri perayaan dengan ikhlas sambil menjaga keyakinan pribadi.",
+                    "Mengusulkan agar perayaan diselenggarakan secara lebih inklusif dengan menghargai keragaman.",
+                    "Mencari dukungan dari rekan kerja lain yang seagama untuk menolak kegiatan tersebut."
+                ],
+                values: [2, 1, 3, 5, 1]
+            },
+            {
+                question: "Sebagai kepala dinas pendidikan di daerah yang multikultural, Anda dihadapkan pada permintaan dari beberapa orang tua untuk menyediakan pendidikan karakter berdasarkan nilai-nilai agama tertentu di sekolah umum. Tindakan terbaik yang Anda lakukan adalah...",
+                options: [
+                    "Menolak permintaan tersebut karena sekolah umum harus netral terhadap agama.",
+                    "Menerima permintaan tersebut dan mengimplementasikan pendidikan karakter berdasarkan agama mayoritas.",
+                    "Menyediakan pilihan kegiatan ekstrakurikuler pendidikan karakter berdasarkan berbagai agama.",
+                    "Mengembangkan kurikulum pendidikan karakter yang mengintegrasikan nilai-nilai universal dari berbagai agama dan budaya.",
+                    "Menyerahkan keputusan sepenuhnya kepada komite sekolah."
+                ],
+                values: [2, 1, 3, 5, 2]
+            },
+            {
+                question: "Anda adalah seorang PNS yang ditugaskan di daerah dengan tingkat kesenjangan sosial yang tinggi. Dalam melaksanakan program pemberdayaan masyarakat, Anda menemukan bahwa ada kelompok masyarakat yang sulit dijangkau karena adanya hambatan budaya dan adat istiadat. Pendekatan terbaik yang Anda lakukan adalah...",
+                options: [
+                    "Mengalihkan sasaran program ke kelompok masyarakat yang lebih mudah dijangkau.",
+                    "Memaksakan implementasi program tanpa mempertimbangkan hambatan budaya.",
+                    "Bekerja sama dengan tokoh masyarakat dan pemuka adat untuk memahami hambatan dan menyesuaikan program.",
+                    "Mengganti program dengan bantuan langsung tanpa melibatkan pemberdayaan.",
+                    "Menunggu hingga masyarakat tersebut siap menerima program."
+                ],
+                values: [1, 1, 5, 2, 2]
+            },
+            {
+                question: "Sebagai PNS di kantor yang sedang mengimplementasikan program perubahan, Anda menemukan bahwa beberapa rekan kerja menunjukkan resistensi terhadap perubahan dengan alasan telah terbiasa dengan cara kerja lama. Sikap terbaik yang Anda tunjukkan adalah...",
+                options: [
+                    "Mengabaikan resistensi mereka dan tetap melaksanakan program perubahan.",
+                    "Mengkritik sikap mereka yang tidak mau berubah di depan umum.",
+                    "Mencoba memahami alasan di balik resistensi mereka dan menjelaskan manfaat perubahan secara persuasif.",
+                    "Melaporkan mereka kepada atasan karena menghambat program perubahan.",
+                    "Membentuk kelompok terpisah yang mendukung perubahan dan mengisolasi yang resisten."
+                ],
+                values: [2, 1, 5, 1, 2]
+            },
+            {
+                question: "Anda ditunjuk sebagai ketua panitia untuk acara peringatan hari ulang tahun kota yang melibatkan berbagai etnis dan agama. Dalam persiapan, terjadi perdebatan mengenai simbol-simbol yang akan ditampilkan dalam acara tersebut. Langkah terbaik yang Anda ambil adalah...",
+                options: [
+                    "Memutuskan untuk tidak menampilkan simbol apapun untuk menghindari konflik.",
+                    "Hanya menampilkan simbol dari etnis dan agama mayoritas.",
+                    "Menampilkan semua simbol dari berbagai etnis dan agama secara setara.",
+                    "Membuat simbol baru yang menggabungkan elemen dari berbagai etnis dan agama.",
+                    "Menyerahkan keputusan kepada walikota tanpa diskusi lebih lanjut."
+                ],
+                values: [1, 1, 4, 5, 2]
+            },
+            {
+                question: "Sebagai PNS di bidang kesehatan, Anda ditugaskan untuk menyosialisasikan program kesehatan di daerah yang masih kuat dengan kepercayaan tradisional. Beberapa masyarakat menolak program tersebut karena dianggap bertentangan dengan kepercayaan mereka. Pendekatan terbaik yang Anda lakukan adalah...",
+                options: [
+                    "Memaksa masyarakat untuk mengikuti program kesehatan karena itu untuk kebaikan mereka.",
+                    "Menghentikan sosialisasi di daerah tersebut dan beralih ke daerah lain yang lebih menerima.",
+                    "Bekerja sama dengan tokoh masyarakat dan pemuka adat untuk menjelaskan program dengan pendekatan yang sesuai dengan kepercayaan lokal.",
+                    "Melaporkan penolakan masyarakat kepada atasan sebagai bentuk ketidakdisiplinan.",
+                    "Mengancam akan menghentikan bantuan lain jika mereka tidak menerima program kesehatan."
+                ],
+                values: [1, 2, 5, 1, 1]
+            },
+            {
+                question: "Anda adalah seorang PNS yang baru saja dipindahkan ke daerah dengan budaya yang sangat berbeda dengan tempat asal Anda. Dalam bekerja, Anda sering menemukan bahwa cara komunikasi dan interaksi sosial di tempat baru sangat berbeda dengan yang biasa Anda lakukan. Sikap terbaik yang Anda tunjukkan adalah...",
+                options: [
+                    "Mempertahankan cara komunikasi dan interaksi Anda karena itu adalah identitas Anda.",
+                    "Menghindari interaksi dengan masyarakat setempat untuk mencegah kesalahpahaman.",
+                    "Mencoba memahami dan menyesuaikan diri dengan norma sosial setempat tanpa menghilangkan identitas diri.",
+                    "Mengajukan permohonan pemindahan kembali ke tempat asal.",
+                    "Mengkritik cara komunikasi dan interaksi sosial setempat di depan umum."
+                ],
+                values: [2, 1, 5, 1, 1]
+            },
+            {
+                question: "Sebagai kepala desa, Anda dihadapkan pada situasi di mana ada adat lokal yang melarang perempuan untuk berpartisipasi dalam rapat desa. Namun, aturan pemerintah mewajibkan partisipasi perempuan dalam pembangunan desa. Tindakan terbaik yang Anda lakukan adalah...",
+                options: [
+                    "Mengikuti aturan pemerintah dan memaksa perempuan untuk berpartisipasi dalam rapat desa.",
+                    "Mengikuti adat lokal dan melarang perempuan berpartisipasi dalam rapat desa.",
+                    "Mencari jalan tengah dengan membentuk forum terpisah untuk perempuan yang hasilnya akan dibahas dalam rapat desa.",
+                    "Mengadakan dialog dengan tokoh masyarakat dan pemuka adat untuk menjelaskan pentingnya partisipasi perempuan serta mencari solusi yang dapat diterima.",
+                    "Mengabaikan kedua aturan tersebut dan melanjutkan rapat desa seperti biasa."
+                ],
+                values: [2, 1, 3, 5, 1]
+            },
+            {
+                question: "Anda adalah seorang PNS di kantor yang sedang menghadapi konflik antarpegawai yang disebabkan oleh perbedaan latar belakang suku dan budaya. Sikap terbaik yang Anda tunjukkan sebagai rekan kerja adalah...",
+                options: [
+                    "Ikut campur dalam konflik dengan membela pihak yang sebudaya dengan Anda.",
+                    "Mengabaikan konflik tersebut karena itu bukan tanggung jawab Anda.",
+                    "Melaporkan konflik tersebut kepada atasan tanpa mencoba menyelesaikannya terlebih dahulu.",
+                    "Mencoba menjadi mediator yang netral dan memfasilitasi dialog antara pihak yang bertikai.",
+                    "Menyebar isu tentang konflik tersebut ke rekan kerja lainnya."
+                ],
+                values: [1, 1, 2, 5, 1]
+            },
+            {
+                question: "Sebagai PNS di bidang pendidikan, Anda ditugaskan untuk mengembangkan kurikulum lokal yang mengintegrasikan kearifan lokal dengan kurikulum nasional. Dalam prosesnya, Anda menemukan bahwa beberapa kearifan lokal dianggap tidak relevan dengan kebutuhan zaman. Pendekatan terbaik yang Anda lakukan adalah...",
+                options: [
+                    "Menghilangkan semua kearifan lokal yang dianggap tidak relevan dengan kebutuhan zaman.",
+                    "Mempertahankan semua kearifan lokal tanpa melakukan modifikasi apapun.",
+                    "Melakukan penelitian mendalam untuk memahami esensi kearifan lokal tersebut dan mengadaptasinya dengan kebutuhan zaman.",
+                    "Menyerahkan sepenuhnya pengembangan kurikulum kepada tokoh masyarakat setempat.",
+                    "Mengganti kearifan lokal dengan materi dari kurikulum nasional saja."
+                ],
+                values: [1, 2, 5, 2, 1]
+            }
+        ];
+
+        // Global variables
+        let currentQuestionIndex = 0;
+        let userAnswers = [];
+        let timeLeft = 600; // 10 minutes in seconds
+        let timerInterval;
+        let shuffledQuestions = [];
+
+        // DOM elements
+        const loginPage = document.getElementById('loginPage');
+        const quizPage = document.getElementById('quizPage');
+        const loadingPage = document.getElementById('loadingPage');
+        const resultPage = document.getElementById('resultPage');
+        const tokenInput = document.getElementById('tokenInput');
+        const loginBtn = document.getElementById('loginBtn');
+        const loginError = document.getElementById('loginError');
+        const questionsContainer = document.getElementById('questionsContainer');
+        const currentQuestionSpan = document.getElementById('currentQuestion');
+        const timeLeftSpan = document.getElementById('timeLeft');
+        const progressBar = document.getElementById('progressBar');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const submitBtn = document.getElementById('submitBtn');
+        const totalScoreSpan = document.getElementById('totalScore');
+        const scoreCategoryDiv = document.getElementById('scoreCategory');
+        const scoreInterpretationP = document.getElementById('scoreInterpretation');
+        const restartBtn = document.getElementById('restartBtn');
+
+        // Event listeners
+        loginBtn.addEventListener('click', handleLogin);
+        prevBtn.addEventListener('click', showPreviousQuestion);
+        nextBtn.addEventListener('click', showNextQuestion);
+        submitBtn.addEventListener('click', submitQuiz);
+        restartBtn.addEventListener('click', restartQuiz);
+
+        // Functions
+        function handleLogin() {
+            const token = tokenInput.value.trim();
+            
+            if (token === 'EP1') {
+                loginPage.classList.add('hidden');
+                loadingPage.classList.remove('hidden');
+                
+                // Simulate loading
+                setTimeout(() => {
+                    loadingPage.classList.add('hidden');
+                    initializeQuiz();
+                }, 1000);
+            } else {
+                loginError.classList.remove('hidden');
+                tokenInput.value = '';
+            }
+        }
+
+        function initializeQuiz() {
+            // Shuffle questions
+            shuffledQuestions = [...questions];
+            for (let i = shuffledQuestions.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffledQuestions[i], shuffledQuestions[j]] = [shuffledQuestions[j], shuffledQuestions[i]];
+            }
+            
+            // Initialize user answers
+            userAnswers = new Array(shuffledQuestions.length).fill(-1);
+            
+            // Start timer
+            startTimer();
+            
+            // Show first question
+            showQuestion(0);
+            
+            // Show quiz page
+            quizPage.classList.remove('hidden');
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    submitQuiz();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timeLeftSpan.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            // Change color when time is running out
+            if (timeLeft <= 60) {
+                timeLeftSpan.parentElement.style.color = '#dc3545';
+            } else if (timeLeft <= 180) {
+                timeLeftSpan.parentElement.style.color = '#fd7e14';
+            }
+        }
+
+        function showQuestion(index) {
+            currentQuestionIndex = index;
+            const question = shuffledQuestions[index];
+            
+            // Update question number
+            currentQuestionSpan.textContent = index + 1;
+            
+            // Update progress bar
+            const progress = ((index + 1) / shuffledQuestions.length) * 100;
+            progressBar.style.width = `${progress}%`;
+            
+            // Update navigation buttons
+            prevBtn.disabled = index === 0;
+            if (index === shuffledQuestions.length - 1) {
+                nextBtn.classList.add('hidden');
+                submitBtn.classList.remove('hidden');
+            } else {
+                nextBtn.classList.remove('hidden');
+                submitBtn.classList.add('hidden');
+            }
+            
+            // Clear previous question
+            questionsContainer.innerHTML = '';
+            
+            // Create question card
+            const questionCard = document.createElement('div');
+            questionCard.className = 'question-card';
+            
+            // Add question number
+            const questionNumber = document.createElement('div');
+            questionNumber.className = 'question-number';
+            questionNumber.textContent = `Soal ${index + 1}`;
+            questionCard.appendChild(questionNumber);
+            
+            // Add question text
+            const questionText = document.createElement('p');
+            questionText.textContent = question.question;
+            questionCard.appendChild(questionText);
+            
+            // Add options
+            const optionsContainer = document.createElement('div');
+            optionsContainer.className = 'options-container';
+            
+            question.options.forEach((option, optionIndex) => {
+                const optionItem = document.createElement('div');
+                optionItem.className = 'option-item';
+                optionItem.textContent = `${String.fromCharCode(65 + optionIndex)}. ${option}`;
+                
+                // Check if this option was selected before
+                if (userAnswers[index] === optionIndex) {
+                    optionItem.classList.add('selected');
+                }
+                
+                // Add click event
+                optionItem.addEventListener('click', () => selectOption(index, optionIndex));
+                
+                optionsContainer.appendChild(optionItem);
+            });
+            
+            questionCard.appendChild(optionsContainer);
+            questionsContainer.appendChild(questionCard);
+        }
+
+        function selectOption(questionIndex, optionIndex) {
+            // Update user answer
+            userAnswers[questionIndex] = optionIndex;
+            
+            // Update UI
+            const optionItems = document.querySelectorAll('.option-item');
+            optionItems.forEach((item, index) => {
+                if (index === optionIndex) {
+                    item.classList.add('selected');
+                } else {
+                    item.classList.remove('selected');
+                }
+            });
+        }
+
+        function showPreviousQuestion() {
+            if (currentQuestionIndex > 0) {
+                showQuestion(currentQuestionIndex - 1);
+            }
+        }
+
+        function showNextQuestion() {
+            if (currentQuestionIndex < shuffledQuestions.length - 1) {
+                showQuestion(currentQuestionIndex + 1);
+            }
+        }
+
+        function submitQuiz() {
+            // Stop timer
+            clearInterval(timerInterval);
+            
+            // Calculate score
+            let totalScore = 0;
+            for (let i = 0; i < shuffledQuestions.length; i++) {
+                if (userAnswers[i] !== -1) {
+                    totalScore += shuffledQuestions[i].values[userAnswers[i]];
+                }
+            }
+            
+            // Show loading
+            quizPage.classList.add('hidden');
+            loadingPage.classList.remove('hidden');
+            
+            // Simulate loading
+            setTimeout(() => {
+                loadingPage.classList.add('hidden');
+                showResult(totalScore);
+            }, 1500);
+        }
+
+        function showResult(score) {
+            // Calculate percentage
+            const maxScore = 100; // 20 questions * 5 points each
+            const percentage = Math.round((score / maxScore) * 100);
+            
+            // Update score display
+            totalScoreSpan.textContent = score;
+            
+            // Determine score category and interpretation
+            let category, categoryClass, interpretation;
+            
+            if (percentage >= 80) {
+                category = "Sangat Baik";
+                categoryClass = "score-excellent";
+                interpretation = "Anda memiliki pemahaman yang sangat baik tentang karakteristik pribadi dalam konteks sosial budaya. Anda mampu menunjukkan sikap yang inklusif, toleran, dan adaptif dalam berbagai situasi kerja yang melibatkan keragaman budaya. Kemampuan Anda dalam mengelola konflik dan mencari solusi terbaik sangat baik.";
+            } else if (percentage >= 60) {
+                category = "Baik";
+                categoryClass = "score-good";
+                interpretation = "Anda memiliki pemahaman yang baik tentang karakteristik pribadi dalam konteks sosial budaya. Anda cenderung mampu menunjukkan sikap yang toleran dan adaptif dalam berbagai situasi kerja. Namun, masih ada ruang untuk peningkatan dalam mengelola konflik dan mencari solusi yang lebih inovatif.";
+            } else if (percentage >= 40) {
+                category = "Cukup";
+                categoryClass = "score-average";
+                interpretation = "Anda memiliki pemahaman yang cukup tentang karakteristik pribadi dalam konteks sosial budaya. Anda perlu meningkatkan kemampuan dalam menunjukkan sikap yang inklusif dan toleran dalam situasi kerja yang melibatkan keragaman budaya. Disarankan untuk lebih banyak belajar tentang pengelolaan konflik dan keragaman.";
+            } else {
+                category = "Kurang";
+                categoryClass = "score-poor";
+                interpretation = "Anda perlu meningkatkan pemahaman tentang karakteristik pribadi dalam konteks sosial budaya. Disarankan untuk lebih banyak belajar tentang pentingnya sikap inklusif, toleran, dan adaptif dalam lingkungan kerja yang beragam. Perhatikan juga cara mengelola konflik dan mencari solusi yang mengakomodasi kepentingan semua pihak.";
+            }
+            
+            // Update category and interpretation
+            scoreCategoryDiv.textContent = category;
+            scoreCategoryDiv.className = `score-category ${categoryClass}`;
+            scoreInterpretationP.textContent = interpretation;
+            
+            // Show result page
+            resultPage.classList.remove('hidden');
+        }
+
+        function restartQuiz() {
+            // Reset variables
+            currentQuestionIndex = 0;
+            userAnswers = [];
+            timeLeft = 600;
+            shuffledQuestions = [];
+            
+            // Reset timer display
+            timeLeftSpan.textContent = '10:00';
+            timeLeftSpan.parentElement.style.color = '#dc3545';
+            
+            // Show login page
+            resultPage.classList.add('hidden');
+            loginPage.classList.remove('hidden');
+            
+            // Reset token input
+            tokenInput.value = '';
+            loginError.classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
