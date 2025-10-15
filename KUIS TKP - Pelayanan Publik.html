@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis TKP CPNS - Pelayanan Publik</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .login-container {
+            max-width: 450px;
+            margin: 100px auto;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            background-color: white;
+        }
+        
+        .quiz-container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            background-color: white;
+        }
+        
+        .timer-container {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(37, 117, 252, 0.3);
+        }
+        
+        .question-card {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            border-left: 5px solid #6a11cb;
+        }
+        
+        .option-card {
+            background-color: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .option-card:hover {
+            background-color: #f0f7ff;
+            border-color: #2575fc;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .option-card.selected {
+            background-color: #e3f2fd;
+            border-color: #2575fc;
+            border-left: 4px solid #2575fc;
+        }
+        
+        .result-container {
+            max-width: 700px;
+            margin: 100px auto;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            background-color: white;
+            text-align: center;
+        }
+        
+        .score-display {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #6a11cb;
+            margin: 20px 0;
+        }
+        
+        .progress-bar-custom {
+            height: 10px;
+            border-radius: 5px;
+            background-color: #e9ecef;
+            margin-bottom: 30px;
+        }
+        
+        .btn-primary-custom {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            border: none;
+            padding: 10px 25px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(37, 117, 252, 0.4);
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .logo-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            color: white;
+            font-size: 2rem;
+        }
+        
+        .question-number {
+            background-color: #6a11cb;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Page -->
+    <div id="loginPage" class="login-container">
+        <div class="logo-container">
+            <div class="logo">
+                <i class="bi bi-person-check-fill"></i>
+            </div>
+            <h2 class="mt-3">Kuis TKP CPNS</h2>
+            <p class="text-muted">Pelayanan Publik</p>
+        </div>
+        
+        <div class="mb-4">
+            <label for="tokenInput" class="form-label">Token Akses</label>
+            <input type="text" class="form-control form-control-lg" id="tokenInput" placeholder="Masukkan token">
+            <div class="form-text">Token akan diberikan oleh pengawas ujian</div>
+        </div>
+        
+        <button id="loginBtn" class="btn btn-primary-custom w-100 py-3">Masuk</button>
+        
+        <div id="loginError" class="alert alert-danger mt-3 hidden">
+            Token tidak valid. Silakan coba lagi.
+        </div>
+    </div>
+    
+    <!-- Quiz Page -->
+    <div id="quizPage" class="quiz-container hidden">
+        <div class="timer-container">
+            <i class="bi bi-clock-fill me-2"></i>
+            <span id="timerDisplay">10:00</span>
+        </div>
+        
+        <div class="progress-bar-custom">
+            <div class="progress" style="height: 100%;">
+                <div id="progressBar" class="progress-bar bg-primary" role="progressbar" style="width: 0%"></div>
+            </div>
+        </div>
+        
+        <div id="questionsContainer">
+            <!-- Questions will be dynamically inserted here -->
+        </div>
+        
+        <div class="d-flex justify-content-between mt-4">
+            <button id="prevBtn" class="btn btn-outline-secondary" disabled>
+                <i class="bi bi-arrow-left me-1"></i> Sebelumnya
+            </button>
+            <span id="questionCounter">1 / 20</span>
+            <button id="nextBtn" class="btn btn-primary-custom">
+                Selanjutnya <i class="bi bi-arrow-right ms-1"></i>
+            </button>
+        </div>
+        
+        <div class="text-center mt-4">
+            <button id="finishBtn" class="btn btn-danger hidden">
+                Selesai & Lihat Hasil
+            </button>
+        </div>
+    </div>
+    
+    <!-- Result Page -->
+    <div id="resultPage" class="result-container hidden">
+        <div class="logo-container">
+            <div class="logo">
+                <i class="bi bi-award-fill"></i>
+            </div>
+            <h2 class="mt-3">Hasil Kuis</h2>
+            <p class="text-muted">Tes Karakteristik Pribadi (TKP)</p>
+        </div>
+        
+        <div class="score-display" id="scoreDisplay">0</div>
+        <p class="lead">Dari 100 poin maksimal</p>
+        
+        <div class="mt-5">
+            <h5>Keterangan:</h5>
+            <div class="text-start mt-3">
+                <p class="mb-2"><i class="bi bi-circle-fill text-primary me-2"></i> Setiap soal memiliki nilai skala 1-5</p>
+                <p class="mb-2"><i class="bi bi-circle-fill text-primary me-2"></i> Nilai 5 merupakan jawaban yang paling baik</p>
+                <p><i class="bi bi-circle-fill text-primary me-2"></i> Semakin tinggi skor, semakin baik karakteristik pelayanan publik Anda</p>
+            </div>
+        </div>
+        
+        <button id="restartBtn" class="btn btn-primary-custom mt-4">
+            <i class="bi bi-arrow-clockwise me-2"></i> Ulangi Kuis
+        </button>
+    </div>
+
+    <script>
+        // Questions data
+        const questions = [
+            {
+                question: "Sebagai pegawai pelayanan publik, Anda dihadapkan pada situasi di mana seorang warga yang sangat marah datang ke kantor Anda karena pelayanan yang dianggap lambat. Sikap apa yang sebaiknya Anda tunjukkan?",
+                options: [
+                    { text: "Mengabaikan kemarahan warga tersebut dan memintanya untuk tenang sebelum dilayani.", value: 1 },
+                    { text: "Mendengarkan dengan sabar keluhan warga tersebut, kemudian mencari solusi terbaik untuk masalahnya.", value: 5 },
+                    { text: "Meminta warga tersebut untuk mengisi formulir keluhan terlebih dahulu sebelum dilayani.", value: 3 },
+                    { text: "Menjelaskan bahwa keterlambatan terjadi karena banyaknya antrian dan bukan kesalahan pihak Anda.", value: 2 },
+                    { text: "Memanggil atasan Anda untuk menangani warga tersebut karena Anda merasa tidak mampu.", value: 2 }
+                ]
+            },
+            {
+                question: "Anda mengetahui ada rekan kerja yang sering terlambat datang ke kantor dan meninggalkan pekerjaannya lebih awal, sehingga memengaruhi pelayanan kepada publik. Tindakan apa yang sebaiknya Anda lakukan?",
+                options: [
+                    { text: "Membiarkan saja karena itu bukan tanggung jawab Anda untuk mengawasi rekan kerja.", value: 1 },
+                    { text: "Melaporkan langsung kepada atasan tanpa memberi tahu rekan kerja tersebut terlebih dahulu.", value: 3 },
+                    { text: "Menegur secara halus rekan kerja tersebut dan menawarkan bantuan jika ia memiliki kesulitan.", value: 5 },
+                    { text: "Membicarakan masalah ini dengan rekan kerja lain di kantor untuk mencari solusi bersama.", value: 4 },
+                    { text: "Mengambil alih pekerjaan rekan kerja tersebut tanpa memberi tahu siapa pun.", value: 2 }
+                ]
+            },
+            {
+                question: "Sebagai kepala unit pelayanan publik, Anda diminta untuk meningkatkan kualitas pelayanan dengan anggaran yang terbatas. Langkah prioritas apa yang akan Anda lakukan?",
+                options: [
+                    { text: "Mengajukan penambahan anggaran kepada atasan karena tanpa tambahan dana tidak ada perubahan.", value: 1 },
+                    { text: "Mengadakan pelatihan untuk meningkatkan kompetensi SDM dalam pelayanan publik.", value: 5 },
+                    { text: "Membeli peralatan canggih untuk meningkatkan kualitas pelayanan meskipun anggaran terbatas.", value: 3 },
+                    { text: "Memperbanyak spanduk dan brosur tentang pelayanan yang ada.", value: 2 },
+                    { text: "Memotong jam kerja pegawai untuk menghemat anggaran operasional.", value: 1 }
+                ]
+            },
+            {
+                question: "Seorang warga lanjut usia datang ke kantor Anda dengan kebingungan karena tidak mengerti prosedur administrasi yang harus dilakukan. Sikap apa yang sebaiknya Anda tunjukkan?",
+                options: [
+                    { text: "Memintanya untuk menunggu hingga giliran karena Anda sedang melayani warga lain.", value: 1 },
+                    { text: "Memberikan penjelasan secara singkat dan memintanya untuk kembali jika masih bingung.", value: 2 },
+                    { text: "Membimbing secara perlahan dan sabar, menggunakan bahasa yang mudah dipahami.", value: 5 },
+                    { text: "Menyarankan warga tersebut untuk membawa pendamping saat datang ke kantor.", value: 3 },
+                    { text: "Memberikan formulir dan memintanya untuk mengisi di rumah lalu kembali lagi.", value: 2 }
+                ]
+            },
+            {
+                question: "Anda diminta oleh atasan untuk mempercepat proses perizinan bagi teman dekatnya, sementara ada banyak antrian yang sudah menunggu lama. Sikap apa yang sebaiknya Anda lakukan?",
+                options: [
+                    { text: "Mematuhi permintaan atasan karena ia adalah pimpinan Anda.", value: 1 },
+                    { text: "Menolak dengan halus dan menjelaskan bahwa semua warga harus mendapat pelayanan yang adil.", value: 5 },
+                    { text: "Meminta izin kepada antrian untuk memberikan prioritas kepada teman atasan.", value: 3 },
+                    { text: "Melakukan proses percepatan diam-diam tanpa sepengetahuan antrian lain.", value: 2 },
+                    { text: "Menyarankan teman atasan untuk menggunakan jalur khusus yang tersedia.", value: 2 }
+                ]
+            },
+            {
+                question: "Dalam situasi darurat bencana alam, kantor pelayanan publik tempat Anda bekerja menjadi tempat pengungsian sementara. Peran apa yang paling tepat untuk Anda ambil?",
+                options: [
+                    { text: "Fokus pada pekerjaan administratif kantor seperti biasa.", value: 1 },
+                    { text: "Membantu mendistribusikan logistik kepada pengungsi sesuai prosedur.", value: 4 },
+                    { text: "Mengkoordinasikan tim untuk memberikan pelayanan darurat dan informasi yang akurat.", value: 5 },
+                    { text: "Melapor ke atasan dan menunggu instruksi lebih lanjut sebelum bertindak.", value: 2 },
+                    { text: "Membantu secara pribadi tanpa melibatkan institusi tempat Anda bekerja.", value: 3 }
+                ]
+            },
+            {
+                question: "Anda menemukan adanya ketidaksesuaian antara kebijakan pelayanan publik yang ditetapkan dengan kondisi di lapangan yang sebenarnya. Tindakan apa yang sebaiknya Anda lakukan?",
+                options: [
+                    { text: "Mengikuti kebijakan yang ada tanpa mempertimbangkan kondisi lapangan.", value: 1 },
+                    { text: "Melakukan inovasi dalam penerapan kebijakan sesuai dengan kondisi lapangan.", value: 5 },
+                    { text: "Mengeluh kepada rekan kerja tentang ketidaksesuaian kebijakan tersebut.", value: 2 },
+                    { text: "Menulis laporan resmi tentang ketidaksesuaian tersebut kepada atasan.", value: 4 },
+                    { text: "Mengabaikan ketidaksesuaian tersebut karena bukan tanggung jawab Anda.", value: 1 }
+                ]
+            },
+            {
+                question: "Sebagai pegawai pelayanan publik, Anda sering menerima keluhan yang sama dari masyarakat tentang prosedur yang rumit. Sikap apa yang sebaiknya Anda lakukan?",
+                options: [
+                    { text: "Menjelaskan kepada masyarakat bahwa prosedur tersebut sudah standar dan tidak bisa diubah.", value: 1 },
+                    { text: "Mencatat semua keluhan dan menyampaikannya kepada atasan sebagai masukan.", value: 4 },
+                    { text: "Membuat panduan sederhana untuk membantu masyarakat memahami prosedur yang rumit.", value: 5 },
+                    { text: "Menyarankan masyarakat untuk menggunakan jasa calo agar prosesnya lebih mudah.", value: 1 },
+                    { text: "Mengabaikan keluhan tersebut karena sudah sering terjadi.", value: 1 }
+                ]
+            },
+            {
+                question: "Anda diminta untuk menjadi narasumber dalam sosialisasi kebijakan baru pelayanan publik kepada masyarakat. Persiapan apa yang paling penting Anda lakukan?",
+                options: [
+                    { text: "Membuat materi presentasi yang sebaik mungkin tanpa mempertimbangkan audiens.", value: 2 },
+                    { text: "Mempelajari kebijakan tersebut secara mendalam dan menyusun strategi komunikasi yang efektif.", value: 5 },
+                    { text: "Meminta bantuan kepada rekan kerja untuk membuat materi presentasi.", value: 3 },
+                    { text: "Mencari contoh kasus sukses penerapan kebijakan di daerah lain.", value: 4 },
+                    { text: "Menunda persiapan hingga mendekati waktu pelaksanaan.", value: 1 }
+                ]
+            },
+            {
+                question: "Dalam situasi pandemi, Anda diminta untuk tetap memberikan pelayanan publik yang optimal namun dengan risiko penularan yang tinggi. Langkah inovatif apa yang akan Anda lakukan?",
+                options: [
+                    { text: "Menutup sementara pelayanan langsung dan mengalihkan ke online tanpa persiapan.", value: 2 },
+                    { text: "Membuat sistem pelayanan terpadu yang menggabungkan layanan daring dan luring dengan protokol kesehatan ketat.", value: 5 },
+                    { text: "Membatasi jam pelayanan dan jumlah pengunjung tanpa solusi alternatif.", value: 3 },
+                    { text: "Menunggu instruksi dari atasan sebelum melakukan perubahan apa pun.", value: 2 },
+                    { text: "Menerapkan pelayanan seperti biasa karena kesehatan adalah tanggung jawab masing-masing.", value: 1 }
+                ]
+            },
+            {
+                question: "Anda mengetahui bahwa ada praktik pungutan liar (pungli) di lingkungan kantor Anda yang merugikan masyarakat. Tindakan apa yang sebaiknya Anda lakukan?",
+                options: [
+                    { text: "Diam saja karena takut terlibat atau menjadi sasaran.", value: 1 },
+                    { text: "Melapor kepada aparat penegak hukum dengan bukti yang cukup.", value: 5 },
+                    { text: "Memberitahu rekan kerja lain agar berhati-hati dengan praktik tersebut.", value: 3 },
+                    { text: "Membicarakan langsung dengan pelaku pungli untuk menghentikannya.", value: 2 },
+                    { text: "Memposting ke media sosial agar praktik tersebut diketahui banyak orang.", value: 2 }
+                ]
+            },
+            {
+                question: "Sebagai pegawai baru di unit pelayanan publik, Anda menemukan banyak prosedur yang tidak efisien dan membuang waktu. Sikap apa yang sebaiknya Anda tunjukkan?",
+                options: [
+                    { text: "Mengikuti prosedur yang ada tanpa mengkritik karena Anda masih pegawai baru.", value: 2 },
+                    { text: "Mencatat inefisiensi tersebut dan menyusun usulan perbaikan yang disertai solusi.", value: 5 },
+                    { text: "Membicarakan kelemahan sistem tersebut dengan rekan kerja lain.", value: 3 },
+                    { text: "Mencari cara untuk mempersingkat prosedur demi kepuasan pelanggan.", value: 4 },
+                    { text: "Mengeluh kepada keluarga atau teman di luar kantor tentang masalah ini.", value: 1 }
+                ]
+            },
+            {
+                question: "Anda diminta untuk merancang sistem evaluasi kinerja pelayanan publik yang objektif. Aspek apa yang sebaiknya menjadi prioritas dalam sistem tersebut?",
+                options: [
+                    { text: "Kecepatan penyelesaian pekerjaan administratif.", value: 3 },
+                    { text: "Kepatuhan terhadap jam kerja dan aturan yang berlaku.", value: 2 },
+                    { text: "Tingkat kepuasan masyarakat terhadap pelayanan yang diberikan.", value: 5 },
+                    { text: "Kemampuan dalam menyelesaikan laporan kegiatan.", value: 2 },
+                    { text: "Jumlah penghargaan yang diterima dari atasan.", value: 1 }
+                ]
+            },
+            {
+                question: "Dalam situasi di mana Anda harus memilih antara menyelesaikan tugas administratif yang menumpuk atau melayani masyarakat yang datang secara tiba-tiba, pilihan mana yang sebaiknya diutamakan?",
+                options: [
+                    { text: "Menyelesaikan tugas administratif terlebih dahulu karena itu adalah kewajiban utama.", value: 2 },
+                    { text: "Melayani masyarakat yang datang terlebih dahulu karena itu adalah esensi pelayanan publik.", value: 5 },
+                    { text: "Meminta masyarakat untuk datang kembali di lain waktu karena sedang sibuk.", value: 1 },
+                    { text: "Mencari bantuan rekan kerja untuk melayani masyarakat sementara Anda menyelesaikan administratif.", value: 4 },
+                    { text: "Mengabaikan keduanya dan beristirahat sebentar karena merasa lelah.", value: 1 }
+                ]
+            },
+            {
+                question: "Anda diminta untuk menyampaikan informasi sensitif tentang kebijakan baru yang mungkin tidak populer di kalangan masyarakat. Pendekatan komunikasi apa yang sebaiknya Anda gunakan?",
+                options: [
+                    { text: "Menyampaikan informasi secara langsung dan tegas tanpa penjelasan tambahan.", value: 2 },
+                    { text: "Menghindari penyampaian informasi tersebut dan menunggu sampai masyarakat mengetahuinya sendiri.", value: 1 },
+                    { text: "Menyampaikan dengan transparan, jujur, dan disertai penjelasan mengenai alasan di balik kebijakan tersebut.", value: 5 },
+                    { text: "Menyampaikan informasi tersebut secara bertahap dengan harapan masyarakat menerima perlahan.", value: 3 },
+                    { text: "Menyampaikan informasi yang menguntungkan saja dan menyembunyikan yang tidak populer.", value: 1 }
+                ]
+            },
+            {
+                question: "Sebagai pegawai pelayanan publik, Anda sering berinteraksi dengan masyarakat dari berbagai latar belakang. Sikap apa yang paling penting untuk dimiliki?",
+                options: [
+                    { text: "Ketegasan dalam menegakkan aturan tanpa mempertimbangkan kondisi masyarakat.", value: 2 },
+                    { text: "Empati dan penghargaan terhadap keragaman serta kemampuan beradaptasi.", value: 5 },
+                    { text: "Kemampuan berbicara dengan bahasa yang formal dan baku dalam semua situasi.", value: 3 },
+                    { text: "Pengetahuan yang mendalam tentang semua peraturan yang berlaku.", value: 4 },
+                    { text: "Kemampuan untuk menyelesaikan semua masalah dengan cepat tanpa berkonsultasi.", value: 2 }
+                ]
+            },
+            {
+                question: "Anda mengetahui bahwa ada masyarakat yang tidak terlayani karena keterbatasan akses (jauh, tidak ada transportasi, dll). Inisiatif apa yang sebaiknya Anda lakukan?",
+                options: [
+                    { text: "Menunggu masyarakat tersebut datang ke kantor jika memang membutuhkan pelayanan.", value: 1 },
+                    { text: "Mengusulkan program pelayanan keliling atau jemput bola untuk masyarakat terpencil.", value: 5 },
+                    { text: "Membuat pengumuman bahwa pelayanan hanya tersedia di kantor.", value: 1 },
+                    { text: "Membicarakan masalah ini dalam rapat rutin tanpa memberikan solusi konkret.", value: 3 },
+                    { text: "Memberikan bantuan pribadi kepada masyarakat yang Anda kenal saja.", value: 2 }
+                ]
+            },
+            {
+                question: "Dalam situasi di mana Anda harus mengambil keputusan cepat terkait pelayanan publik yang belum diatur dalam prosedur, pertimbangan apa yang sebaiknya menjadi prioritas?",
+                options: [
+                    { text: "Kepatuhan terhadap hierarki dan menunggu keputusan atasan.", value: 2 },
+                    { text: "Kepentingan dan manfaat terbesar bagi masyarakat yang dilayani.", value: 5 },
+                    { text: "Kemudahan bagi pegawai dalam melaksanakan tugas.", value: 2 },
+                    { text: "Efisiensi waktu dan biaya operasional.", value: 3 },
+                    { text: "Menghindari risiko atau komplain dari masyarakat.", value: 3 }
+                ]
+            },
+            {
+                question: "Anda diminta untuk menjadi mediator dalam konflik antara dua warga yang terkait dengan pelayanan publik. Pendekatan apa yang sebaiknya Anda lakukan?",
+                options: [
+                    { text: "Memutuskan salah satu pihak yang benar berdasarkan aturan yang berlaku.", value: 3 },
+                    { text: "Mendengarkan kedua belah pihak dengan sabar, mencari akar masalah, dan memfasilitasi solusi yang adil.", value: 5 },
+                    { text: "Menyarankan kedua belah pihak untuk menyelesaikan masalah di luar kantor.", value: 2 },
+                    { text: "Membuat kesepakatan tertulis yang menguntungkan institusi Anda.", value: 2 },
+                    { text: "Mengalihkan masalah tersebut ke pihak berwenang lain seperti polisi atau pengadilan.", value: 3 }
+                ]
+            },
+            {
+                question: "Sebagai pegawai pelayanan publik yang profesional, sikap apa yang sebaiknya Anda tunjukkan ketika menghadapi kritik dari masyarakat?",
+                options: [
+                    { text: "Membela diri dan menjelaskan bahwa kritik tersebut tidak tepat.", value: 1 },
+                    { text: "Menerima kritik dengan terbuka, mencermati isi kritik, dan menjadikannya sebagai masukan perbaikan.", value: 5 },
+                    { text: "Mengabaikan kritik tersebut karena biasanya berasal dari masyarakat yang tidak puas.", value: 1 },
+                    { text: "Mencatat kritik tersebut untuk dilaporkan kepada atasan tanpa tindak lanjut.", value: 3 },
+                    { text: "Membalas kritik dengan alasan-alasan yang membenarkan tindakan Anda.", value: 2 }
+                ]
+            }
+        ];
+        
+        // Global variables
+        let currentQuestion = 0;
+        let userAnswers = new Array(questions.length).fill(null);
+        let timeLeft = 600; // 10 minutes in seconds
+        let timerInterval;
+        let shuffledQuestions = [];
+        
+        // DOM elements
+        const loginPage = document.getElementById('loginPage');
+        const quizPage = document.getElementById('quizPage');
+        const resultPage = document.getElementById('resultPage');
+        const loginError = document.getElementById('loginError');
+        const tokenInput = document.getElementById('tokenInput');
+        const loginBtn = document.getElementById('loginBtn');
+        const timerDisplay = document.getElementById('timerDisplay');
+        const questionsContainer = document.getElementById('questionsContainer');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const finishBtn = document.getElementById('finishBtn');
+        const questionCounter = document.getElementById('questionCounter');
+        const progressBar = document.getElementById('progressBar');
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        const restartBtn = document.getElementById('restartBtn');
+        
+        // Event listeners
+        loginBtn.addEventListener('click', handleLogin);
+        prevBtn.addEventListener('click', showPrevQuestion);
+        nextBtn.addEventListener('click', showNextQuestion);
+        finishBtn.addEventListener('click', finishQuiz);
+        restartBtn.addEventListener('click', restartQuiz);
+        
+        // Functions
+        function handleLogin() {
+            const token = tokenInput.value.trim();
+            
+            if (token === 'EP1') {
+                loginPage.classList.add('hidden');
+                quizPage.classList.remove('hidden');
+                initializeQuiz();
+            } else {
+                loginError.classList.remove('hidden');
+            }
+        }
+        
+        function initializeQuiz() {
+            // Shuffle questions
+            shuffledQuestions = [...questions];
+            for (let i = shuffledQuestions.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffledQuestions[i], shuffledQuestions[j]] = [shuffledQuestions[j], shuffledQuestions[i]];
+            }
+            
+            // Display first question
+            displayQuestion(0);
+            updateProgressBar();
+            
+            // Start timer
+            startTimer();
+        }
+        
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    finishQuiz();
+                }
+            }, 1000);
+        }
+        
+        function displayQuestion(index) {
+            const question = shuffledQuestions[index];
+            
+            let html = `
+                <div class="question-card">
+                    <h5><span class="question-number">${index + 1}</span>${question.question}</h5>
+                    <div class="mt-4">
+            `;
+            
+            question.options.forEach((option, optionIndex) => {
+                const isSelected = userAnswers[index] === optionIndex ? 'selected' : '';
+                html += `
+                    <div class="option-card ${isSelected}" data-option="${optionIndex}">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="question${index}" id="option${index}_${optionIndex}" ${isSelected ? 'checked' : ''}>
+                            <label class="form-check-label" for="option${index}_${optionIndex}">
+                                ${option.text}
+                            </label>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += `
+                    </div>
+                </div>
+            `;
+            
+            questionsContainer.innerHTML = html;
+            
+            // Add event listeners to options
+            const optionCards = questionsContainer.querySelectorAll('.option-card');
+            optionCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    const optionIndex = parseInt(this.dataset.option);
+                    selectOption(optionIndex);
+                });
+            });
+            
+            // Update navigation buttons
+            prevBtn.disabled = index === 0;
+            nextBtn.textContent = index === shuffledQuestions.length - 1 ? 'Selesai' : 'Selanjutnya';
+            nextBtn.innerHTML = index === shuffledQuestions.length - 1 ? 
+                '<i class="bi bi-check-circle-fill me-1"></i> Selesai' : 
+                'Selanjutnya <i class="bi bi-arrow-right ms-1"></i>';
+            
+            // Update question counter
+            questionCounter.textContent = `${index + 1} / ${shuffledQuestions.length}`;
+            
+            // Show/hide finish button
+            if (index === shuffledQuestions.length - 1) {
+                finishBtn.classList.remove('hidden');
+            } else {
+                finishBtn.classList.add('hidden');
+            }
+        }
+        
+        function selectOption(optionIndex) {
+            userAnswers[currentQuestion] = optionIndex;
+            
+            // Update UI
+            const optionCards = questionsContainer.querySelectorAll('.option-card');
+            optionCards.forEach((card, index) => {
+                if (index === optionIndex) {
+                    card.classList.add('selected');
+                    card.querySelector('input').checked = true;
+                } else {
+                    card.classList.remove('selected');
+                    card.querySelector('input').checked = false;
+                }
+            });
+        }
+        
+        function showPrevQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                displayQuestion(currentQuestion);
+                updateProgressBar();
+            }
+        }
+        
+        function showNextQuestion() {
+            if (currentQuestion < shuffledQuestions.length - 1) {
+                currentQuestion++;
+                displayQuestion(currentQuestion);
+                updateProgressBar();
+            } else {
+                finishQuiz();
+            }
+        }
+        
+        function updateProgressBar() {
+            const progress = ((currentQuestion + 1) / shuffledQuestions.length) * 100;
+            progressBar.style.width = `${progress}%`;
+        }
+        
+        function finishQuiz() {
+            clearInterval(timerInterval);
+            
+            // Calculate score
+            let score = 0;
+            for (let i = 0; i < shuffledQuestions.length; i++) {
+                if (userAnswers[i] !== null) {
+                    score += shuffledQuestions[i].options[userAnswers[i]].value;
+                }
+            }
+            
+            // Convert to 100-point scale
+            const maxScore = shuffledQuestions.length * 5;
+            const normalizedScore = Math.round((score / maxScore) * 100);
+            
+            // Display result
+            quizPage.classList.add('hidden');
+            resultPage.classList.remove('hidden');
+            scoreDisplay.textContent = normalizedScore;
+        }
+        
+        function restartQuiz() {
+            // Reset variables
+            currentQuestion = 0;
+            userAnswers = new Array(questions.length).fill(null);
+            timeLeft = 600;
+            shuffledQuestions = [];
+            
+            // Reset UI
+            resultPage.classList.add('hidden');
+            loginPage.classList.remove('hidden');
+            tokenInput.value = '';
+            loginError.classList.add('hidden');
+        }
+    </script>
+</body>
+</html>

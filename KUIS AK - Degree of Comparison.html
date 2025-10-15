@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Degree of Comparison</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 800px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .timer-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 30px;
+            padding: 10px 20px;
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .timer {
+            font-size: 24px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+        }
+        
+        .timer i {
+            margin-right: 10px;
+            font-size: 20px;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .token-form {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .token-form h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .token-form input {
+            padding: 12px 20px;
+            border: 2px solid #ddd;
+            border-radius: 30px;
+            width: 300px;
+            margin-bottom: 20px;
+            font-size: 16px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .token-form input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .quiz-container {
+            display: none;
+        }
+        
+        .question-container {
+            margin-bottom: 30px;
+            background-color: #f9f9f9;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .question-number {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            margin-right: 10px;
+            font-weight: 600;
+        }
+        
+        .question-text {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        .options {
+            display: grid;
+            gap: 12px;
+        }
+        
+        .option {
+            background-color: white;
+            border: 2px solid #eee;
+            border-radius: 10px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+        
+        .option:hover {
+            border-color: #667eea;
+            background-color: #f0f4ff;
+        }
+        
+        .option.selected {
+            border-color: #667eea;
+            background-color: #f0f4ff;
+        }
+        
+        .option-label {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 15px;
+            font-weight: 600;
+            color: #666;
+        }
+        
+        .option.selected .option-label {
+            background-color: #667eea;
+            color: white;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background-color: #eee;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .quiz-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        
+        .result-container {
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+        }
+        
+        .result-container h2 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .score {
+            font-size: 48px;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+        
+        .score-text {
+            font-size: 20px;
+            margin-bottom: 30px;
+            color: #666;
+        }
+        
+        .error-message {
+            color: #e74c3c;
+            margin-top: 10px;
+            font-size: 14px;
+            display: none;
+        }
+        
+        .quiz-info {
+            background-color: #f0f4ff;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin-bottom: 30px;
+            border-radius: 0 10px 10px 0;
+        }
+        
+        .quiz-info p {
+            margin: 5px 0;
+            color: #555;
+        }
+        
+        .quiz-info i {
+            color: #667eea;
+            margin-right: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .question-text {
+                font-size: 16px;
+            }
+            
+            .option {
+                padding: 12px;
+            }
+            
+            .timer {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Kuis Degree of Comparison</h1>
+            <p>Positive, Comparative, dan Superlative Degree</p>
+            
+            <div class="timer-container" id="timerContainer" style="display: none;">
+                <div class="timer">
+                    <i class="fas fa-clock"></i>
+                    <span id="timer">10:00</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="content">
+            <!-- Token Form -->
+            <div class="token-form" id="tokenForm">
+                <h2>Masukkan Token untuk Memulai Kuis</h2>
+                <input type="text" id="tokenInput" placeholder="Masukkan token di sini">
+                <div class="error-message" id="tokenError">Token tidak valid. Silakan coba lagi.</div>
+                <button class="btn" onclick="validateToken()">Mulai Kuis</button>
+                
+                <div class="quiz-info">
+                    <p><i class="fas fa-info-circle"></i> Kuis ini terdiri dari 20 soal pilihan ganda tentang degree of comparison.</p>
+                    <p><i class="fas fa-clock"></i> Waktu pengerjaan: 10 menit</p>
+                    <p><i class="fas fa-star"></i> Setiap soal bernilai 5 poin</p>
+                    <p><i class="fas fa-random"></i> Soal akan ditampilkan secara acak</p>
+                </div>
+            </div>
+            
+            <!-- Quiz Container -->
+            <div class="quiz-container" id="quizContainer">
+                <div class="progress-bar">
+                    <div class="progress" id="progress"></div>
+                </div>
+                
+                <div id="questionsContainer"></div>
+                
+                <div class="quiz-navigation">
+                    <button class="btn" id="prevBtn" onclick="previousQuestion()" disabled>Sebelumnya</button>
+                    <button class="btn" id="nextBtn" onclick="nextQuestion()">Selanjutnya</button>
+                    <button class="btn" id="submitBtn" onclick="submitQuiz()" style="display: none;">Selesai</button>
+                </div>
+            </div>
+            
+            <!-- Result Container -->
+            <div class="result-container" id="resultContainer">
+                <h2>Hasil Kuis</h2>
+                <div class="score" id="score">0</div>
+                <div class="score-text" id="scoreText">Anda menjawab 0 dari 20 soal dengan benar.</div>
+                <button class="btn" onclick="location.reload()">Kembali ke Halaman Utama</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data soal
+        const questions = [
+            {
+                question: "Which sentence uses the correct form of the adjective 'good' in its comparative degree?",
+                options: [
+                    "She is gooder than her sister.",
+                    "She is more good than her sister.",
+                    "She is better than her sister.",
+                    "She is goodliest than her sister.",
+                    "She is good than her sister."
+                ],
+                correctAnswer: 2
+            },
+            {
+                question: "Identify the sentence with the incorrect superlative form:",
+                options: [
+                    "Mount Everest is the highest mountain in the world.",
+                    "This is the most interesting book I've ever read.",
+                    "She is the prettiest girl in the class.",
+                    "He is the most tallest boy in his team.",
+                    "This is the cheapest product in the store."
+                ],
+                correctAnswer: 3
+            },
+            {
+                question: "Choose the sentence that correctly uses both comparative and superlative degrees:",
+                options: [
+                    "My house is bigger than yours, but his house is the biggest of all.",
+                    "My house is more bigger than yours, but his house is biggest of all.",
+                    "My house is big than yours, but his house is the most biggest of all.",
+                    "My house is bigger as yours, but his house is the biggest of all.",
+                    "My house is more big than yours, but his house is the biggest of all."
+                ],
+                correctAnswer: 0
+            },
+            {
+                question: "Which of the following sentences contains an error in the comparative form?",
+                options: [
+                    "This exercise is more difficult than the previous one.",
+                    "She runs faster than her brother.",
+                    "This book is more thicker than that one.",
+                    "The weather today is better than yesterday.",
+                    "His explanation was clearer than hers."
+                ],
+                correctAnswer: 2
+            },
+            {
+                question: "Select the option that correctly completes the sentence: 'The more you practice, _____ you become.'",
+                options: [
+                    "good",
+                    "better",
+                    "the better",
+                    "the more good",
+                    "more good"
+                ],
+                correctAnswer: 2
+            },
+            {
+                question: "Identify the sentence with the correct double comparative structure:",
+                options: [
+                    "The more you study, the more you learn.",
+                    "The more you study, more you learn.",
+                    "More you study, the more you learn.",
+                    "The more you study, the more learn you.",
+                    "More you study, more you learn."
+                ],
+                correctAnswer: 0
+            },
+            {
+                question: "Which sentence correctly uses the irregular adjective 'bad' in its superlative form?",
+                options: [
+                    "He is the baddest student in the class.",
+                    "He is the worst student in the class.",
+                    "He is the most bad student in the class.",
+                    "He is the worse student in the class.",
+                    "He is the most worst student in the class."
+                ],
+                correctAnswer: 1
+            },
+            {
+                question: "Choose the sentence that correctly uses the adjective 'far' in its comparative form:",
+                options: [
+                    "New York is farer than Boston.",
+                    "New York is more far than Boston.",
+                    "New York is farther than Boston.",
+                    "New York is farest than Boston.",
+                    "New York is far than Boston."
+                ],
+                correctAnswer: 2
+            },
+            {
+                question: "Identify the sentence with the correct usage of 'as...as' structure:",
+                options: [
+                    "This car is as fast as a sports car.",
+                    "This car is as faster as a sports car.",
+                    "This car is more fast as a sports car.",
+                    "This car is fast as a sports car.",
+                    "This car is as fast than a sports car."
+                ],
+                correctAnswer: 0
+            },
+            {
+                question: "Which sentence correctly uses the adjective 'little' in its comparative form?",
+                options: [
+                    "I have little money than you.",
+                    "I have less money than you.",
+                    "I have lesser money than you.",
+                    "I have more little money than you.",
+                    "I have littler money than you."
+                ],
+                correctAnswer: 1
+            },
+            {
+                question: "Choose the option that correctly completes the sentence: 'This is _____ book I have ever read.'",
+                options: [
+                    "the most interesting",
+                    "the interestinger",
+                    "the more interesting",
+                    "the most interestinger",
+                    "the interestingest"
+                ],
+                correctAnswer: 0
+            },
+            {
+                question: "Identify the sentence with the correct comparative form of the adjective 'beautiful':",
+                options: [
+                    "She is more beautifuler than her sister.",
+                    "She is beautifuler than her sister.",
+                    "She is more beautiful than her sister.",
+                    "She is beautifuller than her sister.",
+                    "She is beautiful than her sister."
+                ],
+                correctAnswer: 2
+            },
+            {
+                question: "Which sentence correctly uses the adjective 'many' in its comparative form?",
+                options: [
+                    "There are many books on the table than on the shelf.",
+                    "There are more books on the table than on the shelf.",
+                    "There are manyer books on the table than on the shelf.",
+                    "There are most books on the table than on the shelf.",
+                    "There are more many books on the table than on the shelf."
+                ],
+                correctAnswer: 1
+            },
+            {
+                question: "Select the option that correctly completes the sentence: 'The _____ the weather, the _____ I feel.'",
+                options: [
+                    "worse, worst",
+                    "worst, worse",
+                    "worse, worse",
+                    "worst, worst",
+                    "more worse, more worse"
+                ],
+                correctAnswer: 2
+            },
+            {
+                question: "Identify the sentence with the correct superlative form of the adjective 'happy':",
+                options: [
+                    "She is the happiest girl in the class.",
+                    "She is the most happiest girl in the class.",
+                    "She is the happyest girl in the class.",
+                    "She is the more happy girl in the class.",
+                    "She is the happiest of the girl in the class."
+                ],
+                correctAnswer: 0
+            },
+            {
+                question: "Which sentence correctly uses the adjective 'much' in its comparative form?",
+                options: [
+                    "I have much time than you.",
+                    "I have more much time than you.",
+                    "I have more time than you.",
+                    "I have mucher time than you.",
+                    "I have the most time than you."
+                ],
+                correctAnswer: 2
+            },
+            {
+                question: "Choose the option that correctly completes the sentence: 'This is _____ building in the city.'",
+                options: [
+                    "the tallest",
+                    "the most tall",
+                    "the more tall",
+                    "the tallest of",
+                    "the most tallest"
+                ],
+                correctAnswer: 0
+            },
+            {
+                question: "Identify the sentence with the correct usage of 'less...than' structure:",
+                options: [
+                    "This book is less interesting than that one.",
+                    "This book is less interesting as that one.",
+                    "This book is less interesting than that one.",
+                    "This book is lesser interesting than that one.",
+                    "This book is less interesting that one."
+                ],
+                correctAnswer: 0
+            },
+            {
+                question: "Which sentence correctly uses the adjective 'old' in its comparative form?",
+                options: [
+                    "My grandfather is older than yours.",
+                    "My grandfather is more old than yours.",
+                    "My grandfather is elder than yours.",
+                    "My grandfather is old than yours.",
+                    "My grandfather is more older than yours."
+                ],
+                correctAnswer: 0
+            },
+            {
+                question: "Select the option that correctly completes the sentence: 'She is _____ student in the school.'",
+                options: [
+                    "the most intelligent",
+                    "the intelligentest",
+                    "the more intelligent",
+                    "the most intelligenter",
+                    "the intelligenter"
+                ],
+                correctAnswer: 0
+            }
+        ];
+
+        // Variabel global
+        let currentQuestion = 0;
+        let userAnswers = [];
+        let shuffledQuestions = [];
+        let timer;
+        let timeRemaining = 600; // 10 menit dalam detik
+        
+        // Fungsi untuk memvalidasi token
+        function validateToken() {
+            const tokenInput = document.getElementById('tokenInput').value;
+            const tokenError = document.getElementById('tokenError');
+            
+            if (tokenInput === 'EP1') {
+                document.getElementById('tokenForm').style.display = 'none';
+                document.getElementById('quizContainer').style.display = 'block';
+                document.getElementById('timerContainer').style.display = 'block';
+                
+                // Acak soal
+                shuffledQuestions = [...questions];
+                for (let i = shuffledQuestions.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [shuffledQuestions[i], shuffledQuestions[j]] = [shuffledQuestions[j], shuffledQuestions[i]];
+                }
+                
+                // Inisialisasi jawaban pengguna
+                userAnswers = new Array(shuffledQuestions.length).fill(-1);
+                
+                // Tampilkan soal pertama
+                displayQuestion();
+                
+                // Mulai timer
+                startTimer();
+            } else {
+                tokenError.style.display = 'block';
+            }
+        }
+        
+        // Fungsi untuk memulai timer
+        function startTimer() {
+            timer = setInterval(() => {
+                timeRemaining--;
+                
+                const minutes = Math.floor(timeRemaining / 60);
+                const seconds = timeRemaining % 60;
+                
+                document.getElementById('timer').textContent = 
+                    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                // Ubah warna timer jika kurang dari 1 menit
+                if (timeRemaining < 60) {
+                    document.getElementById('timer').style.color = '#e74c3c';
+                }
+                
+                // Hentikan kuis jika waktu habis
+                if (timeRemaining <= 0) {
+                    clearInterval(timer);
+                    submitQuiz();
+                }
+            }, 1000);
+        }
+        
+        // Fungsi untuk menampilkan soal
+        function displayQuestion() {
+            const question = shuffledQuestions[currentQuestion];
+            const questionsContainer = document.getElementById('questionsContainer');
+            
+            questionsContainer.innerHTML = `
+                <div class="question-container">
+                    <div class="question-text">
+                        <span class="question-number">${currentQuestion + 1}</span>
+                        ${question.question}
+                    </div>
+                    <div class="options">
+                        ${question.options.map((option, index) => `
+                            <div class="option ${userAnswers[currentQuestion] === index ? 'selected' : ''}" 
+                                 onclick="selectOption(${index})">
+                                <div class="option-label">${String.fromCharCode(65 + index)}</div>
+                                <div>${option}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            
+            // Update progress bar
+            const progress = ((currentQuestion + 1) / shuffledQuestions.length) * 100;
+            document.getElementById('progress').style.width = `${progress}%`;
+            
+            // Update tombol navigasi
+            document.getElementById('prevBtn').disabled = currentQuestion === 0;
+            document.getElementById('nextBtn').style.display = currentQuestion === shuffledQuestions.length - 1 ? 'none' : 'inline-block';
+            document.getElementById('submitBtn').style.display = currentQuestion === shuffledQuestions.length - 1 ? 'inline-block' : 'none';
+        }
+        
+        // Fungsi untuk memilih opsi
+        function selectOption(optionIndex) {
+            userAnswers[currentQuestion] = optionIndex;
+            
+            // Update tampilan opsi yang dipilih
+            const options = document.querySelectorAll('.option');
+            options.forEach((option, index) => {
+                if (index === optionIndex) {
+                    option.classList.add('selected');
+                } else {
+                    option.classList.remove('selected');
+                }
+            });
+        }
+        
+        // Fungsi untuk navigasi ke soal sebelumnya
+        function previousQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                displayQuestion();
+            }
+        }
+        
+        // Fungsi untuk navigasi ke soal berikutnya
+        function nextQuestion() {
+            if (currentQuestion < shuffledQuestions.length - 1) {
+                currentQuestion++;
+                displayQuestion();
+            }
+        }
+        
+        // Fungsi untuk mengirimkan kuis
+        function submitQuiz() {
+            clearInterval(timer);
+            
+            // Hitung skor
+            let correctAnswers = 0;
+            for (let i = 0; i < shuffledQuestions.length; i++) {
+                if (userAnswers[i] === shuffledQuestions[i].correctAnswer) {
+                    correctAnswers++;
+                }
+            }
+            
+            const score = correctAnswers * 5;
+            
+            // Tampilkan hasil
+            document.getElementById('quizContainer').style.display = 'none';
+            document.getElementById('resultContainer').style.display = 'block';
+            document.getElementById('score').textContent = score;
+            document.getElementById('scoreText').textContent = `Anda menjawab ${correctAnswers} dari ${shuffledQuestions.length} soal dengan benar.`;
+        }
+        
+        // Event listener untuk Enter key pada input token
+        document.getElementById('tokenInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                validateToken();
+            }
+        });
+    </script>
+</body>
+</html>
