@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis CPNS - TKP Jejaring Kerja</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .option-card {
+            transition: all 0.3s ease;
+        }
+        
+        .option-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .option-card.selected {
+            background-color: #3b82f6;
+            color: white;
+            transform: scale(1.02);
+        }
+        
+        .timer-warning {
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .score-animation {
+            animation: countUp 1.5s ease-out;
+        }
+        
+        @keyframes countUp {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        .result-bar {
+            transition: width 1.5s ease-out;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Login Screen -->
+    <div id="loginScreen" class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-600 to-purple-700">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md">
+            <div class="text-center mb-8">
+                <i class="fas fa-lock text-6xl text-blue-600 mb-4"></i>
+                <h1 class="text-3xl font-bold text-gray-800">Kuis CPNS TKP</h1>
+                <p class="text-gray-600 mt-2">Jejaring Kerja - HOTS Level</p>
+            </div>
+            
+            <form id="loginForm" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Masukkan Password</label>
+                    <div class="relative">
+                        <input type="password" id="passwordInput" 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               placeholder="Password">
+                        <button type="button" id="togglePassword" class="absolute right-3 top-3 text-gray-500">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <button type="submit" 
+                        class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition duration-300">
+                    <i class="fas fa-sign-in-alt mr-2"></i>Mulai Kuis
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Quiz Screen -->
+    <div id="quizScreen" class="hidden">
+        <!-- Header -->
+        <header class="bg-white shadow-sm sticky top-0 z-10">
+            <div class="container mx-auto px-4 py-4">
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center space-x-4">
+                        <i class="fas fa-network-wired text-2xl text-blue-600"></i>
+                        <div>
+                            <h1 class="text-xl font-bold text-gray-800">Kuis CPNS - TKP Jejaring Kerja</h1>
+                            <p class="text-sm text-gray-600">Soal 1-20 | Tingkat HOTS</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center space-x-6">
+                        <div id="timer" class="flex items-center space-x-2 bg-gray-100 px-4 py-2 rounded-lg">
+                            <i class="fas fa-clock text-red-500"></i>
+                            <span id="timeDisplay" class="font-mono font-bold text-lg">10:00</span>
+                        </div>
+                        
+                        <div class="text-right">
+                            <p class="text-sm text-gray-600">Progress</p>
+                            <p class="font-bold text-lg"><span id="currentQuestion">1</span> / 20</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="container mx-auto px-4 py-8">
+            <div class="max-w-4xl mx-auto">
+                <!-- Question Card -->
+                <div id="questionCard" class="bg-white rounded-xl shadow-lg p-8 mb-8 fade-in">
+                    <div class="mb-6">
+                        <span class="inline-block bg-blue-100 text-blue-800 text-sm font-semibold px-3 py-1 rounded-full mb-4">
+                            <i class="fas fa-question-circle mr-1"></i>Soal <span id="questionNumber">1</span>
+                        </span>
+                        <h2 id="questionText" class="text-xl text-gray-800 leading-relaxed">
+                            <!-- Question will be inserted here -->
+                        </h2>
+                    </div>
+                    
+                    <!-- Options -->
+                    <div id="optionsContainer" class="space-y-3">
+                        <!-- Options will be inserted here -->
+                    </div>
+                </div>
+
+                <!-- Navigation -->
+                <div class="flex justify-between items-center">
+                    <button id="prevBtn" 
+                            class="flex items-center space-x-2 bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-300 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
+                        <i class="fas fa-chevron-left"></i>
+                        <span>Sebelumnya</span>
+                    </button>
+                    
+                    <div class="flex space-x-2">
+                        <button id="questionIndicator" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-semibold">
+                            <i class="fas fa-list mr-2"></i>Daftar Soal
+                        </button>
+                    </div>
+                    
+                    <button id="nextBtn" 
+                            class="flex items-center space-x-2 bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
+                        <span>Selanjutnya</span>
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <!-- Question Modal -->
+        <div id="questionModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+            <div class="bg-white rounded-xl shadow-2xl max-w-md w-full max-h-[80vh] overflow-y-auto">
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-bold text-gray-800">Daftar Soal</h3>
+                        <button id="closeModal" class="text-gray-500 hover:text-gray-700">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
+                    </div>
+                    
+                    <div id="questionGrid" class="grid grid-cols-5 gap-3">
+                        <!-- Question indicators will be inserted here -->
+                    </div>
+                    
+                    <button id="finishQuiz" 
+                            class="w-full mt-6 bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition duration-300">
+                        <i class="fas fa-check-circle mr-2"></i>Selesai & Submit
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Result Screen -->
+    <div id="resultScreen" class="hidden min-h-screen flex items-center justify-center bg-gradient-to-br from-green-600 to-blue-700">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-2xl">
+            <div class="text-center mb-8">
+                <i class="fas fa-trophy text-6xl text-yellow-500 mb-4"></i>
+                <h1 class="text-3xl font-bold text-gray-800 mb-2">Kuis Selesai!</h1>
+                <p class="text-gray-600">Terima kasih telah mengikuti kuis CPNS TKP</p>
+            </div>
+            
+            <div class="mb-8">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-gray-700 font-medium">Nilai Anda</span>
+                    <span id="scoreText" class="text-2xl font-bold text-blue-600 score-animation">0</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-4">
+                    <div id="scoreBar" class="result-bar bg-gradient-to-r from-blue-500 to-green-500 h-4 rounded-full" style="width: 0%"></div>
+                </div>
+                <div class="flex justify-between text-xs text-gray-500 mt-1">
+                    <span>0</span>
+                    <span>100</span>
+                </div>
+            </div>
+            
+            <div id="resultCategory" class="text-center mb-8 p-6 rounded-xl bg-gray-50">
+                <div class="text-5xl mb-4">
+                    <i id="categoryIcon" class="fas fa-star text-yellow-500"></i>
+                </div>
+                <h2 id="categoryTitle" class="text-2xl font-bold text-gray-800 mb-2">Memuaskan</h2>
+                <p id="categoryDescription" class="text-gray-600">Pemahaman Anda tentang jejaring kerja sangat baik. Anda memiliki potensi untuk menjadi pemimpin yang efektif dalam membangun kolaborasi.</p>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4 mb-8">
+                <div class="bg-blue-50 p-4 rounded-lg text-center">
+                    <p class="text-sm text-gray-600">Soal Dijawab</p>
+                    <p id="answeredCount" class="text-2xl font-bold text-blue-600">0/20</p>
+                </div>
+                <div class="bg-green-50 p-4 rounded-lg text-center">
+                    <p class="text-sm text-gray-600">Waktu Pengerjaan</p>
+                    <p id="timeUsed" class="text-2xl font-bold text-green-600">00:00</p>
+                </div>
+            </div>
+            
+            <div class="text-center">
+                <button id="restartBtn" class="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition duration-300">
+                    <i class="fas fa-redo mr-2"></i>Kerjakan Lagi
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Questions Data
+        const questions = [
+            {
+                id: 1,
+                text: "Anda adalah kepala divisi di instansi pemerintah. Ada rekan kerja dari divisi lain yang sering menghubungi Anda untuk membicarakan proyek kolaborasi, namun komunikasinya cenderung tidak terstruktur dan sering mengganggu pekerjaan utama Anda. Sikap apa yang paling tepat untuk Anda lakukan?",
+                options: [
+                    { value: 1, text: "Menghindari komunikasi dengannya karena mengganggu pekerjaan" },
+                    { value: 2, text: "Menjawab singkat setiap kali dia menghubungi tanpa memberikan perhatian khusus" },
+                    { value: 3, text: "Menjelaskan bahwa Anda sibuk dan meminta untuk mengatur jadwal komunikasi yang lebih terstruktur" },
+                    { value: 4, text: "Membuat sistem komunikasi formal antar divisi untuk kolaborasi proyek" },
+                    { value: 5, text: "Mengusulkan pertemuan rutin dengan semua pihak terkait untuk membahas kolaborasi secara efektif" }
+                ]
+            },
+            {
+                id: 2,
+                text: "Dalam rapat koordinasi antar instansi, Anda menemukan bahwa ada informasi penting yang sengaja tidak dibagikan oleh salah satu peserta rapat dari instansi lain. Hal ini dapat menghambat kelancaran program. Tindakan apa yang paling sesuai dengan prinsip jejaring kerja yang baik?",
+                options: [
+                    { value: 1, text: "Menyimpan kecurigaan dan tidak bertindak apapun" },
+                    { value: 2, text: "Mengkonfrontasi peserta tersebut di depan umum" },
+                    { value: 3, text: "Mendekati secara pribadi dan menanyakan informasi yang dibutuhkan" },
+                    { value: 4, text: "Melaporkan ke atasan Anda tentang perilaku tersebut" },
+                    { value: 5, text: "Membangun komunikasi terbuka dan saling percaya dengan menjelaskan pentingnya berbagi informasi" }
+                ]
+            },
+            {
+                id: 3,
+                text: "Anda baru saja dipromosikan menjadi manajer tim yang anggotanya lebih senior dan berpengalaman. Beberapa anggota tim menunjukkan sikap kurang kooperatif dan sulit diajak berkolaborasi. Pendekatan mana yang paling efektif untuk membangun jejaring kerja yang positif?",
+                options: [
+                    { value: 1, text: "Menggunakan otoritas Anda untuk memaksakan keputusan" },
+                    { value: 2, text: "Menghindari konflik dengan menyerahkan keputusan kepada anggota tim senior" },
+                    { value: 3, text: "Mengadakan pertemuan satu per satu untuk memahami pandangan mereka" },
+                    { value: 4, text: "Membangun kepercayaan dengan mengakui pengalaman mereka dan melibatkan dalam pengambilan keputusan" },
+                    { value: 5, text: "Mengadakan workshop team building untuk memperbaiki dinamika tim" }
+                ]
+            },
+            {
+                id: 4,
+                text: "Instansi Anda sedang menjalankan program kolaborasi dengan instansi lain. Namun, instansi mitra sering terlambat dalam menyelesaikan bagiannya, sehingga menghambat progress program secara keseluruhan. Bagaimana seharusnya Anda menangani situasi ini?",
+                options: [
+                    { value: 1, text: "Menyerah dan membatalkan program kolaborasi" },
+                    { value: 2, text: "Mengerjakan bagian mereka sendiri agar program selesai tepat waktu" },
+                    { value: 3, text: "Mengirimkan surat teguran resmi kepada pimpinan instansi mitra" },
+                    { value: 4, text: "Menganalisis penyebab keterlambatan dan menawarkan bantuan jika diperlukan" },
+                    { value: 5, text: "Mengusulkan perubahan timeline dan mekanisme koordinasi yang lebih efektif" }
+                ]
+            },
+            {
+                id: 5,
+                text: "Anda dihadapkan pada situasi di mana ada dua rekan kerja yang memiliki konflik pribadi yang mempengaruhi kinerja tim dan kolaborasi antar departemen. Sebagai koordinator proyek, tindakan apa yang paling tepat untuk dilakukan?",
+                options: [
+                    { value: 1, text: "Mengabaikan konflik tersebut dengan asumsi akan selesai sendiri" },
+                    { value: 2, text: "Memisahkan mereka dalam penugasan proyek" },
+                    { value: 3, text: "Berkonsultasi dengan atasan untuk memindahkan salah satunya" },
+                    { value: 4, text: "Memediasi konflik dengan mendengarkan kedua belah pihak secara objektif" },
+                    { value: 5, text: "Mengadakan sesi mediasi formal dengan atasan dan HRD" }
+                ]
+            },
+            {
+                id: 6,
+                text: "Dalam lingkungan kerja yang multikultural, Anda menemukan bahwa ada perbedaan gaya komunikasi yang menyebabkan kesalahpahaman antar tim. Bagaimana cara terbaik untuk membangun jejaring kerja yang efektif dalam situasi ini?",
+                options: [
+                    { value: 1, text: "Mengharuskan semua orang menggunakan gaya komunikasi yang sama" },
+                    { value: 2, text: "Menghindari komunikasi dengan tim yang berbeda budaya" },
+                    { value: 3, text: "Mempelajari dasar-dasar komunikasi lintas budaya" },
+                    { value: 4, text: "Mengadakan pelatihan kesadaran budaya dan komunikasi efektif" },
+                    { value: 5, text: "Membuat panduan komunikasi lintas budaya dan memfasilitasi dialog terbuka" }
+                ]
+            },
+            {
+                id: 7,
+                text: "Anda adalah anggota tim yang baru bergabung dalam proyek besar yang melibatkan banyak departemen. Anda merasa sulit untuk berkontribusi karena tidak memiliki akses ke informasi dan jaringan yang cukup. Langkah apa yang paling tepat untuk Anda ambil?",
+                options: [
+                    { value: 1, text: "Menunggu sampai diberi tugas secara eksplisit" },
+                    { value: 2, text: "Mengeluh kepada atasan tentang kurangnya informasi" },
+                    { value: 3, text: "Mengamati dan belajar dari anggota tim lain tanpa aktif bertanya" },
+                    { value: 4, text: "Proaktif membangun relasi dengan anggota tim lain dan bertanya tentang informasi yang dibutuhkan" },
+                    { value: 5, text: "Mengusulkan sistem onboarding untuk anggota tim baru dalam proyek kolaborasi" }
+                ]
+            },
+            {
+                id: 8,
+                text: "Dalam rapat koordinasi antar instansi pemerintah, Anda mengetahui bahwa ada keputusan yang dibuat di luar rapat yang mempengaruhi program Anda. Bagaimana sikap yang paling profesional untuk menangani situasi ini?",
+                options: [
+                    { value: 1, text: "Menerima keputusan tersebut tanpa bertanya" },
+                    { value: 2, text: "Menolak keputusan tersebut secara terbuka" },
+                    { value: 3, text: "Mencari tahu siapa yang membuat keputusan dan mengkonfrontasi mereka" },
+                    { value: 4, text: "Meminta klarifikasi tentang proses pengambilan keputusan dan dampaknya pada program" },
+                    { value: 5, text: "Mengusulkan mekanisme pengambilan keputusan yang transparan dan partisipatif" }
+                ]
+            },
+            {
+                id: 9,
+                text: "Anda bekerja dalam tim virtual dengan anggota yang tersebar di berbagai lokasi. Komunikasi sering terhambat karena perbedaan zona waktu dan keterbatasan teknologi. Strategi apa yang paling efektif untuk mempertahankan jejaring kerja yang solid?",
+                options: [
+                    { value: 1, text: "Mengharuskan semua anggota bekerja dalam zona waktu yang sama" },
+                    { value: 2, text: "Mengurangi frekuensi komunikasi untuk menghindari kesulitan" },
+                    { value: 3, text: "Mengandalkan komunikasi asynchronous melalui email saja" },
+                    { value: 4, text: "Membuat jadwal komunikasi yang fleksibel dan menggunakan berbagai platform" },
+                    { value: 5, text: "Mengembangkan protokol komunikasi virtual yang komprehensif dan pelatihan penggunaan teknologi" }
+                ]
+            },
+            {
+                id: 10,
+                text: "Sebagai pemimpin tim, Anda menemukan bahwa ada anggota tim yang sangat kompeten secara teknis namun sulit bekerja sama dengan orang lain dan sering menolak masukan dari rekan kerja. Pendekatan apa yang paling tepat untuk mengembangkan jejaring kerja yang lebih baik?",
+                options: [
+                    { value: 1, text: "Mengisolasi anggota tersebut dari tim" },
+                    { value: 2, text: "Mengabaikan masalah karena kontribusi teknisnya sangat berharga" },
+                    { value: 3, text: "Memberi peringatan keras tentang perilakunya" },
+                    { value: 4, text: "Memberikan feedback konstruktif dan membimbing untuk mengembangkan soft skills" },
+                    { value: 5, text: "Menciptakan kesempatan untuknya menjadi mentor sehingga belajar berkolaborasi" }
+                ]
+            },
+            {
+                id: 11,
+                text: "Dalam implementasi program pemerintah yang melibatkan banyak stakeholders, Anda menemukan bahwa ada kepentingan yang bertentangan antar instansi. Bagaimana cara terbaik untuk memfasilitasi kolaborasi yang efektif?",
+                options: [
+                    { value: 1, text: "Memilih untuk mendukung kepentingan instansi Anda sendiri" },
+                    { value: 2, text: "Menghindari pembahasan tentang konflik kepentingan" },
+                    { value: 3, text: "Mencari kompromi yang menguntungkan semua pihak" },
+                    { value: 4, text: "Mengidentifikasi tujuan bersama yang lebih besar dari kepentingan individual" },
+                    { value: 5, text: "Membangun forum dialog untuk menyelaraskan visi dan misi bersama" }
+                ]
+            },
+            {
+                id: 12,
+                text: "Anda diminta untuk memimpin proyek kolaborasi dengan instansi lain yang memiliki budaya kerja sangat berbeda dengan instansi Anda. Tim Anda mengeluh tentang perbedaan ini. Langkah apa yang paling strategis untuk diambil?",
+                options: [
+                    { value: 1, text: "Mengganti anggota tim yang tidak bisa beradaptasi" },
+                    { value: 2, text: "Meminta instansi mitra untuk mengikuti budaya kerja Anda" },
+                    { value: 3, text: "Membagi proyek menjadi bagian-bagian yang dikerjakan terpisah" },
+                    { value: 4, text: "Mengadakan sesi pertukaran budaya dan membangun understanding bersama" },
+                    { value: 5, text: "Membuat hybrid culture yang menggabungkan keunggulan dari kedua budaya" }
+                ]
+            },
+            {
+                id: 13,
+                text: "Dalam situasi darurat yang memerlukan koordinasi cepat antar instansi, Anda menemukan bahwa prosedur standar terlalu lambat dan birokratis. Tindakan apa yang paling tepat untuk memastikan jejaring kerja tetap efektif?",
+                options: [
+                    { value: 1, text: "Mengikuti prosedur standar meskipun lambat" },
+                    { value: 2, text: "Mengambil keputusan sendiri tanpa koordinasi" },
+                    { value: 3, text: "Melaporkan keterbatasan prosedur kepada atasan" },
+                    { value: 4, text: "Menggunakan saluran komunikasi informal untuk koordinasi cepat" },
+                    { value: 5, text: "Mengaktifkan mekanisme darurat yang telah disiapkan untuk situasi seperti ini" }
+                ]
+            },
+            {
+                id: 14,
+                text: "Anda adalah perwakilan instansi Anda dalam forum koordinasi regional. Beberapa instansi lain sering tidak hadir atau mengirimkan perwakilan yang tidak memiliki wewenang untuk membuat keputusan. Bagaimana Anda menjaga efektivitas jejaring kerja?",
+                options: [
+                    { value: 1, text: "Melanjutkan forum tanpa kehadiran mereka" },
+                    { value: 2, text: "Mengeluh tentang ketidakhadiran mereka di forum" },
+                    { value: 3, text: "Menghubungi pimpinan instansi tersebut secara langsung" },
+                    { value: 4, text: "Membahas pentingnya partisipasi aktif dalam forum" },
+                    { value: 5, text: "Mengusulkan sistem rotasi kehadiran dan mekanisme pengambilan keputusan yang lebih fleksibel" }
+                ]
+            },
+            {
+                id: 15,
+                text: "Dalam tim proyek, ada anggota yang selalu mengkritik ide orang lain namun jarang memberikan solusi konstruktif. Hal ini menciptakan atmosfer negatif dan menghambat kolaborasi. Pendekatan apa yang paling efektif?",
+                options: [
+                    { value: 1, text: "Mengabaikan kritikannya" },
+                    { value: 2, text: "Meminta anggota lain untuk mengabaikannya" },
+                    { value: 3, text: "Menegur perilakunya di depan tim" },
+                    { value: 4, text: "Membimbingnya untuk memberikan feedback yang konstruktif" },
+                    { value: 5, text: "Menerapkan aturan bahwa kritik harus disertai solusi alternatif" }
+                ]
+            },
+            {
+                id: 16,
+                text: "Anda berhasil membangun jejaring kerja yang kuat dengan beberapa instansi mitra. Namun, ada permintaan bantuan yang tidak sesuai dengan kapasitas dan prioritas instansi Anda. Bagaimana menangani situasi ini tanpa merusak hubungan?",
+                options: [
+                    { value: 1, text: "Menerima semua permintaan untuk menjaga hubungan baik" },
+                    { value: 2, text: "Menolak semua permintaan yang tidak sesuai prioritas" },
+                    { value: 3, text: "Mengabaikan permintaan tersebut" },
+                    { value: 4, text: "Menjelaskan batasan kapasitas dan menawarkan alternatif bantuan" },
+                    { value: 5, text: "Membuat mekanisme formal untuk penilaian dan prioritas permintaan bantuan" }
+                ]
+            },
+            {
+                id: 17,
+                text: "Dalam implementasi kebijakan baru, Anda menemukan resistensi dari beberapa instansi mitra karena mereka merasa tidak dilibatkan dalam proses perumusan. Strategi apa yang paling tepat untuk mengatasi hambatan ini?",
+                options: [
+                    { value: 1, text: "Memaksakan implementasi kebijakan" },
+                    { value: 2, text: "Menunda implementasi sampai semua setuju" },
+                    { value: 3, text: "Mencari dukungan politik untuk memaksakan kebijakan" },
+                    { value: 4, text: "Mengadakan dialog untuk mendengarkan kekhawatiran dan mencari solusi bersama" },
+                    { value: 5, text: "Membentuk tim ad-hoc yang melibatkan perwakilan dari semua instansi terkait" }
+                ]
+            },
+            {
+                id: 18,
+                text: "Anda adalah koordinator jaringan kerja antar unit di instansi Anda. Beberapa unit enggan berbagi data dan informasi dengan alasan kerahasiaan. Padahal data tersebut penting untuk integrasi program. Bagaimana pendekatan terbaik?",
+                options: [
+                    { value: 1, text: "Memaksa mereka untuk berbagi data dengan perintah atasan" },
+                    { value: 2, text: "Mencari data dari sumber lain" },
+                    { value: 3, text: "Mengabaikan kebutuhan data tersebut" },
+                    { value: 4, text: "Membahas kekhawatiran kerahasiaan dan menawarkan solusi keamanan data" },
+                    { value: 5, text: "Mengembangkan kebijakan dan sistem berbagi data yang aman dan terstandar" }
+                ]
+            },
+            {
+                id: 19,
+                text: "Dalam proyek kolaborasi jangka panjang, Anda menemukan bahwa komitmen beberapa instansi mitra mulai menurun setelah fase awal. Bagaimana mempertahankan semangat kolaborasi sepanjang proyek?",
+                options: [
+                    { value: 1, text: "Mengancam akan menghentikan kolaborasi" },
+                    { value: 2, text: "Mengerjakan bagian mereka sendiri" },
+                    { value: 3, text: "Melaporkan penurunan komitmen kepada atasan" },
+                    { value: 4, text: "Mengadakan evaluasi rutin dan merayakan pencapaian bersama" },
+                    { value: 5, text: "Membuat mekanisme insentif dan penghargaan untuk kolaborasi yang baik" }
+                ]
+            },
+            {
+                id: 20,
+                text: "Anda akan pensiun dalam waktu dekat dan perlu memastikan jejaring kerja yang telah Anda bangun dapat berkelanjutan. Tindakan apa yang paling strategis untuk dilakukan?",
+                options: [
+                    { value: 1, text: "Menyimpan semua kontak untuk penggunaan pribadi" },
+                    { value: 2, text: "Tidak melakukan apa-apa karena itu bukan tanggung jawab Anda" },
+                    { value: 3, text: "Memberikan daftar kontak kepada pengganti Anda" },
+                    { value: 4, text: "Memperkenalkan pengganti Anda kepada semua mitra kerja" },
+                    { value: 5, text: "Membuat sistem dokumentasi jejaring kerja dan proses transisi yang terstruktur" }
+                ]
+            }
+        ];
+
+        // Global Variables
+        let currentQuestionIndex = 0;
+        let answers = {};
+        let timeLeft = 600; // 10 minutes in seconds
+        let timeUsed = 0;
+        let timerInterval;
+        let quizStarted = false;
+        let startTime;
+        let shuffledOptions = {}; // Store shuffled options for each question
+
+        // DOM Elements
+        const loginScreen = document.getElementById('loginScreen');
+        const quizScreen = document.getElementById('quizScreen');
+        const resultScreen = document.getElementById('resultScreen');
+        const loginForm = document.getElementById('loginForm');
+        const passwordInput = document.getElementById('passwordInput');
+        const togglePassword = document.getElementById('togglePassword');
+        const questionCard = document.getElementById('questionCard');
+        const questionText = document.getElementById('questionText');
+        const questionNumber = document.getElementById('questionNumber');
+        const currentQuestionSpan = document.getElementById('currentQuestion');
+        const optionsContainer = document.getElementById('optionsContainer');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const questionIndicator = document.getElementById('questionIndicator');
+        const questionModal = document.getElementById('questionModal');
+        const questionGrid = document.getElementById('questionGrid');
+        const closeModal = document.getElementById('closeModal');
+        const finishQuiz = document.getElementById('finishQuiz');
+        const timeDisplay = document.getElementById('timeDisplay');
+        const timer = document.getElementById('timer');
+        const scoreText = document.getElementById('scoreText');
+        const scoreBar = document.getElementById('scoreBar');
+        const resultCategory = document.getElementById('resultCategory');
+        const categoryIcon = document.getElementById('categoryIcon');
+        const categoryTitle = document.getElementById('categoryTitle');
+        const categoryDescription = document.getElementById('categoryDescription');
+        const answeredCount = document.getElementById('answeredCount');
+        const timeUsedElement = document.getElementById('timeUsed');
+        const restartBtn = document.getElementById('restartBtn');
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // Toggle password visibility
+            togglePassword.addEventListener('click', () => {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                togglePassword.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+            });
+
+            // Login form submission
+            loginForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const password = passwordInput.value;
+                if (password === 'cpns2024') {
+                    startQuiz();
+                } else {
+                    alert('Password salah! Silakan coba lagi.');
+                    passwordInput.value = '';
+                }
+            });
+
+            // Navigation buttons
+            prevBtn.addEventListener('click', showPreviousQuestion);
+            nextBtn.addEventListener('click', showNextQuestion);
+
+            // Question indicator
+            questionIndicator.addEventListener('click', showQuestionModal);
+            closeModal.addEventListener('click', hideQuestionModal);
+            finishQuiz.addEventListener('click', endQuiz);
+
+            // Restart button
+            restartBtn.addEventListener('click', () => {
+                location.reload();
+            });
+
+            // Click outside modal to close
+            questionModal.addEventListener('click', (e) => {
+                if (e.target === questionModal) {
+                    hideQuestionModal();
+                }
+            });
+        });
+
+        function startQuiz() {
+            loginScreen.classList.add('hidden');
+            quizScreen.classList.remove('hidden');
+            quizStarted = true;
+            startTime = new Date();
+            
+            // Initialize shuffled options for all questions
+            questions.forEach((question, index) => {
+                shuffledOptions[index] = shuffleArray([...question.options]);
+            });
+            
+            initializeQuestionGrid();
+            displayQuestion();
+            startTimer();
+        }
+
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                
+                if (timeLeft <= 60) {
+                    timer.classList.add('timer-warning');
+                }
+                
+                if (timeLeft <= 0) {
+                    endQuiz();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timeDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function displayQuestion() {
+            const question = questions[currentQuestionIndex];
+            questionText.textContent = question.text;
+            questionNumber.textContent = question.id;
+            currentQuestionSpan.textContent = currentQuestionIndex + 1;
+            
+            // Update navigation buttons
+            prevBtn.disabled = currentQuestionIndex === 0;
+            nextBtn.disabled = currentQuestionIndex === questions.length - 1;
+            nextBtn.innerHTML = currentQuestionIndex === questions.length - 1 ? 
+                '<span>Selesai</span><i class="fas fa-check ml-2"></i>' : 
+                '<span>Selanjutnya</span><i class="fas fa-chevron-right"></i>';
+            
+            // Display shuffled options
+            optionsContainer.innerHTML = '';
+            const currentShuffledOptions = shuffledOptions[currentQuestionIndex];
+            
+            currentShuffledOptions.forEach((option, index) => {
+                const optionCard = document.createElement('div');
+                optionCard.className = 'option-card bg-gray-50 border-2 border-gray-200 rounded-lg p-4 cursor-pointer hover:border-blue-400';
+                optionCard.innerHTML = `
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-full bg-white border-2 border-gray-300 flex items-center justify-center font-bold">
+                            ${String.fromCharCode(65 + index)}
+                        </div>
+                        <p class="text-gray-700">${option.text}</p>
+                    </div>
+                `;
+                
+                // Check if this option was selected
+                if (answers[currentQuestionIndex] === option.value) {
+                    optionCard.classList.add('selected', 'border-blue-500', 'bg-blue-50');
+                }
+                
+                optionCard.addEventListener('click', () => selectOption(option.value, optionCard));
+                optionsContainer.appendChild(optionCard);
+            });
+            
+            // Add fade-in animation
+            questionCard.classList.remove('fade-in');
+            void questionCard.offsetWidth; // Trigger reflow
+            questionCard.classList.add('fade-in');
+        }
+
+        function selectOption(value, element) {
+            // Remove previous selection
+            document.querySelectorAll('.option-card').forEach(card => {
+                card.classList.remove('selected', 'border-blue-500', 'bg-blue-50');
+            });
+            
+            // Add selection to clicked option
+            element.classList.add('selected', 'border-blue-500', 'bg-blue-50');
+            
+            // Save answer
+            answers[currentQuestionIndex] = value;
+            
+            // Update question grid
+            updateQuestionGrid();
+        }
+
+        function showPreviousQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                displayQuestion();
+            }
+        }
+
+        function showNextQuestion() {
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                displayQuestion();
+            } else {
+                endQuiz();
+            }
+        }
+
+        function initializeQuestionGrid() {
+            questionGrid.innerHTML = '';
+            questions.forEach((question, index) => {
+                const indicator = document.createElement('button');
+                indicator.className = 'w-12 h-12 rounded-lg bg-gray-200 text-gray-700 font-semibold hover:bg-gray-300 transition duration-300';
+                indicator.textContent = question.id;
+                indicator.addEventListener('click', () => goToQuestion(index));
+                questionGrid.appendChild(indicator);
+            });
+        }
+
+        function updateQuestionGrid() {
+            const indicators = questionGrid.querySelectorAll('button');
+            indicators.forEach((indicator, index) => {
+                if (answers[index] !== undefined) {
+                    indicator.classList.remove('bg-gray-200', 'text-gray-700');
+                    indicator.classList.add('bg-green-500', 'text-white');
+                }
+            });
+        }
+
+        function goToQuestion(index) {
+            currentQuestionIndex = index;
+            displayQuestion();
+            hideQuestionModal();
+        }
+
+        function showQuestionModal() {
+            questionModal.classList.remove('hidden');
+            updateQuestionGrid();
+        }
+
+        function hideQuestionModal() {
+            questionModal.classList.add('hidden');
+        }
+
+        function endQuiz() {
+            clearInterval(timerInterval);
+            
+            // Calculate time used
+            const endTime = new Date();
+            timeUsed = Math.floor((endTime - startTime) / 1000);
+            
+            // Calculate score
+            const score = calculateScore();
+            
+            // Display results
+            displayResults(score);
+            
+            // Show result screen
+            quizScreen.classList.add('hidden');
+            resultScreen.classList.remove('hidden');
+        }
+
+        function calculateScore() {
+            let totalScore = 0;
+            let answeredQuestions = 0;
+            
+            for (let i = 0; i < questions.length; i++) {
+                if (answers[i] !== undefined) {
+                    totalScore += answers[i];
+                    answeredQuestions++;
+                }
+            }
+            
+            // Calculate percentage (max score is 5 * 20 = 100)
+            const percentage = Math.round((totalScore / 100) * 100);
+            
+            return {
+                total: totalScore,
+                percentage: percentage,
+                answered: answeredQuestions
+            };
+        }
+
+        function displayResults(score) {
+            // Update score text and bar with animation
+            setTimeout(() => {
+                scoreText.textContent = score.percentage;
+                scoreBar.style.width = `${score.percentage}%`;
+            }, 300);
+            
+            // Update answered count
+            answeredCount.textContent = `${score.answered}/20`;
+            
+            // Update time used
+            const minutes = Math.floor(timeUsed / 60);
+            const seconds = timeUsed % 60;
+            timeUsedElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            // Update category based on score
+            let category;
+            if (score.percentage >= 85) {
+                category = {
+                    icon: 'fas fa-trophy',
+                    iconColor: 'text-yellow-500',
+                    title: 'Sangat Memuaskan',
+                    description: 'Pemahaman Anda tentang jejaring kerja sangat luar biasa. Anda memiliki potensi besar untuk menjadi pemimpin yang efektif dalam membangun kolaborasi antar instansi.',
+                    bgColor: 'bg-yellow-50'
+                };
+            } else if (score.percentage >= 70) {
+                category = {
+                    icon: 'fas fa-star',
+                    iconColor: 'text-blue-500',
+                    title: 'Memuaskan',
+                    description: 'Pemahaman Anda tentang jejaring kerja sangat baik. Anda memiliki potensi untuk menjadi pemimpin yang efektif dalam membangun kolaborasi.',
+                    bgColor: 'bg-blue-50'
+                };
+            } else if (score.percentage >= 55) {
+                category = {
+                    icon: 'fas fa-thumbs-up',
+                    iconColor: 'text-green-500',
+                    title: 'Cukup Baik',
+                    description: 'Pemahaman Anda tentang jejaring kerja sudah cukup baik. Dengan sedikit peningkatan, Anda dapat menjadi lebih efektif dalam membangun kolaborasi.',
+                    bgColor: 'bg-green-50'
+                };
+            } else if (score.percentage >= 40) {
+                category = {
+                    icon: 'fas fa-exclamation-circle',
+                    iconColor: 'text-orange-500',
+                    title: 'Kurang',
+                    description: 'Pemahaman Anda tentang jejaring kerja masih perlu ditingkatkan. Disarankan untuk mempelajari lebih lanjut tentang strategi kolaborasi yang efektif.',
+                    bgColor: 'bg-orange-50'
+                };
+            } else {
+                category = {
+                    icon: 'fas fa-times-circle',
+                    iconColor: 'text-red-500',
+                    title: 'Sangat Kurang',
+                    description: 'Pemahaman Anda tentang jejaring kerja perlu peningkatan signifikan. Disarankan untuk mengikuti pelatihan atau workshop tentang kolaborasi dan jejaring kerja.',
+                    bgColor: 'bg-red-50'
+                };
+            }
+            
+            // Update category UI
+            resultCategory.className = `text-center mb-8 p-6 rounded-xl ${category.bgColor}`;
+            categoryIcon.className = `${category.icon} ${category.iconColor}`;
+            categoryTitle.textContent = category.title;
+            categoryDescription.textContent = category.description;
+        }
+    </script>
+</body>
+</html>
