@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Active & Passive Voice - HOTS</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 800px;
+            overflow: hidden;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Login Page */
+        .login-page {
+            padding: 60px 40px;
+            text-align: center;
+        }
+
+        .login-page h1 {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+
+        .login-page p {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .token-input {
+            width: 100%;
+            max-width: 300px;
+            padding: 15px 20px;
+            font-size: 1.2em;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .token-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .start-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .start-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .start-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Quiz Page */
+        .quiz-page {
+            display: none;
+            padding: 0;
+        }
+
+        .quiz-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .timer {
+            font-size: 1.5em;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .timer.warning {
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .progress {
+            font-size: 1.1em;
+        }
+
+        .quiz-content {
+            padding: 40px;
+        }
+
+        .question {
+            margin-bottom: 30px;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .question-number {
+            color: #667eea;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .question-text {
+            font-size: 1.2em;
+            color: #333;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .options {
+            display: grid;
+            gap: 15px;
+        }
+
+        .option {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            padding: 15px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .option:hover {
+            background: #e9ecef;
+            border-color: #667eea;
+            transform: translateX(5px);
+        }
+
+        .option.selected {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .option-letter {
+            background: white;
+            color: #667eea;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .option.selected .option-letter {
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+        }
+
+        .quiz-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid #e9ecef;
+        }
+
+        .nav-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .nav-btn:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+
+        .nav-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Result Page */
+        .result-page {
+            display: none;
+            padding: 60px 40px;
+            text-align: center;
+        }
+
+        .result-icon {
+            font-size: 5em;
+            margin-bottom: 20px;
+        }
+
+        .result-title {
+            font-size: 2.5em;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .result-score {
+            font-size: 3em;
+            color: #667eea;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .result-message {
+            font-size: 1.2em;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .restart-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .restart-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .error-message {
+            color: #e74c3c;
+            margin-top: 10px;
+            font-size: 0.9em;
+            display: none;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                margin: 10px;
+            }
+            
+            .quiz-header {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+            
+            .quiz-content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Login Page -->
+        <div class="login-page" id="loginPage">
+            <h1>Kuis Active & Passive Voice</h1>
+            <p>Masukkan token rahasia untuk memulai kuis</p>
+            <input type="text" class="token-input" id="tokenInput" placeholder="Masukkan token" maxlength="4">
+            <br>
+            <button class="start-btn" id="startBtn" onclick="validateToken()">Mulai Kuis</button>
+            <div class="error-message" id="errorMessage">Token tidak valid!</div>
+        </div>
+
+        <!-- Quiz Page -->
+        <div class="quiz-page" id="quizPage">
+            <div class="quiz-header">
+                <div class="progress">
+                    Soal <span id="currentQuestion">1</span> dari 20
+                </div>
+                <div class="timer" id="timer">
+                    <span>⏱️</span>
+                    <span id="timeDisplay">10:00</span>
+                </div>
+            </div>
+            <div class="quiz-content">
+                <div class="question" id="questionContainer">
+                    <!-- Questions will be dynamically inserted here -->
+                </div>
+                <div class="quiz-navigation">
+                    <button class="nav-btn" id="prevBtn" onclick="previousQuestion()" disabled>Sebelumnya</button>
+                    <button class="nav-btn" id="nextBtn" onclick="nextQuestion()">Selanjutnya</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Result Page -->
+        <div class="result-page" id="resultPage">
+            <div class="result-icon">🎯</div>
+            <h2 class="result-title">Kuis Selesai!</h2>
+            <div class="result-score" id="scoreDisplay">0/20</div>
+            <p class="result-message" id="resultMessage">Terima kasih telah mengikuti kuis!</p>
+            <button class="restart-btn" onclick="restartQuiz()">Ulangi Kuis</button>
+        </div>
+    </div>
+
+    <script>
+        // Questions Data
+        const questions = [
+            {
+                question: "Which sentence correctly transforms the active voice to passive voice?\n'The teacher is explaining the lesson right now.'",
+                options: [
+                    "The lesson is being explained by the teacher right now.",
+                    "The lesson was being explained by the teacher right now.",
+                    "The lesson has been explained by the teacher right now.",
+                    "The lesson is explained by the teacher right now.",
+                    "The lesson was explained by the teacher right now."
+                ],
+                correct: 0
+            },
+            {
+                question: "Identify the correct passive form of:\n'Someone has stolen my bicycle.'",
+                options: [
+                    "My bicycle has been stolen.",
+                    "My bicycle was stolen.",
+                    "My bicycle is stolen.",
+                    "My bicycle had been stolen.",
+                    "My bicycle has stolen."
+                ],
+                correct: 0
+            },
+            {
+                question: "Choose the sentence that is NOT in passive voice:",
+                options: [
+                    "The letter was sent yesterday.",
+                    "The window broke suddenly.",
+                    "The cake was eaten by the children.",
+                    "The book is being read by her.",
+                    "The car has been repaired."
+                ],
+                correct: 1
+            },
+            {
+                question: "Transform to active voice:\n'The meeting will be attended by all employees.'",
+                options: [
+                    "All employees will attend the meeting.",
+                    "All employees are attending the meeting.",
+                    "All employees attended the meeting.",
+                    "All employees have attended the meeting.",
+                    "All employees were attending the meeting."
+                ],
+                correct: 0
+            },
+            {
+                question: "Which sentence uses passive voice correctly?",
+                options: [
+                    "English is spoken by many people around the world.",
+                    "English speaks by many people around the world.",
+                    "English is speaking by many people around the world.",
+                    "English was spoken by many people around the world.",
+                    "English has spoken by many people around the world."
+                ],
+                correct: 0
+            },
+            {
+                question: "Change to passive voice:\n'They will have completed the project by next month.'",
+                options: [
+                    "The project will have been completed by them by next month.",
+                    "The project will be completed by them by next month.",
+                    "The project has been completed by them by next month.",
+                    "The project would have been completed by them by next month.",
+                    "The project is completed by them by next month."
+                ],
+                correct: 0
+            },
+            {
+                question: "Identify the active voice sentence:",
+                options: [
+                    "The cat chased the mouse.",
+                    "The mouse was chased by the cat.",
+                    "The mouse is being chased by the cat.",
+                    "The mouse has been chased by the cat.",
+                    "The mouse had been chased by the cat."
+                ],
+                correct: 0
+            },
+            {
+                question: "Transform to passive voice:\n'She had written the report before the meeting.'",
+                options: [
+                    "The report had been written by her before the meeting.",
+                    "The report was written by her before the meeting.",
+                    "The report has been written by her before the meeting.",
+                    "The report is written by her before the meeting.",
+                    "The report had written by her before the meeting."
+                ],
+                correct: 0
+            },
+            {
+                question: "Which sentence is in passive voice?",
+                options: [
+                    "The door was locked by the security guard.",
+                    "The security guard locked the door.",
+                    "The security guard is locking the door.",
+                    "The security guard has locked the door.",
+                    "The security guard will lock the door."
+                ],
+                correct: 0
+            },
+            {
+                question: "Change to active voice:\n'The homework must be done by the students.'",
+                options: [
+                    "The students must do the homework.",
+                    "The students must be doing the homework.",
+                    "The students must have done the homework.",
+                    "The students must have been doing the homework.",
+                    "The students did the homework."
+                ],
+                correct: 0
+            },
+            {
+                question: "Select the correct passive transformation:\n'People speak English in many countries.'",
+                options: [
+                    "English is spoken in many countries.",
+                    "English was spoken in many countries.",
+                    "English has been spoken in many countries.",
+                    "English is being spoken in many countries.",
+                    "English speaks in many countries."
+                ],
+                correct: 0
+            },
+            {
+                question: "Which sentence uses the passive voice incorrectly?",
+                options: [
+                    "The book was read by me yesterday.",
+                    "The letter is written by John now.",
+                    "The car has been repaired by the mechanic.",
+                    "The house was built in 1990.",
+                    "The food is being cooked by mother."
+                ],
+                correct: 1
+            },
+            {
+                question: "Transform to passive voice:\n'Who wrote this novel?'",
+                options: [
+                    "By whom was this novel written?",
+                    "By whom is this novel written?",
+                    "By whom has this novel been written?",
+                    "By whom had this novel been written?",
+                    "By whom does this novel written?"
+                ],
+                correct: 0
+            },
+            {
+                question: "Identify the sentence that CANNOT be changed to passive voice:",
+                options: [
+                    "She seems happy.",
+                    "He broke the window.",
+                    "They are building a house.",
+                    "She has finished her work.",
+                    "Someone stole my phone."
+                ],
+                correct: 0
+            },
+            {
+                question: "Change to passive voice:\n'They should have informed us about the changes.'",
+                options: [
+                    "We should have been informed about the changes.",
+                    "We should be informed about the changes.",
+                    "We should have informed about the changes.",
+                    "We should have been informing about the changes.",
+                    "We should inform about the changes."
+                ],
+                correct: 0
+            },
+            {
+                question: "Which sentence is in the correct passive form?",
+                options: [
+                    "The experiment is being conducted by scientists.",
+                    "The experiment is conducting by scientists.",
+                    "The experiment was being conducted by scientists.",
+                    "The experiment has being conducted by scientists.",
+                    "The experiment is been conducted by scientists."
+                ],
+                correct: 0
+            },
+            {
+                question: "Transform to active voice:\n'The suspect was arrested by the police last night.'",
+                options: [
+                    "The police arrested the suspect last night.",
+                    "The police was arresting the suspect last night.",
+                    "The police has arrested the suspect last night.",
+                    "The police had arrested the suspect last night.",
+                    "The police arrests the suspect last night."
+                ],
+                correct: 0
+            },
+            {
+                question: "Choose the correct passive voice transformation:\n'Nobody has answered this question yet.'",
+                options: [
+                    "This question has not been answered yet.",
+                    "This question was not answered yet.",
+                    "This question is not answered yet.",
+                    "This question had not been answered yet.",
+                    "This question will not be answered yet."
+                ],
+                correct: 0
+            },
+            {
+                question: "Which sentence uses passive voice appropriately?",
+                options: [
+                    "Mistakes were made during the presentation.",
+                    "Mistakes made during the presentation.",
+                    "Mistakes are making during the presentation.",
+                    "Mistakes have making during the presentation.",
+                    "Mistakes were making during the presentation."
+                ],
+                correct: 0
+            },
+            {
+                question: "Transform to passive voice:\n'The company will announce the results tomorrow.'",
+                options: [
+                    "The results will be announced by the company tomorrow.",
+                    "The results will announce by the company tomorrow.",
+                    "The results are announced by the company tomorrow.",
+                    "The results have been announced by the company tomorrow.",
+                    "The results would be announced by the company tomorrow."
+                ],
+                correct: 0
+            }
+        ];
+
+        // Quiz Variables
+        let currentQuestionIndex = 0;
+        let userAnswers = new Array(questions.length).fill(null);
+        let timeRemaining = 600; // 10 minutes in seconds
+        let timerInterval;
+        let quizStarted = false;
+
+        // Token Validation
+        function validateToken() {
+            const token = document.getElementById('tokenInput').value.toUpperCase();
+            const errorMessage = document.getElementById('errorMessage');
+            
+            if (token === 'EP1') {
+                startQuiz();
+                errorMessage.style.display = 'none';
+            } else {
+                errorMessage.style.display = 'block';
+                document.getElementById('tokenInput').value = '';
+                document.getElementById('tokenInput').focus();
+            }
+        }
+
+        // Start Quiz
+        function startQuiz() {
+            document.getElementById('loginPage').style.display = 'none';
+            document.getElementById('quizPage').style.display = 'block';
+            quizStarted = true;
+            startTimer();
+            displayQuestion();
+        }
+
+        // Timer Functions
+        function startTimer() {
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+
+        function updateTimer() {
+            timeRemaining--;
+            const minutes = Math.floor(timeRemaining / 60);
+            const seconds = timeRemaining % 60;
+            const display = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            
+            document.getElementById('timeDisplay').textContent = display;
+            
+            if (timeRemaining <= 60) {
+                document.getElementById('timer').classList.add('warning');
+            }
+            
+            if (timeRemaining <= 0) {
+                endQuiz();
+            }
+        }
+
+        // Question Display
+        function displayQuestion() {
+            const question = questions[currentQuestionIndex];
+            const container = document.getElementById('questionContainer');
+            
+            container.innerHTML = `
+                <div class="question-number">Soal ${currentQuestionIndex + 1}</div>
+                <div class="question-text">${question.question}</div>
+                <div class="options">
+                    ${question.options.map((option, index) => `
+                        <div class="option ${userAnswers[currentQuestionIndex] === index ? 'selected' : ''}" 
+                             onclick="selectOption(${index})">
+                            <div class="option-letter">${String.fromCharCode(65 + index)}</div>
+                            <div>${option}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            
+            updateNavigation();
+        }
+
+        // Option Selection
+        function selectOption(index) {
+            userAnswers[currentQuestionIndex] = index;
+            displayQuestion();
+        }
+
+        // Navigation
+        function updateNavigation() {
+            document.getElementById('currentQuestion').textContent = currentQuestionIndex + 1;
+            document.getElementById('prevBtn').disabled = currentQuestionIndex === 0;
+            
+            if (currentQuestionIndex === questions.length - 1) {
+                document.getElementById('nextBtn').textContent = 'Selesai';
+                document.getElementById('nextBtn').onclick = endQuiz;
+            } else {
+                document.getElementById('nextBtn').textContent = 'Selanjutnya';
+                document.getElementById('nextBtn').onclick = nextQuestion;
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                displayQuestion();
+            }
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                displayQuestion();
+            }
+        }
+
+        // End Quiz
+        function endQuiz() {
+            clearInterval(timerInterval);
+            
+            let score = 0;
+            for (let i = 0; i < questions.length; i++) {
+                if (userAnswers[i] === questions[i].correct) {
+                    score++;
+                }
+            }
+            
+            document.getElementById('quizPage').style.display = 'none';
+            document.getElementById('resultPage').style.display = 'block';
+            
+            document.getElementById('scoreDisplay').textContent = `${score}/20`;
+            
+            const percentage = (score / 20) * 100;
+            let message = '';
+            if (percentage >= 80) {
+                message = 'Luar biasa! Anda sangat menguasai materi ini!';
+            } else if (percentage >= 60) {
+                message = 'Bagus! Terus tingkatkan pemahaman Anda!';
+            } else if (percentage >= 40) {
+                message = 'Cukup baik, perlu lebih banyak latihan.';
+            } else {
+                message = 'Tetap semangat! Terus belajar dan berlatih.';
+            }
+            
+            document.getElementById('resultMessage').textContent = message;
+        }
+
+        // Restart Quiz
+        function restartQuiz() {
+            currentQuestionIndex = 0;
+            userAnswers = new Array(questions.length).fill(null);
+            timeRemaining = 600;
+            quizStarted = false;
+            
+            document.getElementById('resultPage').style.display = 'none';
+            document.getElementById('loginPage').style.display = 'block';
+            document.getElementById('tokenInput').value = '';
+            document.getElementById('timer').classList.remove('warning');
+        }
+
+        // Keyboard Support
+        document.getElementById('tokenInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                validateToken();
+            }
+        });
+
+        // Prevent back navigation during quiz
+        window.addEventListener('beforeunload', function(e) {
+            if (quizStarted) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
+    </script>
+</body>
+</html>
