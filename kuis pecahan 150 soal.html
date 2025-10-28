@@ -1,0 +1,2181 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kuis pecahan</title>
+    <style>
+      :root {
+        --bg: #060000; /* slate-900 */
+        --card: #111827; /* gray-900 */
+        --muted: #334155; /* slate-600 */
+        --text: #ffffff; /* gray-200 */
+        --accent: #38bdf8; /* sky-400 */
+        --accent-2: #22c55e; /* green-500 */
+        --danger: #ef4444; /* red-500 */
+        --warn: #f59e0b; /* amber-500 */
+        --shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+        --radius: 16px;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto,
+          "Helvetica Neue", Arial;
+        background: radial-gradient(
+            1200px 800px at 10% -10%,
+            #1e293b,
+            transparent
+          ),
+          radial-gradient(800px 600px at 120% 0%, #0b3b47, transparent),
+          var(--bg);
+        color: var(--text);
+        min-height: 100svh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+      }
+      .app {
+        width: 100%;
+        max-width: 980px;
+      }
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+      .brand {
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        font-size: clamp(18px, 3.5vw, 24px);
+      }
+      .timer {
+        font-variant-numeric: tabular-nums;
+        font-weight: 700;
+        padding: 10px 14px;
+        border-radius: 999px;
+        background: #0b1220;
+        border: 1px solid #1f2a44;
+        box-shadow: var(--shadow);
+      }
+      .card {
+        background: linear-gradient(180deg, #0b1220, #0a1020);
+        border: 1px solid #1f2a44;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+      }
+      .section {
+        display: none;
+      }
+      .active {
+        display: block;
+      }
+      .card-inner {
+        padding: 20px;
+      }
+      .grid {
+        display: grid;
+        gap: 16px;
+      }
+      .grid-2 {
+        grid-template-columns: 1fr 1fr;
+      }
+      .grid-responsive {
+        grid-template-columns: 1fr;
+      }
+      @media (min-width: 720px) {
+        .grid-responsive {
+          grid-template-columns: 1fr 320px;
+        }
+      }
+
+      input[type="text"],
+      input[type="password"] {
+        width: 100%;
+        padding: 12px 14px;
+        border-radius: 12px;
+        border: 1px solid #26314d;
+        background: #0b1220;
+        color: var(--text);
+        outline: none;
+        box-shadow: inset 0 0 0 9999px rgba(255, 255, 255, 0);
+      }
+      label {
+        font-size: 14px;
+        color: #cbd5e1;
+      }
+      .btn {
+        cursor: pointer;
+        padding: 12px 16px;
+        border-radius: 14px;
+        background: var(--accent);
+        color: #001219;
+        border: none;
+        font-weight: 700;
+        box-shadow: var(--shadow);
+        transition: 0.2s transform ease;
+      }
+      .btn:active {
+        transform: translateY(1px);
+      }
+      .btn.secondary {
+        background: #1f2937;
+        color: #e2e8f0;
+        border: 1px solid #334155;
+      }
+      .btn.warn {
+        background: var(--warn);
+        color: #0b1220;
+      }
+      .btn.danger {
+        background: var(--danger);
+        color: #0b1220;
+      }
+      .muted {
+        color: #94a3b8;
+      }
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: #0b1220;
+        border: 1px solid #223156;
+        font-size: 12px;
+        color: #cbd5e1;
+      }
+
+      .question-area {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+      .q-title {
+        font-weight: 800;
+        font-size: 18px;
+      }
+      .choices {
+        display: grid;
+        gap: 10px;
+      }
+      .choice {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        border: 1px solid #1f2a44;
+        background: #0b1220;
+        padding: 12px;
+        border-radius: 12px;
+        cursor: pointer;
+      }
+      .choice input {
+        margin-top: 4px;
+      }
+
+      .nav {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        max-height: 240px;
+        overflow: auto;
+        padding: 10px;
+      }
+      .nav button {
+        width: 44px;
+        height: 40px;
+        border-radius: 10px;
+        border: 1px solid #1f2a44;
+        background: #0b1220;
+        color: #cbd5e1;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .nav button.active {
+        outline: 2px solid var(--accent);
+        color: #0ea5e9;
+      }
+      .nav button.done {
+        background: #07291f;
+        border-color: #0b7a53;
+        color: #34d399;
+      }
+
+      .footer-actions {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-top: 10px;
+      }
+
+      .legend {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .results {
+        display: grid;
+        gap: 12px;
+      }
+      .score-box {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      .score-card {
+        background: #0b1220;
+        border: 1px solid #1f2a44;
+        border-radius: 14px;
+        padding: 14px;
+      }
+
+      .info-row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  </head>
+  <body>
+    <div class="app">
+      <header>
+        <div class="brand">kuis pecahan</div>
+        <div class="pill" id="infoUser">Belum login</div>
+        <div class="timer" id="timer">20:00</div>
+      </header>
+
+      <!-- SECTION 1: FORM MINIMAL -->
+      <section id="section-form" class="section active">
+        <div class="card">
+          <div class="card-inner grid">
+            <div>
+              <h2 style="margin: 0 0 10px 0">Masuk Kuis</h2>
+              <p class="muted" style="margin-top: 0">
+                Masukkan nama dan password untuk memulai. Tidak ada pengaturan
+                tambahan.
+              </p>
+              <div class="grid">
+                <div>
+                  <label for="nama">Nama</label>
+                  <input id="nama" type="text" placeholder="Nama peserta" />
+                </div>
+                <div>
+                  <label for="pass">Password</label>
+                  <input id="pass" type="password" placeholder="Password" />
+                </div>
+                <button class="btn" id="btnMulai">Mulai Kuis</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 2: QUIZ -->
+      <section id="section-quiz" class="section">
+        <div class="grid grid-responsive">
+          <div class="card">
+            <div class="card-inner">
+              <div class="info-row">
+                <div class="pill" id="infoKategori">Kategori: -</div>
+                <div class="pill" id="infoSoal">Soal 0 / 180</div>
+              </div>
+              <div class="question-area" id="questionArea">
+                <!-- Question inject here -->
+              </div>
+              <div class="footer-actions">
+                <button class="btn secondary" id="prevBtn">Prev</button>
+                <div class="legend">
+                  <span class="pill">• Biru = aktif</span>
+                  <span
+                    class="pill"
+                    style="
+                      background: #07291f;
+                      color: #34d399;
+                      border-color: #0b7a53;
+                    "
+                    >• Hijau = terjawab</span
+                  >
+                </div>
+                <button class="btn" id="nextBtn">Next</button>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-inner">
+              <h3 style="margin-top: 0">Navigasi Soal</h3>
+              <div class="nav" id="nav">
+                <!-- Nav buttons injected here -->
+              </div>
+              <div class="grid" style="margin-top: 8px">
+                <button class="btn warn" id="btnSubmit">
+                  Kumpulkan Jawaban
+                </button>
+                <button class="btn danger" id="btnReset">Reset Jawaban</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 3: HASIL -->
+      <section id="section-result" class="section">
+        <div class="card">
+          <div class="card-inner results">
+            <h2 style="margin: 0">Hasil Ujian</h2>
+            <p class="muted" id="resultUser">Peserta: -</p>
+            <div class="score-box">
+              <div class="score-card" style="grid-column: span 2">
+                <div class="muted">Total Skor</div>
+                <div id="scoreTotal" style="font-size: 30px; font-weight: 900">
+                  0 / 180
+                </div>
+              </div>
+            </div>
+            <div>
+              <button class="btn" id="btnUlang">Mulai Lagi</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      /** UTIL **/
+      const el = (sel) => document.querySelector(sel);
+      const els = (sel) => Array.from(document.querySelectorAll(sel));
+      const shuffle = (arr) =>
+        arr
+          .map((v) => [Math.random(), v])
+          .sort((a, b) => a[0] - b[0])
+          .map((x) => x[1]);
+
+      /** BANK SOAL (40/40/40) **/
+      // Format: {type:'sinonim'|'antonim'|'hiponim', q:'', options:['','','',''], answer: index}
+
+      const SOAL_fungsi = [
+        // KELOMPOK 1: DASAR PECAHAN (1-50)
+        {
+          q: "\\( \\frac{1}{2} + \\frac{1}{4} \\) adalah ...",
+          o: [
+            "\\( \\frac{1}{6} \\)",
+            "\\( \\frac{3}{4} \\)",
+            "\\( \\frac{2}{3} \\)",
+            "\\( \\frac{1}{8} \\)",
+            "\\( 1 \\)",
+          ],
+          a: 1,
+        },
+        {
+          q: "Bentuk paling sederhana dari \\( \\frac{6}{8} \\) adalah ...",
+          o: [
+            "\\( \\frac{3}{4} \\)",
+            "\\( \\frac{2}{3} \\)",
+            "\\( \\frac{4}{6} \\)",
+            "\\( \\frac{3}{8} \\)",
+            "\\( \\frac{1}{2} \\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "\\( \\frac{3}{5} - \\frac{1}{5} \\) adalah ...",
+          o: [
+            "\\( \\frac{1}{5} \\)",
+            "\\( \\frac{2}{5} \\)",
+            "\\( \\frac{3}{5} \\)",
+            "\\( \\frac{4}{5} \\)",
+            "\\( 1 \\)",
+          ],
+          a: 1,
+        },
+        {
+          q: "Bentuk pecahan dari 40% adalah ...",
+          o: [
+            "\\( \\frac{2}{5} \\)",
+            "\\( \\frac{3}{5} \\)",
+            "\\( \\frac{4}{5} \\)",
+            "\\( \\frac{1}{4} \\)",
+            "\\( \\frac{1}{2} \\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "\\( \\frac{2}{3} \\times \\frac{3}{4} \\) adalah ...",
+          o: [
+            "\\( \\frac{1}{2} \\)",
+            "\\( \\frac{2}{4} \\)",
+            "\\( \\frac{3}{8} \\)",
+            "\\( \\frac{6}{7} \\)",
+            "\\( \\frac{2}{3} \\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Jika dari 20 siswa 5 tidak hadir, persentase kehadiran adalah ...",
+          o: ["60%", "65%", "70%", "75%", "80%"],
+          a: 3,
+        },
+        {
+          q: "Bentuk desimal dari \\( \\frac{1}{4} \\) adalah ...",
+          o: ["0,10", "0,20", "0,25", "0,30", "0,40"],
+          a: 2,
+        },
+        {
+          q: "Nilai \\( 1\\frac{1}{2} \\) dalam pecahan biasa adalah ...",
+          o: [
+            "\\( \\frac{3}{2} \\)",
+            "\\( \\frac{5}{3} \\)",
+            "\\( \\frac{4}{3} \\)",
+            "\\( \\frac{3}{4} \\)",
+            "\\( \\frac{2}{3} \\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "\\( \\frac{7}{10} + \\frac{3}{10} \\) adalah ...",
+          o: [
+            "\\( \\frac{1}{10} \\)",
+            "\\( 1 \\)",
+            "\\( \\frac{7}{5} \\)",
+            "\\( \\frac{3}{5} \\)",
+            "\\( \\frac{4}{5} \\)",
+          ],
+          a: 1,
+        },
+        {
+          q: "Harga Rp100.000 mendapat diskon 25%, harga setelah diskon adalah ...",
+          o: ["Rp65.000", "Rp70.000", "Rp75.000", "Rp80.000", "Rp85.000"],
+          a: 2,
+        },
+        {
+          q: "\\( \\frac{5}{8} - \\frac{1}{4} \\) adalah ...",
+          o: [
+            "\\( \\frac{3}{8} \\)",
+            "\\( \\frac{1}{2} \\)",
+            "\\( \\frac{5}{4} \\)",
+            "\\( \\frac{2}{8} \\)",
+            "\\( \\frac{1}{8} \\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "20% dari 200 adalah ...",
+          o: ["20", "30", "40", "50", "60"],
+          a: 2,
+        },
+        {
+          q: "\\( \\frac{4}{9} + \\frac{2}{9} \\) adalah ...",
+          o: [
+            "\\( \\frac{6}{9} \\)",
+            "\\( \\frac{2}{3} \\)",
+            "\\( \\frac{3}{4} \\)",
+            "\\( \\frac{1}{2} \\)",
+            "\\( \\frac{4}{3} \\)",
+          ],
+          a: 1,
+        },
+        {
+          q: "Bentuk pecahan campuran dari \\( \\frac{7}{3} \\) adalah ...",
+          o: [
+            "\\( 1\\frac{1}{3} \\)",
+            "\\( 2\\frac{1}{3} \\)",
+            "\\( 3\\frac{1}{3} \\)",
+            "\\( 1\\frac{2}{3} \\)",
+            "\\( 2\\frac{2}{3} \\)",
+          ],
+          a: 1,
+        },
+        {
+          q: "\\( 2\\frac{1}{4} - 1\\frac{1}{2} \\) adalah ...",
+          o: [
+            "\\( \\frac{1}{2} \\)",
+            "\\( \\frac{3}{4} \\)",
+            "\\( \\frac{1}{4} \\)",
+            "\\( 1 \\)",
+            "\\( \\frac{2}{3} \\)",
+          ],
+          a: 1,
+        },
+        {
+          q: "Jika 3 dari 12 siswa tidak hadir, persentase ketidakhadiran adalah ...",
+          o: ["10%", "20%", "25%", "30%", "40%"],
+          a: 2,
+        },
+        {
+          q: "\\( \\frac{3}{7} \\div \\frac{1}{2} \\) adalah ...",
+          o: [
+            "\\( \\frac{6}{7} \\)",
+            "\\( \\frac{3}{14} \\)",
+            "\\( \\frac{7}{6} \\)",
+            "\\( \\frac{2}{7} \\)",
+            "\\( \\frac{1}{6} \\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Bentuk sederhana dari \\( \\frac{12}{16} \\) adalah ...",
+          o: [
+            "\\( \\frac{3}{4} \\)",
+            "\\( \\frac{2}{3} \\)",
+            "\\( \\frac{4}{6} \\)",
+            "\\( \\frac{5}{8} \\)",
+            "\\( \\frac{6}{8} \\)",
+          ],
+          a: 0,
+        },
+        { q: "30% dari 90 adalah ...", o: ["9", "18", "27", "36", "45"], a: 2 },
+        {
+          q: "\\( \\frac{7}{10} + \\frac{1}{5} \\) adalah ...",
+          o: [
+            "\\( \\frac{8}{10} \\)",
+            "\\( \\frac{9}{10} \\)",
+            "\\( \\frac{10}{10} \\)",
+            "\\( \\frac{7}{5} \\)",
+            "\\( \\frac{1}{2} \\)",
+          ],
+          a: 1,
+        },
+        {
+          q: "\\( \\frac{5}{9} - \\frac{1}{9} \\) adalah ...",
+          o: [
+            "\\( \\frac{4}{9} \\)",
+            "\\( \\frac{5}{8} \\)",
+            "\\( \\frac{3}{8} \\)",
+            "\\( \\frac{3}{4} \\)",
+            "\\( \\frac{1}{4} \\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "40% dari 250 adalah ...",
+          o: ["50", "75", "100", "125", "150"],
+          a: 2,
+        },
+        {
+          q: "\\( \\frac{9}{4} \\) dalam pecahan campuran adalah ...",
+          o: [
+            "\\( 2\\frac{1}{4} \\)",
+            "\\( 1\\frac{1}{4} \\)",
+            "\\( 2\\frac{1}{2} \\)",
+            "\\( 3\\frac{1}{4} \\)",
+            "\\( 2\\frac{3}{4} \\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "\\( \\frac{3}{4} \\times 2 \\) adalah ...",
+          o: [
+            "\\( 1 \\)",
+            "\\( 1\\frac{1}{2} \\)",
+            "\\( \\frac{3}{2} \\)",
+            "\\( 2 \\)",
+            "\\( \\frac{3}{4} \\)",
+          ],
+          a: 2,
+        },
+        {
+          q: "60% dari 80 adalah ...",
+          o: ["24", "36", "42", "48", "50"],
+          a: 3,
+        },
+        {
+          q: "Bentuk desimal dari \\( \\frac{1}{4} \\) adalah ...",
+          o: ["0,20", "0,25", "0,30", "0,40", "0,50"],
+          a: 1,
+        },
+        {
+          q: "\\( 1 - \\frac{2}{5} \\) adalah ...",
+          o: [
+            "\\( \\frac{3}{5} \\)",
+            "\\( \\frac{2}{5} \\)",
+            "\\( \\frac{1}{5} \\)",
+            "\\( \\frac{4}{5} \\)",
+            "\\( \\frac{5}{5} \\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Jika 15 dari 60 memilih A, persentase memilih A adalah ...",
+          o: ["10%", "15%", "20%", "25%", "30%"],
+          a: 3,
+        },
+        {
+          q: "\\( \\frac{8}{9} - \\frac{1}{3} \\) adalah ...",
+          o: [
+            "\\( \\frac{5}{9} \\)",
+            "\\( \\frac{4}{9} \\)",
+            "\\( \\frac{7}{9} \\)",
+            "\\( \\frac{2}{9} \\)",
+            "\\( \\frac{1}{9} \\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "\\( \\frac{2}{5} \\div \\frac{1}{10} \\) adalah ...",
+          o: ["2", "4", "5", "6", "8"],
+          a: 1,
+        },
+        {
+          q: "Bentuk persen dari \\( \\frac{1}{5} \\) adalah ...",
+          o: ["15%", "20%", "25%", "30%", "35%"],
+          a: 1,
+        },
+        {
+          q: "\\( \\frac{4}{7} + \\frac{2}{7} \\) adalah ...",
+          o: [
+            "\\( \\frac{5}{7} \\)",
+            "\\( \\frac{6}{7} \\)",
+            "\\( \\frac{4}{7} \\)",
+            "\\( \\frac{8}{7} \\)",
+            "\\( 1 \\)",
+          ],
+          a: 1,
+        },
+        {
+          q: "\\( \\frac{10}{3} \\) dalam pecahan campuran adalah ...",
+          o: [
+            "\\( 3\\frac{1}{3} \\)",
+            "\\( 2\\frac{1}{3} \\)",
+            "\\( 1\\frac{1}{3} \\)",
+            "\\( 3\\frac{2}{3} \\)",
+            "\\( 2\\frac{2}{3} \\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Bentuk sederhana dari \\( \\frac{15}{25} \\) adalah ...",
+          o: [
+            "\\( \\frac{3}{4} \\)",
+            "\\( \\frac{1}{3} \\)",
+            "\\( \\frac{3}{5} \\)",
+            "\\( \\frac{4}{5} \\)",
+            "\\( \\frac{5}{15} \\)",
+          ],
+          a: 2,
+        },
+        {
+          q: "\\( \\frac{1}{4} + \\frac{2}{3} \\) adalah ...",
+          o: [
+            "\\( \\frac{11}{12} \\)",
+            "\\( \\frac{5}{7} \\)",
+            "\\( \\frac{7}{12} \\)",
+            "\\( \\frac{3}{4} \\)",
+            "\\( \\frac{1}{2} \\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Bentuk persen dari \\( \\frac{3}{5} \\) adalah ...",
+          o: ["50%", "55%", "60%", "65%", "75%"],
+          a: 2,
+        },
+        {
+          q: "80% dari 150 adalah ...",
+          o: ["90", "100", "110", "120", "130"],
+          a: 3,
+        },
+        {
+          q: "Jika 12 dari 48 hadir, persentase hadir adalah ...",
+          o: ["15%", "20%", "25%", "30%", "50%"],
+          a: 2,
+        },
+        {
+          q: "\\( \\frac{7}{8} - \\frac{1}{2} \\) adalah ...",
+          o: [
+            "\\( \\frac{1}{4} \\)",
+            "\\( \\frac{3}{8} \\)",
+            "\\( \\frac{7}{16} \\)",
+            "\\( \\frac{1}{2} \\)",
+            "\\( \\frac{5}{8} \\)",
+          ],
+          a: 1,
+        },
+        {
+          q: "Bentuk desimal dari 75% adalah ...",
+          o: ["0,5", "0,65", "0,75", "0,8", "0,85"],
+          a: 2,
+        },
+        {
+          q: "\\( \\frac{9}{10} + \\frac{1}{2} \\) adalah ...",
+          o: [
+            "\\( \\frac{11}{10} \\)",
+            "\\( \\frac{7}{5} \\)",
+            "\\( \\frac{9}{5} \\)",
+            "\\( \\frac{10}{9} \\)",
+            "\\( 2 \\)",
+          ],
+          a: 1,
+        },
+        {
+          q: "\\( \\frac{5}{6} - \\frac{1}{3} \\) adalah ...",
+          o: [
+            "\\( \\frac{3}{6} \\)",
+            "\\( \\frac{4}{6} \\)",
+            "\\( \\frac{5}{12} \\)",
+            "\\( \\frac{1}{2} \\)",
+            "\\( \\frac{1}{6} \\)",
+          ],
+          a: 3,
+        },
+        {
+          q: "Harga Rp200.000 diskon 25%, harga setelah diskon adalah ...",
+          o: ["Rp125.000", "Rp140.000", "Rp150.000", "Rp160.000", "Rp175.000"],
+          a: 2,
+        },
+        {
+          q: "\\( \\frac{3}{4} \\times \\frac{2}{5} \\) adalah ...",
+          o: [
+            "\\( \\frac{6}{20} \\)",
+            "\\( \\frac{3}{10} \\)",
+            "\\( \\frac{6}{5} \\)",
+            "\\( \\frac{5}{8} \\)",
+            "\\( \\frac{4}{15} \\)",
+          ],
+          a: 1,
+        },
+        {
+          q: "Jika sebuah pizza dibagi 8 bagian dan dimakan 3, sisa adalah ...",
+          o: [
+            "\\( \\frac{3}{8} \\)",
+            "\\( \\frac{5}{8} \\)",
+            "\\( \\frac{8}{3} \\)",
+            "\\( \\frac{1}{2} \\)",
+            "\\( \\frac{2}{3} \\)",
+          ],
+          a: 1,
+        },
+        {
+          q: "Konversi \\( 0,6 \\) ke persen adalah ...",
+          o: ["6%", "60%", "0,6%", "600%", "16%"],
+          a: 1,
+        },
+        {
+          q: "\\( \\frac{11}{6} \\) dalam pecahan campuran adalah ...",
+          o: [
+            "\\( 1\\frac{5}{6} \\)",
+            "\\( 1\\frac{4}{6} \\)",
+            "\\( 2\\frac{1}{6} \\)",
+            "\\( 1\\frac{1}{6} \\)",
+            "\\( \\frac{11}{6} \\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Hasil dari \\( \\frac{5}{6} + \\frac{1}{3} \\) adalah ...",
+          o: [
+            "\\( \\frac{6}{9} \\)",
+            "\\( \\frac{7}{6} \\)",
+            "\\( \\frac{1}{2} \\)",
+            "\\( \\frac{4}{3} \\)",
+            "\\( \\frac{2}{3} \\)",
+          ],
+          a: 1,
+        },
+        {
+          q: "Bentuk paling sederhana dari \\( \\frac{18}{24} \\) adalah ...",
+          o: [
+            "\\( \\frac{3}{4} \\)",
+            "\\( \\frac{2}{3} \\)",
+            "\\( \\frac{6}{8} \\)",
+            "\\( \\frac{9}{12} \\)",
+            "\\( \\frac{4}{3} \\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Hasil dari \\( \\frac{4}{5} - \\frac{2}{15} \\) adalah ...",
+          o: [
+            "\\( \\frac{10}{15} \\)",
+            "\\( \\frac{8}{15} \\)",
+            "\\( \\frac{1}{3} \\)",
+            "\\( \\frac{2}{5} \\)",
+            "\\( \\frac{6}{15} \\)",
+          ],
+          a: 1,
+        },
+
+        // KELOMPOK 2: LANJUTAN PECAHAN DAN SOAL CERITA (51-100)
+        {
+          q: "Bentuk persen dari \\( \\frac{7}{20} \\) adalah ...",
+          o: ["35\\%", "25\\%", "40\\%", "30\\%", "20\\%"],
+          a: 0,
+        },
+        {
+          q: "Hasil dari \\( 2\\frac{2}{3} + 1\\frac{1}{6} \\) adalah ...",
+          o: [
+            "\\( 3\\frac{3}{4} \\)",
+            "\\( 3\\frac{5}{6} \\)",
+            "\\( 4 \\)",
+            "\\( 3\\frac{7}{6} \\)",
+            "\\( 3\\frac{1}{2} \\)",
+          ],
+          a: 1,
+        },
+        {
+          q: "Jika sebuah tas diisi \\( \\frac{2}{5} \\) penuh dengan 50 bola, berapa banyak bola jika penuh? (asumsikan proporsional)",
+          o: ["125", "100", "125", "50", "75"],
+          a: 1,
+        },
+        {
+          q: "Hasil dari \\( \\frac{3}{8} \\times \\frac{16}{9} \\) adalah ...",
+          o: [
+            "\\( \\frac{1}{2} \\)",
+            "\\( \\frac{2}{3} \\)",
+            "\\( \\frac{8}{9} \\)",
+            "\\( \\frac{6}{9} \\)",
+            "\\( \\frac{4}{3} \\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Bentuk desimal dari 12,5% adalah ...",
+          o: ["0,0125", "0,125", "0,25", "0,012", "0,75"],
+          a: 1,
+        },
+        {
+          q: "Hasil dari \\( \\frac{5}{12} \\div \\frac{5}{18} \\) adalah ...",
+          o: [
+            "\\( \\frac{6}{5} \\)",
+            "\\( \\frac{3}{2} \\)",
+            "\\( \\frac{3}{4} \\)",
+            "\\( \\frac{6}{7} \\)",
+            "\\( \\frac{15}{12} \\)",
+          ],
+          a: 1,
+        },
+        {
+          q: "Jika harga barang Rp80.000 naik 15\\%, harga baru menjadi ...",
+          o: ["Rp92.000", "Rp92.500", "Rp90.000", "Rp92.800", "Rp94.000"],
+          a: 0,
+        },
+        {
+          q: "Hasil dari \\( \\frac{11}{15} - \\frac{2}{5} \\) adalah ...",
+          o: [
+            "\\( \\frac{7}{15} \\)",
+            "\\( \\frac{3}{15} \\)",
+            "\\( \\frac{9}{15} \\)",
+            "\\( \\frac{11}{25} \\)",
+            "\\( \\frac{1}{3} \\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Bentuk pecahan campuran dari \\( \\frac{22}{7} \\) adalah ...",
+          o: [
+            "\\( 3\\frac{1}{7} \\)",
+            "\\( 3\\frac{2}{7} \\)",
+            "\\( 3\\frac{3}{7} \\)",
+            "\\( 4\\frac{1}{7} \\)",
+            "\\( 2\\frac{6}{7} \\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Hasil dari \\( \\frac{2}{9} + \\frac{5}{6} \\) adalah ...",
+          o: [
+            "\\( \\frac{19}{18} \\)",
+            "\\( \\frac{17}{18} \\)",
+            "\\( \\frac{13}{18} \\)",
+            "\\( \\frac{7}{18} \\)",
+            "\\( \\frac{1}{2} \\)",
+          ],
+          a: 1,
+        },
+        {
+          q: "Bentuk sederhana dari \\( \\frac{49}{63} \\) adalah ...",
+          o: [
+            "\\( \\frac{7}{9} \\)",
+            "\\( \\frac{1}{3} \\)",
+            "\\( \\frac{7}{8} \\)",
+            "\\( \\frac{6}{7} \\)",
+            "\\( \\frac{4}{9} \\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Hasil dari \\( 3\\frac{3}{5} - 1\\frac{4}{5} \\) adalah ...",
+          o: [
+            "\\( 1\\frac{4}{5} \\)",
+            "\\( 1\\frac{2}{5} \\)",
+            "\\( 1\\frac{6}{5} \\)",
+            "\\( 2 \\)",
+            "\\( 1\\frac{3}{5} \\)",
+          ],
+          a: 1,
+        },
+        {
+          q: "Jika sebuah resep membutuhkan \\( \\frac{3}{4} \\) kg gula untuk 8 kue, berapa gula untuk 12 kue?",
+          o: [
+            "\\( 1\\frac{1}{8} \\) kg",
+            "\\( 1\\frac{1}{4} \\) kg",
+            "\\( 1\\frac{3}{4} \\) kg",
+            "\\( 1\\frac{1}{2} \\) kg",
+            "\\( 1\\frac{1}{3} \\) kg",
+          ],
+          a: 3,
+        },
+        {
+          q: "Hasil dari \\( \\frac{7}{12} \\times \\frac{3}{14} \\) adalah ...",
+          o: [
+            "\\( \\frac{7}{56} \\)",
+            "\\( \\frac{1}{8} \\)",
+            "\\( \\frac{1}{4} \\)",
+            "\\( \\frac{3}{56} \\)",
+            "\\( \\frac{7}{24} \\)",
+          ],
+          a: 1,
+        },
+        {
+          q: "Konversi \\( 0,875 \\) ke persen adalah ...",
+          o: ["8,75\\%", "87,5\\%", "0,875\\%", "875\\%", "17,5\\%"],
+          a: 1,
+        },
+        {
+          q: "Hasil dari \\( \\frac{14}{25} + \\frac{3}{10} \\) adalah ...",
+          o: [
+            "\\( \\frac{41}{50} \\)",
+            "\\( \\frac{20}{25} \\)",
+            "\\( \\frac{17}{25} \\)",
+            "\\( \\frac{29}{50} \\)",
+            "\\( \\frac{7}{10} \\)",
+          ],
+          a: 3,
+        },
+        {
+          q: "Jika sebuah benda berukuran \\( \\frac{5}{8} \\) m, dan kita mengalikan panjangnya 3, hasilnya adalah ...",
+          o: [
+            "\\( 1\\frac{7}{8} \\) m",
+            "\\( 1\\frac{3}{8} \\) m",
+            "\\( 1\\frac{5}{8} \\) m",
+            "\\( 2 \\) m",
+            "\\( 1\\frac{1}{4} \\) m",
+          ],
+          a: 0,
+        },
+        {
+          q: "Hasil dari \\( \\frac{9}{14} \\div \\frac{3}{7} \\) adalah ...",
+          o: [
+            "\\( \\frac{3}{2} \\)",
+            "\\( \\frac{9}{6} \\)",
+            "\\( \\frac{3}{4} \\)",
+            "\\( \\frac{7}{6} \\)",
+            "\\( \\frac{9}{7} \\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Bentuk sederhana dari \\( \\frac{28}{42} \\) adalah ...",
+          o: [
+            "\\( \\frac{2}{3} \\)",
+            "\\( \\frac{3}{4} \\)",
+            "\\( \\frac{4}{6} \\)",
+            "\\( \\frac{1}{2} \\)",
+            "\\( \\frac{7}{9} \\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Hasil dari \\( \\frac{5}{16} + \\frac{3}{8} \\) adalah ...",
+          o: [
+            "\\( \\frac{11}{16} \\)",
+            "\\( \\frac{5}{8} \\)",
+            "\\( \\frac{7}{16} \\)",
+            "\\( \\frac{1}{2} \\)",
+            "\\( \\frac{2}{3} \\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Jika suatu barang awalnya Rp50.000 lalu turun 20\\%, harga baru adalah ...",
+          o: ["Rp40.000", "Rp42.000", "Rp45.000", "Rp35.000", "Rp38.000"],
+          a: 0,
+        },
+        {
+          q: "Hasil dari \\( 4\\frac{1}{2} \\times 2 \\) adalah ...",
+          o: [
+            "\\( 9 \\)",
+            "\\( 8\\frac{1}{2} \\)",
+            "\\( 10 \\)",
+            "\\( 9\\frac{1}{2} \\)",
+            "\\( 8 \\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Bentuk persen dari \\( \\frac{17}{20} \\) adalah ...",
+          o: ["85\\%", "8,5\\%", "17\\%", "0,85\\%", "170\\%"],
+          a: 0,
+        },
+        {
+          q: "Hasil dari \\( \\frac{13}{18} - \\frac{1}{6} \\) adalah ...",
+          o: [
+            "\\( \\frac{10}{18} \\)",
+            "\\( \\frac{11}{18} \\)",
+            "\\( \\frac{12}{18} \\)",
+            "\\( \\frac{7}{18} \\)",
+            "\\( \\frac{5}{18} \\)",
+          ],
+          a: 1,
+        },
+        {
+          q: "Jika \\( \\frac{2}{3} \\) dari sebuah jumlah adalah 40, jumlah tersebut adalah ...",
+          o: ["60", "50", "70", "80", "100"],
+          a: 0,
+        },
+        {
+          q: "Hasil dari \\( \\frac{6}{7} \\times \\frac{14}{9} \\) adalah ...",
+          o: [
+            "\\( \\frac{12}{9} \\)",
+            "\\( \\frac{28}{63} \\)",
+            "\\( \\frac{4}{3} \\)",
+            "\\( \\frac{84}{63} \\)",
+            "\\( \\frac{2}{3} \\)",
+          ],
+          a: 2,
+        },
+        {
+          q: "Bentuk sederhana dari \\( \\frac{45}{60} \\) adalah ...",
+          o: [
+            "\\( \\frac{3}{4} \\)",
+            "\\( \\frac{4}{5} \\)",
+            "\\( \\frac{2}{3} \\)",
+            "\\( \\frac{5}{6} \\)",
+            "\\( \\frac{9}{12} \\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Hasil dari \\( \\frac{7}{5} - 1\\frac{1}{5} \\) adalah ...",
+          o: [
+            "\\( \\frac{1}{5} \\)",
+            "\\( \\frac{2}{5} \\)",
+            "\\( 0 \\)",
+            "\\( \\frac{3}{5} \\)",
+            "\\( \\frac{4}{5} \\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Jika 25\\% dari sebuah jumlah adalah 15, jumlah tersebut adalah ...",
+          o: ["60", "45", "75", "30", "90"],
+          a: 0,
+        },
+        {
+          q: "Hasil dari \\( \\frac{3}{10} + \\frac{4}{5} \\) adalah ...",
+          o: [
+            "\\( \\frac{11}{10} \\)",
+            "\\( \\frac{7}{10} \\)",
+            "\\( \\frac{1}{2} \\)",
+            "\\( \\frac{13}{10} \\)",
+            "\\( \\frac{17}{20} \\)",
+          ],
+          a: 3,
+        },
+        {
+          q: "Hasil dari \\( 5 \\div \\frac{2}{5} \\) adalah ...",
+          o: [
+            "\\( \\frac{5}{2} \\)",
+            "12,5",
+            "\\( \\frac{25}{2} \\)",
+            "\\( \\frac{10}{2} \\)",
+            "\\( \\frac{5}{10} \\)",
+          ],
+          a: 2,
+        },
+        {
+          q: "Bentuk pecahan dari 0,2 adalah ...",
+          o: [
+            "\\( \\frac{1}{5} \\)",
+            "\\( \\frac{2}{5} \\)",
+            "\\( \\frac{1}{4} \\)",
+            "\\( \\frac{1}{2} \\)",
+            "\\( \\frac{1}{10} \\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Hasil dari \\( \\frac{15}{28} + \\frac{1}{4} \\) adalah ...",
+          o: [
+            "\\( \\frac{11}{14} \\)",
+            "\\( \\frac{19}{28} \\)",
+            "\\( \\frac{17}{28} \\)",
+            "\\( \\frac{23}{28} \\)",
+            "\\( \\frac{5}{7} \\)",
+          ],
+          a: 2,
+        },
+        {
+          q: "Jika sebuah kolam terisi \\( \\frac{3}{10} \\) penuh setiap jam, berapa jam untuk mencapai \\( \\frac{9}{10} \\) penuh?",
+          o: ["2 jam", "3 jam", "4 jam", "5 jam", "6 jam"],
+          a: 1,
+        },
+        {
+          q: "Hasil dari \\( \\frac{4}{11} \\times 33 \\) adalah ...",
+          o: [
+            "12",
+            "\\( \\frac{132}{11} \\)",
+            "\\( \\frac{4}{3} \\)",
+            "11",
+            "15",
+          ],
+          a: 0,
+        },
+        {
+          q: "Bentuk campuran dari \\( \\frac{31}{8} \\) adalah ...",
+          o: [
+            "\\( 3\\frac{7}{8} \\)",
+            "\\( 3\\frac{5}{8} \\)",
+            "\\( 4\\frac{3}{8} \\)",
+            "\\( 3\\frac{6}{8} \\)",
+            "\\( 2\\frac{7}{8} \\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Hasil dari \\( \\frac{5}{12} - \\frac{1}{6} \\) adalah ...",
+          o: [
+            "\\( \\frac{3}{12} \\)",
+            "\\( \\frac{5}{24} \\)",
+            "\\( \\frac{1}{12} \\)",
+            "\\( \\frac{1}{6} \\)",
+            "\\( \\frac{2}{12} \\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Jika 3 orang membagi roti sehingga masing-masing mendapat \\( \\frac{2}{7} \\) dari roti, berapa sisa roti?",
+          o: [
+            "\\( \\frac{1}{7} \\)",
+            "\\( \\frac{1}{14} \\)",
+            "\\( 0 \\)",
+            "\\( \\frac{1}{3} \\)",
+            "\\( \\frac{1}{21} \\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Konversi 22,5\\% ke bentuk pecahan adalah ...",
+          o: [
+            "\\( \\frac{9}{40} \\)",
+            "\\( \\frac{45}{200} \\)",
+            "\\( \\frac{9}{20} \\)",
+            "\\( \\frac{225}{1000} \\)",
+            "\\( \\frac{1}{4} \\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Hasil dari \\( \\frac{8}{15} \\div \\frac{2}{5} \\) adalah ...",
+          o: [
+            "\\( \\frac{4}{3} \\)",
+            "\\( \\frac{8}{6} \\)",
+            "\\( \\frac{2}{3} \\)",
+            "\\( \\frac{20}{30} \\)",
+            "\\( \\frac{5}{3} \\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Jika sebuah panjang adalah 2,4 m dan kita ubah menjadi pecahan \\( \\frac{\\_}{5} \\) m, berapa pembilangnya? (tulis sebagai pecahan dengan penyebut 5)",
+          o: [
+            "\\( \\frac{12}{5} \\)",
+            "\\( \\frac{24}{5} \\)",
+            "\\( \\frac{6}{5} \\)",
+            "\\( \\frac{48}{5} \\)",
+            "\\( \\frac{10}{5} \\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Hasil dari \\( 1\\frac{3}{4} + 2\\frac{2}{5} \\) adalah ...",
+          o: [
+            "\\( 4\\frac{1}{20} \\)",
+            "\\( 3\\frac{19}{20} \\)",
+            "\\( 3\\frac{11}{20} \\)",
+            "\\( 3\\frac{14}{20} \\)",
+            "\\( 4\\frac{1}{10} \\)",
+          ],
+          a: 1,
+        },
+        {
+          q: "Bentuk persen dari \\( \\frac{49}{200} \\) adalah ...",
+          o: ["24,5\\%", "0,245\\%", "2,45\\%", "12,25\\%", "49\\%"],
+          a: 0,
+        },
+        {
+          q: "Hasil dari \\( \\frac{2}{7} \\times \\frac{21}{4} \\) adalah ...",
+          o: [
+            "\\( \\frac{6}{4} \\)",
+            "\\( \\frac{3}{2} \\)",
+            "\\( \\frac{21}{14} \\)",
+            "\\( \\frac{42}{28} \\)",
+            "\\( \\frac{1}{2} \\)",
+          ],
+          a: 1,
+        },
+        {
+          q: "Jika 45% dari sebuah jumlah adalah 54, jumlah tersebut adalah ...",
+          o: ["120", "100", "110", "90", "95"],
+          a: 0,
+        },
+        {
+          q: "Hasil dari \\( \\frac{27}{40} + \\frac{13}{40} \\) adalah ...",
+          o: [
+            "1",
+            "\\( \\frac{1}{2} \\)",
+            "\\( \\frac{40}{40} \\)",
+            "\\( \\frac{1}{4} \\)",
+            "\\( \\frac{5}{4} \\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Bentuk sederhana dari \\( \\frac{32}{48} \\) adalah ...",
+          o: [
+            "\\( \\frac{2}{3} \\)",
+            "\\( \\frac{3}{4} \\)",
+            "\\( \\frac{4}{6} \\)",
+            "\\( \\frac{16}{24} \\)",
+            "\\( \\frac{8}{12} \\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Hasil dari \\( \\frac{5}{9} \\times 27 \\) adalah ...",
+          o: ["15", "\\( \\frac{135}{9} \\)", "9", "12", "18"],
+          a: 0,
+        },
+        {
+          q: "Jika sebuah nilai dikurangi 30\\% menjadi 70, nilai awal adalah ...",
+          o: ["100", "90", "110", "140", "70"],
+          a: 0,
+        },
+
+        // KELOMPOK 3: LANJUTAN PECAHAN DAN SOAL KOMPLEKS (101-115)
+        {
+          q: "Hasil dari \\( 2\\frac{1}{3} \\div \\frac{7}{9} \\) adalah ...",
+          o: [
+            "\\( 3 \\)",
+            "\\( 3\\frac{6}{7} \\)",
+            "\\( \\frac{21}{7} \\)",
+            "\\( 2\\frac{5}{7} \\)",
+            "\\( \\frac{18}{7} \\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Hasil dari \\( \\frac{3}{4} + \\frac{2}{5} \\times \\frac{1}{2} \\) adalah ...",
+          o: [
+            "\\( \\frac{11}{20} \\)",
+            "\\( \\frac{7}{8} \\)",
+            "\\( \\frac{19}{20} \\)",
+            "\\( \\frac{13}{20} \\)",
+            "\\( \\frac{5}{8} \\)",
+          ],
+          a: 2,
+        },
+        {
+          q: "Jika \\( \\frac{2}{3} \\) dari sebuah jumlah dikurangi \\( \\frac{1}{4} \\) dari jumlah yang sama menghasilkan 30, jumlah tersebut adalah ...",
+          o: ["36", "40", "50", "60", "45"],
+          a: 1,
+        },
+        {
+          q: "Selesaikan \\( \\left(\\frac{5}{6} - \\frac{1}{3}\\right) \\div \\frac{2}{5} \\). Hasilnya ...",
+          o: [
+            "\\( \\frac{5}{6} \\)",
+            "\\( \\frac{5}{4} \\)",
+            "\\( \\frac{3}{2} \\)",
+            "\\( 1 \\)",
+            "\\( \\frac{1}{2} \\)",
+          ],
+          a: 1,
+        }, // KOREKSI KUNCI: Sebelumnya a: 2. Hasil benar 5/4, ada di indeks 1.
+        {
+          q: "Gabungan operasi: \\( \\frac{7}{8} \\times \\frac{4}{7} + \\frac{1}{2} \\) sama dengan ...",
+          o: [
+            "\\( \\frac{1}{2} \\)",
+            "\\( 1 \\)",
+            "\\( \\frac{3}{2} \\)",
+            "\\( \\frac{5}{8} \\)",
+            "\\( \\frac{9}{8} \\)",
+          ],
+          a: 1,
+        },
+        {
+          q: "Jika sebuah benda berharga Rp120.000 dan naik Rp\\( \\frac{1}{5} \\) dari harga awal, harga baru menjadi ...",
+          o: ["Rp132.000", "Rp144.000", "Rp150.000", "Rp160.000", "Rp140.000"],
+          a: 1,
+        },
+        {
+          q: "Sederhanakan \\( \\frac{9}{10} - \\left(\\frac{2}{5} + \\frac{1}{10}\\right) \\). Hasilnya ...",
+          o: [
+            "\\( \\frac{1}{5} \\)",
+            "\\( \\frac{1}{10} \\)",
+            "\\( \\frac{3}{10} \\)",
+            "\\( \\frac{2}{5} \\)",
+            "\\( 0 \\)",
+          ],
+          a: 2,
+        },
+        {
+          q: "Hasil operasi campuran \\( 1\\frac{1}{3} + \\frac{3}{4} \\times \\frac{2}{3} \\) adalah ...",
+          o: [
+            "\\( 1\\frac{1}{2} \\)",
+            "\\( 1\\frac{1}{6} \\)",
+            "\\( 2\\frac{1}{3} \\)",
+            "\\( 2 \\)",
+            "\\( 1\\frac{7}{12} \\)",
+          ],
+          a: 4,
+        },
+        {
+          q: "Jika \\( \\frac{3}{5} \\) dari kue dimakan dan sisanya dibagi rata ke 4 anak sehingga tiap anak mendapat \\( \\frac{9}{20} \\) kue, berapa kue semula?",
+          o: ["2", "3", "\\( \\frac{5}{2} \\)", "\\( \\frac{8}{3} \\)", "4"],
+          a: 2,
+        },
+        {
+          q: "Nilai dari \\( \\left(\\frac{4}{9} + \\frac{2}{3}\\right) \\times \\frac{3}{2} \\) adalah ...",
+          o: [
+            "\\( \\frac{7}{3} \\)",
+            "\\( 2 \\)",
+            "\\( \\frac{5}{3} \\)",
+            "\\( \\frac{11}{6} \\)",
+            "\\( \\frac{3}{2} \\)",
+          ],
+          a: 3,
+        },
+        {
+          q: "Selesaikan \\( \\frac{11}{12} \\div \\left(\\frac{1}{4} + \\frac{1}{6}\\right) \\). Hasilnya ...",
+          o: [
+            "\\( \\frac{11}{5} \\)",
+            "\\( \\frac{11}{3} \\)",
+            "\\( \\frac{11}{2} \\)",
+            "\\( \\frac{11}{4} \\)",
+            "\\( \\frac{11}{6} \\)",
+          ],
+          a: 1,
+        },
+        {
+          q: "Seorang pedagang menjual barang setelah mendapat diskon \\( \\frac{1}{6} \\) dari harga jual sehingga harganya menjadi Rp140.000. Berapa harga awal (sebelum diskon)?",
+          o: ["Rp160.000", "Rp168.000", "Rp175.000", "Rp180.000", "Rp150.000"],
+          a: 2,
+        },
+        {
+          q: "Hasil dari \\( \\left(1\\frac{1}{2}\\right) \\times \\left(\\frac{4}{5} - \\frac{1}{5}\\right) \\) adalah ...",
+          o: [
+            "\\( \\frac{3}{5} \\)",
+            "\\( 1\\frac{1}{2} \\)",
+            "\\( \\frac{6}{5} \\)",
+            "\\( \\frac{9}{10} \\)",
+            "\\( 1 \\)",
+          ],
+          a: 4,
+        },
+        {
+          q: "Jika suatu jumlah dikurangi \\( \\frac{3}{7} \\) menghasilkan \\( \\frac{2}{5} \\) dari jumlah itu, berapa jumlahnya jika hasilnya 40?",
+          o: ["100", "140", "80", "120", "200"],
+          a: 0,
+        },
+        {
+          q: "Operasi campuran: \\( \\frac{5}{6} \\div \\frac{5}{9} + \\frac{1}{3} \\) nilai akhirnya ...",
+          o: [
+            "\\( \\frac{3}{2} \\)",
+            "\\( 2 \\)",
+            "\\( \\frac{5}{3} \\)",
+            "\\( \\frac{11}{6} \\)",
+            "\\( \\frac{7}{6} \\)",
+          ],
+          a: 3,
+        },
+
+        // KELOMPOK 4: PECAHAN CAMPURAN DAN SOAL KOMPLEKS (116-138)
+        {
+          q: "Konversi dan operasi: \\( 25\\% + \\frac{1}{6} \\) hasilnya ...",
+          o: [
+            "\\( \\frac{2}{3} \\)",
+            "\\( \\frac{11}{12} \\)",
+            "\\( \\frac{7}{12} \\)",
+            "\\( \\frac{5}{12} \\)",
+            "\\( \\frac{3}{4} \\)",
+          ],
+          a: 2,
+        },
+        {
+          q: "Jika \\( \\frac{2}{5} \\) dari sebuah perjalanan sejauh 300 km sudah ditempuh, sisa jarak adalah ...",
+          o: ["120 km", "180 km", "200 km", "150 km", "100 km"],
+          a: 1,
+        },
+        {
+          q: "Selesaikan \\( \\left(\\frac{7}{10} - \\frac{1}{2}\\right) \\times 20 \\). Hasilnya ...",
+          o: ["2", "4", "6", "8", "10"],
+          a: 2,
+        },
+        {
+          q: "Hasil dari \\( \\frac{3}{4} \\div \\left(\\frac{2}{3} - \\frac{1}{6}\\right) \\) adalah ...",
+          o: [
+            "\\( \\frac{9}{8} \\)",
+            "\\( \\frac{3}{2} \\)",
+            "\\( \\frac{6}{5} \\)",
+            "\\( \\frac{4}{3} \\)",
+            "\\( \\frac{5}{4} \\)",
+          ],
+          a: 3,
+        },
+        {
+          q: "Jika sebuah wadah berisi \\( \\frac{5}{8} \\) liter dan ditambah \\( 0,15 \\) liter, berapa liter total (tulis dalam pecahan berpenyebut 40)?",
+          o: [
+            "\\( \\frac{29}{40} \\)",
+            "\\( \\frac{31}{40} \\)",
+            "\\( \\frac{33}{40} \\)",
+            "\\( \\frac{35}{40} \\)",
+            "\\( \\frac{37}{40} \\)",
+          ],
+          a: 4,
+        },
+        {
+          q: "Gabungkan: \\( \\frac{4}{5} \\times \\left(1 - \\frac{1}{3}\\right) + \\frac{1}{6} \\) hasilnya ...",
+          o: [
+            "\\( \\frac{17}{30} \\)",
+            "\\( \\frac{19}{30} \\)",
+            "\\( \\frac{7}{10} \\)",
+            "\\( \\frac{11}{15} \\)",
+            "\\( \\frac{2}{3} \\)",
+          ],
+          a: 1,
+        },
+        {
+          q: "Soal cerita: Dwi memiliki \\( \\frac{3}{4} \\) meter kain. Ia menggunakan \\( \\frac{1}{3} \\) dari kain tersebut untuk lengan. Sisa kain yang dipakai untuk badan adalah \\( \\frac{2}{5} \\) dari sisa. Berapa kain yang tersisa setelah itu?",
+          o: [
+            "\\( \\frac{1}{5} \\) m",
+            "\\( \\frac{1}{6} \\) m",
+            "\\( \\frac{1}{8} \\) m",
+            "\\( \\frac{1}{10} \\) m",
+            "\\( \\frac{1}{12} \\) m",
+          ],
+          a: 2,
+        },
+        {
+          q: "Selesaikan \\( \\frac{5}{8} + \\left(\\frac{3}{4} \\times \\frac{2}{3}\\right) - \\frac{1}{5} \\). Hasil ...",
+          o: [
+            "\\( \\frac{49}{40} \\)",
+            "\\( \\frac{31}{40} \\)",
+            "\\( \\frac{7}{8} \\)",
+            "\\( \\frac{41}{40} \\)",
+            "\\( 1 \\)",
+          ],
+          a: 3,
+        },
+        {
+          q: "Jika persen: tambahkan 15\\% ke \\( \\frac{2}{5} \\) (tulis hasil dalam persen), hasilnya ...",
+          o: ["55\\%", "50\\%", "65\\%", "45\\%", "70\\%"],
+          a: 0,
+        },
+        {
+          q: "Operasi berlapis: \\( \\left(1\\frac{1}{4} - \\frac{3}{8}\\right) \\div \\frac{1}{2} \\) adalah ...",
+          o: [
+            "\\( \\frac{7}{4} \\)",
+            "\\( 1 \\)",
+            "\\( \\frac{5}{4} \\)",
+            "\\( \\frac{3}{2} \\)",
+            "\\( \\frac{9}{8} \\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Jika sebuah bilangan dikalikan \\( \\frac{3}{7} \\) lalu ditambah 5 hasilnya 20. Bilangan itu adalah ...",
+          o: ["35", "25", "30", "28", "40"],
+          a: 1,
+        },
+        {
+          q: "Selesaikan \\( \\frac{2}{3} + \\frac{3}{5} \\times \\frac{5}{6} \\). Hasil ...",
+          o: [
+            "\\( \\frac{4}{3} \\)",
+            "\\( \\frac{3}{2} \\)",
+            "\\( \\frac{19}{18} \\)",
+            "\\( \\frac{7}{6} \\)",
+            "\\( \\frac{17}{18} \\)",
+          ],
+          a: 3,
+        },
+        {
+          q: "Soal cerita multi-langkah: Sebuah tangki terisi \\( \\frac{2}{5} \\) penuh. Setelah ditambahkan 40% dari kapasitas tangki, tangki menjadi penuh. Berapa porsi kapasitas tangki (dalam pecahan) yang 40% itu merepresentasikan? (jawab sebagai pecahan sederhana)",
+          o: [
+            "\\( \\frac{3}{5} \\)",
+            "\\( \\frac{1}{2} \\)",
+            "\\( \\frac{7}{10} \\)",
+            "\\( \\frac{4}{5} \\)",
+            "\\( \\frac{6}{5} \\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Hasil dari \\( \\left(\\frac{11}{6} - 1\\right) \\times \\frac{3}{4} \\) adalah ...",
+          o: [
+            "\\( \\frac{11}{8} \\)",
+            "\\( \\frac{5}{8} \\)",
+            "\\( \\frac{1}{2} \\)",
+            "\\( \\frac{7}{8} \\)",
+            "\\( \\frac{1}{4} \\)",
+          ],
+          a: 1,
+        },
+        {
+          q: "Selesaikan \\( \\frac{7}{9} \\div \\left(\\frac{14}{27}\\right) - 1 \\). Hasil ...",
+          o: [
+            "\\( 0 \\)",
+            "\\( \\frac{1}{2} \\)",
+            "\\( 1 \\)",
+            "\\( \\frac{3}{2} \\)",
+            "\\( \\frac{2}{3} \\)",
+          ],
+          a: 2,
+        },
+        {
+          q: "Jika sebuah barang diskon 20\\% lalu kena pajak 10\\% dari harga setelah diskon, total perubahan (persentase dari harga awal) adalah ...",
+          o: ["-10\\%", "-12\\%", "-8\\%", "-9\\%", "-11\\%"],
+          a: 1,
+        },
+        {
+          q: "Operasi campuran: \\( \\frac{5}{12} \\times \\left(\\frac{3}{5} + \\frac{2}{3}\\right) \\) sama dengan ...",
+          o: [
+            "\\( \\frac{7}{12} \\)",
+            "\\( \\frac{25}{36} \\)",
+            "\\( \\frac{1}{2} \\)",
+            "\\( \\frac{11}{36} \\)",
+            "\\( \\frac{5}{9} \\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Soal perbandingan: Jika \\( \\frac{3}{4} \\) dari A sama dengan \\( \\frac{5}{6} \\) dari B dan B = 48, maka A adalah ...",
+          o: ["40", "42", "44", "36", "32"],
+          a: 0,
+        },
+        {
+          q: "Selesaikan \\( \\left(\\frac{9}{10} - \\frac{2}{5}\\right) \\times 50 \\). Hasilnya ...",
+          o: ["10", "15", "20", "25", "30"],
+          a: 3,
+        },
+        {
+          q: "Jika sebuah panjang 2,5 m dikurangi \\( \\frac{3}{8} \\) m, hasilnya dinyatakan sebagai pecahan dengan penyebut 8 adalah ...",
+          o: [
+            "\\( \\frac{17}{8} \\) m",
+            "\\( \\frac{11}{8} \\) m",
+            "\\( \\frac{13}{8} \\) m",
+            "\\( \\frac{9}{8} \\) m",
+            "\\( \\frac{7}{8} \\) m",
+          ],
+          a: 0,
+        },
+        {
+          q: "Gabungkan: \\( \\frac{4}{7} + \\frac{1}{2} \\times \\frac{7}{8} \\) hasilnya ...",
+          o: [
+            "\\( \\frac{27}{28} \\)",
+            "\\( \\frac{3}{2} \\)",
+            "\\( \\frac{25}{28} \\)",
+            "\\( \\frac{11}{14} \\)",
+            "\\( \\frac{13}{14} \\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Soal cerita: Rina membeli \\( \\frac{3}{5} \\) kg beras, memberi tetangga \\( \\frac{1}{4} \\) dari yang dibeli. Berapa kg beras yang tersisa untuk Rina?",
+          o: [
+            "\\( \\frac{7}{20} \\) kg",
+            "\\( \\frac{2}{5} \\) kg",
+            "\\( \\frac{3}{10} \\) kg",
+            "\\( \\frac{11}{20} \\) kg",
+            "\\( \\frac{1}{2} \\) kg",
+          ],
+          a: 3,
+        },
+        {
+          q: "Selesaikan \\( \\left(2\\frac{1}{3} - 1\\right) \\div \\left(\\frac{5}{6}\\right) \\). Hasil ...",
+          o: [
+            "\\( \\frac{8}{5} \\)",
+            "\\( \\frac{4}{3} \\)",
+            "\\( \\frac{6}{5} \\)",
+            "\\( \\frac{7}{6} \\)",
+            "\\( \\frac{3}{2} \\)",
+          ],
+          a: 1,
+        },
+        {
+          q: "Operasi kompleks: \\( \\frac{7}{12} + \\frac{5}{18} \\times 3 \\) hasilnya ...",
+          o: [
+            "\\( \\frac{7}{6} \\)",
+            "\\( \\frac{11}{12} \\)",
+            "\\( \\frac{17}{18} \\)",
+            "\\( \\frac{5}{4} \\)",
+            "\\( \\frac{19}{12} \\)",
+          ],
+          a: 4,
+        },
+        {
+          q: "Jika \\( \\frac{4}{9} \\) dari suatu jumlah adalah 32, jumlah tersebut adalah ...",
+          o: ["72", "64", "80", "96", "100"],
+          a: 3,
+        },
+        {
+          q: "Selesaikan \\( \\left(\\frac{3}{5} + \\frac{2}{7}\\right) \\div \\frac{1}{2} \\). Hasil ...",
+          o: [
+            "\\( \\frac{26}{35} \\)",
+            "\\( \\frac{52}{35} \\)",
+            "\\( \\frac{13}{35} \\)",
+            "\\( \\frac{39}{35} \\)",
+            "\\( \\frac{5}{7} \\)",
+          ],
+          a: 1,
+        },
+        {
+          q: "Soal multi-langkah: Sebuah resep memakai \\( 1\\frac{1}{2} \\) cangkir tepung, kita ingin membuat setengah resep ditambah \\( \\frac{1}{4} \\) cangkir lagi. Berapa tepung total?",
+          o: [
+            "\\( \\frac{7}{8} \\) cangkir",
+            "\\( \\frac{3}{4} \\) cangkir",
+            "\\( \\frac{13}{8} \\) cangkir",
+            "\\( \\frac{5}{4} \\) cangkir",
+            "\\( \\frac{11}{8} \\) cangkir",
+          ],
+          a: 4,
+        },
+        {
+          q: "Hasil dari \\( \\frac{5}{8} \\div \\left(\\frac{2}{3} - \\frac{1}{4}\\right) \\) adalah ...",
+          o: [
+            "\\( \\frac{20}{11} \\)",
+            "\\( \\frac{15}{8} \\)",
+            "\\( \\frac{5}{3} \\)",
+            "\\( \\frac{40}{17} \\)",
+            "\\( \\frac{10}{7} \\)",
+          ],
+          a: 2,
+        },
+        {
+          q: "Jika sebuah nilai naik 12,5\\% lalu turun 10\\%, perubahan bersihnya (dalam persen kira-kira) adalah ...",
+          o: ["~2,25\\%", "~1,25\\%", "~2,5\\%", "~3\\%", "~-1,25\\%"],
+          a: 0,
+        },
+        {
+          q: "Operasi berantai: \\( \\left(\\frac{9}{4} - 1\\frac{1}{4}\\right) \\times \\frac{8}{9} \\) hasilnya ...",
+          o: [
+            "\\( \\frac{2}{3} \\)",
+            "\\( \\frac{4}{9} \\)",
+            "\\( \\frac{1}{2} \\)",
+            "\\( \\frac{5}{6} \\)",
+            "\\( \\frac{7}{9} \\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Soal cerita sulit: Andi memiliki sejumlah kelereng. Ia memberi \\( \\frac{1}{3} \\) kepada Budi, lalu \\( \\frac{1}{4} \\) dari sisa kepada Citra, kini Andi tinggal 30. Berapa kelereng semula?",
+          o: ["120", "100", "90", "80", "150"],
+          a: 1,
+        },
+        {
+          q: "Selesaikan \\( \\left(\\frac{7}{3} \\div \\frac{7}{9}\\right) - 2 \\). Hasil ...",
+          o: [
+            "\\( \\frac{1}{3} \\)",
+            "\\( 1 \\)",
+            "\\( 2 \\)",
+            "\\( \\frac{4}{3} \\)",
+            "\\( 0 \\)",
+          ],
+          a: 1,
+        },
+        {
+          q: "Operasi kompleks: \\( \\frac{2}{5} + \\frac{3}{10} \\times \\left(\\frac{5}{6} + \\frac{1}{3}\\right) \\) hasilnya ...",
+          o: [
+            "\\( \\frac{7}{10} \\)",
+            "\\( \\frac{4}{5} \\)",
+            "\\( \\frac{11}{15} \\)",
+            "\\( \\frac{13}{15} \\)",
+            "\\( \\frac{3}{4} \\)",
+          ],
+          a: 2,
+        },
+        {
+          q: "Jika sebuah panjang bertambah \\( \\frac{1}{8} \\) dari panjang awal menjadi 11 cm, panjang awal adalah ...",
+          o: ["9,75 cm", "10 cm", "9,5 cm", "9,875 cm", "10,25 cm"],
+          a: 0,
+        },
+        {
+          q: "Soal akhir blok ini: Sederhanakan \\( \\frac{5}{6} - \\left(\\frac{1}{2} \\times \\frac{2}{3}\\right) + \\frac{1}{9} \\). Hasil ...",
+          o: [
+            "\\( \\frac{5}{18} \\)",
+            "\\( \\frac{7}{18} \\)",
+            "\\( \\frac{1}{3} \\)",
+            "\\( \\frac{4}{9} \\)",
+            "\\( \\frac{11}{18} \\)",
+          ],
+          a: 1,
+        },
+        {
+          q: "\\( Hasil dari \\left( \\frac{3}{4} + \\frac{5}{12} - \\frac{1}{6} \\right) \\) adalah ...",
+          o: [
+            "\\( 1 \\)",
+            "\\( \\frac{1}{2} \\)",
+            "\\( \\frac{11}{12} \\)",
+            "\\( \\frac{4}{5} \\)",
+            "\\( \\frac{2}{3} \\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "\\( Selesaikan \\left( \\left(\\frac{7}{8} \\times \\frac{12}{7}\\right) \\div \\frac{3}{4} \\right) \\) adalah ...",
+          o: [
+            "\\( \\frac{4}{3} \\)",
+            "\\( \\frac{3}{2} \\)",
+            "\\( 2 \\)",
+            "\\( \\frac{8}{5} \\)",
+            "\\( 1\\frac{2}{3} \\)",
+          ],
+          a: 2,
+        },
+        {
+          q: "\\( Hitung \\left( \\frac{5}{6} \\times \\frac{9}{10} + \\frac{1}{5} \\right) \\) adalah ...",
+          o: [
+            "\\( \\frac{47}{60} \\)",
+            "\\( \\frac{19}{20} \\)",
+            "\\( \\frac{9}{10} \\)",
+            "\\( \\frac{11}{12} \\)",
+            "\\( 1\\frac{1}{20} \\)",
+          ],
+          a: 1,
+        },
+        {
+          q: "\\( Sederhanakan \\left( \\frac{11}{15} - \\frac{2}{9} + \\frac{1}{3} \\right) \\) adalah ...",
+          o: [
+            "\\( \\frac{73}{90} \\)",
+            "\\( \\frac{137}{180} \\)",
+            "\\( \\frac{19}{30} \\)",
+            "\\( \\frac{38}{45} \\)",
+            "\\( 1\\frac{1}{90} \\)",
+          ],
+          a: 3,
+        },
+        {
+          q: "\\( Nilai dari \\left( \\frac{4}{5} \\div \\left(\\frac{2}{3} - \\frac{1}{6}\\right) \\right) \\) adalah ...",
+          o: [
+            "\\( \\frac{6}{5} \\)",
+            "\\( \\frac{5}{4} \\)",
+            "\\( \\frac{9}{5} \\)",
+            "\\( \\frac{8}{5} \\)",
+            "\\( 2\\frac{1}{10} \\)",
+          ],
+          a: 3,
+        },
+        {
+          q: "\\( Hasil \\left( \\left(1\\frac{1}{2}\\right) \\times \\left( \\frac{4}{9} + \\frac{5}{18} \\right) \\right) \\) adalah ...",
+          o: [
+            "\\( 1\\frac{1}{3} \\)",
+            "\\( \\frac{4}{3} \\)",
+            "\\( \\frac{11}{12} \\)",
+            "\\( \\frac{3}{2} \\)",
+            "\\( \\frac{5}{6} \\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "\\( Selesaikan \\left( \\frac{13}{20} + \\frac{7}{30} - \\frac{1}{12} \\right) \\) adalah ...",
+          o: [
+            "\\( \\frac{47}{60} \\)",
+            "\\( \\frac{11}{12} \\)",
+            "\\( \\frac{13}{20} \\)",
+            "\\( \\frac{37}{60} \\)",
+            "\\( \\frac{7}{12} \\)",
+          ],
+          a: 1,
+        },
+        {
+          q: "\\( Hitung \\left( \\left(\\frac{5}{8} \\div \\frac{15}{32}\\right) - 1 \\right) \\) adalah ...",
+          o: [
+            "\\( \\frac{1}{3} \\)",
+            "\\( \\frac{2}{3} \\)",
+            "\\( \\frac{5}{8} \\)",
+            "\\( \\frac{4}{5} \\)",
+            "\\( 1\\frac{1}{4} \\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "\\( Sederhanakan \\left( \\frac{17}{24} - \\frac{5}{16} + \\frac{1}{3} \\right) \\) adalah ...",
+          o: [
+            "\\( \\frac{11}{24} \\)",
+            "\\( \\frac{7}{12} \\)",
+            "\\( \\frac{13}{48} \\)",
+            "\\( \\frac{37}{48} \\)",
+            "\\( \\frac{1}{2} \\)",
+          ],
+          a: 3,
+        },
+        {
+          q: "\\( Hasil \\left( \\frac{6}{7} \\times \\frac{14}{9} - \\frac{1}{3} \\right) \\) adalah ...",
+          o: [
+            "\\( \\frac{2}{3} \\)",
+            "\\( \\frac{5}{6} \\)",
+            "\\( \\frac{3}{2} \\)",
+            "\\( \\frac{4}{3} \\)",
+            "\\( \\frac{1}{3} \\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "\\( Selesaikan \\left( \\left(\\frac{9}{10} + \\frac{2}{5}\\right) \\times \\frac{5}{6} \\right) \\) adalah ...",
+          o: [
+            "\\( \\frac{7}{6} \\)",
+            "\\( \\frac{11}{12} \\)",
+            "\\( 1 \\)",
+            "\\( \\frac{19}{20} \\)",
+            "\\( \\frac{5}{4} \\)",
+          ],
+          a: 1,
+        },
+        {
+          q: "\\( Hitung \\left( \\frac{7}{12} \\div \\frac{7}{18} + \\frac{1}{4} \\right) \\) adalah ...",
+          o: [
+            "\\( \\frac{3}{2} \\)",
+            "\\( \\frac{11}{8} \\)",
+            "\\( \\frac{7}{12} \\)",
+            "\\( \\frac{13}{12} \\)",
+            "\\( \\frac{1}{4} \\)",
+          ],
+          a: 3,
+        },
+        {
+          q: "\\( Nilai \\left( \\frac{15}{28} + \\frac{2}{7} \\times \\frac{3}{4} \\right) \\) adalah ...",
+          o: [
+            "\\( \\frac{23}{28} \\)",
+            "\\( \\frac{41}{56} \\)",
+            "\\( \\frac{5}{6} \\)",
+            "\\( \\frac{3}{4} \\)",
+            "\\( \\frac{11}{14} \\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "\\( Selesaikan \\left( \\left(2\\frac{2}{5} - 1\\frac{3}{10}\\right) \\div \\frac{1}{2} \\right) \\) adalah ...",
+          o: [
+            "\\( 1\\frac{4}{5} \\)",
+            "\\( 2\\frac{1}{5} \\)",
+            "\\( 1\\frac{3}{10} \\)",
+            "\\( 1\\frac{7}{10} \\)",
+            "\\( 1\\frac{1}{2} \\)",
+          ],
+          a: 1,
+        },
+        {
+          q: "\\( Hitung \\left( \\frac{8}{9} - \\left(\\frac{1}{3} + \\frac{1}{9}\\right) + \\frac{5}{18} \\right) \\) adalah ...",
+          o: [
+            "\\( \\frac{1}{2} \\)",
+            "\\( \\frac{5}{18} \\)",
+            "\\( \\frac{2}{9} \\)",
+            "\\( \\frac{11}{18} \\)",
+            "\\( \\frac{1}{3} \\)",
+          ],
+          a: 3,
+        },
+        {
+          q: "\\( Sederhanakan \\left( \\frac{21}{40} \\times \\frac{8}{7} + \\frac{1}{5} \\right) \\) adalah ...",
+          o: [
+            "\\( \\frac{1}{2} \\)",
+            "\\( \\frac{19}{20} \\)",
+            "\\( \\frac{11}{20} \\)",
+            "\\( \\frac{17}{20} \\)",
+            "\\( \\frac{3}{4} \\)",
+          ],
+          a: 3,
+        },
+        {
+          q: "\\( Hasil \\left( \\left(\\frac{11}{6} - \\frac{5}{3}\\right) \\times \\frac{3}{4} \\right) \\) adalah ...",
+          o: [
+            "\\( -\\frac{1}{4} \\)",
+            "\\( \\frac{1}{8} \\)",
+            "\\( \\frac{5}{8} \\)",
+            "\\( -\\frac{3}{4} \\)",
+            "\\( \\frac{1}{2} \\)",
+          ],
+          a: 1,
+        }, // KOREKSI OPSI: Opsi 1 diubah menjadi 1/8.
+        {
+          q: "\\( Hitung \\left( \\frac{2}{3} + \\frac{4}{9} \\times \\frac{27}{8} \\right) \\) adalah ...",
+          o: [
+            "\\( \\frac{11}{6} \\)",
+            "\\( \\frac{5}{3} \\)",
+            "\\( \\frac{7}{6} \\)",
+            "\\( 2 \\)",
+            "\\( \\frac{17}{12} \\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "\\( Selesaikan \\left( \\frac{19}{30} \\div \\frac{19}{45} - \\frac{1}{3} \\right) \\) adalah ...",
+          o: [
+            "\\( 1 \\)",
+            "\\( \\frac{4}{3} \\)",
+            "\\( \\frac{2}{3} \\)",
+            "\\( \\frac{5}{6} \\)",
+            "\\( \\frac{7}{6} \\)",
+          ],
+          a: 4,
+        },
+      ].map((x) => ({
+        type: "pecahan",
+        q: x.q,
+        options: x.o,
+        answer: x.a,
+      }));
+
+      S_fungsi = shuffle(SOAL_fungsi);
+
+      /*  Validasi jumlah
+          if(SINONIM.length!==90||ANTONIM.length!==90){
+            console.warn('Jumlah soal tidak 90/90:', SINONIM.length, ANTONIM.length);
+          }  */
+
+      // /* Gabung & acak
+      function shuffleOptions(q) {
+        let opts = q.options.map((opt, i) => ({ opt, i }));
+        opts = shuffle(opts); // pake fungsi shuffle yang sudah kamu punya
+        let newAnswer = opts.findIndex((o) => o.i === q.answer);
+        return {
+          ...q,
+          options: opts.map((o) => o.opt),
+          answer: newAnswer,
+        };
+      }
+      //*/
+      let QUESTIONS = [...S_fungsi].map((q, i) => ({
+        id: i + 1,
+        ...shuffleOptions(q),
+      }));
+      // let QUESTIONS = [...SINONIM, ...ANTONIM].map((q,i)=>({id:i+1, ...q }));
+      // State
+      let state = {
+        user: null,
+        timeLeft: 45 * 60, // 25 menit
+        currentIndex: 0,
+        answers: Array(180).fill(null), // simpan index jawaban (0..3) atau null
+      };
+
+      /** RENDERING **/
+      function formatTime(s) {
+        const m = Math.floor(s / 60)
+          .toString()
+          .padStart(2, "0");
+        const r = (s % 60).toString().padStart(2, "0");
+        return `${m}:${r}`;
+      }
+
+      function renderTimer() {
+        el("#timer").textContent = formatTime(state.timeLeft);
+        if (state.timeLeft <= 60) {
+          el("#timer").style.background = "#331a1a";
+          el("#timer").style.borderColor = "#7f1d1d";
+        }
+        if (state.timeLeft <= 0) {
+          submitQuiz();
+        }
+      }
+
+      let tick = null;
+      function startTimer() {
+        if (tick) clearInterval(tick);
+        tick = setInterval(() => {
+          state.timeLeft--;
+          renderTimer();
+          if (state.timeLeft <= 0) clearInterval(tick);
+        }, 1000);
+      }
+
+      function mountNav() {
+        const nav = el("#nav");
+        nav.innerHTML = "";
+        QUESTIONS.forEach((q, idx) => {
+          const b = document.createElement("button");
+          b.textContent = idx + 1;
+          b.addEventListener("click", () => {
+            goTo(idx);
+          });
+          nav.appendChild(b);
+        });
+        updateNavActive();
+      }
+
+      function updateNavActive() {
+        const buttons = els("#nav button");
+        buttons.forEach((b, idx) => {
+          b.classList.toggle("active", idx === state.currentIndex);
+          b.classList.toggle("done", state.answers[idx] !== null);
+        });
+        el("#infoSoal").textContent = `Soal ${state.currentIndex + 1} / ${
+          QUESTIONS.length
+        }`;
+        el("#infoKategori").textContent = `Kategori: ${QUESTIONS[
+          state.currentIndex
+        ].type.toUpperCase()}`;
+      }
+
+      function renderQuestion() {
+        const q = QUESTIONS[state.currentIndex];
+        const container = el("#questionArea");
+        container.innerHTML = "";
+        const title = document.createElement("div");
+        title.className = "q-title";
+
+        title.innerHTML = q.q;
+        container.appendChild(title);
+
+        const list = document.createElement("div");
+        list.className = "choices";
+        q.options.forEach((opt, i) => {
+          const row = document.createElement("label");
+          row.className = "choice";
+          const input = document.createElement("input");
+          input.type = "radio";
+          input.name = "choice";
+          input.value = i;
+          input.checked = state.answers[state.currentIndex] === i;
+          input.addEventListener("change", () => {
+            state.answers[state.currentIndex] = i;
+            updateNavActive();
+          });
+          const span = document.createElement("div");
+          span.innerHTML = opt;
+          row.appendChild(input);
+          row.appendChild(span);
+          list.appendChild(row);
+        });
+        container.appendChild(list);
+        MathJax.typeset();
+      }
+
+      function goTo(idx) {
+        state.currentIndex = Math.max(0, Math.min(QUESTIONS.length - 1, idx));
+        updateNavActive();
+        renderQuestion();
+      }
+
+      function next() {
+        if (state.currentIndex < QUESTIONS.length - 1) {
+          goTo(state.currentIndex + 1);
+        }
+      }
+      function prev() {
+        if (state.currentIndex > 0) {
+          goTo(state.currentIndex - 1);
+        }
+      }
+
+      function resetAnswers() {
+        if (!confirm("Yakin reset semua jawaban?")) return;
+        state.answers = Array(QUESTIONS.length).fill(null);
+        updateNavActive();
+        renderQuestion();
+      }
+
+      function submitQuiz() {
+        // hitung skor per kategori
+        let sSin = 0,
+          sAnt = 0,
+          sHip = 0;
+        QUESTIONS.forEach((q, idx) => {
+          const pick = state.answers[idx];
+          const correct = q.answer;
+          if (pick === correct) {
+            if (q.type === "pecahan") sSin++;
+          }
+        });
+        const total = sSin + sAnt + sHip;
+
+        // tampilkan
+        let total_question = QUESTIONS.length;
+
+        el("#scoreTotal").textContent = `${total} / ${total_question}`;
+        el("#resultUser").textContent = `Peserta: ${
+          state.user?.nama || "-"
+        } (waktu habis/kumpul)`;
+
+        // stop timer, ganti section
+        if (tick) clearInterval(tick);
+        showSection("result");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      function showSection(which) {
+        el("#section-form").classList.remove("active");
+        el("#section-quiz").classList.remove("active");
+        el("#section-result").classList.remove("active");
+        if (which === "form") el("#section-form").classList.add("active");
+        if (which === "quiz") el("#section-quiz").classList.add("active");
+        if (which === "result") el("#section-result").classList.add("active");
+      }
+
+      // EVENTS
+      el("#btnMulai").addEventListener("click", () => {
+        const nama = el("#nama").value.trim();
+        const pass = el("#pass").value.trim();
+        if (!nama || !pass) {
+          alert("Nama dan password wajib diisi.");
+          return;
+        }
+        if (pass !== "MUDAHBANGET") {
+          alert(
+            "password salah! tanya password ke sir hardi. klo sir hardi dak tau tanya ke sir meca"
+          );
+          return;
+        }
+        state.user = { nama, pass };
+        el("#infoUser").textContent = `Peserta: ${nama}`;
+        showSection("quiz");
+        startTimer();
+        mountNav();
+        goTo(0);
+        renderTimer();
+      });
+
+      el("#prevBtn").addEventListener("click", prev);
+      el("#nextBtn").addEventListener("click", next);
+      el("#btnReset").addEventListener("click", resetAnswers);
+      el("#btnSubmit").addEventListener("click", () => {
+        if (confirm("Kumpulkan jawaban sekarang?")) submitQuiz();
+      });
+
+      // Keyboard nav: panah kiri/kanan, angka 1-4 untuk memilih A-D
+      window.addEventListener("keydown", (e) => {
+        if (!el("#section-quiz").classList.contains("active")) return;
+        if (e.key === "ArrowRight") next();
+        if (e.key === "ArrowLeft") prev();
+        if (["1", "2", "3", "4"].includes(e.key)) {
+          const idx = parseInt(e.key) - 1;
+          state.answers[state.currentIndex] = idx;
+          updateNavActive();
+          renderQuestion();
+        }
+      });
+
+      // Ulang dari hasil
+      el("#btnUlang").addEventListener("click", () => {
+        state = {
+          user: state.user,
+          timeLeft: 15 * 60,
+          currentIndex: 0,
+          answers: Array(180).fill(null),
+        };
+        QUESTIONS = shuffle(QUESTIONS); // acak ulang urutan
+        showSection("quiz");
+        startTimer();
+        mountNav();
+        goTo(0);
+        renderTimer();
+      });
+    </script>
+  </body>
+</html>
