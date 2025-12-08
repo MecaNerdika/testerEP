@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Tebak Kata - Food, Animals & Adjectives</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- Gaya Umum & Reset --- */
+        :root {
+            --primary-color: #007BFF;
+            --success-color: #28a745;
+            --error-color: #dc3545;
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-color: #333;
+            --light-gray: #e9ecef;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* --- Container Utama --- */
+        .quiz-container {
+            background-color: var(--card-bg);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 800px;
+            padding: 40px;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--light-gray);
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            font-size: 2.2rem;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            color: #6c757d;
+            font-size: 1rem;
+            margin-top: 5px;
+        }
+
+        /* --- Gaya Setiap Bagian Kuis --- */
+        .quiz-section {
+            margin-bottom: 30px;
+        }
+
+        .quiz-section h2 {
+            color: var(--text-color);
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+
+        .quiz-section h2::before {
+            content: '';
+            display: inline-block;
+            width: 5px;
+            height: 25px;
+            background-color: var(--primary-color);
+            margin-right: 10px;
+            border-radius: 3px;
+        }
+
+        .question-list {
+            list-style: none;
+        }
+
+        .question-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 15px;
+            background-color: var(--bg-color);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .question-item.correct {
+            background-color: #d4edda;
+            border-left: 5px solid var(--success-color);
+        }
+
+        .question-item.incorrect {
+            background-color: #f8d7da;
+            border-left: 5px solid var(--error-color);
+        }
+
+        .jumbled-word {
+            font-weight: 600;
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+            color: #495057;
+            background-color: var(--light-gray);
+            padding: 8px 15px;
+            border-radius: 8px;
+            min-width: 180px;
+            text-align: center;
+            margin-right: 20px;
+        }
+
+        .answer-input {
+            flex-grow: 1;
+            padding: 10px 15px;
+            border: 2px solid #ced4da;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .answer-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .feedback-icon {
+            font-size: 1.5rem;
+            margin-left: 15px;
+            display: none; /* Sembunyikan ikon awalnya */
+        }
+
+        .feedback-icon.correct {
+            color: var(--success-color);
+            display: inline; /* Tampilkan jika benar */
+        }
+
+        .feedback-icon.incorrect {
+            color: var(--error-color);
+            display: inline; /* Tampilkan jika salah */
+        }
+
+        /* --- Gaya Tombol & Skor --- */
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .btn-check {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-check:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        .btn-reset {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-reset:hover {
+            background-color: #5a6268;
+            transform: translateY(-2px);
+        }
+
+        #score-container {
+            text-align: center;
+            margin-top: 25px;
+            padding: 20px;
+            background-color: #e7f3ff;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            display: none; /* Sembunyikan awalnya */
+            animation: slideDown 0.5s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; max-height: 0; }
+            to { opacity: 1; max-height: 100px; }
+        }
+
+        /* --- Responsif untuk Ponsel --- */
+        @media (max-width: 600px) {
+            .quiz-container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .question-item {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .jumbled-word {
+                margin-right: 0;
+                margin-bottom: 10px;
+                min-width: auto;
+            }
+            
+            .feedback-icon {
+                align-self: center;
+                margin-top: 10px;
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <main class="quiz-container">
+        <header>
+            <h1>Kuis Tebak Kata</h1>
+            <p class="subtitle">Susun huruf-huruf acak berikut menjadi kata yang benar!</p>
+        </header>
+
+        <section class="quiz-section">
+            <h2>Food (Makanan)</h2>
+            <ol class="question-list">
+                <li class="question-item">
+                    <span class="jumbled-word">r-e-g-u-b-r</span>
+                    <input type="text" class="answer-input" data-answer="burger" placeholder="Ketik jawabanmu...">
+                    <span class="feedback-icon"></span>
+                </li>
+                <li class="question-item">
+                    <span class="jumbled-word">c-o-o-h-l-t-e</span>
+                    <input type="text" class="answer-input" data-answer="chocolate" placeholder="Ketik jawabanmu...">
+                    <span class="feedback-icon"></span>
+                </li>
+                <li class="question-item">
+                    <span class="jumbled-word">c-i-u-j-e</span>
+                    <input type="text" class="answer-input" data-answer="juice" placeholder="Ketik jawabanmu...">
+                    <span class="feedback-icon"></span>
+                </li>
+                <li class="question-item">
+                    <span class="jumbled-word">r-b-e-a-d</span>
+                    <input type="text" class="answer-input" data-answer="bread" placeholder="Ketik jawabanmu...">
+                    <span class="feedback-icon"></span>
+                </li>
+                <li class="question-item">
+                    <span class="jumbled-word">s-a-u-s-a-g-e</span>
+                    <input type="text" class="answer-input" data-answer="sausage" placeholder="Ketik jawabanmu...">
+                    <span class="feedback-icon"></span>
+                </li>
+                <li class="question-item">
+                    <span class="jumbled-word">o-n-i-o-n</span>
+                    <input type="text" class="answer-input" data-answer="onion" placeholder="Ketik jawabanmu...">
+                    <span class="feedback-icon"></span>
+                </li>
+                <li class="question-item">
+                    <span class="jumbled-word">t-a-e-m</span>
+                    <input type="text" class="answer-input" data-answer="meat" placeholder="Ketik jawabanmu...">
+                    <span class="feedback-icon"></span>
+                </li>
+                <li class="question-item">
+                    <span class="jumbled-word">a-p-e-r</span>
+                    <input type="text" class="answer-input" data-answer="pear" placeholder="Ketik jawabanmu...">
+                    <span class="feedback-icon"></span>
+                </li>
+                <li class="question-item">
+                    <span class="jumbled-word">o-p-t-o-a</span>
+                    <input type="text" class="answer-input" data-answer="potato" placeholder="Ketik jawabanmu...">
+                    <span class="feedback-icon"></span>
+                </li>
+                <li class="question-item">
+                    <span class="jumbled-word">b-e-a-n-s</span>
+                    <input type="text" class="answer-input" data-answer="beans" placeholder="Ketik jawabanmu...">
+                    <span class="feedback-icon"></span>
+                </li>
+                <li class="question-item">
+                    <span class="jumbled-word">c-e-r-a-m-i-e-c</span>
+                    <input type="text" class="answer-input" data-answer="ice cream" placeholder="Ketik jawabanmu...">
+                    <span class="feedback-icon"></span>
+                </li>
+            </ol>
+        </section>
+
+        <section class="quiz-section">
+            <h2>Animals (Hewan)</h2>
+            <ol class="question-list">
+                <li class="question-item">
+                    <span class="jumbled-word">s-h-e-e-p</span>
+                    <input type="text" class="answer-input" data-answer="sheep" placeholder="Ketik jawabanmu...">
+                    <span class="feedback-icon"></span>
+                </li>
+                <li class="question-item">
+                    <span class="jumbled-word">g-o-a-t</span>
+                    <input type="text" class="answer-input" data-answer="goat" placeholder="Ketik jawabanmu...">
+                    <span class="feedback-icon"></span>
+                </li>
+                <li class="question-item">
+                    <span class="jumbled-word">l-a-i-z-r-d</span>
+                    <input type="text" class="answer-input" data-answer="lizard" placeholder="Ketik jawabanmu...">
+                    <span class="feedback-icon"></span>
+                </li>
+                <li class="question-item">
+                    <span class="jumbled-word">c-h-c-e-i-n-k</span>
+                    <input type="text" class="answer-input" data-answer="chicken" placeholder="Ketik jawabanmu...">
+                    <span class="feedback-icon"></span>
+                </li>
+                <li class="question-item">
+                    <span class="jumbled-word">m-o-u-s-e</span>
+                    <input type="text" class="answer-input" data-answer="mouse" placeholder="Ketik jawabanmu...">
+                    <span class="feedback-icon"></span>
+                </li>
+                <li class="question-item">
+                    <span class="jumbled-word">c-o-w</span>
+                    <input type="text" class="answer-input" data-answer="cow" placeholder="Ketik jawabanmu...">
+                    <span class="feedback-icon"></span>
+                </li>
+            </ol>
+        </section>
+
+        <section class="quiz-section">
+            <h2>Adjectives (Kata Sifat)</h2>
+            <ol class="question-list">
+                <li class="question-item">
+                    <span class="jumbled-word">g-r-n-a-y</span>
+                    <input type="text" class="answer-input" data-answer="angry" placeholder="Ketik jawabanmu...">
+                    <span class="feedback-icon"></span>
+                </li>
+                <li class="question-item">
+                    <span class="jumbled-word">u-l-g-y</span>
+                    <input type="text" class="answer-input" data-answer="ugly" placeholder="Ketik jawabanmu...">
+                    <span class="feedback-icon"></span>
+                </li>
+                <li class="question-item">
+                    <span class="jumbled-word">n-n-f-u-y</span>
+                    <input type="text" class="answer-input" data-answer="funny" placeholder="Ketik jawabanmu...">
+                    <span class="feedback-icon"></span>
+                </li>
+                <li class="question-item">
+                    <span class="jumbled-word">b-e-a-t-u-i-f-l-u</span>
+                    <input type="text" class="answer-input" data-answer="beautiful" placeholder="Ketik jawabanmu...">
+                    <span class="feedback-icon"></span>
+                </li>
+                <li class="question-item">
+                    <span class="jumbled-word">g-r-e-a-t</span>
+                    <input type="text" class="answer-input" data-answer="great" placeholder="Ketik jawabanmu...">
+                    <span class="feedback-icon"></span>
+                </li>
+                <li class="question-item">
+                    <span class="jumbled-word">d-i-r-t-y</span>
+                    <input type="text" class="answer-input" data-answer="dirty" placeholder="Ketik jawabanmu...">
+                    <span class="feedback-icon"></span>
+                </li>
+            </ol>
+        </section>
+
+        <div class="action-buttons">
+            <button class="btn btn-check" id="check-btn">Cek Jawaban</button>
+            <button class="btn btn-reset" id="reset-btn">Coba Lagi</button>
+        </div>
+
+        <div id="score-container"></div>
+
+    </main>
+
+    <script>
+        // Mendapatkan semua elemen yang dibutuhkan dari DOM
+        const checkBtn = document.getElementById('check-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const scoreContainer = document.getElementById('score-container');
+        const answerInputs = document.querySelectorAll('.answer-input');
+        const questionItems = document.querySelectorAll('.question-item');
+
+        // Fungsi untuk mengecek semua jawaban
+        function checkAnswers() {
+            let score = 0;
+            const totalQuestions = answerInputs.length;
+
+            answerInputs.forEach((input, index) => {
+                const userAnswer = input.value.trim().toLowerCase();
+                const correctAnswer = input.dataset.answer.toLowerCase();
+                const feedbackIcon = input.nextElementSibling; // Mengambil span ikon
+                const parentItem = input.parentElement;
+
+                // Hapus kelas sebelumnya
+                parentItem.classList.remove('correct', 'incorrect');
+                feedbackIcon.classList.remove('correct', 'incorrect');
+                feedbackIcon.textContent = ''; // Hapus teks ikon sebelumnya
+
+                if (userAnswer === correctAnswer) {
+                    // Jawaban benar
+                    score++;
+                    parentItem.classList.add('correct');
+                    feedbackIcon.textContent = '✓';
+                    feedbackIcon.classList.add('correct');
+                } else {
+                    // Jawaban salah
+                    parentItem.classList.add('incorrect');
+                    feedbackIcon.textContent = '✗';
+                    feedbackIcon.classList.add('incorrect');
+                }
+            });
+
+            // Tampilkan skor
+            scoreContainer.textContent = `Skor kamu: ${score} dari ${totalQuestions}`;
+            scoreContainer.style.display = 'block';
+        }
+
+        // Fungsi untuk mereset kuis
+        function resetQuiz() {
+            answerInputs.forEach(input => {
+                input.value = '';
+            });
+
+            questionItems.forEach(item => {
+                item.classList.remove('correct', 'incorrect');
+            });
+
+            const feedbackIcons = document.querySelectorAll('.feedback-icon');
+            feedbackIcons.forEach(icon => {
+                icon.classList.remove('correct', 'incorrect');
+                icon.textContent = '';
+            });
+
+            scoreContainer.style.display = 'none';
+        }
+
+        // Menambahkan event listener ke tombol
+        checkBtn.addEventListener('click', checkAnswers);
+        resetBtn.addEventListener('click', resetQuiz);
+    </script>
+
+</body>
+</html>
