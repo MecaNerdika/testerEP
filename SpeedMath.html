@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Speed Math</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+:root{
+  --primary:#2E2DA4;
+  --bg:#f4f6fb;
+  --card:#ffffff;
+}
+
+*{
+  box-sizing:border-box;
+  font-family:'Segoe UI',sans-serif;
+}
+
+body{
+  background:var(--bg);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  min-height:100vh;
+  margin:0;
+}
+
+.card{
+  background:var(--card);
+  padding:32px;
+  width:100%;
+  max-width:480px;
+  border-radius:20px;
+  box-shadow:0 12px 35px rgba(0,0,0,.12);
+  text-align:center;
+}
+
+h1{
+  margin-top:0;
+  color:var(--primary);
+  font-size:34px;
+}
+
+.subtitle{
+  margin-bottom:20px;
+}
+
+select, input{
+  padding:14px;
+  font-size:16px;
+  border-radius:12px;
+  border:2px solid #ddd;
+  text-align:center;
+}
+
+select:focus, input:focus{
+  border-color:var(--primary);
+  outline:none;
+}
+
+.level-set{
+  margin-bottom:20px;
+}
+
+.time-set{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:25px;
+}
+
+.time-box{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+
+.time-box span{
+  margin-top:6px;
+  font-size:14px;
+  color:#555;
+}
+
+button{
+  width:100%;
+  padding:16px;
+  font-size:18px;
+  border:none;
+  border-radius:14px;
+  background:var(--primary);
+  color:white;
+  cursor:pointer;
+}
+
+button:hover{
+  opacity:.9;
+}
+
+.hidden{display:none;}
+
+.timer{
+  font-size:22px;
+  font-weight:bold;
+}
+
+.question{
+  font-size:36px;
+  margin:25px 0;
+}
+
+.keypad{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+  margin-top:18px;
+}
+
+.keypad button{
+  font-size:22px;
+  padding:18px;
+}
+
+.report p{
+  font-size:17px;
+  margin:10px 0;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+<h1>Speed Math</h1>
+<div class="subtitle">Uji Kecepatan Perkalian & Pembagian</div>
+
+<!-- START -->
+<div id="startScreen">
+
+  <div class="level-set">
+    <select id="level">
+      <option value="5">Mudah (1–5)</option>
+      <option value="10" selected>Sedang (1–10)</option>
+      <option value="15">Sulit (1–15)</option>
+      <option value="20">Asia (11–20)</option>
+    </select>
+  </div>
+
+  <div class="time-set">
+    <div class="time-box">
+      <input type="number" id="h" value="0" min="0">
+      <span>Jam</span>
+    </div>
+    <div class="time-box">
+      <input type="number" id="m" value="1" min="0" max="59">
+      <span>Menit</span>
+    </div>
+    <div class="time-box">
+      <input type="number" id="s" value="0" min="0" max="59">
+      <span>Detik</span>
+    </div>
+  </div>
+
+  <button onclick="startTest()">Mulai</button>
+</div>
+
+<!-- TEST -->
+<div id="testScreen" class="hidden">
+  <div class="timer" id="time"></div>
+  <div class="question" id="question"></div>
+  <input type="number" id="answer" placeholder="Jawaban">
+
+  <div id="keypad" class="keypad hidden"></div>
+</div>
+
+<!-- RESULT -->
+<div id="resultScreen" class="hidden report">
+  <h2>Hasil</h2>
+  <p>Total Terjawab: <b id="total"></b></p>
+  <p>Jawaban Benar: <b id="correct"></b></p>
+  <p>Jawaban Salah: <b id="wrong"></b></p>
+  <p>Kecepatan: <b id="speed"></b> soal/menit</p>
+  <button onclick="location.reload()">Ulangi</button>
+</div>
+
+</div>
+
+<script>
+let maxNum, totalSeconds, startSeconds;
+let total=0, correct=0, wrong=0;
+let currentAnswer=0, timer;
+
+const qEl=document.getElementById("question");
+const ansEl=document.getElementById("answer");
+const timeEl=document.getElementById("time");
+
+function rand(min,max){
+  return Math.floor(Math.random()*(max-min+1))+min;
+}
+
+function formatTime(sec){
+  let h=Math.floor(sec/3600);
+  let m=Math.floor(sec%3600/60);
+  let s=sec%60;
+  return `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`;
+}
+
+function generateQuestion(){
+  let A=rand(1,maxNum);
+  let B=rand(1,maxNum);
+  let C=A*B;
+  if(Math.random()<0.5){
+    qEl.textContent=`${A} × ${B} = ?`;
+    currentAnswer=C;
+  }else{
+    qEl.textContent=`${C} ÷ ${A} = ?`;
+    currentAnswer=B;
+  }
+  ansEl.value="";
+}
+
+function startTest(){
+  maxNum=parseInt(document.getElementById("level").value);
+  let h=+document.getElementById("h").value||0;
+  let m=+document.getElementById("m").value||0;
+  let s=+document.getElementById("s").value||0;
+
+  totalSeconds=startSeconds=h*3600+m*60+s;
+  if(totalSeconds<=0){
+    alert("Waktu harus lebih dari 0 detik");
+    return;
+  }
+
+  document.getElementById("startScreen").classList.add("hidden");
+  document.getElementById("testScreen").classList.remove("hidden");
+
+  timeEl.textContent=formatTime(totalSeconds);
+  generateQuestion();
+  ansEl.focus();
+
+  if(/Mobi|Android/i.test(navigator.userAgent)) buildKeypad();
+
+  timer=setInterval(()=>{
+    totalSeconds--;
+    timeEl.textContent=formatTime(totalSeconds);
+    if(totalSeconds<=0) endTest();
+  },1000);
+}
+
+ansEl.addEventListener("keydown",e=>{
+  if(e.key==="Enter") submitAnswer();
+});
+
+function submitAnswer(){
+  if(ansEl.value==="") return;
+  total++;
+  if(+ansEl.value===currentAnswer) correct++;
+  else wrong++;
+  generateQuestion();
+}
+
+function buildKeypad(){
+  const pad=document.getElementById("keypad");
+  pad.classList.remove("hidden");
+  ["1","2","3","4","5","6","7","8","9","0","⌫","✔"].forEach(k=>{
+    let b=document.createElement("button");
+    b.textContent=k;
+    b.onclick=()=>{
+      if(k==="⌫") ansEl.value=ansEl.value.slice(0,-1);
+      else if(k==="✔") submitAnswer();
+      else ansEl.value+=k;
+    };
+    pad.appendChild(b);
+  });
+}
+
+function endTest(){
+  clearInterval(timer);
+  document.getElementById("testScreen").classList.add("hidden");
+  document.getElementById("resultScreen").classList.remove("hidden");
+
+  document.getElementById("total").textContent=total;
+  document.getElementById("correct").textContent=correct;
+  document.getElementById("wrong").textContent=wrong;
+  document.getElementById("speed").textContent=
+    (total/(startSeconds/60)).toFixed(2);
+}
+</script>
+
+</body>
+</html>
