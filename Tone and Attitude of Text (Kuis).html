@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Literasi Bahasa Inggris - Tone & Attitude</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            max-width: 800px;
+            width: 100%;
+            overflow: hidden;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .token-container {
+            text-align: center;
+        }
+        
+        .token-container h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        .token-input {
+            padding: 12px 20px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            width: 250px;
+            margin-bottom: 20px;
+            transition: border-color 0.3s;
+        }
+        
+        .token-input:focus {
+            outline: none;
+            border-color: #2575fc;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .quiz-container {
+            display: none;
+        }
+        
+        .timer-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .timer {
+            font-size: 20px;
+            font-weight: bold;
+            color: #e74c3c;
+            display: flex;
+            align-items: center;
+        }
+        
+        .timer-icon {
+            margin-right: 8px;
+        }
+        
+        .question-number {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .question-container {
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            border-left: 5px solid #2575fc;
+        }
+        
+        .passage {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: white;
+            border-radius: 8px;
+            line-height: 1.6;
+            font-style: italic;
+            color: #444;
+        }
+        
+        .question {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .options {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+        
+        .option {
+            padding: 12px 20px;
+            background-color: white;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .option:hover {
+            background-color: #f0f7ff;
+            border-color: #2575fc;
+        }
+        
+        .option.selected {
+            background-color: #e3f2fd;
+            border-color: #2575fc;
+        }
+        
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        
+        .result-container {
+            display: none;
+            text-align: center;
+            padding: 30px;
+        }
+        
+        .result-title {
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .score {
+            font-size: 48px;
+            font-weight: bold;
+            color: #2575fc;
+            margin-bottom: 20px;
+        }
+        
+        .score-message {
+            font-size: 18px;
+            margin-bottom: 30px;
+            color: #666;
+        }
+        
+        .error-message {
+            color: #e74c3c;
+            margin-top: 10px;
+            display: none;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background-color: #e0e0e0;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                margin: 10px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .timer-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .navigation {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Kuis Literasi Bahasa Inggris</h1>
+            <p>Tone and Attitude of Author</p>
+        </div>
+        
+        <div class="content">
+            <!-- Token Verification Page -->
+            <div class="token-container" id="tokenPage">
+                <h2>Masukkan Token Akses</h2>
+                <input type="text" class="token-input" id="tokenInput" placeholder="Token">
+                <div class="error-message" id="tokenError">Token tidak valid. Silakan coba lagi.</div>
+                <button class="btn" id="submitToken">Masuk</button>
+            </div>
+            
+            <!-- Quiz Page -->
+            <div class="quiz-container" id="quizPage">
+                <div class="progress-bar">
+                    <div class="progress" id="progressBar"></div>
+                </div>
+                
+                <div class="timer-container">
+                    <div class="question-number" id="questionNumber">Pertanyaan 1 dari 20</div>
+                    <div class="timer">
+                        <span class="timer-icon">⏱️</span>
+                        <span id="timer">10:00</span>
+                    </div>
+                </div>
+                
+                <div class="question-container">
+                    <div class="passage" id="passage"></div>
+                    <div class="question" id="question"></div>
+                    <div class="options" id="options"></div>
+                </div>
+                
+                <div class="navigation">
+                    <button class="btn" id="prevBtn" disabled>Sebelumnya</button>
+                    <button class="btn" id="nextBtn">Selanjutnya</button>
+                </div>
+            </div>
+            
+            <!-- Result Page -->
+            <div class="result-container" id="resultPage">
+                <h2 class="result-title">Hasil Kuis</h2>
+                <div class="score" id="score">0/20</div>
+                <p class="score-message" id="scoreMessage"></p>
+                <button class="btn" id="restartBtn">Mulai Lagi</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Quiz Data
+        const quizData = [
+            {
+                passage: "The government's new policy on climate change is nothing short of revolutionary. By implementing strict carbon emission limits and investing heavily in renewable energy, we are finally taking meaningful action against the existential threat that has been ignored for far too long. Critics may argue that these measures are too extreme, but they fail to recognize the urgency of our situation.",
+                question: "What is the author's tone in this passage?",
+                options: ["Skeptical", "Enthusiastic", "Indifferent", "Critical", "Humorous"],
+                answer: 1
+            },
+            {
+                passage: "While the new smartphone boasts impressive specifications and a sleek design, its battery life leaves much to be desired. Users report needing to charge their devices multiple times throughout the day, which significantly undermines the phone's portability and convenience. Additionally, the price point places it well beyond the reach of average consumers.",
+                question: "The author's attitude toward the new smartphone can best be described as:",
+                options: ["Completely positive", "Mixed but leaning negative", "Neutral", "Overly enthusiastic", "Indifferent"],
+                answer: 1
+            },
+            {
+                passage: "It is with profound sadness that we announce the passing of Dr. Sarah Johnson, a pioneering researcher in the field of neurobiology. Her groundbreaking work on neural plasticity has transformed our understanding of brain function and opened new avenues for treating neurological disorders. Dr. Johnson's dedication to science and her compassionate mentorship of young researchers will be deeply missed by all who had the privilege of working with her.",
+                question: "The author's tone in this passage is primarily:",
+                options: ["Celebratory", "Informative", "Mournful", "Critical", "Skeptical"],
+                answer: 2
+            },
+            {
+                passage: "The company's decision to outsource its customer service department to a foreign country has resulted in a significant decrease in service quality. Customers now face long wait times, language barriers, and representatives who lack the authority to resolve complex issues. What was once a hallmark of our brand—exceptional customer support—has become a source of frustration and disappointment for our loyal clientele.",
+                question: "The author's attitude toward the company's outsourcing decision is:",
+                options: ["Supportive", "Ambivalent", "Indifferent", "Critical", "Optimistic"],
+                answer: 3
+            },
+            {
+                passage: "Imagine a world where renewable energy sources completely replace fossil fuels, where electric vehicles outnumber gasoline-powered ones, and where cities are designed with pedestrians and cyclists in mind rather than cars. This vision of a sustainable future may seem distant, but with technological advancements and growing public awareness, it is increasingly within our reach.",
+                question: "The author's tone in this passage can be best described as:",
+                options: ["Skeptical", "Pessimistic", "Hopeful", "Cynical", "Indifferent"],
+                answer: 2
+            },
+            {
+                passage: "The restaurant's new menu features an eclectic mix of traditional dishes and innovative culinary creations. While the classic pasta dishes maintain their time-honored flavors, the chef's experimental offerings push the boundaries of conventional cuisine. Diners seeking familiar comfort will find satisfaction in the tried-and-true options, while adventurous eaters can explore bold new taste sensations.",
+                question: "The author's attitude toward the restaurant's menu is:",
+                options: ["Overly critical", "Balanced and appreciative", "Disappointed", "Indifferent", "Skeptical"],
+                answer: 1
+            },
+            {
+                passage: "Despite numerous warnings from climate scientists about the dangers of rising sea levels, coastal communities continue to develop waterfront properties at an alarming rate. This shortsighted approach not only puts residents at risk but also places an enormous financial burden on taxpayers who will ultimately fund disaster relief efforts. It is time for policymakers to prioritize long-term sustainability over short-term economic gains.",
+                question: "The author's tone in this passage is primarily:",
+                options: ["Humorous", "Celebratory", "Urgent and concerned", "Indifferent", "Sarcastic"],
+                answer: 2
+            },
+            {
+                passage: "The university's decision to eliminate its philosophy department has sparked outrage among students and faculty alike. While administrators cite budget constraints as the primary reason, critics argue that this move reflects a troubling trend toward prioritizing vocational training over critical thinking skills. Philosophy, they contend, is not an expendable luxury but an essential component of a well-rounded education.",
+                question: "The author's attitude toward the university's decision is:",
+                options: ["Supportive", "Neutral", "Indifferent", "Critical", "Ambivalent"],
+                answer: 3
+            },
+            {
+                passage: "The new art exhibition features works from emerging artists who challenge conventional notions of beauty and form. Through bold colors, unconventional materials, and thought-provoking subject matter, these pieces invite viewers to question their assumptions about art itself. While some may find the works unsettling or even incomprehensible, they undeniably succeed in their mission to provoke dialogue and reflection.",
+                question: "The author's tone in this passage can be best described as:",
+                options: ["Dismissive", "Appreciative", "Skeptical", "Indifferent", "Critical"],
+                answer: 1
+            },
+            {
+                passage: "The proposed tax reform bill promises to simplify the tax code and reduce rates for middle-class families. However, a closer examination reveals that these benefits come at the expense of essential public services, including education, healthcare, and infrastructure. While the bill's supporters tout its potential to stimulate economic growth, its critics warn that it will exacerbate income inequality and undermine social welfare programs.",
+                question: "The author's attitude toward the tax reform bill is:",
+                options: ["Enthusiastic", "Balanced but leaning critical", "Completely supportive", "Indifferent", "Humorous"],
+                answer: 1
+            },
+            {
+                passage: "The city's new public transportation system has transformed urban mobility, offering residents a convenient, affordable, and environmentally friendly alternative to private vehicles. With expanded routes, improved accessibility, and state-of-the-art technology, the system has exceeded expectations and become a model for other metropolitan areas. Commuters now enjoy shorter travel times, reduced stress, and a smaller carbon footprint.",
+                question: "The author's tone in this passage is primarily:",
+                options: ["Critical", "Skeptical", "Enthusiastic", "Indifferent", "Humorous"],
+                answer: 2
+            },
+            {
+                passage: "While social media platforms have revolutionized communication and information sharing, they have also given rise to serious concerns about privacy, mental health, and the spread of misinformation. The constant stream of curated content creates unrealistic expectations and fosters comparison, while algorithms designed to maximize engagement often prioritize sensationalism over accuracy. As we navigate this digital landscape, it is crucial to approach these platforms with both openness and critical awareness.",
+                question: "The author's attitude toward social media can be best described as:",
+                options: ["Completely positive", "Balanced and cautious", "Overly negative", "Indifferent", "Humorous"],
+                answer: 1
+            },
+            {
+                passage: "The traditional classroom model, with its rows of desks and teacher-centered instruction, is increasingly being challenged by innovative approaches to education. Project-based learning, collaborative activities, and technology integration are transforming how students engage with material and develop critical thinking skills. While some educators resist these changes, clinging to familiar methods, others embrace the opportunity to create more dynamic and effective learning environments.",
+                question: "The author's tone in this passage is primarily:",
+                options: ["Skeptical", "Indifferent", "Supportive of innovation", "Critical of new approaches", "Humorous"],
+                answer: 2
+            },
+            {
+                passage: "The documentary presents a harrowing account of the environmental devastation caused by industrial pollution in the region. Through interviews with affected residents, expert analysis, and striking visual evidence, the film exposes the long-term consequences of regulatory failures and corporate negligence. Viewers are left with a sense of urgency and a call to action that extends far beyond the credits.",
+                question: "The author's attitude toward the environmental issue presented in the documentary is:",
+                options: ["Indifferent", "Skeptical", "Humorous", "Concerned and urgent", "Balanced"],
+                answer: 3
+            },
+            {
+                passage: "The rise of artificial intelligence has sparked both excitement and apprehension among technologists, policymakers, and the general public. Proponents highlight its potential to solve complex problems, enhance productivity, and improve quality of life. Critics, however, warn of job displacement, ethical dilemmas, and the concentration of power in the hands of a few tech giants. As we stand at this technological crossroads, it is essential to approach AI development with both enthusiasm and caution.",
+                question: "The author's tone in this passage can be best described as:",
+                options: ["Overly enthusiastic", "Balanced and thoughtful", "Skeptical", "Indifferent", "Humorous"],
+                answer: 1
+            },
+            {
+                passage: "The new shopping mall promises an unparalleled retail experience with its luxurious amenities, diverse selection of stores, and innovative entertainment options. However, its construction has come at a significant cost to the local community, displacing small businesses, increasing traffic congestion, and contributing to urban sprawl. While developers celebrate the economic benefits, residents lament the loss of neighborhood character and the strain on public resources.",
+                question: "The author's attitude toward the new shopping mall is:",
+                options: ["Completely positive", "Balanced but leaning critical", "Indifferent", "Overly enthusiastic", "Humorous"],
+                answer: 1
+            },
+            {
+                passage: "The novel's protagonist navigates a complex moral landscape, challenging readers to question their own ethical boundaries. Through vivid characterization and intricate plot development, the author explores themes of redemption, sacrifice, and the nature of justice. While some readers may find the narrative's ambiguity frustrating, others will appreciate the opportunity to engage deeply with these philosophical questions long after the final page is turned.",
+                question: "The author's tone in this passage is primarily:",
+                options: ["Critical", "Indifferent", "Appreciative", "Skeptical", "Humorous"],
+                answer: 2
+            },
+            {
+                passage: "The government's response to the public health crisis has been characterized by inconsistent messaging, delayed action, and inadequate resource allocation. Despite clear warnings from experts, officials initially downplayed the severity of the situation, allowing the outbreak to spread unchecked. Even as cases surged, political considerations often seemed to outweigh scientific evidence, resulting in policies that were both ineffective and confusing to the public.",
+                question: "The author's attitude toward the government's response is:",
+                options: ["Supportive", "Indifferent", "Critical", "Humorous", "Balanced"],
+                answer: 2
+            },
+            {
+                passage: "The small bookstore, tucked away on a quiet side street, offers a refuge from the digital age's relentless pace. Its shelves are lined with carefully curated selections, each book chosen with thoughtful consideration rather than algorithmic recommendation. The owner, with her encyclopedic knowledge and genuine passion for literature, provides personalized recommendations that often lead readers to unexpected treasures. In this cozy haven, the tactile experience of physical books and the joy of serendipitous discovery remain alive and well.",
+                question: "The author's tone in this passage can be best described as:",
+                options: ["Critical", "Skeptical", "Nostalgic and appreciative", "Indifferent", "Humorous"],
+                answer: 2
+            }
+        ];
+        
+        // Global Variables
+        let currentQuestion = 0;
+        let score = 0;
+        let timeLeft = 600; // 10 minutes in seconds
+        let timerInterval;
+        let userAnswers = new Array(quizData.length).fill(null);
+        let shuffledQuestions = [];
+        
+        // DOM Elements
+        const tokenPage = document.getElementById('tokenPage');
+        const quizPage = document.getElementById('quizPage');
+        const resultPage = document.getElementById('resultPage');
+        const tokenInput = document.getElementById('tokenInput');
+        const tokenError = document.getElementById('tokenError');
+        const submitToken = document.getElementById('submitToken');
+        const questionNumber = document.getElementById('questionNumber');
+        const timer = document.getElementById('timer');
+        const passage = document.getElementById('passage');
+        const question = document.getElementById('question');
+        const options = document.getElementById('options');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const scoreElement = document.getElementById('score');
+        const scoreMessage = document.getElementById('scoreMessage');
+        const restartBtn = document.getElementById('restartBtn');
+        const progressBar = document.getElementById('progressBar');
+        
+        // Event Listeners
+        submitToken.addEventListener('click', verifyToken);
+        tokenInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') verifyToken();
+        });
+        prevBtn.addEventListener('click', previousQuestion);
+        nextBtn.addEventListener('click', nextQuestion);
+        restartBtn.addEventListener('click', restartQuiz);
+        
+        // Functions
+        function verifyToken() {
+            const token = tokenInput.value.trim();
+            if (token === 'UTBK26') {
+                tokenPage.style.display = 'none';
+                quizPage.style.display = 'block';
+                initializeQuiz();
+            } else {
+                tokenError.style.display = 'block';
+                tokenInput.value = '';
+                setTimeout(() => {
+                    tokenError.style.display = 'none';
+                }, 3000);
+            }
+        }
+        
+        function initializeQuiz() {
+            // Shuffle questions
+            shuffledQuestions = [...quizData].sort(() => Math.random() - 0.5);
+            
+            // Display first question
+            displayQuestion();
+            
+            // Start timer
+            startTimer();
+        }
+        
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    endQuiz();
+                }
+            }, 1000);
+        }
+        
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timer.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+            
+            // Change color when time is running out
+            if (timeLeft <= 60) {
+                timer.style.color = '#e74c3c';
+            } else if (timeLeft <= 180) {
+                timer.style.color = '#f39c12';
+            } else {
+                timer.style.color = '#333';
+            }
+        }
+        
+        function displayQuestion() {
+            // Update question number
+            questionNumber.textContent = `Pertanyaan ${currentQuestion + 1} dari ${shuffledQuestions.length}`;
+            
+            // Update progress bar
+            const progress = ((currentQuestion + 1) / shuffledQuestions.length) * 100;
+            progressBar.style.width = `${progress}%`;
+            
+            // Display passage and question
+            const currentData = shuffledQuestions[currentQuestion];
+            passage.textContent = currentData.passage;
+            question.textContent = currentData.question;
+            
+            // Display options
+            options.innerHTML = '';
+            currentData.options.forEach((option, index) => {
+                const optionElement = document.createElement('div');
+                optionElement.classList.add('option');
+                optionElement.textContent = option;
+                
+                // Check if this option was previously selected
+                if (userAnswers[currentQuestion] === index) {
+                    optionElement.classList.add('selected');
+                }
+                
+                optionElement.addEventListener('click', () => selectOption(index));
+                options.appendChild(optionElement);
+            });
+            
+            // Update navigation buttons
+            prevBtn.disabled = currentQuestion === 0;
+            nextBtn.textContent = currentQuestion === shuffledQuestions.length - 1 ? 'Selesai' : 'Selanjutnya';
+        }
+        
+        function selectOption(index) {
+            // Remove previous selection
+            const allOptions = document.querySelectorAll('.option');
+            allOptions.forEach(option => option.classList.remove('selected'));
+            
+            // Add selection to clicked option
+            allOptions[index].classList.add('selected');
+            
+            // Save user's answer
+            userAnswers[currentQuestion] = index;
+        }
+        
+        function previousQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                displayQuestion();
+            }
+        }
+        
+        function nextQuestion() {
+            if (currentQuestion < shuffledQuestions.length - 1) {
+                currentQuestion++;
+                displayQuestion();
+            } else {
+                endQuiz();
+            }
+        }
+        
+        function endQuiz() {
+            clearInterval(timerInterval);
+            
+            // Calculate score
+            score = 0;
+            for (let i = 0; i < shuffledQuestions.length; i++) {
+                if (userAnswers[i] === shuffledQuestions[i].answer) {
+                    score++;
+                }
+            }
+            
+            // Display result
+            quizPage.style.display = 'none';
+            resultPage.style.display = 'block';
+            scoreElement.textContent = `${score}/${shuffledQuestions.length}`;
+            
+            // Display score message
+            let message = '';
+            const percentage = (score / shuffledQuestions.length) * 100;
+            
+            if (percentage >= 90) {
+                message = 'Luar biasa! Anda memiliki pemahaman yang sangat baik tentang tone and attitude dalam teks bahasa Inggris.';
+            } else if (percentage >= 75) {
+                message = 'Bagus! Anda memiliki pemahaman yang baik tentang tone and attitude dalam teks bahasa Inggris.';
+            } else if (percentage >= 60) {
+                message = 'Cukup baik. Terus berlatih untuk meningkatkan pemahaman Anda tentang tone and attitude.';
+            } else if (percentage >= 40) {
+                message = 'Perlu lebih banyak latihan. Fokus pada memahami nuansa bahasa dan ekspresi penulis.';
+            } else {
+                message = 'Jangan menyerah! Pelajari lebih lanjut tentang tone and attitude dan coba lagi.';
+            }
+            
+            scoreMessage.textContent = message;
+        }
+        
+        function restartQuiz() {
+            // Reset variables
+            currentQuestion = 0;
+            score = 0;
+            timeLeft = 600;
+            userAnswers = new Array(quizData.length).fill(null);
+            
+            // Reset UI
+            resultPage.style.display = 'none';
+            tokenPage.style.display = 'block';
+            tokenInput.value = '';
+            
+            // Shuffle questions for new quiz
+            shuffledQuestions = [...quizData].sort(() => Math.random() - 0.5);
+        }
+    </script>
+</body>
+</html>
