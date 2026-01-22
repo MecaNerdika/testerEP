@@ -1,0 +1,1535 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kuis Latihan Pecahan</title>
+    <style>
+      :root {
+        --bg: #060000; /* slate-900 */
+        --card: #111827; /* gray-900 */
+        --muted: #334155; /* slate-600 */
+        --text: #ffffff; /* gray-200 */
+        --accent: #38bdf8; /* sky-400 */
+        --accent-2: #22c55e; /* green-500 */
+        --danger: #ef4444; /* red-500 */
+        --warn: #f59e0b; /* amber-500 */
+        --shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+        --radius: 16px;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          Segoe UI,
+          Roboto,
+          "Helvetica Neue",
+          Arial;
+        background:
+          radial-gradient(1200px 800px at 10% -10%, #1e293b, transparent),
+          radial-gradient(800px 600px at 120% 0%, #0b3b47, transparent),
+          var(--bg);
+        color: var(--text);
+        min-height: 100svh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+      }
+      .app {
+        width: 100%;
+        max-width: 980px;
+      }
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+      .brand {
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        font-size: clamp(18px, 3.5vw, 24px);
+      }
+      .timer {
+        font-variant-numeric: tabular-nums;
+        font-weight: 700;
+        padding: 10px 14px;
+        border-radius: 999px;
+        background: #0b1220;
+        border: 1px solid #1f2a44;
+        box-shadow: var(--shadow);
+      }
+      .card {
+        background: linear-gradient(180deg, #0b1220, #0a1020);
+        border: 1px solid #1f2a44;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+      }
+      .section {
+        display: none;
+      }
+      .active {
+        display: block;
+      }
+      .card-inner {
+        padding: 20px;
+      }
+      .grid {
+        display: grid;
+        gap: 16px;
+      }
+      .grid-2 {
+        grid-template-columns: 1fr 1fr;
+      }
+      .grid-responsive {
+        grid-template-columns: 1fr;
+      }
+      @media (min-width: 720px) {
+        .grid-responsive {
+          grid-template-columns: 1fr 320px;
+        }
+      }
+
+      input[type="text"],
+      input[type="password"] {
+        width: 100%;
+        padding: 12px 14px;
+        border-radius: 12px;
+        border: 1px solid #26314d;
+        background: #0b1220;
+        color: var(--text);
+        outline: none;
+        box-shadow: inset 0 0 0 9999px rgba(255, 255, 255, 0);
+      }
+      label {
+        font-size: 14px;
+        color: #cbd5e1;
+      }
+      .btn {
+        cursor: pointer;
+        padding: 12px 16px;
+        border-radius: 14px;
+        background: var(--accent);
+        color: #001219;
+        border: none;
+        font-weight: 700;
+        box-shadow: var(--shadow);
+        transition: 0.2s transform ease;
+      }
+      .btn:active {
+        transform: translateY(1px);
+      }
+      .btn.secondary {
+        background: #1f2937;
+        color: #e2e8f0;
+        border: 1px solid #334155;
+      }
+      .btn.warn {
+        background: var(--warn);
+        color: #0b1220;
+      }
+      .btn.danger {
+        background: var(--danger);
+        color: #0b1220;
+      }
+      .muted {
+        color: #94a3b8;
+      }
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: #0b1220;
+        border: 1px solid #223156;
+        font-size: 12px;
+        color: #cbd5e1;
+      }
+
+      .question-area {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+      .q-title {
+        font-weight: 800;
+        font-size: 18px;
+      }
+      .choices {
+        display: grid;
+        gap: 10px;
+      }
+      .choice {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        border: 1px solid #1f2a44;
+        background: #0b1220;
+        padding: 12px;
+        border-radius: 12px;
+        cursor: pointer;
+      }
+      .choice input {
+        margin-top: 4px;
+      }
+
+      .nav {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        max-height: 240px;
+        overflow: auto;
+        padding: 10px;
+      }
+      .nav button {
+        width: 44px;
+        height: 40px;
+        border-radius: 10px;
+        border: 1px solid #1f2a44;
+        background: #0b1220;
+        color: #cbd5e1;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .nav button.active {
+        outline: 2px solid var(--accent);
+        color: #0ea5e9;
+      }
+      .nav button.done {
+        background: #07291f;
+        border-color: #0b7a53;
+        color: #34d399;
+      }
+
+      .footer-actions {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-top: 10px;
+      }
+
+      .legend {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .results {
+        display: grid;
+        gap: 12px;
+      }
+      .score-box {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      .score-card {
+        background: #0b1220;
+        border: 1px solid #1f2a44;
+        border-radius: 14px;
+        padding: 14px;
+      }
+
+      .info-row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  </head>
+  <body>
+    <div class="app">
+      <header>
+        <div class="brand">Kuis Latihan Pecahan</div>
+        <div class="pill" id="infoUser">Belum login</div>
+        <div class="timer" id="timer">25:00</div>
+      </header>
+
+      <!-- SECTION 1: FORM MINIMAL -->
+      <section id="section-form" class="section active">
+        <div class="card">
+          <div class="card-inner grid">
+            <div>
+              <h2 style="margin: 0 0 10px 0">Masuk Kuis</h2>
+              <p class="muted" style="margin-top: 0">
+                Masukkan nama dan password untuk memulai. Tidak ada pengaturan
+                tambahan.
+              </p>
+              <div class="grid">
+                <div>
+                  <label for="nama">Nama</label>
+                  <input id="nama" type="text" placeholder="Nama peserta" />
+                </div>
+                <div>
+                  <label for="pass">Password</label>
+                  <input id="pass" type="password" placeholder="Password" />
+                </div>
+                <button class="btn" id="btnMulai">Mulai Kuis</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 2: QUIZ -->
+      <section id="section-quiz" class="section">
+        <div class="grid grid-responsive">
+          <div class="card">
+            <div class="card-inner">
+              <div class="info-row">
+                <div class="pill" id="infoKategori">Kategori: -</div>
+                <div class="pill" id="infoSoal">Soal 0 / 180</div>
+              </div>
+              <div class="question-area" id="questionArea">
+                <!-- Question inject here -->
+              </div>
+              <div class="footer-actions">
+                <button class="btn secondary" id="prevBtn">Prev</button>
+                <div class="legend">
+                  <span class="pill">• Biru = aktif</span>
+                  <span
+                    class="pill"
+                    style="
+                      background: #07291f;
+                      color: #34d399;
+                      border-color: #0b7a53;
+                    "
+                    >• Hijau = terjawab</span
+                  >
+                </div>
+                <button class="btn" id="nextBtn">Next</button>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-inner">
+              <h3 style="margin-top: 0">Navigasi Soal</h3>
+              <div class="nav" id="nav">
+                <!-- Nav buttons injected here -->
+              </div>
+              <div class="grid" style="margin-top: 8px">
+                <button class="btn warn" id="btnSubmit">
+                  Kumpulkan Jawaban
+                </button>
+                <button class="btn danger" id="btnReset">Reset Jawaban</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 3: HASIL -->
+      <section id="section-result" class="section">
+        <div class="card">
+          <div class="card-inner results">
+            <h2 style="margin: 0">Hasil Ujian</h2>
+            <p class="muted" id="resultUser">Peserta: -</p>
+            <div class="score-box">
+              <div class="score-card" style="grid-column: span 2">
+                <div class="muted">Total Skor</div>
+                <div id="scoreTotal" style="font-size: 30px; font-weight: 900">
+                  0 / 180
+                </div>
+              </div>
+            </div>
+            <div>
+              <button class="btn" id="btnUlang">Mulai Lagi</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      /** UTIL **/
+      const el = (sel) => document.querySelector(sel);
+      const els = (sel) => Array.from(document.querySelectorAll(sel));
+      const shuffle = (arr) =>
+        arr
+          .map((v) => [Math.random(), v])
+          .sort((a, b) => a[0] - b[0])
+          .map((x) => x[1]);
+
+      /** BANK SOAL (40/40/40) **/
+      // Format: {type:'sinonim'|'antonim'|'hiponim', q:'', options:['','','',''], answer: index}
+
+      const SOAL_fungsi = [
+        {
+          q: "Ubah pecahan campuran \\(1 \\dfrac{3}{4}\\) menjadi pecahan biasa.",
+          o: [
+            "\\(\\dfrac{7}{4}\\)",
+            "\\(\\dfrac{5}{4}\\)",
+            "\\(\\dfrac{9}{4}\\)",
+            "\\(\\dfrac{11}{4}\\)",
+          ],
+          a: 3,
+        },
+        {
+          q: "Ubah pecahan campuran \\(2 \\dfrac{2}{5}\\) menjadi pecahan biasa.",
+          o: [
+            "\\(\\dfrac{12}{5}\\)",
+            "\\(\\dfrac{10}{5}\\)",
+            "\\(\\dfrac{14}{5}\\)",
+            "\\(\\dfrac{8}{5}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Ubah pecahan campuran \\(3 \\dfrac{1}{3}\\) menjadi pecahan biasa.",
+          o: [
+            "\\(\\dfrac{9}{3}\\)",
+            "\\(\\dfrac{10}{3}\\)",
+            "\\(\\dfrac{11}{3}\\)",
+            "\\(\\dfrac{12}{3}\\)",
+          ],
+          a: 1,
+        },
+        {
+          q: "Ubah pecahan campuran \\(4 \\dfrac{3}{8}\\) menjadi pecahan biasa.",
+          o: [
+            "\\(\\dfrac{35}{8}\\)",
+            "\\(\\dfrac{32}{8}\\)",
+            "\\(\\dfrac{34}{8}\\)",
+            "\\(\\dfrac{37}{8}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Ubah pecahan campuran \\(5 \\dfrac{4}{7}\\) menjadi pecahan biasa.",
+          o: [
+            "\\(\\dfrac{39}{7}\\)",
+            "\\(\\dfrac{34}{7}\\)",
+            "\\(\\dfrac{37}{7}\\)",
+            "\\(\\dfrac{41}{7}\\)",
+          ],
+          a: 0,
+        },
+
+        {
+          q: "Ubah \\(0{,}6\\) menjadi pecahan biasa paling sederhana.",
+          o: [
+            "\\(\\dfrac{3}{5}\\)",
+            "\\(\\dfrac{6}{10}\\)",
+            "\\(\\dfrac{2}{3}\\)",
+            "\\(\\dfrac{1}{6}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Ubah \\(0{,}125\\) menjadi pecahan biasa paling sederhana.",
+          o: [
+            "\\(\\dfrac{1}{8}\\)",
+            "\\(\\dfrac{125}{1000}\\)",
+            "\\(\\dfrac{1}{4}\\)",
+            "\\(\\dfrac{5}{8}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Ubah \\(0{,}75\\) menjadi pecahan biasa paling sederhana.",
+          o: [
+            "\\(\\dfrac{3}{4}\\)",
+            "\\(\\dfrac{75}{100}\\)",
+            "\\(\\dfrac{6}{8}\\)",
+            "\\(\\dfrac{2}{3}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Ubah \\(0{,}2\\) menjadi pecahan biasa paling sederhana.",
+          o: [
+            "\\(\\dfrac{1}{5}\\)",
+            "\\(\\dfrac{2}{10}\\)",
+            "\\(\\dfrac{1}{2}\\)",
+            "\\(\\dfrac{3}{5}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Ubah \\(0{,}04\\) menjadi pecahan biasa paling sederhana.",
+          o: [
+            "\\(\\dfrac{1}{25}\\)",
+            "\\(\\dfrac{4}{100}\\)",
+            "\\(\\dfrac{2}{25}\\)",
+            "\\(\\dfrac{1}{4}\\)",
+          ],
+          a: 0,
+        },
+
+        {
+          q: "Ubah \\(20\\%\\) menjadi pecahan biasa paling sederhana.",
+          o: [
+            "\\(\\dfrac{1}{5}\\)",
+            "\\(\\dfrac{20}{100}\\)",
+            "\\(\\dfrac{2}{5}\\)",
+            "\\(\\dfrac{1}{4}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Ubah \\(12{,}5\\%\\) menjadi pecahan biasa paling sederhana.",
+          o: [
+            "\\(\\dfrac{1}{8}\\)",
+            "\\(\\dfrac{125}{1000}\\)",
+            "\\(\\dfrac{1}{4}\\)",
+            "\\(\\dfrac{5}{8}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Ubah \\(75\\%\\) menjadi pecahan biasa paling sederhana.",
+          o: [
+            "\\(\\dfrac{3}{4}\\)",
+            "\\(\\dfrac{75}{100}\\)",
+            "\\(\\dfrac{6}{8}\\)",
+            "\\(\\dfrac{2}{3}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Ubah \\(40\\%\\) menjadi pecahan biasa paling sederhana.",
+          o: [
+            "\\(\\dfrac{2}{5}\\)",
+            "\\(\\dfrac{4}{10}\\)",
+            "\\(\\dfrac{1}{4}\\)",
+            "\\(\\dfrac{3}{5}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Ubah \\(5\\%\\) menjadi pecahan biasa paling sederhana.",
+          o: [
+            "\\(\\dfrac{1}{20}\\)",
+            "\\(\\dfrac{5}{100}\\)",
+            "\\(\\dfrac{1}{5}\\)",
+            "\\(\\dfrac{1}{25}\\)",
+          ],
+          a: 0,
+        },
+
+        {
+          q: "Ubah \\(1{,}25\\) menjadi pecahan biasa paling sederhana.",
+          o: [
+            "\\(\\dfrac{5}{4}\\)",
+            "\\(\\dfrac{125}{100}\\)",
+            "\\(\\dfrac{6}{5}\\)",
+            "\\(\\dfrac{4}{5}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Ubah \\(2{,}4\\) menjadi pecahan biasa paling sederhana.",
+          o: [
+            "\\(\\dfrac{12}{5}\\)",
+            "\\(\\dfrac{24}{10}\\)",
+            "\\(\\dfrac{6}{5}\\)",
+            "\\(\\dfrac{5}{2}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Ubah \\(0{,}375\\) menjadi pecahan biasa paling sederhana.",
+          o: [
+            "\\(\\dfrac{3}{8}\\)",
+            "\\(\\dfrac{375}{1000}\\)",
+            "\\(\\dfrac{5}{8}\\)",
+            "\\(\\dfrac{1}{3}\\)",
+          ],
+          a: 0,
+        },
+
+        {
+          q: "Ubah \\(150\\%\\) menjadi pecahan biasa paling sederhana.",
+          o: [
+            "\\(\\dfrac{3}{2}\\)",
+            "\\(\\dfrac{150}{100}\\)",
+            "\\(\\dfrac{5}{2}\\)",
+            "\\(\\dfrac{2}{3}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Ubah \\(250\\%\\) menjadi pecahan biasa paling sederhana.",
+          o: [
+            "\\(\\dfrac{5}{2}\\)",
+            "\\(\\dfrac{250}{100}\\)",
+            "\\(\\dfrac{3}{2}\\)",
+            "\\(\\dfrac{2}{5}\\)",
+          ],
+          a: 0,
+        },
+
+        {
+          q: "Ubah pecahan campuran \\(6 \\dfrac{1}{6}\\) menjadi pecahan biasa.",
+          o: [
+            "\\(\\dfrac{37}{6}\\)",
+            "\\(\\dfrac{36}{6}\\)",
+            "\\(\\dfrac{31}{6}\\)",
+            "\\(\\dfrac{35}{6}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Ubah pecahan campuran \\(7 \\dfrac{5}{9}\\) menjadi pecahan biasa.",
+          o: [
+            "\\(\\dfrac{68}{9}\\)",
+            "\\(\\dfrac{63}{9}\\)",
+            "\\(\\dfrac{59}{9}\\)",
+            "\\(\\dfrac{72}{9}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Ubah pecahan campuran \\(8 \\dfrac{3}{10}\\) menjadi pecahan biasa.",
+          o: [
+            "\\(\\dfrac{83}{10}\\)",
+            "\\(\\dfrac{80}{10}\\)",
+            "\\(\\dfrac{87}{10}\\)",
+            "\\(\\dfrac{78}{10}\\)",
+          ],
+          a: 0,
+        },
+
+        {
+          q: "Ubah \\(0{,}9\\) menjadi pecahan biasa paling sederhana.",
+          o: [
+            "\\(\\dfrac{9}{10}\\)",
+            "\\(\\dfrac{1}{9}\\)",
+            "\\(\\dfrac{3}{5}\\)",
+            "\\(\\dfrac{1}{10}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Ubah \\(90\\%\\) menjadi pecahan biasa paling sederhana.",
+          o: [
+            "\\(\\dfrac{9}{10}\\)",
+            "\\(\\dfrac{90}{100}\\)",
+            "\\(\\dfrac{3}{5}\\)",
+            "\\(\\dfrac{1}{9}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Ubah \\(0{,}05\\) menjadi pecahan biasa paling sederhana.",
+          o: [
+            "\\(\\dfrac{1}{20}\\)",
+            "\\(\\dfrac{5}{100}\\)",
+            "\\(\\dfrac{1}{5}\\)",
+            "\\(\\dfrac{1}{50}\\)",
+          ],
+          a: 0,
+        },
+
+        {
+          q: "Sederhanakan pecahan \\(\\dfrac{6}{8}\\).",
+          o: [
+            "\\(\\dfrac{3}{4}\\)",
+            "\\(\\dfrac{2}{3}\\)",
+            "\\(\\dfrac{4}{6}\\)",
+            "\\(\\dfrac{5}{8}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Sederhanakan pecahan \\(\\dfrac{10}{15}\\).",
+          o: [
+            "\\(\\dfrac{2}{3}\\)",
+            "\\(\\dfrac{5}{15}\\)",
+            "\\(\\dfrac{1}{3}\\)",
+            "\\(\\dfrac{3}{5}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Sederhanakan pecahan \\(\\dfrac{12}{18}\\).",
+          o: [
+            "\\(\\dfrac{2}{3}\\)",
+            "\\(\\dfrac{6}{9}\\)",
+            "\\(\\dfrac{3}{4}\\)",
+            "\\(\\dfrac{4}{9}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Sederhanakan pecahan \\(\\dfrac{14}{21}\\).",
+          o: [
+            "\\(\\dfrac{2}{3}\\)",
+            "\\(\\dfrac{7}{21}\\)",
+            "\\(\\dfrac{3}{7}\\)",
+            "\\(\\dfrac{14}{7}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Sederhanakan pecahan \\(\\dfrac{16}{24}\\).",
+          o: [
+            "\\(\\dfrac{2}{3}\\)",
+            "\\(\\dfrac{4}{6}\\)",
+            "\\(\\dfrac{3}{4}\\)",
+            "\\(\\dfrac{8}{12}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Sederhanakan pecahan \\(\\dfrac{18}{27}\\).",
+          o: [
+            "\\(\\dfrac{2}{3}\\)",
+            "\\(\\dfrac{6}{9}\\)",
+            "\\(\\dfrac{3}{5}\\)",
+            "\\(\\dfrac{9}{18}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Sederhanakan pecahan \\(\\dfrac{20}{30}\\).",
+          o: [
+            "\\(\\dfrac{2}{3}\\)",
+            "\\(\\dfrac{10}{15}\\)",
+            "\\(\\dfrac{3}{5}\\)",
+            "\\(\\dfrac{1}{3}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Sederhanakan pecahan \\(\\dfrac{21}{28}\\).",
+          o: [
+            "\\(\\dfrac{3}{4}\\)",
+            "\\(\\dfrac{7}{28}\\)",
+            "\\(\\dfrac{4}{7}\\)",
+            "\\(\\dfrac{6}{8}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Sederhanakan pecahan \\(\\dfrac{24}{36}\\).",
+          o: [
+            "\\(\\dfrac{2}{3}\\)",
+            "\\(\\dfrac{12}{18}\\)",
+            "\\(\\dfrac{3}{4}\\)",
+            "\\(\\dfrac{4}{9}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Sederhanakan pecahan \\(\\dfrac{25}{35}\\).",
+          o: [
+            "\\(\\dfrac{5}{7}\\)",
+            "\\(\\dfrac{1}{7}\\)",
+            "\\(\\dfrac{7}{5}\\)",
+            "\\(\\dfrac{25}{7}\\)",
+          ],
+          a: 0,
+        },
+
+        {
+          q: "Sederhanakan pecahan \\(\\dfrac{27}{45}\\).",
+          o: [
+            "\\(\\dfrac{3}{5}\\)",
+            "\\(\\dfrac{9}{15}\\)",
+            "\\(\\dfrac{5}{3}\\)",
+            "\\(\\dfrac{1}{3}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Sederhanakan pecahan \\(\\dfrac{28}{42}\\).",
+          o: [
+            "\\(\\dfrac{2}{3}\\)",
+            "\\(\\dfrac{14}{21}\\)",
+            "\\(\\dfrac{3}{7}\\)",
+            "\\(\\dfrac{4}{9}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Sederhanakan pecahan \\(\\dfrac{30}{45}\\).",
+          o: [
+            "\\(\\dfrac{2}{3}\\)",
+            "\\(\\dfrac{15}{45}\\)",
+            "\\(\\dfrac{3}{5}\\)",
+            "\\(\\dfrac{1}{3}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Sederhanakan pecahan \\(\\dfrac{32}{48}\\).",
+          o: [
+            "\\(\\dfrac{2}{3}\\)",
+            "\\(\\dfrac{4}{6}\\)",
+            "\\(\\dfrac{3}{4}\\)",
+            "\\(\\dfrac{8}{12}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Sederhanakan pecahan \\(\\dfrac{33}{44}\\).",
+          o: [
+            "\\(\\dfrac{3}{4}\\)",
+            "\\(\\dfrac{11}{44}\\)",
+            "\\(\\dfrac{4}{3}\\)",
+            "\\(\\dfrac{33}{11}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Sederhanakan pecahan \\(\\dfrac{35}{49}\\).",
+          o: [
+            "\\(\\dfrac{5}{7}\\)",
+            "\\(\\dfrac{7}{5}\\)",
+            "\\(\\dfrac{1}{7}\\)",
+            "\\(\\dfrac{35}{7}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Sederhanakan pecahan \\(\\dfrac{36}{54}\\).",
+          o: [
+            "\\(\\dfrac{2}{3}\\)",
+            "\\(\\dfrac{18}{27}\\)",
+            "\\(\\dfrac{3}{5}\\)",
+            "\\(\\dfrac{4}{9}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Sederhanakan pecahan \\(\\dfrac{40}{60}\\).",
+          o: [
+            "\\(\\dfrac{2}{3}\\)",
+            "\\(\\dfrac{4}{6}\\)",
+            "\\(\\dfrac{3}{5}\\)",
+            "\\(\\dfrac{1}{2}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Sederhanakan pecahan \\(\\dfrac{42}{56}\\).",
+          o: [
+            "\\(\\dfrac{3}{4}\\)",
+            "\\(\\dfrac{7}{56}\\)",
+            "\\(\\dfrac{4}{7}\\)",
+            "\\(\\dfrac{6}{8}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Sederhanakan pecahan \\(\\dfrac{45}{60}\\).",
+          o: [
+            "\\(\\dfrac{3}{4}\\)",
+            "\\(\\dfrac{15}{20}\\)",
+            "\\(\\dfrac{4}{5}\\)",
+            "\\(\\dfrac{2}{3}\\)",
+          ],
+          a: 0,
+        },
+
+        {
+          q: "Sederhanakan pecahan \\(\\dfrac{48}{72}\\).",
+          o: [
+            "\\(\\dfrac{2}{3}\\)",
+            "\\(\\dfrac{24}{36}\\)",
+            "\\(\\dfrac{3}{4}\\)",
+            "\\(\\dfrac{4}{9}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Sederhanakan pecahan \\(\\dfrac{50}{75}\\).",
+          o: [
+            "\\(\\dfrac{2}{3}\\)",
+            "\\(\\dfrac{25}{75}\\)",
+            "\\(\\dfrac{3}{5}\\)",
+            "\\(\\dfrac{1}{3}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Sederhanakan pecahan \\(\\dfrac{54}{81}\\).",
+          o: [
+            "\\(\\dfrac{2}{3}\\)",
+            "\\(\\dfrac{18}{27}\\)",
+            "\\(\\dfrac{3}{4}\\)",
+            "\\(\\dfrac{4}{9}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Sederhanakan pecahan \\(\\dfrac{63}{84}\\).",
+          o: [
+            "\\(\\dfrac{3}{4}\\)",
+            "\\(\\dfrac{7}{84}\\)",
+            "\\(\\dfrac{4}{7}\\)",
+            "\\(\\dfrac{6}{8}\\)",
+          ],
+          a: 0,
+        },
+
+        {
+          q: "Ubah pecahan biasa \\(\\dfrac{7}{3}\\) menjadi pecahan campuran.",
+          o: [
+            "\\(2 \\dfrac{1}{3}\\)",
+            "\\(1 \\dfrac{1}{3}\\)",
+            "\\(2 \\dfrac{2}{3}\\)",
+            "\\(3 \\dfrac{1}{3}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Ubah pecahan biasa \\(\\dfrac{9}{4}\\) menjadi pecahan campuran.",
+          o: [
+            "\\(2 \\dfrac{1}{4}\\)",
+            "\\(1 \\dfrac{3}{4}\\)",
+            "\\(3 \\dfrac{1}{4}\\)",
+            "\\(2 \\dfrac{3}{4}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Ubah pecahan biasa \\(\\dfrac{11}{5}\\) menjadi pecahan campuran.",
+          o: [
+            "\\(2 \\dfrac{1}{5}\\)",
+            "\\(1 \\dfrac{1}{5}\\)",
+            "\\(2 \\dfrac{2}{5}\\)",
+            "\\(3 \\dfrac{1}{5}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Ubah pecahan biasa \\(\\dfrac{13}{6}\\) menjadi pecahan campuran.",
+          o: [
+            "\\(2 \\dfrac{1}{6}\\)",
+            "\\(1 \\dfrac{1}{6}\\)",
+            "\\(2 \\dfrac{2}{6}\\)",
+            "\\(3 \\dfrac{1}{6}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Ubah pecahan biasa \\(\\dfrac{15}{4}\\) menjadi pecahan campuran.",
+          o: [
+            "\\(3 \\dfrac{3}{4}\\)",
+            "\\(2 \\dfrac{3}{4}\\)",
+            "\\(3 \\dfrac{1}{4}\\)",
+            "\\(4 \\dfrac{1}{4}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Ubah pecahan biasa \\(\\dfrac{17}{5}\\) menjadi pecahan campuran.",
+          o: [
+            "\\(3 \\dfrac{2}{5}\\)",
+            "\\(2 \\dfrac{2}{5}\\)",
+            "\\(3 \\dfrac{1}{5}\\)",
+            "\\(4 \\dfrac{2}{5}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Ubah pecahan biasa \\(\\dfrac{19}{6}\\) menjadi pecahan campuran.",
+          o: [
+            "\\(3 \\dfrac{1}{6}\\)",
+            "\\(2 \\dfrac{1}{6}\\)",
+            "\\(3 \\dfrac{2}{6}\\)",
+            "\\(4 \\dfrac{1}{6}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Ubah pecahan biasa \\(\\dfrac{21}{8}\\) menjadi pecahan campuran.",
+          o: [
+            "\\(2 \\dfrac{5}{8}\\)",
+            "\\(2 \\dfrac{3}{8}\\)",
+            "\\(3 \\dfrac{1}{8}\\)",
+            "\\(1 \\dfrac{5}{8}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Ubah pecahan biasa \\(\\dfrac{23}{7}\\) menjadi pecahan campuran.",
+          o: [
+            "\\(3 \\dfrac{2}{7}\\)",
+            "\\(2 \\dfrac{2}{7}\\)",
+            "\\(3 \\dfrac{1}{7}\\)",
+            "\\(4 \\dfrac{2}{7}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Ubah pecahan biasa \\(\\dfrac{25}{6}\\) menjadi pecahan campuran.",
+          o: [
+            "\\(4 \\dfrac{1}{6}\\)",
+            "\\(3 \\dfrac{1}{6}\\)",
+            "\\(4 \\dfrac{5}{6}\\)",
+            "\\(5 \\dfrac{1}{6}\\)",
+          ],
+          a: 0,
+        },
+
+        {
+          q: "Ubah pecahan biasa \\(\\dfrac{27}{4}\\) menjadi pecahan campuran.",
+          o: [
+            "\\(6 \\dfrac{3}{4}\\)",
+            "\\(5 \\dfrac{3}{4}\\)",
+            "\\(6 \\dfrac{1}{4}\\)",
+            "\\(7 \\dfrac{3}{4}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Ubah pecahan biasa \\(\\dfrac{29}{5}\\) menjadi pecahan campuran.",
+          o: [
+            "\\(5 \\dfrac{4}{5}\\)",
+            "\\(4 \\dfrac{4}{5}\\)",
+            "\\(5 \\dfrac{3}{5}\\)",
+            "\\(6 \\dfrac{4}{5}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Ubah pecahan biasa \\(\\dfrac{31}{6}\\) menjadi pecahan campuran.",
+          o: [
+            "\\(5 \\dfrac{1}{6}\\)",
+            "\\(4 \\dfrac{1}{6}\\)",
+            "\\(5 \\dfrac{5}{6}\\)",
+            "\\(6 \\dfrac{1}{6}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Ubah pecahan biasa \\(\\dfrac{33}{8}\\) menjadi pecahan campuran.",
+          o: [
+            "\\(4 \\dfrac{1}{8}\\)",
+            "\\(3 \\dfrac{1}{8}\\)",
+            "\\(4 \\dfrac{5}{8}\\)",
+            "\\(5 \\dfrac{1}{8}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Ubah pecahan biasa \\(\\dfrac{35}{6}\\) menjadi pecahan campuran.",
+          o: [
+            "\\(5 \\dfrac{5}{6}\\)",
+            "\\(4 \\dfrac{5}{6}\\)",
+            "\\(5 \\dfrac{1}{6}\\)",
+            "\\(6 \\dfrac{5}{6}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Ubah pecahan biasa \\(\\dfrac{37}{7}\\) menjadi pecahan campuran.",
+          o: [
+            "\\(5 \\dfrac{2}{7}\\)",
+            "\\(4 \\dfrac{2}{7}\\)",
+            "\\(5 \\dfrac{1}{7}\\)",
+            "\\(6 \\dfrac{2}{7}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Ubah pecahan biasa \\(\\dfrac{39}{8}\\) menjadi pecahan campuran.",
+          o: [
+            "\\(4 \\dfrac{7}{8}\\)",
+            "\\(4 \\dfrac{3}{8}\\)",
+            "\\(5 \\dfrac{1}{8}\\)",
+            "\\(3 \\dfrac{7}{8}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Ubah pecahan biasa \\(\\dfrac{41}{6}\\) menjadi pecahan campuran.",
+          o: [
+            "\\(6 \\dfrac{5}{6}\\)",
+            "\\(5 \\dfrac{5}{6}\\)",
+            "\\(6 \\dfrac{1}{6}\\)",
+            "\\(7 \\dfrac{5}{6}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Ubah pecahan biasa \\(\\dfrac{43}{7}\\) menjadi pecahan campuran.",
+          o: [
+            "\\(6 \\dfrac{1}{7}\\)",
+            "\\(5 \\dfrac{1}{7}\\)",
+            "\\(6 \\dfrac{3}{7}\\)",
+            "\\(7 \\dfrac{1}{7}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Ubah pecahan biasa \\(\\dfrac{47}{8}\\) menjadi pecahan campuran.",
+          o: [
+            "\\(5 \\dfrac{7}{8}\\)",
+            "\\(4 \\dfrac{7}{8}\\)",
+            "\\(5 \\dfrac{3}{8}\\)",
+            "\\(6 \\dfrac{7}{8}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Sederhanakan pecahan \\(\\dfrac{84}{126}\\).",
+          o: [
+            "\\(\\dfrac{2}{3}\\)",
+            "\\(\\dfrac{14}{21}\\)",
+            "\\(\\dfrac{3}{4}\\)",
+            "\\(\\dfrac{4}{9}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Sederhanakan pecahan \\(\\dfrac{96}{144}\\).",
+          o: [
+            "\\(\\dfrac{2}{3}\\)",
+            "\\(\\dfrac{4}{5}\\)",
+            "\\(\\dfrac{3}{4}\\)",
+            "\\(\\dfrac{5}{8}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Sederhanakan pecahan \\(\\dfrac{105}{140}\\).",
+          o: [
+            "\\(\\dfrac{3}{4}\\)",
+            "\\(\\dfrac{5}{7}\\)",
+            "\\(\\dfrac{7}{5}\\)",
+            "\\(\\dfrac{4}{5}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Sederhanakan pecahan \\(\\dfrac{108}{162}\\).",
+          o: [
+            "\\(\\dfrac{2}{3}\\)",
+            "\\(\\dfrac{3}{5}\\)",
+            "\\(\\dfrac{4}{9}\\)",
+            "\\(\\dfrac{5}{6}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Sederhanakan pecahan \\(\\dfrac{132}{198}\\).",
+          o: [
+            "\\(\\dfrac{2}{3}\\)",
+            "\\(\\dfrac{4}{5}\\)",
+            "\\(\\dfrac{5}{6}\\)",
+            "\\(\\dfrac{3}{4}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Sederhanakan pecahan \\(\\dfrac{150}{210}\\).",
+          o: [
+            "\\(\\dfrac{5}{7}\\)",
+            "\\(\\dfrac{3}{5}\\)",
+            "\\(\\dfrac{7}{5}\\)",
+            "\\(\\dfrac{2}{3}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Sederhanakan pecahan \\(\\dfrac{168}{224}\\).",
+          o: [
+            "\\(\\dfrac{3}{4}\\)",
+            "\\(\\dfrac{4}{7}\\)",
+            "\\(\\dfrac{7}{8}\\)",
+            "\\(\\dfrac{5}{6}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Sederhanakan pecahan \\(\\dfrac{180}{270}\\).",
+          o: [
+            "\\(\\dfrac{2}{3}\\)",
+            "\\(\\dfrac{3}{5}\\)",
+            "\\(\\dfrac{4}{9}\\)",
+            "\\(\\dfrac{5}{6}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Sederhanakan pecahan \\(\\dfrac{216}{288}\\).",
+          o: [
+            "\\(\\dfrac{3}{4}\\)",
+            "\\(\\dfrac{2}{3}\\)",
+            "\\(\\dfrac{4}{5}\\)",
+            "\\(\\dfrac{5}{6}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Sederhanakan pecahan \\(\\dfrac{252}{336}\\).",
+          o: [
+            "\\(\\dfrac{3}{4}\\)",
+            "\\(\\dfrac{4}{7}\\)",
+            "\\(\\dfrac{7}{8}\\)",
+            "\\(\\dfrac{5}{6}\\)",
+          ],
+          a: 0,
+        },
+        {
+          q: "Ubah pecahan biasa \\(\\dfrac{1}{4}\\) menjadi desimal.",
+          o: ["0.25", "0.4", "0.2", "0.75"],
+          a: 0,
+        },
+        {
+          q: "Ubah pecahan biasa \\(\\dfrac{3}{5}\\) menjadi desimal.",
+          o: ["0.6", "0.35", "0.5", "0.75"],
+          a: 0,
+        },
+        {
+          q: "Ubah pecahan biasa \\(\\dfrac{7}{8}\\) menjadi desimal.",
+          o: ["0.875", "0.78", "0.825", "0.887"],
+          a: 0,
+        },
+        {
+          q: "Ubah pecahan biasa \\(\\dfrac{9}{20}\\) menjadi desimal.",
+          o: ["0.45", "0.9", "0.225", "0.49"],
+          a: 0,
+        },
+        {
+          q: "Ubah pecahan biasa \\(\\dfrac{11}{25}\\) menjadi desimal.",
+          o: ["0.44", "0.11", "0.25", "0.55"],
+          a: 0,
+        },
+
+        {
+          q: "Ubah pecahan campuran \\(1 \\dfrac{1}{4}\\) menjadi desimal.",
+          o: ["1.25", "1.4", "1.2", "1.75"],
+          a: 0,
+        },
+        {
+          q: "Ubah pecahan campuran \\(2 \\dfrac{3}{5}\\) menjadi desimal.",
+          o: ["2.6", "2.35", "2.5", "2.75"],
+          a: 0,
+        },
+        {
+          q: "Ubah pecahan campuran \\(3 \\dfrac{1}{8}\\) menjadi desimal.",
+          o: ["3.125", "3.18", "3.25", "3.15"],
+          a: 0,
+        },
+        {
+          q: "Ubah pecahan campuran \\(4 \\dfrac{3}{4}\\) menjadi desimal.",
+          o: ["4.75", "4.34", "4.25", "4.5"],
+          a: 0,
+        },
+        {
+          q: "Ubah pecahan campuran \\(5 \\dfrac{2}{5}\\) menjadi desimal.",
+          o: ["5.4", "5.25", "5.2", "5.6"],
+          a: 0,
+        },
+
+        {
+          q: "Ubah pecahan biasa \\(\\dfrac{13}{20}\\) menjadi desimal.",
+          o: ["0.65", "0.52", "0.75", "0.615"],
+          a: 0,
+        },
+        {
+          q: "Ubah pecahan biasa \\(\\dfrac{17}{50}\\) menjadi desimal.",
+          o: ["0.34", "0.17", "0.5", "0.68"],
+          a: 0,
+        },
+        {
+          q: "Ubah pecahan biasa \\(\\dfrac{21}{40}\\) menjadi desimal.",
+          o: ["0.525", "0.42", "0.54", "0.512"],
+          a: 0,
+        },
+        {
+          q: "Ubah pecahan biasa \\(\\dfrac{9}{16}\\) menjadi desimal.",
+          o: ["0.5625", "0.516", "0.59", "0.625"],
+          a: 0,
+        },
+        {
+          q: "Ubah pecahan biasa \\(\\dfrac{27}{100}\\) menjadi desimal.",
+          o: ["0.27", "2.7", "0.027", "0.207"],
+          a: 0,
+        },
+
+        {
+          q: "Ubah pecahan campuran \\(6 \\dfrac{1}{2}\\) menjadi desimal.",
+          o: ["6.5", "6.25", "6.2", "6.75"],
+          a: 0,
+        },
+        {
+          q: "Ubah pecahan campuran \\(7 \\dfrac{3}{10}\\) menjadi desimal.",
+          o: ["7.3", "7.03", "7.5", "7.13"],
+          a: 0,
+        },
+        {
+          q: "Ubah pecahan campuran \\(8 \\dfrac{5}{8}\\) menjadi desimal.",
+          o: ["8.625", "8.58", "8.75", "8.52"],
+          a: 0,
+        },
+        {
+          q: "Ubah pecahan campuran \\(9 \\dfrac{7}{20}\\) menjadi desimal.",
+          o: ["9.35", "9.07", "9.5", "9.375"],
+          a: 0,
+        },
+        {
+          q: "Ubah pecahan campuran \\(10 \\dfrac{9}{25}\\) menjadi desimal.",
+          o: ["10.36", "10.09", "10.25", "10.4"],
+          a: 0,
+        },
+      ].map((x) => ({
+        type: "TKS",
+        q: x.q,
+        options: x.o,
+        answer: x.a,
+      }));
+
+      S_fungsi = shuffle(SOAL_fungsi);
+
+      /*  Validasi jumlah
+                if(SINONIM.length!==90||ANTONIM.length!==90){
+                  console.warn('Jumlah soal tidak 90/90:', SINONIM.length, ANTONIM.length);
+                }  */
+
+      // /* Gabung & acak
+      function shuffleOptions(q) {
+        let opts = q.options.map((opt, i) => ({ opt, i }));
+        opts = shuffle(opts); // pake fungsi shuffle yang sudah kamu punya
+        let newAnswer = opts.findIndex((o) => o.i === q.answer);
+        return {
+          ...q,
+          options: opts.map((o) => o.opt),
+          answer: newAnswer,
+        };
+      }
+      //*/
+      let QUESTIONS = [...S_fungsi].map((q, i) => ({
+        id: i + 1,
+        ...shuffleOptions(q),
+      }));
+      // let QUESTIONS = [...SINONIM, ...ANTONIM].map((q,i)=>({id:i+1, ...q }));
+      // State
+      let state = {
+        user: null,
+        timeLeft: 25 * 60, // 25 menit
+        currentIndex: 0,
+        answers: Array(180).fill(null), // simpan index jawaban (0..3) atau null
+      };
+
+      /** RENDERING **/
+      function formatTime(s) {
+        const m = Math.floor(s / 60)
+          .toString()
+          .padStart(2, "0");
+        const r = (s % 60).toString().padStart(2, "0");
+        return `${m}:${r}`;
+      }
+
+      function renderTimer() {
+        el("#timer").textContent = formatTime(state.timeLeft);
+        if (state.timeLeft <= 60) {
+          el("#timer").style.background = "#331a1a";
+          el("#timer").style.borderColor = "#7f1d1d";
+        }
+        if (state.timeLeft <= 0) {
+          submitQuiz();
+        }
+      }
+
+      let tick = null;
+      function startTimer() {
+        if (tick) clearInterval(tick);
+        tick = setInterval(() => {
+          state.timeLeft--;
+          renderTimer();
+          if (state.timeLeft <= 0) clearInterval(tick);
+        }, 1000);
+      }
+
+      function mountNav() {
+        const nav = el("#nav");
+        nav.innerHTML = "";
+        QUESTIONS.forEach((q, idx) => {
+          const b = document.createElement("button");
+          b.textContent = idx + 1;
+          b.addEventListener("click", () => {
+            goTo(idx);
+          });
+          nav.appendChild(b);
+        });
+        updateNavActive();
+      }
+
+      function updateNavActive() {
+        const buttons = els("#nav button");
+        buttons.forEach((b, idx) => {
+          b.classList.toggle("active", idx === state.currentIndex);
+          b.classList.toggle("done", state.answers[idx] !== null);
+        });
+        el("#infoSoal").textContent = `Soal ${state.currentIndex + 1} / ${
+          QUESTIONS.length
+        }`;
+        el("#infoKategori").textContent = `Kategori: ${QUESTIONS[
+          state.currentIndex
+        ].type.toUpperCase()}`;
+      }
+
+      function renderQuestion() {
+        const q = QUESTIONS[state.currentIndex];
+        const container = el("#questionArea");
+        container.innerHTML = "";
+        const title = document.createElement("div");
+        title.className = "q-title";
+
+        title.innerHTML = q.q;
+        container.appendChild(title);
+
+        const list = document.createElement("div");
+        list.className = "choices";
+        q.options.forEach((opt, i) => {
+          const row = document.createElement("label");
+          row.className = "choice";
+          const input = document.createElement("input");
+          input.type = "radio";
+          input.name = "choice";
+          input.value = i;
+          input.checked = state.answers[state.currentIndex] === i;
+          input.addEventListener("change", () => {
+            state.answers[state.currentIndex] = i;
+            updateNavActive();
+          });
+          const span = document.createElement("div");
+          span.innerHTML = opt;
+          row.appendChild(input);
+          row.appendChild(span);
+          list.appendChild(row);
+        });
+        container.appendChild(list);
+        MathJax.typeset();
+      }
+
+      function goTo(idx) {
+        state.currentIndex = Math.max(0, Math.min(QUESTIONS.length - 1, idx));
+        updateNavActive();
+        renderQuestion();
+      }
+
+      function next() {
+        if (state.currentIndex < QUESTIONS.length - 1) {
+          goTo(state.currentIndex + 1);
+        }
+      }
+      function prev() {
+        if (state.currentIndex > 0) {
+          goTo(state.currentIndex - 1);
+        }
+      }
+
+      function resetAnswers() {
+        if (!confirm("Yakin reset semua jawaban?")) return;
+        state.answers = Array(QUESTIONS.length).fill(null);
+        updateNavActive();
+        renderQuestion();
+      }
+
+      function submitQuiz() {
+        // hitung skor per kategori
+        let sSin = 0,
+          sAnt = 0,
+          sHip = 0;
+        QUESTIONS.forEach((q, idx) => {
+          const pick = state.answers[idx];
+          const correct = q.answer;
+          if (pick === correct) {
+            if (q.type === "TKS") sSin++;
+          }
+        });
+        const total = sSin + sAnt + sHip;
+
+        // tampilkan
+        let total_question = QUESTIONS.length;
+
+        el("#scoreTotal").textContent = `${total} / ${total_question}`;
+        el("#resultUser").textContent = `Peserta: ${
+          state.user?.nama || "-"
+        } (waktu habis/kumpul)`;
+
+        // stop timer, ganti section
+        if (tick) clearInterval(tick);
+        showSection("result");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      function showSection(which) {
+        el("#section-form").classList.remove("active");
+        el("#section-quiz").classList.remove("active");
+        el("#section-result").classList.remove("active");
+        if (which === "form") el("#section-form").classList.add("active");
+        if (which === "quiz") el("#section-quiz").classList.add("active");
+        if (which === "result") el("#section-result").classList.add("active");
+      }
+
+      // EVENTS
+      el("#btnMulai").addEventListener("click", () => {
+        const nama = el("#nama").value.trim();
+        const pass = el("#pass").value.trim();
+        if (!nama || !pass) {
+          alert("Nama dan password wajib diisi.");
+          return;
+        }
+        if (pass !== "WW3iscoming") {
+          alert(
+            "password salah! tanya password ke sir hardi. klo sir hardi dak tau tanya ke sir meca"
+          );
+          return;
+        }
+        state.user = { nama, pass };
+        el("#infoUser").textContent = `Peserta: ${nama}`;
+        showSection("quiz");
+        startTimer();
+        mountNav();
+        goTo(0);
+        renderTimer();
+      });
+
+      el("#prevBtn").addEventListener("click", prev);
+      el("#nextBtn").addEventListener("click", next);
+      el("#btnReset").addEventListener("click", resetAnswers);
+      el("#btnSubmit").addEventListener("click", () => {
+        if (confirm("Kumpulkan jawaban sekarang?")) submitQuiz();
+      });
+
+      // Keyboard nav: panah kiri/kanan, angka 1-4 untuk memilih A-D
+      window.addEventListener("keydown", (e) => {
+        if (!el("#section-quiz").classList.contains("active")) return;
+        if (e.key === "ArrowRight") next();
+        if (e.key === "ArrowLeft") prev();
+        if (["1", "2", "3", "4"].includes(e.key)) {
+          const idx = parseInt(e.key) - 1;
+          state.answers[state.currentIndex] = idx;
+          updateNavActive();
+          renderQuestion();
+        }
+      });
+
+      // Ulang dari hasil
+      el("#btnUlang").addEventListener("click", () => {
+        state = {
+          user: state.user,
+          timeLeft: 20 * 60,
+          currentIndex: 0,
+          answers: Array(180).fill(null),
+        };
+        QUESTIONS = shuffle(QUESTIONS); // acak ulang urutan
+        showSection("quiz");
+        startTimer();
+        mountNav();
+        goTo(0);
+        renderTimer();
+      });
+    </script>
+  </body>
+</html>
