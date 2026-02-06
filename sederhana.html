@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Ujian Kecepatan Pecahan</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- MathJax -->
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+<style>
+body {
+    margin: 0;
+    font-family: "Segoe UI", sans-serif;
+    background: linear-gradient(135deg, #2E2DA4, #4c6ef5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+.card {
+    background: #fff;
+    width: 100%;
+    max-width: 480px;
+    border-radius: 18px;
+    padding: 24px;
+    box-shadow: 0 20px 40px rgba(0,0,0,.25);
+}
+h1 {
+    text-align: center;
+    margin-bottom: 12px;
+}
+select, button {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    font-size: 1rem;
+    margin-top: 10px;
+}
+button {
+    background: #2E2DA4;
+    color: white;
+    cursor: pointer;
+}
+button:hover { background: #24238a; }
+.info {
+    display: flex;
+    justify-content: space-between;
+    font-size: .9rem;
+}
+.question {
+    text-align: center;
+    font-size: 1.2rem;
+    margin: 18px 0;
+}
+.options button {
+    background: #f1f3f5;
+    color: #222;
+}
+.hidden { display: none; }
+.review {
+    max-height: 280px;
+    overflow-y: auto;
+    font-size: .9rem;
+}
+.review-item {
+    border-bottom: 1px solid #ddd;
+    padding: 8px 0;
+}
+.correct { color: green; }
+.wrong { color: red; }
+</style>
+</head>
+
+<body>
+<div class="card">
+
+<!-- MENU -->
+<div id="menu">
+    <h1>Ujian Kecepatan Pecahan</h1>
+    <select id="timeSelect">
+        <option value="180">3 Menit</option>
+        <option value="300">5 Menit</option>
+        <option value="600">10 Menit</option>
+    </select>
+    <button onclick="startTest()">Mulai Ujian</button>
+</div>
+
+<!-- TEST -->
+<div id="test" class="hidden">
+    <div class="info">
+        <div>⏱️ <span id="time">00:00</span></div>
+        <div>✔️ <span id="score">0</span> ❌ <span id="wrong">0</span></div>
+    </div>
+    <div class="question" id="question"></div>
+    <div class="options" id="options"></div>
+</div>
+
+<!-- RESULT -->
+<div id="result" class="hidden">
+    <h1>Hasil Ujian</h1>
+    <p>Benar: <b id="finalScore"></b></p>
+    <p>Salah: <b id="finalWrong"></b></p>
+    <div class="review" id="review"></div>
+    <button onclick="location.reload()">Ulangi</button>
+</div>
+
+</div>
+
+<script>
+let timeLeft, timer;
+let score = 0, wrong = 0;
+let currentCorrect = "";
+let history = [];
+
+// util
+function rand(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+function gcd(a, b) {
+    while (b !== 0) [a, b] = [b, a % b];
+    return a;
+}
+
+// start
+function startTest() {
+    score = 0;
+    wrong = 0;
+    history = [];
+    timeLeft = +document.getElementById("timeSelect").value;
+
+    document.getElementById("menu").classList.add("hidden");
+    document.getElementById("test").classList.remove("hidden");
+
+    updateTime();
+    timer = setInterval(() => {
+        timeLeft--;
+        updateTime();
+        if (timeLeft <= 0) finishTest();
+    }, 1000);
+
+    generateQuestion();
+}
+
+function updateTime() {
+    let m = Math.floor(timeLeft / 60);
+    let s = timeLeft % 60;
+    document.getElementById("time").textContent =
+        `${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`;
+}
+
+// core logic
+function generateQuestion() {
+    let a, b;
+    do {
+        a = rand(1, 9);
+        b = rand(1, 9);
+    } while (a === b || gcd(a, b) !== 1);
+
+    let factor = rand(2, 9);
+    let m = a * factor;
+    let n = b * factor;
+
+    currentCorrect = `${a}/${b}`;
+
+    document.getElementById("question").innerHTML =
+        `Bentuk sederhana dari \\( \\frac{${m}}{${n}} \\) adalah ...`;
+
+    let opts = new Set([currentCorrect]);
+    while (opts.size < 4) {
+        let x = rand(1, 9);
+        let y = rand(1, 9);
+        if (x !== y && gcd(x, y) === 1) {
+            opts.add(`${x}/${y}`);
+        }
+    }
+
+    let options = [...opts].sort(() => Math.random() - 0.5);
+    let box = document.getElementById("options");
+    box.innerHTML = "";
+
+    options.forEach(o => {
+        let [p, q] = o.split('/');
+        let btn = document.createElement("button");
+        btn.innerHTML = `\\( \\frac{${p}}{${q}} \\)`;
+        btn.onclick = () => submitAnswer(o, m, n);
+        box.appendChild(btn);
+    });
+
+    MathJax.typeset();
+}
+
+function submitAnswer(ans, m, n) {
+    let correct = ans === currentCorrect;
+    if (correct) score++; else wrong++;
+
+    document.getElementById("score").textContent = score;
+    document.getElementById("wrong").textContent = wrong;
+
+    history.push({
+        soal: `\\( \\frac{${m}}{${n}} \\)`,
+        jawab: ans,
+        benar: currentCorrect,
+        status: correct
+    });
+
+    generateQuestion();
+}
+
+// finish
+function finishTest() {
+    clearInterval(timer);
+    document.getElementById("test").classList.add("hidden");
+    document.getElementById("result").classList.remove("hidden");
+
+    document.getElementById("finalScore").textContent = score;
+    document.getElementById("finalWrong").textContent = wrong;
+
+    document.getElementById("review").innerHTML = history.map((h, i) => `
+        <div class="review-item ${h.status ? 'correct':'wrong'}">
+            ${i+1}. ${h.soal}<br>
+            Jawaban Anda: \\( \\frac{${h.jawab.split('/')[0]}}{${h.jawab.split('/')[1]}} \\)<br>
+            Kunci: \\( \\frac{${h.benar.split('/')[0]}}{${h.benar.split('/')[1]}} \\)
+            ${h.status ? '✔️':'❌'}
+        </div>
+    `).join("");
+
+    MathJax.typeset();
+}
+</script>
+</body>
+</html>
