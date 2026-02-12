@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Latihan Kecepatan KPK</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+  font-family: system-ui, sans-serif;
+  background:#f4f6fb;
+  margin:0;
+}
+.container{
+  max-width:440px;
+  margin:40px auto;
+  background:#fff;
+  padding:20px;
+  border-radius:12px;
+  box-shadow:0 8px 20px rgba(0,0,0,.08);
+}
+h1{text-align:center}
+button{
+  padding:10px;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+}
+.start{width:100%;background:#2e2da4;color:#fff;font-weight:600}
+.option{
+  display:block;
+  width:100%;
+  margin:8px 0;
+  background:#f0f2ff;
+}
+.option:hover{background:#dfe3ff}
+.correct{background:#c8f7c5!important}
+.wrong{background:#ffd6d6!important}
+.feedback{text-align:center;font-weight:600;margin:10px 0}
+.timer{text-align:center;font-weight:700}
+.hidden{display:none}
+.summary p{margin:6px 0}
+select,input{width:100%;margin:5px 0 10px}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<h1>Latihan KPK</h1>
+
+<div id="setup">
+  <label>Waktu latihan (menit)</label>
+  <input id="timeInput" type="number" min="1" value="3">
+
+  <label>Mode</label>
+  <select id="mode">
+    <option value="latihan">Latihan</option>
+    <option value="evaluasi">Evaluasi</option>
+  </select>
+
+  <label>Jenis pasangan bilangan</label>
+  <select id="pairType">
+    <option value="bebas">Campuran (bebas)</option>
+    <option value="gcd1">Relatif prima (gcd = 1)</option>
+    <option value="gcdgt1">Tidak relatif prima (gcd > 1)</option>
+  </select>
+
+  <button class="start" onclick="start()">Mulai</button>
+</div>
+
+<div id="quiz" class="hidden">
+  <div class="timer" id="timer"></div>
+  <h3 id="question"></h3>
+  <div id="options"></div>
+  <div class="feedback" id="feedback"></div>
+</div>
+
+<div id="result" class="hidden">
+  <h3>Rekap Hasil</h3>
+  <div class="summary">
+    <p>Total soal: <b id="total"></b></p>
+    <p>Benar: <b id="correctCount"></b></p>
+    <p>Salah: <b id="wrongCount"></b></p>
+  </div>
+  <h4>Kunci Jawaban</h4>
+  <ul id="answerKey"></ul>
+</div>
+
+</div>
+
+<script>
+let a,b,c;
+let timerInterval;
+let remaining;
+let answers=[];
+let benar=0, salah=0;
+let mode, pairType;
+
+const gcd=(x,y)=>y===0?x:gcd(y,x%y);
+const lcm=(x,y)=>x*y/gcd(x,y);
+const rand=(min,max)=>Math.floor(Math.random()*(max-min+1))+min;
+
+function generatePair(){
+  let x,y,g;
+  do{
+    x=rand(1,20);
+    y=rand(1,20);
+    g=gcd(x,y);
+  }while(
+    (pairType==="gcd1" && g!==1) ||
+    (pairType==="gcdgt1" && g===1)
+  );
+  return [x,y];
+}
+
+function generateQuestion(){
+  [a,b]=generatePair();
+  c=lcm(a,b);
+
+  document.getElementById("question").textContent=
+    `KPK dari ${a} dan ${b} adalah ...`;
+
+  let options=new Set([c]);
+  while(options.size<5){
+    let d=c+rand(-10,10);
+    if(d>0) options.add(d);
+  }
+
+  options=[...options].sort(()=>Math.random()-0.5);
+
+  const optDiv=document.getElementById("options");
+  optDiv.innerHTML="";
+  options.forEach(v=>{
+    const btn=document.createElement("button");
+    btn.className="option";
+    btn.textContent=v;
+    btn.onclick=()=>check(v,btn);
+    optDiv.appendChild(btn);
+  });
+
+  document.getElementById("feedback").textContent="";
+}
+
+function check(val,btn){
+  const ok=val===c;
+  btn.classList.add(ok?"correct":"wrong");
+
+  if(ok){
+    benar++;
+    answers.push(`KPK(${a},${b}) = ${c}`);
+    document.getElementById("feedback").textContent="✔ Benar";
+    setTimeout(generateQuestion,500);
+  }else{
+    salah++;
+    document.getElementById("feedback").textContent="✖ Salah";
+    if(mode==="latihan"){
+      answers.push(`KPK(${a},${b}) = ${c}`);
+      setTimeout(generateQuestion,500);
+    }
+  }
+}
+
+function start(){
+  remaining=parseInt(timeInput.value)*60;
+  mode=document.getElementById("mode").value;
+  pairType=document.getElementById("pairType").value;
+
+  benar=0; salah=0; answers=[];
+
+  document.getElementById("setup").classList.add("hidden");
+  document.getElementById("quiz").classList.remove("hidden");
+
+  timerInterval=setInterval(()=>{
+    remaining--;
+    timer.textContent=`Sisa waktu: ${remaining} detik`;
+    if(remaining<=0) end();
+  },1000);
+
+  generateQuestion();
+}
+
+function end(){
+  clearInterval(timerInterval);
+
+  quiz.classList.add("hidden");
+  result.classList.remove("hidden");
+
+  total.textContent=benar+salah;
+  correctCount.textContent=benar;
+  wrongCount.textContent=salah;
+
+  answerKey.innerHTML="";
+  answers.forEach(x=>{
+    const li=document.createElement("li");
+    li.textContent=x;
+    answerKey.appendChild(li);
+  });
+}
+</script>
+</body>
+</html>
