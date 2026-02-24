@@ -1,180 +1,378 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tes Numerik Deret</title>
-  <style>
-    :root { --primary:#2E2DA4; --bg:#f4f6fb; --card:#fff; --text:#222; }
-    *{box-sizing:border-box}
-    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:var(--bg)}
-    .container{max-width:720px;margin:auto;padding:16px}
-    h1{text-align:center;color:var(--primary)}
-    .card{background:var(--card);border-radius:16px;padding:16px;box-shadow:0 8px 20px rgba(0,0,0,.08);margin-bottom:16px}
-    label{font-weight:600}
-    input,select,button{width:100%;padding:12px;font-size:16px;border-radius:12px;border:1px solid #ddd}
-    button{background:var(--primary);color:#fff;border:none;margin-top:8px}
-    button.secondary{background:#e9ebff;color:#000}
-    .row{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
-    .deret{text-align:center;font-size:20px;letter-spacing:1px;margin:16px 0}
-    .timer{text-align:center;font-weight:600}
-    .hidden{display:none}
-    @media(min-width:600px){.row{grid-template-columns:repeat(4,1fr)}}
-  </style>
-</head>
-<body>
-<div class="container">
-  <h1>Tes Numerik Deret</h1>
-
-  <div class="card" id="setup">
-    <label>Mode Tes</label>
-    <select id="mode">
-      <option value="latihan">Latihan</option>
-      <option value="evaluasi">Evaluasi</option>
-    </select><br><br>
-
-    <label>Waktu (menit)</label>
-    <input type="number" id="timeInput" value="5" min="1" />
-
-    <button onclick="startTest()">Mulai</button>
-  </div>
-
-  <div class="card hidden" id="test">
-    <div class="timer" id="timer"></div>
-    <div class="deret" id="deret"></div>
-    <div class="row" id="options"></div>
-  </div>
-
-  <div class="card hidden" id="result">
-    <h2>Hasil Tes</h2>
-    <p>Total: <span id="total"></span></p>
-    <p>Benar: <span id="benar"></span></p>
-    <p>Salah: <span id="salah"></span></p>
-  </div>
-</div>
-
-<script>
-let timeLeft,timerInterval,total=0,benar=0,currentAnswer=null,mode='latihan';
-
-const rand=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
-
-function weightedIndex(){
-  const w=[3,2,1,1,1,5,1,1,8];
-  let s=w.reduce((a,b)=>a+b,0),r=Math.random()*s;
-  for(let i=0;i<w.length;i++){ if(r<w[i]) return i; r-=w[i]; }
-}
-
-// ====== GENERATOR DERET (VERSI AWAL + LENGKAP) ======
-function genDeret(){
-  const n=10; const t=rand(0,14); let d=[];
-  switch(t){
-    case 0: { // Aritmatika
-      let a=rand(-5,10),b=rand(1,5);
-      for(let i=0;i<n;i++) d.push(a+i*b); break; }
-    case 1: { // Geometri
-      const rs= [-2,-3,2,3];
-      let a=rand(1,5),r=rs[rand(0,rs.length-1)];
-      for(let i=0;i<n;i++) d.push(a*Math.pow(r,i)); break; }
-    case 2: { // Fibonacci
-      d=[rand(1,5),rand(1,5)];
-      for(let i=2;i<n;i++) d.push(d[i-1]+d[i-2]); break; }
-    case 3: { // Kuadrat
-      let s=rand(1,3);
-      for(let i=s;i<s+n;i++) d.push(i*i); break; }
-    case 4: { // Kubik
-      let s=rand(1,3);
-      for(let i=s;i<s+n;i++) d.push(i*i*i); break; }
-    case 5: { // Bertingkat (beda naik)
-      let x=rand(1,5),b=rand(1,3),pb=rand(1,2);
-      d=[x]; for(let i=1;i<n;i++){ x+=b; d.push(x); b+=pb;} break; }
-    case 6: { // Bertingkat genap
-      let x=rand(1,5),b=2; d=[x];
-      for(let i=1;i<n;i++){ x+=b; d.push(x); b+=2;} break; }
-    case 7: { // Bertingkat ganjil
-      let x=rand(1,5),b=1; d=[x];
-      for(let i=1;i<n;i++){ x+=b; d.push(x); b+=2;} break; }
-    case 8: { // Bertingkat kelipatan
-      let x=rand(1,5),k=rand(1,3); d=[x];
-      for(let i=1;i<n;i++){ x+=k*i; d.push(x);} break; }
-    case 9: { // Bertingkat kuadrat
-      let x=rand(1,5); d=[x];
-      for(let i=1;i<n;i++){ x+=i*i; d.push(x);} break; }
-    case 10: { // Larik dua
-      let a1=rand(1,5),a2=rand(1,5),b1=rand(1,4),b2=rand(1,4);
-      d=[a1,a2];
-      for(let i=2;i<n;i++) d.push(d[i-2]+(i%2===0?b1:b2)); break; }
-    case 11: { // Larik dua bertingkat
-      let a1=rand(1,5),a2=rand(1,5),b1=rand(1,3),b2=rand(1,3),p1=rand(1,2),p2=rand(1,2);
-      d=[a1,a2]; let x=b1,y=b2;
-      for(let i=2;i<n;i++){
-        if(i%2===0){ d.push(d[i-2]+x); x+=p1; }
-        else { d.push(d[i-2]+y); y+=p2; }
-      } break; }
-    case 12: { // Huruf
-      let start=rand(1,26),step=rand(1,3);
-      for(let i=0;i<n;i++) d.push(String.fromCharCode(64+((start+i*step-1)%26+1))); break; }
-    case 13: { // Campuran + dan *
-      let x=rand(2,5); d=[x];
-      for(let i=1;i<n;i++) d.push(i%2===0?d[i-1]+2:d[i-1]*2); break; }
-    case 14: { // Pola selisih berulang
-      let x=rand(1,5); const diff=[1,3,1,3]; d=[x];
-      for(let i=1;i<n;i++) d.push(d[i-1]+diff[(i-1)%4]); break; }
-    case 15: { //pola prima
-      const prima=[2,3,5,7,11,13,17,19,23,29,31,37];
-      let a = rand(1, 10);
-      let current = a;
-      let startIndex = rand(0, 3); // mulai dari prima ke-berapa
-      for (let i = 0; i < n; i++) {
-        d.push(current);
-        current += primes[startIndex + i]; // ditambah prima yang berbeda tiap langkah
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tes Numerik Deret</title>
+    <style>
+      :root {
+        --primary: #2e2da4;
+        --bg: #f4f6fb;
+        --card: #fff;
+        --text: #222;
       }
-      break;
-    }
-  }
-  return d;
-}
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          system-ui,
+          -apple-system,
+          Segoe UI,
+          sans-serif;
+        background: var(--bg);
+      }
+      .container {
+        max-width: 720px;
+        margin: auto;
+        padding: 16px;
+      }
+      h1 {
+        text-align: center;
+        color: var(--primary);
+      }
+      .card {
+        background: var(--card);
+        border-radius: 16px;
+        padding: 16px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+        margin-bottom: 16px;
+      }
+      label {
+        font-weight: 600;
+      }
+      input,
+      select,
+      button {
+        width: 100%;
+        padding: 12px;
+        font-size: 16px;
+        border-radius: 12px;
+        border: 1px solid #ddd;
+      }
+      button {
+        background: var(--primary);
+        color: #fff;
+        border: none;
+        margin-top: 8px;
+      }
+      button.secondary {
+        background: #e9ebff;
+        color: #000;
+      }
+      .row {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+      }
+      .deret {
+        text-align: center;
+        font-size: 20px;
+        letter-spacing: 1px;
+        margin: 16px 0;
+      }
+      .timer {
+        text-align: center;
+        font-weight: 600;
+      }
+      .hidden {
+        display: none;
+      }
+      @media (min-width: 600px) {
+        .row {
+          grid-template-columns: repeat(4, 1fr);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Tes Numerik Deret</h1>
 
-function newQuestion(){
-  const d=genDeret(); const k=weightedIndex(); currentAnswer=d[k];
-  document.getElementById('deret').innerText=d.map((v,i)=>i===k?'...':v).join(' , ');
-  let ops=new Set([currentAnswer]); while(ops.size<4) ops.add(currentAnswer+rand(-15,15));
-  const box=document.getElementById('options'); box.innerHTML='';
-  [...ops].sort(()=>Math.random()-.5).forEach(o=>{
-    const b=document.createElement('button'); b.className='secondary'; b.innerText=o;
-    b.onclick=()=>check(o); box.appendChild(b);
-  });
-}
+      <div class="card" id="setup">
+        <label>Mode Tes</label>
+        <select id="mode">
+          <option value="latihan">Latihan</option>
+          <option value="evaluasi">Evaluasi</option></select
+        ><br /><br />
 
-function check(v){
-  total++; if(v===currentAnswer){ benar++; if(mode==='latihan') alert('Benar ✔'); }
-  else if(mode==='latihan') alert('Salah ✖');
-  newQuestion();
-}
+        <label>Waktu (menit)</label>
+        <input type="number" id="timeInput" value="5" min="1" />
 
-function startTest(){
-  total=0; benar=0;
-  mode=document.getElementById('mode').value;
-  document.getElementById('setup').classList.add('hidden');
-  document.getElementById('result').classList.add('hidden');
-  document.getElementById('test').classList.remove('hidden');
-  timeLeft=parseInt(document.getElementById('timeInput').value)*60;
-  updateTimer();
-  timerInterval=setInterval(()=>{ timeLeft--; updateTimer(); if(timeLeft<=0) endTest(); },1000);
-  newQuestion();
-}
+        <button onclick="startTest()">Mulai</button>
+      </div>
 
-function updateTimer(){
-  document.getElementById('timer').innerText='Sisa Waktu: '+Math.floor(timeLeft/60)+':'+String(timeLeft%60).padStart(2,'0');
-}
+      <div class="card hidden" id="test">
+        <div class="timer" id="timer"></div>
+        <div class="deret" id="deret"></div>
+        <div class="row" id="options"></div>
+      </div>
 
-function endTest(){
-  clearInterval(timerInterval);
-  document.getElementById('test').classList.add('hidden');
-  document.getElementById('result').classList.remove('hidden');
-  document.getElementById('total').innerText=total;
-  document.getElementById('benar').innerText=benar;
-  document.getElementById('salah').innerText=total-benar;
-}
-</script>
-</body>
+      <div class="card hidden" id="result">
+        <h2>Hasil Tes</h2>
+        <p>Total: <span id="total"></span></p>
+        <p>Benar: <span id="benar"></span></p>
+        <p>Salah: <span id="salah"></span></p>
+      </div>
+    </div>
+
+    <script>
+      let timeLeft,
+        timerInterval,
+        total = 0,
+        benar = 0,
+        currentAnswer = null,
+        mode = "latihan";
+
+      const rand = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a;
+
+      function weightedIndex() {
+        const w = [3, 2, 1, 1, 1, 5, 1, 1, 8];
+        let s = w.reduce((a, b) => a + b, 0),
+          r = Math.random() * s;
+        for (let i = 0; i < w.length; i++) {
+          if (r < w[i]) return i;
+          r -= w[i];
+        }
+      }
+
+      // ====== GENERATOR DERET (VERSI AWAL + LENGKAP) ======
+      function genDeret() {
+        const n = 10;
+        const t = rand(0, 14);
+        let d = [];
+        switch (t) {
+          case 0: {
+            // Aritmatika
+            let a = rand(-5, 10),
+              b = rand(1, 5);
+            for (let i = 0; i < n; i++) d.push(a + i * b);
+            break;
+          }
+          case 1: {
+            // Geometri
+            const rs = [-2, -3, 2, 3];
+            let a = rand(1, 5),
+              r = rs[rand(0, rs.length - 1)];
+            for (let i = 0; i < n; i++) d.push(a * Math.pow(r, i));
+            break;
+          }
+          case 2: {
+            // Fibonacci
+            d = [rand(1, 5), rand(1, 5)];
+            for (let i = 2; i < n; i++) d.push(d[i - 1] + d[i - 2]);
+            break;
+          }
+          case 3: {
+            // Kuadrat
+            let s = rand(1, 3);
+            for (let i = s; i < s + n; i++) d.push(i * i);
+            break;
+          }
+          case 4: {
+            // Kubik
+            let s = rand(1, 3);
+            for (let i = s; i < s + n; i++) d.push(i * i * i);
+            break;
+          }
+          case 5: {
+            // Bertingkat (beda naik)
+            let x = rand(1, 5),
+              b = rand(1, 3),
+              pb = rand(1, 2);
+            d = [x];
+            for (let i = 1; i < n; i++) {
+              x += b;
+              d.push(x);
+              b += pb;
+            }
+            break;
+          }
+          case 6: {
+            // Bertingkat genap
+            let x = rand(1, 5),
+              b = 2;
+            d = [x];
+            for (let i = 1; i < n; i++) {
+              x += b;
+              d.push(x);
+              b += 2;
+            }
+            break;
+          }
+          case 7: {
+            // Bertingkat ganjil
+            let x = rand(1, 5),
+              b = 1;
+            d = [x];
+            for (let i = 1; i < n; i++) {
+              x += b;
+              d.push(x);
+              b += 2;
+            }
+            break;
+          }
+          case 8: {
+            // Bertingkat kelipatan
+            let x = rand(1, 5),
+              k = rand(1, 3);
+            d = [x];
+            for (let i = 1; i < n; i++) {
+              x += k * i;
+              d.push(x);
+            }
+            break;
+          }
+          case 9: {
+            // Bertingkat kuadrat
+            let x = rand(1, 5);
+            d = [x];
+            for (let i = 1; i < n; i++) {
+              x += i * i;
+              d.push(x);
+            }
+            break;
+          }
+          case 10: {
+            // Larik dua
+            let a1 = rand(1, 5),
+              a2 = rand(1, 5),
+              b1 = rand(1, 4),
+              b2 = rand(1, 4);
+            d = [a1, a2];
+            for (let i = 2; i < n; i++)
+              d.push(d[i - 2] + (i % 2 === 0 ? b1 : b2));
+            break;
+          }
+          case 11: {
+            // Larik dua bertingkat
+            let a1 = rand(1, 5),
+              a2 = rand(1, 5),
+              b1 = rand(1, 3),
+              b2 = rand(1, 3),
+              p1 = rand(1, 2),
+              p2 = rand(1, 2);
+            d = [a1, a2];
+            let x = b1,
+              y = b2;
+            for (let i = 2; i < n; i++) {
+              if (i % 2 === 0) {
+                d.push(d[i - 2] + x);
+                x += p1;
+              } else {
+                d.push(d[i - 2] + y);
+                y += p2;
+              }
+            }
+            break;
+          }
+          case 12: {
+            // Huruf
+            let start = rand(1, 26),
+              step = rand(1, 3);
+            for (let i = 0; i < n; i++)
+              d.push(
+                String.fromCharCode(64 + (((start + i * step - 1) % 26) + 1)),
+              );
+            break;
+          }
+          case 13: {
+            // Campuran + dan *
+            let x = rand(2, 5);
+            d = [x];
+            for (let i = 1; i < n; i++)
+              d.push(i % 2 === 0 ? d[i - 1] + 2 : d[i - 1] * 2);
+            break;
+          }
+          case 14: {
+            // Pola selisih berulang
+            let x = rand(1, 5);
+            const diff = [1, 3, 1, 3];
+            d = [x];
+            for (let i = 1; i < n; i++) d.push(d[i - 1] + diff[(i - 1) % 4]);
+            break;
+          }
+          case 15: {
+            //pola prima
+            const prima = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37];
+            let a = rand(1, 10);
+            let current = a;
+            let startIndex = rand(0, 3); // mulai dari prima ke-berapa
+            for (let i = 0; i < n; i++) {
+              d.push(current);
+              current += primes[startIndex + i]; // ditambah prima yang berbeda tiap langkah
+            }
+            break;
+          }
+        }
+        return d;
+      }
+
+      function newQuestion() {
+        const d = genDeret();
+        const k = weightedIndex();
+        currentAnswer = d[k];
+        document.getElementById("deret").innerText = d
+          .map((v, i) => (i === k ? "..." : v))
+          .join(" , ");
+        let ops = new Set([currentAnswer]);
+        while (ops.size < 4) ops.add(currentAnswer + rand(-15, 15));
+        const box = document.getElementById("options");
+        box.innerHTML = "";
+        [...ops]
+          .sort(() => Math.random() - 0.5)
+          .forEach((o) => {
+            const b = document.createElement("button");
+            b.className = "secondary";
+            b.innerText = o;
+            b.onclick = () => check(o);
+            box.appendChild(b);
+          });
+      }
+
+      function check(v) {
+        total++;
+        if (v === currentAnswer) {
+          benar++;
+          if (mode === "latihan") alert("Benar ✔");
+        } else if (mode === "latihan") alert("Salah ✖");
+        newQuestion();
+      }
+
+      function startTest() {
+        total = 0;
+        benar = 0;
+        mode = document.getElementById("mode").value;
+        document.getElementById("setup").classList.add("hidden");
+        document.getElementById("result").classList.add("hidden");
+        document.getElementById("test").classList.remove("hidden");
+        timeLeft = parseInt(document.getElementById("timeInput").value) * 60;
+        updateTimer();
+        timerInterval = setInterval(() => {
+          timeLeft--;
+          updateTimer();
+          if (timeLeft <= 0) endTest();
+        }, 1000);
+        newQuestion();
+      }
+
+      function updateTimer() {
+        document.getElementById("timer").innerText =
+          "Sisa Waktu: " +
+          Math.floor(timeLeft / 60) +
+          ":" +
+          String(timeLeft % 60).padStart(2, "0");
+      }
+
+      function endTest() {
+        clearInterval(timerInterval);
+        document.getElementById("test").classList.add("hidden");
+        document.getElementById("result").classList.remove("hidden");
+        document.getElementById("total").innerText = total;
+        document.getElementById("benar").innerText = benar;
+        document.getElementById("salah").innerText = total - benar;
+      }
+    </script>
+  </body>
 </html>
