@@ -69,10 +69,11 @@ function genDeret(){
   const n=10; const t=rand(0,14); let d=[];
   switch(t){
     case 0: { // Aritmatika
-      let a=rand(1,10),b=rand(1,5);
+      let a=rand(-5,10),b=rand(1,5);
       for(let i=0;i<n;i++) d.push(a+i*b); break; }
     case 1: { // Geometri
-      let a=rand(1,5),r=rand(2,3);
+      const rs= [-2,-3,2,3];
+      let a=rand(1,5),r=rs[rand(0,rs.length-1)];
       for(let i=0;i<n;i++) d.push(a*Math.pow(r,i)); break; }
     case 2: { // Fibonacci
       d=[rand(1,5),rand(1,5)];
@@ -118,7 +119,17 @@ function genDeret(){
     case 14: { // Pola selisih berulang
       let x=rand(1,5); const diff=[1,3,1,3]; d=[x];
       for(let i=1;i<n;i++) d.push(d[i-1]+diff[(i-1)%4]); break; }
-  }
+    case 15: { //pola prima
+      const prima=[2,3,5,7,11,13,17,19,23,29,31,37];
+      let a = rand(1, 10);
+      let current = a;
+      let startIndex = rand(0, 3); // mulai dari prima ke-berapa
+      for (let i = 0; i < n; i++) {
+        d.push(current);
+        current += primes[startIndex + i]; // ditambah prima yang berbeda tiap langkah
+      }
+      break;
+    }
   return d;
 }
 
