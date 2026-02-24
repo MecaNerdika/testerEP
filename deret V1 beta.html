@@ -59,7 +59,7 @@ let timeLeft,timerInterval,total=0,benar=0,currentAnswer=null,mode='latihan';
 const rand=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
 
 function weightedIndex(){
-  const w=[4,1,1,1,1,1,1,1,4];
+  const w=[3,2,1,1,1,5,1,1,8];
   let s=w.reduce((a,b)=>a+b,0),r=Math.random()*s;
   for(let i=0;i<w.length;i++){ if(r<w[i]) return i; r-=w[i]; }
 }
@@ -130,8 +130,8 @@ function genDeret(){
       }
       break;
     }
+  }
   return d;
-}
 }
 
 function newQuestion(){
