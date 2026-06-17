@@ -1,0 +1,1086 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Operasi Hitung dasar</title>
+    <style>
+      :root {
+        --bg: #060000; /* slate-900 */
+        --card: #111827; /* gray-900 */
+        --muted: #334155; /* slate-600 */
+        --text: #ffffff; /* gray-200 */
+        --accent: #38bdf8; /* sky-400 */
+        --accent-2: #22c55e; /* green-500 */
+        --danger: #ef4444; /* red-500 */
+        --warn: #f59e0b; /* amber-500 */
+        --shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+        --radius: 16px;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          Segoe UI,
+          Roboto,
+          "Helvetica Neue",
+          Arial;
+        background:
+          radial-gradient(1200px 800px at 10% -10%, #1e293b, transparent),
+          radial-gradient(800px 600px at 120% 0%, #0b3b47, transparent),
+          var(--bg);
+        color: var(--text);
+        min-height: 100svh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+      }
+      .app {
+        width: 100%;
+        max-width: 980px;
+      }
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+      .brand {
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        font-size: clamp(18px, 3.5vw, 24px);
+      }
+      .timer {
+        font-variant-numeric: tabular-nums;
+        font-weight: 700;
+        padding: 10px 14px;
+        border-radius: 999px;
+        background: #0b1220;
+        border: 1px solid #1f2a44;
+        box-shadow: var(--shadow);
+      }
+      .card {
+        background: linear-gradient(180deg, #0b1220, #0a1020);
+        border: 1px solid #1f2a44;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+      }
+      .section {
+        display: none;
+      }
+      .active {
+        display: block;
+      }
+      .card-inner {
+        padding: 20px;
+      }
+      .grid {
+        display: grid;
+        gap: 16px;
+      }
+      .grid-2 {
+        grid-template-columns: 1fr 1fr;
+      }
+      .grid-responsive {
+        grid-template-columns: 1fr;
+      }
+      @media (min-width: 720px) {
+        .grid-responsive {
+          grid-template-columns: 1fr 320px;
+        }
+      }
+
+      input[type="text"],
+      input[type="password"] {
+        width: 100%;
+        padding: 12px 14px;
+        border-radius: 12px;
+        border: 1px solid #26314d;
+        background: #0b1220;
+        color: var(--text);
+        outline: none;
+        box-shadow: inset 0 0 0 9999px rgba(255, 255, 255, 0);
+      }
+      label {
+        font-size: 14px;
+        color: #cbd5e1;
+      }
+      .btn {
+        cursor: pointer;
+        padding: 12px 16px;
+        border-radius: 14px;
+        background: var(--accent);
+        color: #001219;
+        border: none;
+        font-weight: 700;
+        box-shadow: var(--shadow);
+        transition: 0.2s transform ease;
+      }
+      .btn:active {
+        transform: translateY(1px);
+      }
+      .btn.secondary {
+        background: #1f2937;
+        color: #e2e8f0;
+        border: 1px solid #334155;
+      }
+      .btn.warn {
+        background: var(--warn);
+        color: #0b1220;
+      }
+      .btn.danger {
+        background: var(--danger);
+        color: #0b1220;
+      }
+      .muted {
+        color: #94a3b8;
+      }
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: #0b1220;
+        border: 1px solid #223156;
+        font-size: 12px;
+        color: #cbd5e1;
+      }
+
+      .question-area {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+      .q-title {
+        font-weight: 400;
+        font-size: 12px;
+      }
+      .choices {
+        display: grid;
+        gap: 10px;
+      }
+      .choice {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        border: 1px solid #1f2a44;
+        background: #0b1220;
+        padding: 12px;
+        border-radius: 12px;
+        cursor: pointer;
+      }
+      .choice input {
+        margin-top: 4px;
+      }
+
+      .nav {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        max-height: 240px;
+        overflow: auto;
+        padding: 10px;
+      }
+      .nav button {
+        width: 44px;
+        height: 40px;
+        border-radius: 10px;
+        border: 1px solid #1f2a44;
+        background: #0b1220;
+        color: #cbd5e1;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .nav button.active {
+        outline: 2px solid var(--accent);
+        color: #0ea5e9;
+      }
+      .nav button.done {
+        background: #07291f;
+        border-color: #0b7a53;
+        color: #34d399;
+      }
+
+      .footer-actions {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-top: 10px;
+      }
+
+      .legend {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .results {
+        display: grid;
+        gap: 12px;
+      }
+      .score-box {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      .score-card {
+        background: #0b1220;
+        border: 1px solid #1f2a44;
+        border-radius: 14px;
+        padding: 14px;
+      }
+
+      .info-row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  </head>
+  <body>
+    <div class="app">
+      <header>
+        <div class="brand">Operasi Hitung Dasar</div>
+        <div class="pill" id="infoUser">Belum login</div>
+        <div class="timer" id="timer">15:00</div>
+      </header>
+
+      <!-- SECTION 1: FORM MINIMAL -->
+      <section id="section-form" class="section active">
+        <div class="card">
+          <div class="card-inner grid">
+            <div>
+              <h2 style="margin: 0 0 10px 0">Masuk Kuis</h2>
+              <p class="muted" style="margin-top: 0">
+                Masukkan nama dan password untuk memulai. Tidak ada pengaturan
+                tambahan.
+              </p>
+              <div class="grid">
+                <div>
+                  <label for="nama">Nama</label>
+                  <input id="nama" type="text" placeholder="Nama peserta" />
+                </div>
+                <div>
+                  <label for="pass">Password</label>
+                  <input id="pass" type="password" placeholder="Password" />
+                </div>
+                <button class="btn" id="btnMulai">Mulai Kuis</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 2: QUIZ -->
+      <section id="section-quiz" class="section">
+        <div class="grid grid-responsive">
+          <div class="card">
+            <div class="card-inner">
+              <div class="info-row">
+                <div class="pill" id="infoKategori">Kategori: -</div>
+                <div class="pill" id="infoSoal">Soal 0 / 180</div>
+              </div>
+              <div class="question-area" id="questionArea">
+                <!-- Question inject here -->
+              </div>
+              <div class="footer-actions">
+                <button class="btn secondary" id="prevBtn">Prev</button>
+                <div class="legend">
+                  <span class="pill">• Biru = aktif</span>
+                  <span
+                    class="pill"
+                    style="
+                      background: #07291f;
+                      color: #34d399;
+                      border-color: #0b7a53;
+                    "
+                    >• Hijau = terjawab</span
+                  >
+                </div>
+                <button class="btn" id="nextBtn">Next</button>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-inner">
+              <h3 style="margin-top: 0">Navigasi Soal</h3>
+              <div class="nav" id="nav">
+                <!-- Nav buttons injected here -->
+              </div>
+              <div class="grid" style="margin-top: 8px">
+                <button class="btn warn" id="btnSubmit">
+                  Kumpulkan Jawaban
+                </button>
+                <button class="btn danger" id="btnReset">Reset Jawaban</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 3: HASIL -->
+      <section id="section-result" class="section">
+        <div class="card">
+          <div class="card-inner results">
+            <h2 style="margin: 0">Hasil Ujian</h2>
+            <p class="muted" id="resultUser">Peserta: -</p>
+            <div class="score-box">
+              <div class="score-card" style="grid-column: span 2">
+                <div class="muted">Total Skor</div>
+                <div id="scoreTotal" style="font-size: 30px; font-weight: 900">
+                  0 / 180
+                </div>
+              </div>
+            </div>
+            <div>
+              <button class="btn" id="btnUlang">Mulai Lagi</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      /** UTIL **/
+      const el = (sel) => document.querySelector(sel);
+      const els = (sel) => Array.from(document.querySelectorAll(sel));
+      const shuffle = (arr) =>
+        arr
+          .map((v) => [Math.random(), v])
+          .sort((a, b) => a[0] - b[0])
+          .map((x) => x[1]);
+
+      /** BANK SOAL (40/40/40) **/
+      // Format: {type:'sinonim'|'antonim'|'hiponim', q:'', options:['','','',''], answer: index}
+
+      const SOAL_fungsi = [
+        // --- BAGIAN 1: PENJUMLAHAN & PENGURANGAN ---
+
+        // A. Positif + Positif
+        {
+          q: "\\(6 + 4\\)",
+          o: ["8", "9", "10", "11"],
+          a: 2,
+        },
+        {
+          q: "\\(14 + 9\\)",
+          o: ["21", "23", "25", "27"],
+          a: 1,
+        },
+        {
+          q: "\\(28 + 17\\)",
+          o: ["43", "45", "47", "55"],
+          a: 1,
+        },
+
+        // B. Negatif + Negatif
+        {
+          q: "\\((-5) + (-8)\\)",
+          o: ["-13", "-3", "3", "13"],
+          a: 0,
+        },
+        {
+          q: "\\((-16) + (-7)\\)",
+          o: ["-25", "-23", "-9", "23"],
+          a: 1,
+        },
+        {
+          q: "\\((-25) + (-18)\\)",
+          o: ["-43", "-37", "-7", "43"],
+          a: 0,
+        },
+
+        // C. Positif + Negatif
+        {
+          q: "\\(9 + (-4)\\)",
+          o: ["-13", "-5", "5", "13"],
+          a: 2,
+        },
+        {
+          q: "\\(26 + (-12)\\)",
+          o: ["-14", "12", "14", "38"],
+          a: 2,
+        },
+        {
+          q: "\\(100 + (-45)\\)",
+          o: ["-55", "45", "55", "145"],
+          a: 2,
+        },
+
+        // D. Negatif + Positif
+        {
+          q: "\\((-8) + 5\\)",
+          o: ["-13", "-3", "3", "13"],
+          a: 1,
+        },
+        {
+          q: "\\((-22) + 14\\)",
+          o: ["-36", "-8", "8", "36"],
+          a: 1,
+        },
+        {
+          q: "\\((-54) + 19\\)",
+          o: ["-73", "-35", "35", "73"],
+          a: 1,
+        },
+
+        // E. Positif - Positif
+        {
+          q: "\\(8 - 5\\)",
+          o: ["2", "3", "4", "-3"],
+          a: 1,
+        },
+        {
+          q: "\\(27 - 14\\)",
+          o: ["11", "13", "15", "-13"],
+          a: 1,
+        },
+        {
+          q: "\\(100 - 75\\)",
+          o: ["15", "25", "35", "-25"],
+          a: 1,
+        },
+
+        // F. Positif - Negatif
+        {
+          q: "\\(6 - (-4)\\)",
+          o: ["2", "8", "10", "-10"],
+          a: 2,
+        },
+        {
+          q: "\\(17 - (-13)\\)",
+          o: ["4", "20", "30", "-30"],
+          a: 2,
+        },
+        {
+          q: "\\(36 - (-24)\\)",
+          o: ["12", "50", "60", "-60"],
+          a: 2,
+        },
+
+        // G. Negatif - Positif
+        {
+          q: "\\((-7) - 4\\)",
+          o: ["-11", "-3", "3", "11"],
+          a: 0,
+        },
+        {
+          q: "\\((-16) - 8\\)",
+          o: ["-24", "-8", "8", "24"],
+          a: 0,
+        },
+        {
+          q: "\\((-45) - 20\\)",
+          o: ["-65", "-25", "25", "65"],
+          a: 0,
+        },
+
+        // H. Negatif - Negatif
+        {
+          q: "\\((-8) - (-5)\\)",
+          o: ["-13", "-3", "3", "13"],
+          a: 1,
+        },
+        {
+          q: "\\((-25) - (-14)\\)",
+          o: ["-39", "-11", "11", "39"],
+          a: 1,
+        },
+        {
+          q: "\\((-30) - (-45)\\)",
+          o: ["-75", "-15", "15", "75"],
+          a: 2,
+        },
+
+        // I. Operasi Campuran Tambah dan Kurang
+        {
+          q: "\\(6 - 9 + 14 - 5\\)",
+          o: ["4", "6", "8", "16"],
+          a: 1,
+        },
+        {
+          q: "\\((-4) + 8 - 12 + 6\\)",
+          o: ["-2", "0", "2", "4"],
+          a: 0,
+        },
+        {
+          q: "\\(25 - 40 + 15 - 8\\)",
+          o: ["-12", "-8", "0", "8"],
+          a: 1,
+        },
+        {
+          q: "\\((-12) - 6 + 20 - (-15)\\)",
+          o: ["13", "17", "21", "43"],
+          a: 1,
+        },
+        {
+          q: "\\(100 - 60 + (-40) - 15\\)",
+          o: ["-15", "-5", "15", "35"],
+          a: 0,
+        },
+        {
+          q: "\\((-40) + 15 - (-25) + 10\\)",
+          o: ["-10", "0", "10", "20"],
+          a: 2,
+        },
+
+        // J. Soal HOTS / Bertingkat (Tambah & Kurang)
+        {
+          q: "\\((-6) + (-9) - (-15) + 8\\)",
+          o: ["-2", "0", "8", "14"],
+          a: 2,
+        },
+        {
+          q: "\\(30 - (-10) - 25 + (-8)\\)",
+          o: ["7", "15", "23", "37"],
+          a: 0,
+        },
+        {
+          q: "\\((-100) + 60 - (-35) - 20\\)",
+          o: ["-65", "-25", "-5", "15"],
+          a: 1,
+        },
+        {
+          q: "\\(20 - (-5) + (-15) - (-8)\\)",
+          o: ["2", "12", "18", "32"],
+          a: 2,
+        },
+        {
+          q: "\\((-25) - (-15) + (-10) - 5\\)",
+          o: ["-35", "-25", "-5", "5"],
+          a: 1,
+        },
+
+        // --- BAGIAN 2: PERKALIAN & PEMBAGIAN ---
+
+        // K. Positif × Positif
+        {
+          q: "\\(6 \\times 4\\)",
+          o: ["18", "20", "24", "30"],
+          a: 2,
+        },
+        {
+          q: "\\(13 \\times 5\\)",
+          o: ["55", "65", "75", "85"],
+          a: 1,
+        },
+        {
+          q: "\\(25 \\times 6\\)",
+          o: ["125", "140", "150", "175"],
+          a: 2,
+        },
+
+        // L. Positif × Negatif
+        {
+          q: "\\(8 \\times (-4)\\)",
+          o: ["-32", "-24", "24", "32"],
+          a: 0,
+        },
+        {
+          q: "\\(14 \\times (-5)\\)",
+          o: ["-80", "-70", "-60", "70"],
+          a: 1,
+        },
+        {
+          q: "\\(22 \\times (-6)\\)",
+          o: ["-152", "-132", "-122", "132"],
+          a: 1,
+        },
+
+        // M. Negatif × Positif
+        {
+          q: "\\((-9) \\times 5\\)",
+          o: ["-45", "-35", "35", "45"],
+          a: 0,
+        },
+        {
+          q: "\\((-12) \\times 7\\)",
+          o: ["-94", "-84", "84", "94"],
+          a: 1,
+        },
+        {
+          q: "\\((-30) \\times 8\\)",
+          o: ["-270", "-240", "240", "270"],
+          a: 1,
+        },
+
+        // N. Negatif × Negatif
+        {
+          q: "\\((-7) \\times (-6)\\)",
+          o: ["-42", "-13", "13", "42"],
+          a: 3,
+        },
+        {
+          q: "\\((-13) \\times (-5)\\)",
+          o: ["-65", "-18", "18", "65"],
+          a: 3,
+        },
+        {
+          q: "\\((-15) \\times (-8)\\)",
+          o: ["-120", "-23", "23", "120"],
+          a: 3,
+        },
+
+        // O. Positif ÷ Positif
+        {
+          q: "\\(28 \\div 7\\)",
+          o: ["3", "4", "5", "6"],
+          a: 1,
+        },
+        {
+          q: "\\(96 \\div 8\\)",
+          o: ["11", "12", "13", "14"],
+          a: 1,
+        },
+        {
+          q: "\\(125 \\div 5\\)",
+          o: ["15", "20", "25", "35"],
+          a: 2,
+        },
+
+        // P. Positif ÷ Negatif
+        {
+          q: "\\(45 \\div (-5)\\)",
+          o: ["-9", "-8", "8", "9"],
+          a: 0,
+        },
+        {
+          q: "\\(72 \\div (-6)\\)",
+          o: ["-14", "-12", "12", "14"],
+          a: 1,
+        },
+        {
+          q: "\\(200 \\div (-25)\\)",
+          o: ["-12", "-8", "8", "12"],
+          a: 1,
+        },
+
+        // Q. Negatif ÷ Positif
+        {
+          q: "\\((-32) \\div 8\\)",
+          o: ["-6", "-4", "4", "6"],
+          a: 1,
+        },
+        {
+          q: "\\((-84) \\div 7\\)",
+          o: ["-14", "-12", "12", "14"],
+          a: 1,
+        },
+        {
+          q: "\\((-169) \\div 13\\)",
+          o: ["-15", "-13", "13", "15"],
+          a: 1,
+        },
+
+        // R. Negatif ÷ Negatif
+        {
+          q: "\\((-54) \\div (-6)\\)",
+          o: ["-9", "-8", "8", "9"],
+          a: 3,
+        },
+        {
+          q: "\\((-96) \\div (-12)\\)",
+          o: ["-8", "-6", "6", "8"],
+          a: 3,
+        },
+        {
+          q: "\\((-225) \\div (-15)\\)",
+          o: ["-15", "-5", "15", "25"],
+          a: 2,
+        },
+
+        // S. Operasi Campuran Perkalian dan Pembagian
+        {
+          q: "\\(15 \\times (-4) \\div 6\\)",
+          o: ["-12", "-10", "10", "12"],
+          a: 1,
+        },
+        {
+          q: "\\((-24) \\div 6 \\times (-5)\\)",
+          o: ["-20", "-4", "4", "20"],
+          a: 3,
+        },
+        {
+          q: "\\(56 \\div (-8) \\times 4\\)",
+          o: ["-32", "-28", "28", "32"],
+          a: 1,
+        },
+        {
+          q: "\\((-48) \\div (-6) \\times (-3)\\)",
+          o: ["-24", "-18", "18", "24"],
+          a: 0,
+        },
+        {
+          q: "\\(18 \\times (-5) \\div (-9)\\)",
+          o: ["-10", "-8", "8", "10"],
+          a: 3,
+        },
+        {
+          q: "\\((-120) \\div 12 \\times (-4)\\)",
+          o: ["-40", "-30", "30", "40"],
+          a: 3,
+        },
+
+        // T. Operasi Campuran Perkalian/Pembagian dengan Tambah/Kurang
+        {
+          q: "\\(6 + 5 \\times (-4)\\)",
+          o: ["-44", "-14", "14", "44"],
+          a: 1,
+        },
+        {
+          q: "\\(24 \\div (-8) - 5\\)",
+          o: ["-8", "-2", "2", "8"],
+          a: 0,
+        },
+        {
+          q: "\\((-7) \\times 6 + 15\\)",
+          o: ["-57", "-27", "27", "57"],
+          a: 1,
+        },
+        {
+          q: "\\(30 - (-5) \\times 4\\)",
+          o: ["10", "20", "40", "50"],
+          a: 3,
+        },
+        {
+          q: "\\((-36) \\div (-4) + (-12)\\)",
+          o: ["-21", "-3", "3", "21"],
+          a: 1,
+        },
+        {
+          q: "\\(60 - 15 \\div (-3)\\)",
+          o: ["45", "55", "65", "75"],
+          a: 2,
+        },
+        {
+          q: "\\((-20) + 48 \\div (-6)\\)",
+          o: ["-28", "-12", "12", "28"],
+          a: 0,
+        },
+        {
+          q: "\\((-6) \\times (-7) - 25\\)",
+          o: ["-67", "-17", "17", "67"],
+          a: 2,
+        },
+        {
+          q: "\\(120 \\div (-6) + 40\\)",
+          o: ["-20", "20", "40", "60"],
+          a: 1,
+        },
+        {
+          q: "\\((-81) \\div 9 - (-7)\\)",
+          o: ["-16", "-2", "2", "16"],
+          a: 1,
+        },
+
+        // U. Soal HOTS / Bertingkat / Kompleks (Semua Operasi)
+        {
+          q: "\\(18 - 6 \\times 3 + 8\\)",
+          o: ["8", "12", "24", "44"],
+          a: 0,
+        },
+        {
+          q: "\\((-15) + 6 \\times (-4)\\)",
+          o: ["-39", "-9", "9", "39"],
+          a: 0,
+        },
+        {
+          q: "\\(45 \\div (-9) + 5 \\times (-3)\\)",
+          o: ["-25", "-20", "10", "20"],
+          a: 1,
+        },
+        {
+          q: "\\(24 - [8 + 4 \\times (-3)]\\)",
+          o: ["12", "20", "28", "36"],
+          a: 2,
+        },
+        {
+          q: "\\((-4)^2 - 5 \\times 3\\)",
+          o: ["-31", "-1", "1", "31"],
+          a: 2,
+        },
+        {
+          q: "\\((-9) + 32 \\div (-4) \\times 2\\)",
+          o: ["-25", "-13", "13", "25"],
+          a: 0,
+        },
+        {
+          q: "\\(60 - 3 \\times [5 + (-3)^2]\\)",
+          o: ["12", "18", "24", "34"],
+          a: 1,
+        },
+        {
+          q: "\\((-4) \\times (-6) - 30 \\div (-5)\\)",
+          o: ["-30", "-18", "18", "30"],
+          a: 3,
+        },
+        {
+          q: "\\(-8 + 3(4 - 9) - (-12)\\)",
+          o: ["-21", "-11", "11", "21"],
+          a: 1,
+        },
+      ].map((x) => ({
+        type: "Operasi Hitung Dasar",
+        q: x.q,
+        options: x.o,
+        answer: x.a,
+      }));
+
+      S_fungsi = shuffle(SOAL_fungsi);
+
+      /*  Validasi jumlah
+                      if(SINONIM.length!==90||ANTONIM.length!==90){
+                        console.warn('Jumlah soal tidak 90/90:', SINONIM.length, ANTONIM.length);
+                      }  */
+
+      // /* Gabung & acak
+      function shuffleOptions(q) {
+        let opts = q.options.map((opt, i) => ({ opt, i }));
+        opts = shuffle(opts); // pake fungsi shuffle yang sudah kamu punya
+        let newAnswer = opts.findIndex((o) => o.i === q.answer);
+        return {
+          ...q,
+          options: opts.map((o) => o.opt),
+          answer: newAnswer,
+        };
+      }
+      //*/
+      let QUESTIONS = [...S_fungsi].map((q, i) => ({
+        id: i + 1,
+        ...shuffleOptions(q),
+      }));
+      // let QUESTIONS = [...SINONIM, ...ANTONIM].map((q,i)=>({id:i+1, ...q }));
+      // State
+      let state = {
+        user: null,
+        timeLeft: 20 * 60, // 25 menit
+        currentIndex: 0,
+        answers: Array(180).fill(null), // simpan index jawaban (0..3) atau null
+      };
+
+      /** RENDERING **/
+      function formatTime(s) {
+        const m = Math.floor(s / 60)
+          .toString()
+          .padStart(2, "0");
+        const r = (s % 60).toString().padStart(2, "0");
+        return `${m}:${r}`;
+      }
+
+      function renderTimer() {
+        el("#timer").textContent = formatTime(state.timeLeft);
+        if (state.timeLeft <= 60) {
+          el("#timer").style.background = "#331a1a";
+          el("#timer").style.borderColor = "#7f1d1d";
+        }
+        if (state.timeLeft <= 0) {
+          submitQuiz();
+        }
+      }
+
+      let tick = null;
+      function startTimer() {
+        if (tick) clearInterval(tick);
+        tick = setInterval(() => {
+          state.timeLeft--;
+          renderTimer();
+          if (state.timeLeft <= 0) clearInterval(tick);
+        }, 1000);
+      }
+
+      function mountNav() {
+        const nav = el("#nav");
+        nav.innerHTML = "";
+        QUESTIONS.forEach((q, idx) => {
+          const b = document.createElement("button");
+          b.textContent = idx + 1;
+          b.addEventListener("click", () => {
+            goTo(idx);
+          });
+          nav.appendChild(b);
+        });
+        updateNavActive();
+      }
+
+      function updateNavActive() {
+        const buttons = els("#nav button");
+        buttons.forEach((b, idx) => {
+          b.classList.toggle("active", idx === state.currentIndex);
+          b.classList.toggle("done", state.answers[idx] !== null);
+        });
+        el("#infoSoal").textContent = `Soal ${state.currentIndex + 1} / ${
+          QUESTIONS.length
+        }`;
+        el("#infoKategori").textContent = `Kategori: ${QUESTIONS[
+          state.currentIndex
+        ].type.toUpperCase()}`;
+      }
+
+      function renderQuestion() {
+        const q = QUESTIONS[state.currentIndex];
+        const container = el("#questionArea");
+        container.innerHTML = "";
+        const title = document.createElement("div");
+        title.className = "q-title";
+
+        title.innerHTML = q.q;
+        container.appendChild(title);
+
+        const list = document.createElement("div");
+        list.className = "choices";
+        q.options.forEach((opt, i) => {
+          const row = document.createElement("label");
+          row.className = "choice";
+          const input = document.createElement("input");
+          input.type = "radio";
+          input.name = "choice";
+          input.value = i;
+          input.checked = state.answers[state.currentIndex] === i;
+          input.addEventListener("change", () => {
+            state.answers[state.currentIndex] = i;
+            updateNavActive();
+          });
+          const span = document.createElement("div");
+          span.innerHTML = opt;
+          row.appendChild(input);
+          row.appendChild(span);
+          list.appendChild(row);
+        });
+        container.appendChild(list);
+        MathJax.typeset();
+      }
+
+      function goTo(idx) {
+        state.currentIndex = Math.max(0, Math.min(QUESTIONS.length - 1, idx));
+        updateNavActive();
+        renderQuestion();
+      }
+
+      function next() {
+        if (state.currentIndex < QUESTIONS.length - 1) {
+          goTo(state.currentIndex + 1);
+        }
+      }
+      function prev() {
+        if (state.currentIndex > 0) {
+          goTo(state.currentIndex - 1);
+        }
+      }
+
+      function resetAnswers() {
+        if (!confirm("Yakin reset semua jawaban?")) return;
+        state.answers = Array(QUESTIONS.length).fill(null);
+        updateNavActive();
+        renderQuestion();
+      }
+
+      function submitQuiz() {
+        // hitung skor per kategori
+        let sSin = 0,
+          sAnt = 0,
+          sHip = 0;
+        QUESTIONS.forEach((q, idx) => {
+          const pick = state.answers[idx];
+          const correct = q.answer;
+          if (pick === correct) {
+            if (q.type === "Operasi Hitung Dasar") sSin++;
+          }
+        });
+        const total = sSin + sAnt + sHip;
+
+        // tampilkan
+        let total_question = QUESTIONS.length;
+
+        el("#scoreTotal").textContent = `${total} / ${total_question}`;
+        el("#resultUser").textContent = `Peserta: ${
+          state.user?.nama || "-"
+        } (waktu habis/kumpul)`;
+
+        // stop timer, ganti section
+        if (tick) clearInterval(tick);
+        showSection("result");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      function showSection(which) {
+        el("#section-form").classList.remove("active");
+        el("#section-quiz").classList.remove("active");
+        el("#section-result").classList.remove("active");
+        if (which === "form") el("#section-form").classList.add("active");
+        if (which === "quiz") el("#section-quiz").classList.add("active");
+        if (which === "result") el("#section-result").classList.add("active");
+      }
+
+      // EVENTS
+      el("#btnMulai").addEventListener("click", () => {
+        const nama = el("#nama").value.trim();
+        const pass = el("#pass").value.trim();
+        if (!nama || !pass) {
+          alert("Nama dan password wajib diisi.");
+          return;
+        }
+        if (pass !== "GERAN2") {
+          alert(
+            "password salah! tanya password ke sir hardi. klo sir hardi dak tau tanya ke sir meca",
+          );
+          return;
+        }
+        state.user = { nama, pass };
+        el("#infoUser").textContent = `Peserta: ${nama}`;
+        showSection("quiz");
+        startTimer();
+        mountNav();
+        goTo(0);
+        renderTimer();
+      });
+
+      el("#prevBtn").addEventListener("click", prev);
+      el("#nextBtn").addEventListener("click", next);
+      el("#btnReset").addEventListener("click", resetAnswers);
+      el("#btnSubmit").addEventListener("click", () => {
+        if (confirm("Kumpulkan jawaban sekarang?")) submitQuiz();
+      });
+
+      // Keyboard nav: panah kiri/kanan, angka 1-4 untuk memilih A-D
+      window.addEventListener("keydown", (e) => {
+        if (!el("#section-quiz").classList.contains("active")) return;
+        if (e.key === "ArrowRight") next();
+        if (e.key === "ArrowLeft") prev();
+        if (["1", "2", "3", "4"].includes(e.key)) {
+          const idx = parseInt(e.key) - 1;
+          state.answers[state.currentIndex] = idx;
+          updateNavActive();
+          renderQuestion();
+        }
+      });
+
+      // Ulang dari hasil
+      el("#btnUlang").addEventListener("click", () => {
+        state = {
+          user: state.user,
+          timeLeft: 20 * 60,
+          currentIndex: 0,
+          answers: Array(180).fill(null),
+        };
+        QUESTIONS = shuffle(QUESTIONS); // acak ulang urutan
+        showSection("quiz");
+        startTimer();
+        mountNav();
+        goTo(0);
+        renderTimer();
+      });
+    </script>
+  </body>
+</html>
