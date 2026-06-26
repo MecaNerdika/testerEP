@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal Tes Kecermatan - MecaNerdika</title>
+    <title>Portal Tes Kecermatan Otomatis</title>
     <style>
         :root {
             --primary: #2c3e50;
@@ -16,8 +16,7 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--bg);
             color: var(--text);
-            margin: 0;
-            padding: 0;
+            margin: 0; padding: 0;
         }
 
         header {
@@ -28,16 +27,8 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
 
-        header h1 {
-            margin: 0;
-            font-size: 2.3rem;
-        }
-
-        header p {
-            margin: 10px 0 0 0;
-            opacity: 0.9;
-            font-size: 1.1rem;
-        }
+        header h1 { margin: 0; font-size: 2.3rem; }
+        header p { margin: 10px 0 0 0; opacity: 0.9; font-size: 1.1rem; }
 
         .container {
             max-width: 1200px;
@@ -85,20 +76,12 @@
 
         .quiz-title {
             margin: 0 0 10px 0;
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             color: var(--primary);
+            text-transform: capitalize;
         }
 
-        .quiz-desc {
-            font-size: 0.95rem;
-            color: #666;
-            line-height: 1.5;
-            margin-bottom: 20px;
-        }
-
-        .quiz-footer {
-            padding: 0 20px 20px 20px;
-        }
+        .quiz-footer { padding: 0 20px 20px 20px; }
 
         .btn-play {
             display: block;
@@ -112,16 +95,15 @@
             transition: background 0.2s;
         }
 
-        .btn-play:hover {
-            background-color: var(--accent);
-        }
+        .btn-play:hover { background-color: var(--accent); }
 
-        footer {
+        /* Loading & Error Style */
+        .status-msg {
+            grid-column: 1 / -1;
             text-align: center;
-            padding: 20px;
+            font-size: 1.2rem;
+            padding: 40px;
             color: #7f8c8d;
-            font-size: 0.9rem;
-            margin-top: 40px;
         }
     </style>
 </head>
@@ -129,73 +111,79 @@
 
     <header>
         <h1>Portal Tes & Latihan Kecermatan</h1>
-        <p>Akses cepat ke berbagai modul simulasi evaluasi kemampuan mental.</p>
+        <p>Daftar modul kuis ini diperbarui secara otomatis dari repositori GitHub.</p>
     </header>
 
     <div class="container">
-        <div class="quiz-grid">
-
-            <div class="quiz-card">
-                <div class="quiz-body">
-                    <span class="quiz-badge">Ketelitian Huruf</span>
-                    <h2 class="quiz-title">Tes Kecermatan (Huruf Hilang)</h2>
-                    <p class="quiz-desc">Mencari karakter atau huruf yang tidak ada dari tabel petunjuk utama dengan cepat dan presisi.</p>
-                </div>
-                <div class="quiz-footer">
-                    <a href="kecermatanhuruf.html" class="btn-play">Mulai Tes</a>
-                </div>
-            </div>
-
-            <div class="quiz-card">
-                <div class="quiz-body">
-                    <span class="quiz-badge">Ketelitian Angka</span>
-                    <h2 class="quiz-title">Tes Kecermatan (Angka Hilang)</h2>
-                    <p class="quiz-desc">Melatih konsentrasi visual dengan mencocokkan baris kombinasi angka acak yang hilang dari pola utama.</p>
-                </div>
-                <div class="quiz-footer">
-                    <a href="kecermatanangka.html" class="btn-play">Mulai Tes</a>
-                </div>
-            </div>
-
-            <div class="quiz-card">
-                <div class="quiz-body">
-                    <span class="quiz-badge">Verifikasi Visual</span>
-                    <h2 class="quiz-title">Verifikasi Data (Sama/Berbeda)</h2>
-                    <p class="quiz-desc">Uji ketelitian visual tingkat tinggi dengan membandingkan teks acak bersensitif huruf besar/kecil dan karakter tiruan antar-alfabet.</p>
-                </div>
-                <div class="quiz-footer">
-                    <a href="samaberbeda.html" class="btn-play">Mulai Tes</a>
-                </div>
-            </div>
-
-            <div class="quiz-card">
-                <div class="quiz-body">
-                    <span class="quiz-badge">Memori Jangka Pendek</span>
-                    <h2 class="quiz-title">Memori Stack Vertikal</h2>
-                    <p class="quiz-desc">Mengingat tumpukan kata yang bertambah secara vertikal dalam jeda waktu ketat, lalu menebak hubungan posisinya.</p>
-                </div>
-                <div class="quiz-footer">
-                    <a href="memorivertikal.html" class="btn-play">Mulai Tes</a>
-                </div>
-            </div>
-
-            <div class="quiz-card">
-                <div class="quiz-body">
-                    <span class="quiz-badge">Logika Spasial</span>
-                    <h2 class="quiz-title">Sudoku Mind Master</h2>
-                    <p class="quiz-desc">Game Sudoku dinamis dengan pilihan ukuran grid dari pemanasan hingga tingkat master (4x4, 6x6, dan 9x9).</p>
-                </div>
-                <div class="quiz-footer">
-                    <a href="sudoku.html" class="btn-play">Mulai Tes</a>
-                </div>
-            </div>
-
+        <div class="quiz-grid" id="quiz-container">
+            <div class="status-msg" id="status-text">Memuat daftar kuis dari GitHub...</div>
         </div>
     </div>
 
-    <footer>
-        &copy; 2026 MecaNerdika TesterEP. All Rights Reserved.
-    </footer>
+    <script>
+        // Konfigurasi Repositori Anda
+        const username = "MecaNerdika";
+        const repo = "testerEP";
+        const apiUrl = `https://api.github.io/repos/${username}/${repo}/contents/`;
+
+        async function fetchQuizzes() {
+            const container = document.getElementById('quiz-container');
+            const statusText = document.getElementById('status-text');
+
+            try {
+                const response = await fetch(apiUrl);
+                if (!response.ok) throw new Error("Gagal mengambil data dari repositori.");
+                
+                const files = await response.json();
+                
+                // Saring hanya file .html dan abaikan index.html
+                const htmlFiles = files.filter(file => 
+                    file.name.endsWith('.html') && 
+                    file.name.toLowerCase() !== 'index.html'
+                );
+
+                if (htmlFiles.length === 0) {
+                    statusText.innerText = "Tidak ada file kuis (.html) ditemukan di repositori ini.";
+                    return;
+                }
+
+                // Bersihkan pesan loading
+                container.innerHTML = "";
+
+                // Generate Card secara otomatis
+                htmlFiles.forEach(file => {
+                    // Membuat nama kuis yang rapi dari nama file (contoh: "kecermatanhuruf.html" -> "Kecermatan Huruf")
+                    let cleanTitle = file.name
+                        .replace('.html', '')
+                        .replace(/[-_]/g, ' ')
+                        .replace(/([A-Z])/g, ' $1') // Beri spasi jika ada CamelCase
+                        .trim();
+
+                    let card = document.createElement('div');
+                    card.className = 'quiz-card';
+                    card.innerHTML = `
+                        <div class="quiz-body">
+                            <span class="quiz-badge">Modul Tes</span>
+                            <h2 class="quiz-title">${cleanTitle}</h2>
+                            <p style="font-size: 0.9rem; color: #7f8c8d;">File: ${file.name}</p>
+                        </div>
+                        <div class="quiz-footer">
+                            <a href="${file.name}" class="btn-play">Mulai Tes</a>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+
+            } catch (error) {
+                console.error(error);
+                statusText.innerText = "Gagal memuat kuis secara otomatis. Pastikan pengaturan GitHub Pages Anda aktif.";
+                statusText.style.color = "var(--accent)";
+            }
+        }
+
+        // Jalankan fungsi saat halaman dimuat
+        window.onload = fetchQuizzes;
+    </script>
 
 </body>
 </html>
