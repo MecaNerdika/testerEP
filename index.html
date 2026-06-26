@@ -124,8 +124,7 @@
         // Konfigurasi Repositori Anda
         const username = "MecaNerdika";
         const repo = "testerEP";
-        const apiUrl = `https://api.github.io/repos/${username}/${repo}/contents/`;
-
+        const apiUrl = `https://api.github.com/repos/${username}/${repo}/contents/`;
         async function fetchQuizzes() {
             const container = document.getElementById('quiz-container');
             const statusText = document.getElementById('status-text');
