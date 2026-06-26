@@ -1,10 +1,201 @@
-<html>
-  <head>
-    <title>Web Ujian Education Priority</title>
-  </head>
-  <body>
-    <p>
-      selamat datang di web ujian dan latihan Education Priority
-    </p>
-  </body>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Tes Kecermatan - MecaNerdika</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --accent: #3498db;
+            --bg: #f4f6f7;
+            --text: #333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary), #34495e);
+            color: white;
+            text-align: center;
+            padding: 40px 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.3rem;
+        }
+
+        header p {
+            margin: 10px 0 0 0;
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .quiz-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .quiz-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .quiz-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+        }
+
+        .quiz-body {
+            padding: 20px;
+            flex-grow: 1;
+        }
+
+        .quiz-badge {
+            display: inline-block;
+            background-color: #e8f4f8;
+            color: var(--accent);
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .quiz-title {
+            margin: 0 0 10px 0;
+            font-size: 1.4rem;
+            color: var(--primary);
+        }
+
+        .quiz-desc {
+            font-size: 0.95rem;
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        .quiz-footer {
+            padding: 0 20px 20px 20px;
+        }
+
+        .btn-play {
+            display: block;
+            text-align: center;
+            background-color: var(--primary);
+            color: white;
+            text-decoration: none;
+            padding: 12px;
+            border-radius: 6px;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+
+        .btn-play:hover {
+            background-color: var(--accent);
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Portal Tes & Latihan Kecermatan</h1>
+        <p>Akses cepat ke berbagai modul simulasi evaluasi kemampuan mental.</p>
+    </header>
+
+    <div class="container">
+        <div class="quiz-grid">
+
+            <div class="quiz-card">
+                <div class="quiz-body">
+                    <span class="quiz-badge">Ketelitian Huruf</span>
+                    <h2 class="quiz-title">Tes Kecermatan (Huruf Hilang)</h2>
+                    <p class="quiz-desc">Mencari karakter atau huruf yang tidak ada dari tabel petunjuk utama dengan cepat dan presisi.</p>
+                </div>
+                <div class="quiz-footer">
+                    <a href="kecermatanhuruf.html" class="btn-play">Mulai Tes</a>
+                </div>
+            </div>
+
+            <div class="quiz-card">
+                <div class="quiz-body">
+                    <span class="quiz-badge">Ketelitian Angka</span>
+                    <h2 class="quiz-title">Tes Kecermatan (Angka Hilang)</h2>
+                    <p class="quiz-desc">Melatih konsentrasi visual dengan mencocokkan baris kombinasi angka acak yang hilang dari pola utama.</p>
+                </div>
+                <div class="quiz-footer">
+                    <a href="kecermatanangka.html" class="btn-play">Mulai Tes</a>
+                </div>
+            </div>
+
+            <div class="quiz-card">
+                <div class="quiz-body">
+                    <span class="quiz-badge">Verifikasi Visual</span>
+                    <h2 class="quiz-title">Verifikasi Data (Sama/Berbeda)</h2>
+                    <p class="quiz-desc">Uji ketelitian visual tingkat tinggi dengan membandingkan teks acak bersensitif huruf besar/kecil dan karakter tiruan antar-alfabet.</p>
+                </div>
+                <div class="quiz-footer">
+                    <a href="samaberbeda.html" class="btn-play">Mulai Tes</a>
+                </div>
+            </div>
+
+            <div class="quiz-card">
+                <div class="quiz-body">
+                    <span class="quiz-badge">Memori Jangka Pendek</span>
+                    <h2 class="quiz-title">Memori Stack Vertikal</h2>
+                    <p class="quiz-desc">Mengingat tumpukan kata yang bertambah secara vertikal dalam jeda waktu ketat, lalu menebak hubungan posisinya.</p>
+                </div>
+                <div class="quiz-footer">
+                    <a href="memorivertikal.html" class="btn-play">Mulai Tes</a>
+                </div>
+            </div>
+
+            <div class="quiz-card">
+                <div class="quiz-body">
+                    <span class="quiz-badge">Logika Spasial</span>
+                    <h2 class="quiz-title">Sudoku Mind Master</h2>
+                    <p class="quiz-desc">Game Sudoku dinamis dengan pilihan ukuran grid dari pemanasan hingga tingkat master (4x4, 6x6, dan 9x9).</p>
+                </div>
+                <div class="quiz-footer">
+                    <a href="sudoku.html" class="btn-play">Mulai Tes</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2026 MecaNerdika TesterEP. All Rights Reserved.
+    </footer>
+
+</body>
 </html>
