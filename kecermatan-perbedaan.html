@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Kecermatan: Verifikasi Data</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #e74c3c;
+            --success-color: #2ecc71;
+            --bg-color: #f4f6f7;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        h1, h2 { text-align: center; color: var(--primary-color); }
+        .hidden { display: none !important; }
+
+        /* Sticky Header untuk Timer */
+        .sticky-header {
+            position: sticky;
+            top: 0;
+            background: white;
+            padding: 15px;
+            border-bottom: 2px solid #ddd;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .timer { color: var(--accent-color); font-size: 22px; }
+
+        /* Tabel Soal */
+        .quiz-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .quiz-table th, .quiz-table td {
+            border: 1px solid #ddd;
+            padding: 12px 10px;
+            text-align: center;
+            font-size: 16px;
+        }
+        .quiz-table th { background-color: var(--primary-color); color: white; }
+        .quiz-table tr:nth-child(even) { background-color: #f9f9f9; }
+
+        .string-display {
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            font-size: 18px;
+            letter-spacing: 1px;
+        }
+
+        /* Radio Buttons Jawaban */
+        .radio-group {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        .radio-group label {
+            cursor: pointer;
+            padding: 6px 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        .radio-group input[type="radio"] { display: none; }
+        
+        /* Efek Terpilih */
+        .radio-group input[type="radio"]:checked + span {
+            font-weight: bold;
+        }
+        .radio-group label:has(input[type="radio"]:checked) {
+            background-color: #d1ecf1;
+            border-color: #17a2b8;
+        }
+
+        /* Tombol */
+        .btn-container { text-align: center; margin-top: 30px; }
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .btn:hover { background-color: #34495e; }
+        .btn-submit { background-color: var(--success-color); }
+        .btn-submit:hover { background-color: #27ae60; }
+
+        /* Hasil Akhir */
+        .result-card {
+            background: #e8f8f5;
+            border: 1px solid var(--success-color);
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="start-screen">
+        <h1>Tes Kecermatan: Verifikasi Data</h1>
+        <p style="text-align: justify; line-height: 1.6;">
+            <strong>Petunjuk:</strong> Anda akan diberikan 25 pasang data teks (kombinasi huruf besar/kecil, angka, dan simbol). 
+            Tugas Anda adalah memeriksa apakah teks <strong>Pembanding</strong> persis sama dengan teks <strong>Soal Utama</strong>. 
+            <br><br>
+            Pilih <strong>Sama</strong> jika identik (sensitif terhadap huruf besar/kecil), atau <strong>Berbeda</strong> jika ada modifikasi/perbedaan sekecil apa pun.
+            <br><br>
+            <strong>Waktu Pengerjaan:</strong> 12.5 Menit (12 Menit 30 Detik) untuk seluruh soal sekaligus.
+        </p>
+        <div class="btn-container">
+            <button class="btn" onclick="startQuiz()">Mulai Tes</button>
+        </div>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+        <div class="sticky-header">
+            <div>Progress: <span id="progress-text">0/25 Terjawab</span></div>
+            <div class="timer">Sisa Waktu: <span id="timer-clock">12:30</span></div>
+        </div>
+
+        <table class="quiz-table">
+            <thead>
+                <tr>
+                    <th style="width: 8%">No</th>
+                    <th style="width: 31%">Soal Utama</th>
+                    <th style="width: 31%">Pembanding</th>
+                    <th style="width: 30%">Pilihan Jawaban</th>
+                </tr>
+            </thead>
+            <tbody id="quiz-questions-body">
+                </tbody>
+        </table>
+
+        <div class="btn-container">
+            <button class="btn btn-submit" onclick="finishQuiz()">Selesai & Kumpulkan</button>
+        </div>
+    </div>
+
+    <div id="result-screen" class="hidden">
+        <h2>Hasil Evaluasi Tes Kecermatan</h2>
+        <div class="result-card">
+            <strong>TOTAL SKOR:</strong> <span id="res-correct" style="font-weight: bold; color: var(--success-color);">0</span> / 25 Benar
+            <br>
+            <span id="res-time" style="font-size: 16px; color: #666;">Waktu pengerjaan: 0 detik</span>
+        </div>
+
+        <table class="quiz-table" id="review-table">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Soal Utama</th>
+                    <th>Pembanding</th>
+                    <th>Kunci</th>
+                    <th>Jawaban Anda</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="review-questions-body">
+                </tbody>
+        </table>
+
+        <div class="btn-container">
+            <button class="btn" onclick="location.reload()">Ulangi Tes</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const TOTAL_QUESTIONS = 25;
+    const TOTAL_TIME = 12.5 * 60; // 750 detik
+
+    let questionsData = [];
+    let timerInterval = null;
+    let timeRemaining = TOTAL_TIME;
+
+    // Karakter pool untuk pembuatan soal
+    const charsPool = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%&*";
+    // Pasangan karakter mirip untuk manipulasi visual tingkat tinggi
+    const lookAlike = { 'l': '1', '1': 'I', 'O': '0', '0': 'O', 'S': '5', '5': 'S', 'Z': '2', '2': 'Z', 'b': 'd', 'p': 'q', 'm': 'n' };
+
+    function startQuiz() {
+        document.getElementById('start-screen').classList.add('hidden');
+        document.getElementById('quiz-screen').classList.remove('hidden');
+        
+        generateAllQuestions();
+        renderQuizTable();
+        startTimer();
+    }
+
+    // Fungsi utama pembuat struktur bank soal
+    function generateAllQuestions() {
+        questionsData = [];
+        for (let i = 0; i < TOTAL_QUESTIONS; i++) {
+            // 1. Tentukan panjang string antara 5 sampai 8 karakter
+            const length = Math.floor(Math.random() * 4) + 5; 
+            
+            // 2. Buat Soal Utama
+            let originalString = "";
+            for (let j = 0; j < length; j++) {
+                originalString += charsPool.charAt(Math.floor(Math.random() * charsPool.length));
+            }
+
+            // 3. Tentukan apakah pembanding akan dimodifikasi atau sama (50:50)
+            const isDifferent = Math.random() < 0.5;
+            let compareString = originalString;
+            let modificationType = "Tidak ada modifikasi";
+
+            if (isDifferent) {
+                const modType = Math.floor(Math.random() * 3); // 0, 1, atau 2
+                let arr = originalString.split('');
+
+                if (modType === 0) {
+                    // Modifikasi 1: Balik besar/kecil huruf secara acak
+                    modificationType = "Ubah Case";
+                    let idx = Math.floor(Math.random() * arr.length);
+                    if (arr[idx] === arr[idx].toUpperCase()) {
+                        arr[idx] = arr[idx].toLowerCase();
+                    } else {
+                        arr[idx] = arr[idx].toUpperCase();
+                    }
+                    compareString = arr.join('');
+                } 
+                else if (modType === 1) {
+                    // Modifikasi 2: Ganti dengan karakter yang mirip jika ada, jika tidak, tukar karakter acak
+                    modificationType = "Karakter Mirip";
+                    let replaced = false;
+                    // Cari karakter di dalam soal yang punya kembaran mirip
+                    for (let j = 0; j < arr.length; j++) {
+                        if (lookAlike[arr[j]]) {
+                            arr[j] = lookAlike[arr[j]];
+                            replaced = true;
+                            break;
+                        }
+                    }
+                    // Jika tidak ada karakter mirip, ubah paksa satu karakter menjadi huruf lain
+                    if (!replaced) {
+                        let idx = Math.floor(Math.random() * arr.length);
+                        arr[idx] = arr[idx] === 'X' ? 'Y' : 'X';
+                    }
+                    compareString = arr.join('');
+                } 
+                else {
+                    // Modifikasi 3: Tukar urutan 2 huruf/bilangan berdampingan
+                    modificationType = "Tukar Urutan";
+                    let idx = Math.floor(Math.random() * (arr.length - 1));
+                    let temp = arr[idx];
+                    arr[idx] = arr[idx + 1];
+                    arr[idx + 1] = temp;
+                    compareString = arr.join('');
+                }
+                
+                // Proteksi fail-safe: jika secara tidak sengaja hasil modifikasi tetap sama dengan aslinya
+                if (compareString === originalString) {
+                    compareString += "x"; 
+                }
+            }
+
+            questionsData.push({
+                id: i + 1,
+                original: originalString,
+                compare: compareString,
+                expected: isDifferent ? "berbeda" : "sama",
+                userAnswer: null
+            });
+        }
+    }
+
+    function renderQuizTable() {
+        const tbody = document.getElementById('quiz-questions-body');
+        tbody.innerHTML = '';
+
+        questionsData.forEach((q, index) => {
+            let row = document.createElement('tr');
+            row.innerHTML = `
+                <td><strong>${q.id}</strong></td>
+                <td class="string-display">${escapeHtml(q.original)}</td>
+                <td class="string-display">${escapeHtml(q.compare)}</td>
+                <td>
+                    <div class="radio-group">
+                        <label>
+                            <input type="radio" name="q-${index}" value="sama" onclick="selectAnswer(${index}, 'sama')">
+                            <span>Sama</span>
+                        </label>
+                        <label>
+                            <input type="radio" name="q-${index}" value="berbeda" onclick="selectAnswer(${index}, 'berbeda')">
+                            <span>Berbeda</span>
+                        </label>
+                    </div>
+                </td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+
+    function selectAnswer(index, value) {
+        questionsData[index].userAnswer = value;
+        
+        // Update jumlah yang sudah dijawab pada UI
+        const answeredCount = questionsData.filter(q => q.userAnswer !== null).length;
+        document.getElementById('progress-text').innerText = `${answeredCount}/25 Terjawab`;
+    }
+
+    function startTimer() {
+        updateTimerDisplay();
+        timerInterval = setInterval(() => {
+            timeRemaining--;
+            updateTimerDisplay();
+
+            if (timeRemaining <= 0) {
+                clearInterval(timerInterval);
+                alert("Waktu habis! Jawaban Anda akan otomatis dikumpulkan.");
+                finishQuiz();
+            }
+        }, 1000);
+    }
+
+    function updateTimerDisplay() {
+        let minutes = Math.floor(timeRemaining / 60);
+        let seconds = timeRemaining % 60;
+        document.getElementById('timer-clock').innerText = 
+            `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
+
+    function finishQuiz() {
+        clearInterval(timerInterval);
+
+        let correctCount = 0;
+        const timeSpent = TOTAL_TIME - timeRemaining;
+        const reviewBody = document.getElementById('review-questions-body');
+        reviewBody.innerHTML = '';
+
+        questionsData.forEach((q, index) => {
+            const isCorrect = q.userAnswer === q.expected;
+            if (isCorrect) correctCount++;
+
+            // Render baris ulasan koreksi di akhir halaman
+            let row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${q.id}</td>
+                <td class="string-display">${escapeHtml(q.original)}</td>
+                <td class="string-display">${escapeHtml(q.compare)}</td>
+                <td style="text-transform: capitalize; font-weight: bold;">${q.expected}</td>
+                <td style="text-transform: capitalize;">${q.userAnswer ? q.userAnswer : '<span style="color:gray;">Kosong</span>'}</td>
+                <td style="color: ${isCorrect ? 'var(--success-color)' : 'var(--accent-color)'}; font-weight: bold;">
+                    ${isCorrect ? '✓ Benar' : '✗ Salah'}
+                </td>
+            `;
+            reviewBody.appendChild(row);
+        });
+
+        // Tampilkan halaman evaluasi hasil
+        document.getElementById('quiz-screen').classList.add('hidden');
+        document.getElementById('result-screen').classList.remove('hidden');
+
+        document.getElementById('res-correct').innerText = correctCount;
+        
+        // Format durasi pengerjaan
+        let minutesSpent = Math.floor(timeSpent / 60);
+        let secondsSpent = timeSpent % 60;
+        document.getElementById('res-time').innerText = `Waktu pengerjaan: ${minutesSpent} menit ${secondsSpent} detik`;
+        
+        window.scrollTo(0, 0);
+    }
+
+    // Fungsi pengaman agar karakter simbol HTML seperti <, >, & tidak merusak struktur tabel
+    function escapeHtml(text) {
+        return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+</script>
+
+</body>
+</html>

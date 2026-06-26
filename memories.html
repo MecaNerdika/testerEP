@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Kecermatan & Memori (Murni Kata)</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --accent: #e74c3c;
+            --success: #2ecc71;
+            --bg: #f8f9fa;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            margin: 0; padding: 20px;
+            display: flex; justify-content: center; align-items: center; min-height: 100vh;
+        }
+        .container {
+            background: white; padding: 30px; border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 600px; text-align: center;
+        }
+        .hidden { display: none !important; }
+        .btn {
+            background: var(--primary); color: white; border: none; padding: 12px 25px;
+            font-size: 18px; font-weight: bold; border-radius: 6px; cursor: pointer; transition: 0.2s;
+        }
+        .btn:hover { background: #34495e; }
+        
+        /* Area List Vertikal Murni Teks */
+        #memo-list-container {
+            margin: 20px auto;
+            max-width: 400px;
+            text-align: center;
+            background: #fdf2e9;
+            border-radius: 8px;
+            border: 2px dashed #f39c12;
+            padding: 20px;
+            min-height: 150px;
+        }
+        .list-row {
+            padding: 10px;
+            margin-bottom: 8px;
+            background: white;
+            border-radius: 4px;
+            font-size: 24px;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            animation: fadeIn 0.3s ease-in-out;
+            color: var(--primary);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Quiz Styles */
+        .timer-bar-container {
+            width: 100%; height: 6px; background: #eee; border-radius: 3px; margin-bottom: 20px; overflow: hidden;
+        }
+        .timer-bar {
+            width: 100%; height: 100%; background: var(--accent); transition: width 4s linear;
+        }
+        .question-text { font-size: 22px; font-weight: bold; margin-bottom: 25px; color: #333; min-height: 60px;}
+        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .btn-opt {
+            background: #fff; color: var(--primary); border: 2px solid var(--primary);
+            padding: 15px; font-size: 18px; font-weight: bold; border-radius: 6px; cursor: pointer;
+        }
+        .btn-opt:hover { background: var(--primary); color: white; }
+
+        /* Status Header */
+        .status-header {
+            display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 15px; background: #eee; padding: 8px 12px; border-radius: 4px;
+        }
+        .instruction-box {
+            text-align: left; background: #eef2f7; padding: 15px; border-radius: 8px; margin-bottom: 20px; line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Kuis Memori & Kecermatan</h1>
+
+    <!-- SCREEN 1: START -->
+    <div id="start-screen">
+        <div class="instruction-box">
+            <strong>Petunjuk Kuis:</strong>
+            <ol style="margin-left: -15px;">
+                <li>Kata-kata akan muncul berurutan ke bawah secara vertikal (jarak 1 detik per kata).</li>
+                <li>Ingat urutan dan hubungan antar kata tersebut dengan cermat.</li>
+                <li>Setelah daftar hilang, Anda harus menjawab pertanyaan pilihan ganda terkait letak kata tersebut.</li>
+                <li>Setiap soal akan berganti otomatis secara cepat. Jawablah sesegera mungkin.</li>
+            </ol>
+        </div>
+        <button class="btn" onclick="startNextSession()">Mulai Sesi 1</button>
+    </div>
+
+    <!-- SCREEN 2: MEMORIZATION (VERTICAL STACK) -->
+    <div id="memo-screen" class="hidden">
+        <div class="status-header">
+            <div>Sesi / Level: <span id="lbl-session-num">1</span></div>
+            <div id="memo-status-text" style="color: var(--accent)">Menampilkan Daftar...</div>
+        </div>
+        <div id="memo-list-container">
+            <!-- Tempat baris kata ditumpuk ke bawah via JS -->
+        </div>
+    </div>
+
+    <!-- SCREEN 3: QUIZ QUESTION -->
+    <div id="quiz-screen" class="hidden">
+        <div class="status-header">
+            <div>Pertanyaan: <span id="lbl-q-progress">1/2</span></div>
+            <div>Evaluasi Memori</div>
+        </div>
+        <div class="timer-bar-container">
+           // <div id="timer-progress" class="timer-bar"></div>
+        </div>
+        <div class="question-text" id="question-display">Memuat pertanyaan...</div>
+        <div class="options-grid" id="options-display">
+            <!-- Pilihan Ganda -->
+        </div>
+    </div>
+
+    <!-- SCREEN 4: INTERMISSION / JEDA LEVEL -->
+    <div id="break-screen" class="hidden">
+        <h2>Sesi Selesai!</h2>
+        <p id="break-report">Anda menjawab X dari Y pertanyaan dengan benar.</p>
+        <p>Bersiap! Sesi berikutnya akan menjadi lebih panjang dan lebih sulit.</p>
+        <button class="btn" onclick="startNextSession()">Lanjut ke Sesi Berikutnya</button>
+    </div>
+
+    <!-- SCREEN 5: GAME OVER -->
+    <div id="gameover-screen" class="hidden">
+        <h2>Skor Akhir Anda</h2>
+        <h1 id="lbl-final-score" style="color: var(--success); font-size: 48px;">0</h1>
+        <p>Latihan yang luar biasa untuk ketajaman otak Anda!</p>
+        <button class="btn" onclick="location.reload()">Ulangi Dari Awal</button>
+    </div>
+</div>
+
+<script>
+    // Bank Data Kata Campuran (Kategori internal hanya untuk mempermudah variasi pengacakan)
+    const pool = {
+        hewan: ["Kucing", "Anjing", "Gajah", "Singa", "Harimau", "Kelinci", "Burung", "Kuda", "Rusa", "Sapi"],
+        warna: ["Merah", "Biru", "Hijau", "Kuning", "Ungu", "Hitam", "Putih", "Cokelat", "Jingga", "Abu-abu"],
+        sayuran: ["Bayam", "Wortel", "Brokoli", "Terong", "Kubis", "Tomat", "Kentang", "Sawi", "Kangkung", "Labu"],
+        buah: ["Apel", "Pisang", "Jeruk", "Mangga", "Anggur", "Melon", "Semangka", "Durian", "Stroberi", "Nanas"]
+    };
+    const categories = Object.keys(pool);
+
+    let currentLevel = 0; 
+    let generatedList = []; 
+    let questionBank = [];
+    let currentQuestionIdx = 0;
+    let correctAnswersCount = 0;
+    let totalScore = 0;
+    let questionTimer = null;
+
+    const levelSettings = [
+        { listLength: 4, qCount: 2 }, 
+        { listLength: 5, qCount: 3 }, 
+        { listLength: 6, qCount: 4 }, 
+        { listLength: 7, qCount: 5 }, 
+        { listLength: 8, qCount: 6 }  
+    ];
+
+    function startNextSession() {
+        currentLevel++;
+        const setting = levelSettings[Math.min(currentLevel, levelSettings.length) - 1];
+        
+        document.getElementById('start-screen').classList.add('hidden');
+        document.getElementById('break-screen').classList.add('hidden');
+        document.getElementById('memo-screen').classList.remove('hidden');
+        document.getElementById('lbl-session-num').innerText = currentLevel;
+        document.getElementById('memo-status-text').innerText = "Menampilkan Daftar...";
+
+        const container = document.getElementById('memo-list-container');
+        container.innerHTML = '';
+
+        generateMemoryList(setting.listLength);
+        appendWordsVertically(() => {
+            buildQuestionBank(setting.qCount);
+            currentQuestionIdx = 0;
+            correctAnswersCount = 0;
+            
+            document.getElementById('memo-screen').classList.add('hidden');
+            document.getElementById('quiz-screen').classList.remove('hidden');
+            showQuestion();
+        });
+    }
+
+    function generateMemoryList(length) {
+        generatedList = [];
+        let usedWords = new Set();
+        
+        for (let i = 0; i < length; i++) {
+            let cat = categories[Math.floor(Math.random() * categories.length)];
+            let wordPool = pool[cat];
+            let word = wordPool[Math.floor(Math.random() * wordPool.length)];
+            
+            if (usedWords.has(word)) { i--; continue; }
+            
+            usedWords.add(word);
+            generatedList.push({ word: word }); // Hanya menyimpan kata utama saja
+        }
+    }
+
+    function appendWordsVertically(callback) {
+        let idx = 0;
+        const container = document.getElementById('memo-list-container');
+
+        let appendInterval = setInterval(() => {
+            if (idx < generatedList.length) {
+                let row = document.createElement('div');
+                row.className = 'list-row';
+                row.innerHTML = `<span>${generatedList[idx].word}</span>`;
+                container.appendChild(row);
+                idx++;
+            } else {
+                clearInterval(appendInterval);
+                document.getElementById('memo-status-text').innerText = "INGAT DAFTAR DI ATAS!";
+                setTimeout(callback, 1500); 
+            }
+        }, 1000); 
+    }
+
+    function buildQuestionBank(count) {
+        questionBank = [];
+        const len = generatedList.length;
+
+        for (let i = 0; i < count; i++) {
+            let qText = "";
+            let correctAnswer = "";
+            let type = Math.floor(Math.random() * 3); // Diubah menjadi 3 tipe (tipe kategori dihapus)
+
+            if (type === 0) {
+                // Tipe Posisi Absolut
+                let targetIdx = Math.floor(Math.random() * len);
+                if (targetIdx === 0) {
+                    qText = `Kata pertama yang muncul paling atas pada daftar tadi adalah...`;
+                } else if (targetIdx === len - 1) {
+                    qText = `Kata terakhir yang muncul paling bawah pada daftar tadi adalah...`;
+                } else {
+                    qText = `Kata pada urutan ke-${targetIdx + 1} dari atas adalah...`;
+                }
+                correctAnswer = generatedList[targetIdx].word;
+            } 
+            else if (type === 1 && len > 1) {
+                // Tipe Setelah Kata X
+                let targetIdx = Math.floor(Math.random() * (len - 1)); 
+                let anchor = generatedList[targetIdx];
+                let nextItem = generatedList[targetIdx + 1];
+                qText = `Kata yang muncul tepat <strong>setelah</strong> kata "<strong>${anchor.word}</strong>" adalah...`;
+                correctAnswer = nextItem.word;
+            } 
+            else if (type === 2 && len > 1) {
+                // Tipe Sebelum Kata Y
+                let targetIdx = Math.floor(Math.random() * (len - 1)) + 1; 
+                let anchor = generatedList[targetIdx];
+                let prevItem = generatedList[targetIdx - 1];
+                qText = `Kata yang muncul tepat <strong>sebelum</strong> kata "<strong>${anchor.word}</strong>" adalah...`;
+                correctAnswer = prevItem.word;
+            }
+
+            // Generate Pilihan Pengalih dari list kata yang muncul
+            let options = new Set([correctAnswer]);
+            while (options.size < 4) {
+                let randomItem = generatedList[Math.floor(Math.random() * len)].word;
+                options.add(randomItem);
+            }
+
+            questionBank.push({
+                question: qText,
+                answer: correctAnswer,
+                options: Array.from(options).sort(() => 0.5 - Math.random())
+            });
+        }
+    }
+
+    function showQuestion() {
+        clearTimeout(questionTimer);
+        
+        const bar = document.getElementById('timer-progress');
+        bar.style.transition = 'none';
+        bar.style.width = '100%';
+        setTimeout(() => {
+            bar.style.transition = 'width 4000ms linear';
+            bar.style.width = '0%';
+        }, 10);
+
+        if (currentQuestionIdx >= questionBank.length) {
+            endSession();
+            return;
+        }
+
+        document.getElementById('lbl-q-progress').innerText = `${currentQuestionIdx + 1}/${questionBank.length}`;
+        
+        let qData = questionBank[currentQuestionIdx];
+        document.getElementById('question-display').innerHTML = qData.question;
+
+        const optDisplay = document.getElementById('options-display');
+        optDisplay.innerHTML = '';
+        qData.options.forEach(opt => {
+            let button = document.createElement('button');
+            button.className = 'btn-opt';
+            button.innerText = opt;
+            button.onclick = () => submitAnswer(opt);
+            optDisplay.appendChild(button);
+        });
+
+        questionTimer = setTimeout(() => {
+            nextQuestion();
+        }, 4000);
+    }
+
+    function submitAnswer(selected) {
+        if (selected === questionBank[currentQuestionIdx].answer) {
+            correctAnswersCount++;
+            totalScore += 10 * currentLevel;
+        }
+        nextQuestion();
+    }
+
+    function nextQuestion() {
+        currentQuestionIdx++;
+        showQuestion();
+    }
+
+    function endSession() {
+        clearTimeout(questionTimer);
+        document.getElementById('quiz-screen').classList.add('hidden');
+
+        if (currentLevel >= levelSettings.length) {
+            document.getElementById('gameover-screen').classList.remove('hidden');
+            document.getElementById('lbl-final-score').innerText = totalScore + " Poin";
+        } else {
+            document.getElementById('break-screen').classList.remove('hidden');
+            document.getElementById('break-report').innerText = `Anda menjawab ${correctAnswersCount} dari ${questionBank.length} pertanyaan dengan benar.`;
+        }
+    }
+</script>
+
+</body>
+</html>
