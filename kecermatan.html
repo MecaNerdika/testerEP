@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Latihan Kecermatan</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #e74c3c;
+            --bg-color: #f8f9fa;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+        }
+
+        h1 { color: var(--primary-color); margin-bottom: 20px; }
+        
+        .hidden { display: none !important; }
+
+        /* Panel Pengaturan */
+        .setup-group {
+            margin: 20px 0;
+            text-align: left;
+        }
+        label { font-weight: bold; display: block; margin-bottom: 5px; }
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #bdc3c7;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        /* Header Info Game */
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            font-weight: bold;
+            font-size: 18px;
+            background: #ecf0f1;
+            padding: 10px;
+            border-radius: 6px;
+        }
+        .timer { color: var(--accent-color); }
+
+        /* Tabel Kunci (Atas-Bawah) */
+        .table-key {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 25px;
+        }
+        .table-key td {
+            border: 2px solid var(--primary-color);
+            padding: 12px;
+            font-size: 24px;
+            font-weight: bold;
+            width: 20%;
+        }
+        .table-key tr:first-child {
+            background-color: #f3f4f6;
+        }
+
+        /* Area Soal */
+        .question-box {
+            font-size: 32px;
+            font-weight: bold;
+            letter-spacing: 8px;
+            margin-bottom: 25px;
+            color: #333;
+            background: #fff8db;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px dashed #f1c40f;
+        }
+
+        /* Tombol Opsi Jawaban */
+        .options-container {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        /* Tombol Umum */
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn:hover { background-color: #34495e; }
+        
+        .btn-opt {
+            background-color: #fff;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+            padding: 15px 0;
+            font-size: 20px;
+        }
+        .btn-opt:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        /* Pesan Jeda */
+        .countdown-overlay {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--accent-color);
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Kuis Kecermatan</h1>
+
+    <div id="setup-screen">
+        <p>Latih fokus dan kecermatan Anda. Tiap sesi berisi 60 pertanyaan dengan waktu 1 menit.</p>
+        <div class="setup-group">
+            <label for="total-sessions">Jumlah Sesi Sesi:</label>
+            <input type="number" id="total-sessions" value="3" min="1" max="20">
+        </div>
+        <button class="btn" onclick="startQuiz()">Mulai Kuis</button>
+    </div>
+
+    <div id="break-screen" class="hidden">
+        <h2>Sesi Selesai!</h2>
+        <p id="break-message">Bersiap menuju sesi berikutnya...</p>
+        <div class="countdown-overlay" id="break-countdown">3</div>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+        <div class="game-info">
+            <div>Sesi: <span id="current-session-info">1</span>/<span id="max-session-info">3</span></div>
+            <div>Soal: <span id="question-count-info">1</span>/60</div>
+            <div class="timer">Sisa Waktu: <span id="timer-clock">60</span>s</div>
+        </div>
+
+        <table class="table-key">
+            <tr id="row-chars">
+                </tr>
+            <tr>
+                <td>A</td>
+                <td>B</td>
+                <td>C</td>
+                <td>D</td>
+                <td>E</td>
+            </tr>
+        </table>
+
+        <div class="question-box" id="question-display">
+            X X X X
+        </div>
+
+        <div class="options-container">
+            <button class="btn btn-opt" onclick="submitAnswer(0)">A</button>
+            <button class="btn btn-opt" onclick="submitAnswer(1)">B</button>
+            <button class="btn btn-opt" onclick="submitAnswer(2)">C</button>
+            <button class="btn btn-opt" onclick="submitAnswer(3)">D</button>
+            <button class="btn btn-opt" onclick="submitAnswer(4)">E</button>
+        </div>
+    </div>
+
+    <div id="result-screen" class="hidden">
+        <h2>Kuis Selesai!</h2>
+        <p>Anda telah menyelesaikan semua sesi kuis kecermatan.</p>
+        <div class="setup-group" style="text-align: center;">
+            <p><strong>Total Sesi:</strong> <span id="res-sessions">0</span></p>
+            <p><strong>Total Jawaban Benar:</strong> <span id="res-correct">0</span> / <span id="res-total-q">0</span></p>
+        </div>
+        <button class="btn" onclick="resetToSetup()">Main Lagi</button>
+    </div>
+</div>
+
+<script>
+    // Konfigurasi Standar
+    const QUESTIONS_PER_SESSION = 60;
+    const TIME_PER_SESSION = 60; // 60 detik
+
+    // State Aplikasi
+    let totalSessions = 3;
+    let currentSession = 1;
+    let currentQuestionCount = 1;
+    let timerInterval = null;
+    let timeRemaining = TIME_PER_SESSION;
+    
+    // Data Sesi Berjalan
+    let currentKeyChars = []; // 5 karakter yang terpilih di sesi ini
+    let currentCorrectIndex = -1; // Index jawaban yang benar (0-4 untuk A-E)
+    let totalCorrectAnswers = 0;
+
+    // Kumpulan karakter untuk diacak
+    const numbers = "123456789";
+    const letters = "abcdefghijklmnopqrstuvwxyz";
+
+    // Elemen DOM
+    const setupScreen = document.getElementById('setup-screen');
+    const quizScreen = document.getElementById('quiz-screen');
+    const breakScreen = document.getElementById('break-screen');
+    const resultScreen = document.getElementById('result-screen');
+
+    // Memulai kuis dari halaman depan
+    function startQuiz() {
+        totalSessions = parseInt(document.getElementById('total-sessions').value) || 3;
+        currentSession = 1;
+        totalCorrectAnswers = 0;
+        
+        setupScreen.classList.add('hidden');
+        initiateSession();
+    }
+
+    // Inisialisasi Sesi Baru (generate master key 5 karakter)
+    function initiateSession() {
+        currentQuestionCount = 1;
+        timeRemaining = TIME_PER_SESSION;
+        
+        // Tentukan secara acak apakah sesi ini memakai ANGKA atau HURUF
+        const useNumbers = Math.random() < 0.5;
+        const sourcePool = useNumbers ? numbers : letters;
+        
+        // Pilih 5 karakter acak unik
+        let shuffled = sourcePool.split('').sort(() => 0.5 - Math.random());
+        currentKeyChars = shuffled.slice(0, 5);
+
+        // Render tabel kisi-kisi bagian atas
+        const rowChars = document.getElementById('row-chars');
+        rowChars.innerHTML = '';
+        currentKeyChars.forEach(char => {
+            let td = document.createElement('td');
+            td.innerText = char.toUpperCase();
+            rowChars.appendChild(td);
+        });
+
+        // Tampilkan layar kuis, sembunyikan layar jeda jika ada
+        breakScreen.classList.add('hidden');
+        quizScreen.classList.remove('hidden');
+
+        // Update Info UI
+        document.getElementById('max-session-info').innerText = totalSessions;
+        updateSessionUI();
+
+        // Mulai Timer Sesi
+        startTimer();
+        // Generate Soal Pertama
+        generateQuestion();
+    }
+
+    // Generate Soal baru di dalam sesi yang sama
+    function generateQuestion() {
+        if (currentQuestionCount > QUESTIONS_PER_SESSION) {
+            endSession();
+            return;
+        }
+
+        document.getElementById('question-count-info').innerText = currentQuestionCount;
+
+        // Pilih 1 dari 5 karakter untuk dihilangkan (ini target jawabannya)
+        currentCorrectIndex = Math.floor(Math.random() * 5);
+        
+        // Ambil 4 karakter sisa
+        let questionChars = [];
+        for (let i = 0; i < 5; i++) {
+            if (i !== currentCorrectIndex) {
+                questionChars.push(currentKeyChars[i].toUpperCase());
+            }
+        }
+
+        // Acak urutan 4 karakter tersebut
+        questionChars.sort(() => 0.5 - Math.random());
+
+        // Tampilkan di layar
+        document.getElementById('question-display').innerText = questionChars.join(' ');
+    }
+
+    // Aksi ketika user mengklik opsi jawaban (A=0, B=1, dst)
+    function submitAnswer(selectedIndex) {
+        if (selectedIndex === currentCorrectIndex) {
+            totalCorrectAnswers++;
+        }
+        
+        // Lanjut ke soal berikutnya tanpa jeda
+        currentQuestionCount++;
+        generateQuestion();
+    }
+
+    // Timer Hitung Mundur Sesi
+    function startTimer() {
+        clearInterval(timerInterval);
+        document.getElementById('timer-clock').innerText = timeRemaining;
+
+        timerInterval = setInterval(() => {
+            timeRemaining--;
+            document.getElementById('timer-clock').innerText = timeRemaining;
+
+            if (timeRemaining <= 0) {
+                clearInterval(timerInterval);
+                endSession();
+            }
+        }, 1000);
+    }
+
+    // Sesi berakhir (karena waktu habis atau soal mencapai 60)
+    function endSession() {
+        clearInterval(timerInterval);
+
+        if (currentSession < totalSessions) {
+            // Masuk ke fase jeda 3 detik menuju sesi berikutnya
+            quizScreen.classList.add('hidden');
+            breakScreen.classList.remove('hidden');
+            
+            let breakTimeLeft = 3;
+            document.getElementById('break-countdown').innerText = breakTimeLeft;
+
+            let breakInterval = setInterval(() => {
+                breakTimeLeft--;
+                document.getElementById('break-countdown').innerText = breakTimeLeft;
+                
+                if (breakTimeLeft <= 0) {
+                    clearInterval(breakInterval);
+                    currentSession++;
+                    initiateSession();
+                }
+            }, 1000);
+        } else {
+            // Semua sesi selesai, tampilkan hasil akhir
+            showResults();
+        }
+    }
+
+    function updateSessionUI() {
+        document.getElementById('current-session-info').innerText = currentSession;
+    }
+
+    // Tampilkan Layar Hasil Akhir
+    function showResults() {
+        quizScreen.classList.add('hidden');
+        breakScreen.classList.add('hidden');
+        resultScreen.classList.remove('hidden');
+
+        document.getElementById('res-sessions').innerText = totalSessions;
+        document.getElementById('res-correct').innerText = totalCorrectAnswers;
+        document.getElementById('res-total-q').innerText = totalSessions * QUESTIONS_PER_SESSION;
+    }
+
+    // Kembali ke menu awal
+    function resetToSetup() {
+        resultScreen.classList.add('hidden');
+        setupScreen.classList.remove('hidden');
+    }
+</script>
+
+</body>
+</html>
