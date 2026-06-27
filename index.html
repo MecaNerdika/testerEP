@@ -1,188 +1,273 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal Tes Kecermatan Otomatis</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      
+    <title>Portal Tes Education Priority</title>
+    <meta name="description" content="Pusat simulasi kuis kecermatan online gratis. Latihan tes angka hilang, huruf hilang, verifikasi data, kuis memori vertikal, dan sudoku untuk persiapan ujian akademik.">
+    <meta name="keywords" content="tes kecermatan, angka hilang, huruf hilang, tes memori, sudoku online, kuis logika, simulasi akademik">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://mecanerdika.github.io/testerEP/">
+    
+    <!-- Open Graph (Untuk Optimasi Share ke WA / Sosial Media) -->
+    <meta property="og:title" content="Portal Latihan Tes Kecermatan Online Gratis">
+    <meta property="og:description" content="Uji ketelitian, ingatan, dan logika spasial Anda dengan simulasi kuis interaktif yang diperbarui otomatis.">
+    <meta property="og:url" content="https://mecanerdika.github.io/testerEP/">
+    <meta property="og:type" content="website">
+    
     <style>
-        :root {
-            --primary: #2c3e50;
-            --accent: #3498db;
-            --bg: #f4f6f7;
-            --text: #333;
-        }
+      :root {
+        --primary: #2a3036;
+        --accent: #3498db;
+        --bg: #f4f6f7;
+        --text: #333;
+      }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            margin: 0; padding: 0;
-        }
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: var(--bg);
+        color: var(--text);
+        margin: 0;
+        padding: 0;
+      }
 
-        header {
-            background: linear-gradient(135deg, var(--primary), #34495e);
-            color: white;
-            text-align: center;
-            padding: 40px 20px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
+      header {
+        background: linear-gradient(135deg, #f8f7f7, #06207f);
+        color: white;
+        text-align: center;
+        padding: 40px 20px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      }
 
-        header h1 { margin: 0; font-size: 2.3rem; }
-        header p { margin: 10px 0 0 0; opacity: 0.9; font-size: 1.1rem; }
+      header h1 {
+        margin: 0;
+        font-size: 2.3rem;
+      }
+      header p {
+        margin: 10px 0 0 0;
+        opacity: 0.9;
+        font-size: 1.1rem;
+      }
+      header img {
+        width: 50%;
+        max-width: 200px;
+        height: auto;
+      }
 
-        .container {
-            max-width: 1200px;
-            margin: 40px auto;
-            padding: 0 20px;
-        }
+      .container {
+        max-width: 1200px;
+        margin: 40px auto;
+        padding: 0 20px;
+      }
 
-        .quiz-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 25px;
-        }
+      .quiz-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 25px;
+      }
 
-        .quiz-card {
-            background: white;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            display: flex;
-            flex-direction: column;
-        }
+      .quiz-card {
+        background: white;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        transition:
+          transform 0.3s ease,
+          box-shadow 0.3s ease;
+        display: flex;
+        flex-direction: column;
+      }
 
-        .quiz-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
-        }
+      .quiz-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+      }
 
-        .quiz-body {
-            padding: 20px;
-            flex-grow: 1;
-        }
+      .quiz-body {
+        padding: 20px;
+        flex-grow: 1;
+      }
 
-        .quiz-badge {
-            display: inline-block;
-            background-color: #e8f4f8;
-            color: var(--accent);
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            text-transform: uppercase;
-            margin-bottom: 10px;
-        }
+      .quiz-badge {
+        display: inline-block;
+        background-color: #e8f4f8;
+        color: var(--accent);
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: bold;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+      }
 
-        .quiz-title {
-            margin: 0 0 10px 0;
-            font-size: 1.3rem;
-            color: var(--primary);
-            text-transform: capitalize;
-        }
+      .quiz-title {
+        margin: 0 0 10px 0;
+        font-size: 1.3rem;
+        color: var(--primary);
+        text-transform: capitalize;
+      }
 
-        .quiz-footer { padding: 0 20px 20px 20px; }
+      .quiz-footer {
+        padding: 0 20px 20px 20px;
+      }
 
-        .btn-play {
-            display: block;
-            text-align: center;
-            background-color: var(--primary);
-            color: white;
-            text-decoration: none;
-            padding: 12px;
-            border-radius: 6px;
-            font-weight: bold;
-            transition: background 0.2s;
-        }
+      .btn-play {
+        display: block;
+        text-align: center;
+        background-color: var(--primary);
+        color: white;
+        text-decoration: none;
+        padding: 12px;
+        border-radius: 6px;
+        font-weight: bold;
+        transition: background 0.2s;
+      }
 
-        .btn-play:hover { background-color: var(--accent); }
+      .btn-play:hover {
+        background-color: var(--accent);
+      }
 
-        /* Loading & Error Style */
-        .status-msg {
-            grid-column: 1 / -1;
-            text-align: center;
-            font-size: 1.2rem;
-            padding: 40px;
-            color: #7f8c8d;
-        }
+      /* Loading & Error Style */
+      .status-msg {
+        grid-column: 1 / -1;
+        text-align: center;
+        font-size: 1.2rem;
+        padding: 40px;
+        color: #7f8c8d;
+      }
     </style>
-</head>
-<body>
-
+  </head>
+  <body>
     <header>
-        <h1>Portal Tes & Latihan Kecermatan</h1>
-        <p>Daftar modul kuis ini diperbarui secara otomatis dari repositori GitHub.</p>
+        <img src="EP blue.png"></img>
+      <h1>Portal Tes Education Priority</h1>
+      <p>
+        Daftar modul kuis ini dipergunakan untuk Keperluan Pembelajaran di
+        Education priority. modul kuis dan latihan akan diupdate secara berkala
+        oleh admin.
+      </p>
     </header>
-
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6458620299119449"
+     crossorigin="anonymous"></script>
+<!-- iklan 1 -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-6458620299119449"
+     data-ad-slot="9806980473"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+<div style="max-width: 600px; margin: 30px auto 0 auto; padding: 0 20px;">
+    <input type="text" id="search-input" placeholder="Cari modul kuis di sini... (misal: angka, huruf, sudoku)" 
+           style="width: 100%; padding: 12px 20px; font-size: 16px; border: 2px solid var(--primary); border-radius: 25px; box-sizing: border-box; outline: none; transition: 0.3s;">
+</div>
     <div class="container">
-        <div class="quiz-grid" id="quiz-container">
-            <div class="status-msg" id="status-text">Memuat daftar kuis dari GitHub...</div>
-        </div>
+      <div class="quiz-grid" id="quiz-container">
+        <div class="status-msg" id="status-text">Memuat daftar kuis ...</div>
+      </div>
     </div>
 
     <script>
-        // Konfigurasi Repositori Anda
-        const username = "MecaNerdika";
-        const repo = "testerEP";
-        const apiUrl = `https://api.github.com/repos/${username}/${repo}/contents/`;
-        async function fetchQuizzes() {
-            const container = document.getElementById('quiz-container');
-            const statusText = document.getElementById('status-text');
+      // Konfigurasi Repositori Anda
+      const username = "MecaNerdika";
+      const repo = "testerEP";
+      const apiUrl = `https://api.github.com/repos/${username}/${repo}/contents/`;
+      // GANTI FUNGSI FETCHQUIZZES ANDA DENGAN INI
+async function fetchQuizzes() {
+    const container = document.getElementById('quiz-container');
+    const statusText = document.getElementById('status-text');
+    const searchInput = document.getElementById('search-input'); // Ambil elemen input
 
-            try {
-                const response = await fetch(apiUrl);
-                if (!response.ok) throw new Error("Gagal mengambil data dari repositori.");
-                
-                const files = await response.json();
-                
-                // Saring hanya file .html dan abaikan index.html
-                const htmlFiles = files.filter(file => 
-                    file.name.endsWith('.html') && 
-                    file.name.toLowerCase() !== 'index.html'
-                );
+    try {
+        const response = await fetch(apiUrl);
+        if (!response.ok) throw new Error("Gagal mengambil data dari repositori.");
+        
+        const files = await response.json();
+        
+        const htmlFiles = files.filter(file => 
+            file.name.endsWith('.html') && 
+            file.name.toLowerCase() !== 'index.html'
+        );
 
-                if (htmlFiles.length === 0) {
-                    statusText.innerText = "Tidak ada file kuis (.html) ditemukan di repositori ini.";
-                    return;
-                }
-
-                // Bersihkan pesan loading
-                container.innerHTML = "";
-
-                // Generate Card secara otomatis
-                htmlFiles.forEach(file => {
-                    // Membuat nama kuis yang rapi dari nama file (contoh: "kecermatanhuruf.html" -> "Kecermatan Huruf")
-                    let cleanTitle = file.name
-                        .replace('.html', '')
-                        .replace(/[-_]/g, ' ')
-                        .replace(/([A-Z])/g, ' $1') // Beri spasi jika ada CamelCase
-                        .trim();
-
-                    let card = document.createElement('div');
-                    card.className = 'quiz-card';
-                    card.innerHTML = `
-                        <div class="quiz-body">
-                            <span class="quiz-badge">Modul Tes</span>
-                            <h2 class="quiz-title">${cleanTitle}</h2>
-                            <p style="font-size: 0.9rem; color: #7f8c8d;">File: ${file.name}</p>
-                        </div>
-                        <div class="quiz-footer">
-                            <a href="${file.name}" class="btn-play">Mulai Tes</a>
-                        </div>
-                    `;
-                    container.appendChild(card);
-                });
-
-            } catch (error) {
-                console.error(error);
-                statusText.innerText = "Gagal memuat kuis secara otomatis. Pastikan pengaturan GitHub Pages Anda aktif.";
-                statusText.style.color = "var(--accent)";
-            }
+        if (htmlFiles.length === 0) {
+            statusText.innerText = "Tidak ada file kuis (.html) ditemukan di repositori ini.";
+            return;
         }
 
-        // Jalankan fungsi saat halaman dimuat
-        window.onload = fetchQuizzes;
-    </script>
+        container.innerHTML = "";
 
-</body>
+        // Buat Array untuk menyimpan semua elemen card kuis
+        let quizCards = [];
+
+        htmlFiles.forEach(file => {
+            let cleanTitle = file.name
+                .replace('.html', '')
+                .replace(/[-_]/g, ' ')
+                .replace(/([A-Z])/g, ' $1')
+                .trim();
+
+            let card = document.createElement('div');
+            card.className = 'quiz-card';
+            card.innerHTML = `
+                <div class="quiz-body">
+                    <span class="quiz-badge">Modul Tes</span>
+                    <h2 class="quiz-title">${cleanTitle}</h2>
+                    <p style="font-size: 0.9rem; color: #7f8c8d;">File: ${file.name}</p>
+                </div>
+                <div class="quiz-footer">
+                    <a href="${file.name}" class="btn-play">Mulai Tes</a>
+                </div>
+            `;
+            container.appendChild(card);
+
+            // Simpan referensi card dan teks judulnya untuk pencarian
+            quizCards.push({
+                element: card,
+                title: cleanTitle.toLowerCase()
+            });
+        });
+
+        // FUNGSI UTAMA PENCARIAN (Event Listener)
+        searchInput.addEventListener('input', function(e) {
+            let searchTerm = e.target.value.toLowerCase();
+            let kuisDitemukan = false;
+
+            quizCards.forEach(card => {
+                // Jika judul kuis mengandung kata yang diketik, tampilkan. Jika tidak, sembunyikan.
+                if (card.title.includes(searchTerm)) {
+                    card.element.style.display = "flex";
+                    kuisDitemukan = true;
+                } else {
+                    card.element.style.display = "none";
+                }
+            });
+
+            // Tampilkan pesan jika kuis yang dicari tidak ada
+            let existingNoResult = document.getElementById('no-result-msg');
+            if (!kuisDitemukan) {
+                if (!existingNoResult) {
+                    let msg = document.createElement('div');
+                    msg.id = 'no-result-msg';
+                    msg.className = 'status-msg';
+                    msg.innerText = "Kuis yang Anda cari tidak ditemukan.";
+                    container.appendChild(msg);
+                }
+            } else {
+                if (existingNoResult) existingNoResult.remove();
+            }
+        });
+
+    } catch (error) {
+        console.error(error);
+        statusText.innerText = "Gagal memuat kuis secara otomatis. Pastikan pengaturan GitHub Pages Anda aktif.";
+        statusText.style.color = "var(--accent)";
+    }
+}
+      // Jalankan fungsi saat halaman dimuat
+      window.onload = fetchQuizzes;
+    </script>
+  </body>
 </html>
