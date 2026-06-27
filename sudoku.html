@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini Game: Sudoku Pro Master</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --accent: #e74c3c;
+            --success: #2ecc71;
+            --bg: #f8f9fa;
+            --cell-border: #34495e;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            margin: 0; padding: 20px;
+            display: flex; justify-content: center; align-items: center; min-height: 100vh;
+        }
+        .container {
+            background: white; padding: 25px; border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 500px; text-align: center;
+        }
+        .hidden { display: none !important; }
+        .btn {
+            background: var(--primary); color: white; border: none; padding: 12px 25px;
+            font-size: 16px; font-weight: bold; border-radius: 6px; cursor: pointer; margin: 5px;
+        }
+        .btn:hover { background: #34495e; }
+        
+        /* Menu Utama */
+        .mode-select { margin: 20px 0; }
+        select { padding: 10px; font-size: 16px; border-radius: 6px; border: 2px solid var(--primary); width: 80%; }
+
+        /* Panel Info Game */
+        .info-panel {
+            display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 15px;
+            background: #eee; padding: 10px; border-radius: 6px; font-size: 16px;
+        }
+        .timer { color: var(--accent); }
+
+        /* Papan Sudoku Dinamis */
+        .sudoku-grid {
+            display: grid;
+            margin: 20px auto;
+            border: 3px solid var(--cell-border);
+            background-color: var(--cell-border);
+            gap: 1px;
+            max-width: 400px;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+        }
+
+        /* Desain Sel Angka */
+        .cell {
+            background: white;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 20px; font-weight: bold; color: #333;
+        }
+        .cell input {
+            width: 100%; height: 100%; border: none; text-align: center;
+            font-size: 22px; font-weight: bold; color: #2980b9; background: transparent;
+            padding: 0; box-sizing: border-box;
+        }
+        .cell input:focus { background: #e8f4f8; outline: none; }
+        .cell.readonly { background: #f1f3f5; color: #333; }
+        
+        /* Garis Tebal Pembatas Sub-Grid Beragam */
+        /* Aturan dinamis akan diatur via JavaScript berdasarkan jenis kotak */
+
+        .cell.wrong input { color: var(--accent); background: #fdedec; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Sudoku Mind Master</h1>
+
+    <div id="menu-screen">
+        <p>Pilih ukuran kotak Sudoku Anda. Semakin besar ukuran kotak, tingkat kerumitan logika akan meningkat tajam!</p>
+        <div class="mode-select">
+            <label for="grid-size" style="font-weight: bold; display: block; margin-bottom: 8px;">Ukuran Kotak:</label>
+            <select id="grid-size">
+                <option value="4">4 x 4 (Pemanasan - Waktu: 2 Menit)</option>
+                <option value="6">6 x 6 (Menengah - Waktu: 5 Menit)</option>
+                <option value="9" selected>9 x 9 (Klasik Sulit - Waktu: 10 Menit)</option>
+            </select>
+        </div>
+        <button class="btn" onclick="startGame()">Mulai Game</button>
+    </div>
+
+    <div id="game-screen" class="hidden">
+        <div class="info-panel">
+            <div class="timer">Sisa Waktu: <span id="lbl-time">00:00</span></div>
+            <div>Salah: <span id="lbl-mistakes">0</span>/3</div>
+        </div>
+
+        <div id="sudoku-board" class="sudoku-grid"></div>
+
+        <button class="btn" onclick="checkWinCondition()">Periksa Jawaban</button>
+        <button class="btn" onclick="backToMenu()" style="background: #7f8c8d;">Menyerah</button>
+    </div>
+
+    <div id="end-screen" class="hidden">
+        <h2 id="end-title">Game Over!</h2>
+        <p id="end-message">Waktu Anda telah habis atau melakukan kesalahan terlalu banyak.</p>
+        <button class="btn" onclick="backToMenu()">Main Lagi</button>
+    </div>
+</div>
+
+<script>
+    let N = 9; // Ukuran grid default
+    let subW = 3, subH = 3; // Ukuran sub-kotak dalam grid
+    let timeLimit = 600; // dalam detik
+    let timerInterval = null;
+    let mistakes = 0;
+
+    let solutionBoard = [];
+    let puzzleBoard = [];
+
+    function startGame() {
+        N = parseInt(document.getElementById('grid-size').value);
+        mistakes = 0;
+        document.getElementById('lbl-mistakes').innerText = mistakes;
+
+        // Atur parameter sub-kotak & waktu berdasarkan tipe ukuran grid
+        if (N === 4) {
+            subW = 2; subH = 2; timeLimit = 120;
+        } else if (N === 6) {
+            subW = 3; subH = 2; timeLimit = 300;
+        } else {
+            subW = 3; subH = 3; timeLimit = 600;
+        }
+
+        document.getElementById('menu-screen').classList.add('hidden');
+        document.getElementById('end-screen').classList.add('hidden');
+        document.getElementById('game-screen').classList.remove('hidden');
+
+        generateSudokuData();
+        renderBoard();
+        startTimer();
+    }
+
+    // --- ALGORITMA PENYUSUNAN DAN PENGACAKAN SUDOKU ---
+    function generateSudokuData() {
+        // Inisialisasi papan kosong
+        solutionBoard = Array.from({ length: N }, () => Array(N).fill(0));
+        
+        // Selesaikan papan kosong menggunakan backtracking solver untuk membuat pola valid dasar
+        solveSudoku(solutionBoard);
+
+        // Lakukan pengacakan baris/kolom dalam blok sub-grid yang sama agar variatif
+        shuffleBoard();
+
+        // Salin papan solusi ke papan teka-teki, lalu hilangkan angka untuk tingkat "SULIT"
+        puzzleBoard = solutionBoard.map(row => [...row]);
+        
+        // Jumlah sel yang dibuang disesuaikan agar menyisakan sedikit angka petunjuk (Mode Sulit)
+        let cellsToRemove = Math.floor(N * N * (N === 4 ? 0.5 : N === 6 ? 0.6 : 0.65));
+        while (cellsToRemove > 0) {
+            let r = Math.floor(Math.random() * N);
+            let c = Math.floor(Math.random() * N);
+            if (puzzleBoard[r][c] !== 0) {
+                puzzleBoard[r][c] = 0;
+                cellsToRemove--;
+            }
+        }
+    }
+
+    function shuffleBoard() {
+        // Pengacakan berbasis penukaran baris di dalam blok internal sub-grid yang sama
+        for (let i = 0; i < N; i += subH) {
+            for (let j = 0; j < 10; j++) {
+                let r1 = i + Math.floor(Math.random() * subH);
+                let r2 = i + Math.floor(Math.random() * subH);
+                let temp = solutionBoard[r1];
+                solutionBoard[r1] = solutionBoard[r2];
+                solutionBoard[r2] = temp;
+            }
+        }
+    }
+
+    // Backtracking Solver Engine
+    function solveSudoku(board) {
+        for (let row = 0; row < N; row++) {
+            for (let col = 0; col < N; col++) {
+                if (board[row][col] === 0) {
+                    let numbers = Array.from({length: N}, (_, i) => i + 1).sort(() => Math.random() - 0.5);
+                    for (let num of numbers) {
+                        if (isValid(board, row, col, num)) {
+                            board[row][col] = num;
+                            if (solveSudoku(board)) return true;
+                            board[row][col] = 0;
+                        }
+                    }
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    function isValid(board, row, col, num) {
+        for (let i = 0; i < N; i++) {
+            if (board[row][i] === num || board[i][col] === num) return false;
+        }
+        let startRow = row - (row % subH);
+        let startCol = col - (col % subW);
+        for (let i = 0; i < subH; i++) {
+            for (let j = 0; j < subW; j++) {
+                if (board[startRow + i][startCol + j] === num) return false;
+            }
+        }
+        return true;
+    }
+
+    // --- RENDER VISUAL KE LAYAR ---
+    function renderBoard() {
+        const boardElem = document.getElementById('sudoku-board');
+        boardElem.innerHTML = '';
+        boardElem.style.gridTemplateColumns = `repeat(${N}, 1fr)`;
+
+        for (let r = 0; r < N; r++) {
+            for (let c = 0; c < N; c++) {
+                let cell = document.createElement('div');
+                cell.className = 'cell';
+                
+                // Beri garis tebal pembatas sub-grid secara dinamis lewat CSS borders
+                if ((r + 1) % subH === 0 && r !== N - 1) cell.style.borderBottom = '3px solid var(--cell-border)';
+                if ((c + 1) % subW === 0 && c !== N - 1) cell.style.borderRight = '3px solid var(--cell-border)';
+
+                let val = puzzleBoard[r][c];
+                if (val !== 0) {
+                    cell.classList.add('readonly');
+                    cell.innerText = val;
+                } else {
+                    let input = document.createElement('input');
+                    input.type = 'text';
+                    input.maxLength = 1;
+                    
+                    // Validasi instan saat pengguna mengetik angka
+                    input.oninput = function() {
+                        this.value = this.value.replace(/[^1-9]/g, ''); // hanya angka 1-9
+                        if (this.value !== "") {
+                            let typedNum = parseInt(this.value);
+                            if (typedNum > N) { this.value = ""; return; }
+                            
+                            // Cek jika salah langsung tandai merah merah
+                            if (typedNum !== solutionBoard[r][c]) {
+                                cell.classList.add('wrong');
+                                mistakes++;
+                                document.getElementById('lbl-mistakes').innerText = mistakes;
+                                if (mistakes >= 3) endGame(false, "Anda melakukan kesalahan sebanyak 3 kali!");
+                            } else {
+                                cell.classList.remove('wrong');
+                            }
+                        } else {
+                            cell.classList.remove('wrong');
+                        }
+                    };
+                    cell.appendChild(input);
+                }
+                
+                cell.dataset.row = r;
+                cell.dataset.col = c;
+                boardElem.appendChild(cell);
+            }
+        }
+    }
+
+    // --- MANAJEMEN TIMER & KONDISI AKHIR ---
+    function startTimer() {
+        clearInterval(timerInterval);
+        updateTimerDisplay();
+
+        timerInterval = setInterval(() => {
+            timeLimit--;
+            updateTimerDisplay();
+
+            if (timeLimit <= 0) {
+                clearInterval(timerInterval);
+                endGame(false, "Waktu Anda telah habis!");
+            }
+        }, 1000);
+    }
+
+    function updateTimerDisplay() {
+        let min = Math.floor(timeLimit / 60);
+        let sec = timeLimit % 60;
+        document.getElementById('lbl-time').innerText = 
+            `${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
+    }
+
+    function checkWinCondition() {
+        const cells = document.querySelectorAll('.cell:not(.readonly)');
+        let hasEmptyOrWrong = false;
+
+        cells.forEach(cell => {
+            let input = cell.querySelector('input');
+            let r = parseInt(cell.dataset.row);
+            let c = parseInt(cell.dataset.col);
+            let val = input ? parseInt(input.value) : 0;
+
+            if (!val || val !== solutionBoard[r][c]) {
+                hasEmptyOrWrong = true;
+                if (val) cell.classList.add('wrong');
+            }
+        });
+
+        if (!hasEmptyOrWrong) {
+            endGame(true, "Selamat! Anda berhasil memecahkan Sudoku dengan sempurna!");
+        } else {
+            alert("Masih ada kotak yang kosong atau jawaban Anda keliru. Silakan periksa kembali!");
+        }
+    }
+
+    function endGame(isWin, message) {
+        clearInterval(timerInterval);
+        document.getElementById('game-screen').classList.add('hidden');
+        document.getElementById('end-screen').classList.remove('hidden');
+
+        const title = document.getElementById('end-title');
+        title.innerText = isWin ? "Victory!" : "Game Over!";
+        title.style.color = isWin ? "var(--success)" : "var(--accent)";
+        document.getElementById('end-message').innerText = message;
+    }
+
+    function backToMenu() {
+        clearInterval(timerInterval);
+        document.getElementById('game-screen').classList.add('hidden');
+        document.getElementById('end-screen').classList.add('hidden');
+        document.getElementById('menu-screen').classList.remove('hidden');
+    }
+</script>
+
+</body>
+</html>
