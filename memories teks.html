@@ -1,271 +1,1060 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Tes Memori & Rekonstruksi Informasi</title>
     <style>
-        :root {
-            --primary: #2c3e50;
-            --accent: #e74c3c;
-            --success: #2ecc71;
-            --bg: #f8f9fa;
-        }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg);
-            margin: 0; padding: 20px;
-            display: flex; justify-content: center; align-items: center; min-height: 100vh;
-        }
-        .container {
-            background: white; padding: 30px; border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 700px;
-        }
-        h1, h2 { text-align: center; color: var(--primary); margin-top: 0; }
-        .hidden { display: none !important; }
-        .btn {
-            background: var(--primary); color: white; border: none; padding: 12px 25px;
-            font-size: 16px; font-weight: bold; border-radius: 6px; cursor: pointer;
-            display: block; margin: 20px auto 0 auto; width: 100%; max-width: 200px; text-align: center;
-        }
-        .btn:hover { background: #34495e; }
-        
-        .timer-bar {
-            background: #eee; border-radius: 4px; height: 10px; width: 100%;
-            margin-bottom: 20px; overflow: hidden;
-        }
-        .timer-fill {
-            background: var(--accent); height: 100%; width: 100%;
-            transition: width 1s linear;
-        }
-        .info-header {
-            display: flex; justify-content: space-between; font-weight: bold;
-            margin-bottom: 15px; color: #555; border-bottom: 2px solid #eee; padding-bottom: 10px;
-        }
-        
-        /* Box Teks Bacaan */
-        .text-box {
-            background: #fdfefe; border: 2px dashed #bdc3c7; padding: 20px;
-            border-radius: 8px; line-height: 1.7; font-size: 16px; color: #2c3e50;
-            text-align: justify; white-space: pre-line;
-        }
+      :root {
+        --primary: #2c3e50;
+        --accent: #e74c3c;
+        --success: #2ecc71;
+        --bg: #f8f9fa;
+      }
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: var(--bg);
+        margin: 0;
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+      }
+      .container {
+        background: white;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 700px;
+      }
+      h1,
+      h2 {
+        text-align: center;
+        color: var(--primary);
+        margin-top: 0;
+      }
+      .hidden {
+        display: none !important;
+      }
+      .btn {
+        background: var(--primary);
+        color: white;
+        border: none;
+        padding: 12px 25px;
+        font-size: 16px;
+        font-weight: bold;
+        border-radius: 6px;
+        cursor: pointer;
+        display: block;
+        margin: 20px auto 0 auto;
+        width: 100%;
+        max-width: 200px;
+        text-align: center;
+      }
+      .btn:hover {
+        background: #34495e;
+      }
 
-        /* Desain Pilihan Ganda */
-        .question-box { font-size: 18px; font-weight: bold; margin-bottom: 20px; color: var(--primary); }
-        .options-container { display: flex; flex-direction: column; gap: 12px; }
-        .option-btn {
-            background: white; border: 2px solid #ebd3c7; padding: 14px;
-            border-radius: 8px; text-align: left; font-size: 15px; cursor: pointer;
-            font-weight: 500; transition: 0.2s; border: 2px solid #ccc;
-        }
-        .option-btn:hover { background: #f4f6f7; border-color: var(--primary); }
+      .timer-bar {
+        background: #eee;
+        border-radius: 4px;
+        height: 10px;
+        width: 100%;
+        margin-bottom: 20px;
+        overflow: hidden;
+      }
+      .timer-fill {
+        background: var(--accent);
+        height: 100%;
+        width: 100%;
+        transition: width 1s linear;
+      }
+      .info-header {
+        display: flex;
+        justify-content: space-between;
+        font-weight: bold;
+        margin-bottom: 15px;
+        color: #555;
+        border-bottom: 2px solid #eee;
+        padding-bottom: 10px;
+      }
+
+      /* Box Teks Bacaan */
+      .text-box {
+        background: #fdfefe;
+        border: 2px dashed #bdc3c7;
+        padding: 20px;
+        border-radius: 8px;
+        line-height: 1.7;
+        font-size: 16px;
+        color: #2c3e50;
+        text-align: justify;
+        white-space: pre-line;
+      }
+
+      /* Desain Pilihan Ganda */
+      .question-box {
+        font-size: 18px;
+        font-weight: bold;
+        margin-bottom: 20px;
+        color: var(--primary);
+      }
+      .options-container {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .option-btn {
+        background: white;
+        border: 2px solid #ebd3c7;
+        padding: 14px;
+        border-radius: 8px;
+        text-align: left;
+        font-size: 15px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: 0.2s;
+        border: 2px solid #ccc;
+      }
+      .option-btn:hover {
+        background: #f4f6f7;
+        border-color: var(--primary);
+      }
     </style>
-</head>
-<body>
-
-<div class="container">
-    <div id="start-screen">
+  </head>
+  <body>
+    <div class="container">
+      <div id="start-screen">
         <h1>Tes Memori & Rekonstruksi Teks</h1>
-        <p style="line-height: 1.6; color: #555;">
-            Tes ini terdiri dari <strong>3 Sesi</strong>. Pada setiap sesi, Anda akan diberikan sebuah teks bacaan kompleks berdurasi <strong>1 menit</strong> untuk dihafal dan dianalisis secara detail. 
-            <br><br>
-            Setelah waktu habis, teks akan dihilangkan dan diganti dengan <strong>5 pertanyaan logika kecermatan</strong>. Setiap soal hanya muncul selama <strong>15 detik</strong> dan akan berganti otomatis jika tidak dijawab. Jawablah dengan cepat dan teliti!
+        <p style="line-height: 1.6; color: #555">
+          Tes ini terdiri dari <strong>3 Sesi</strong>. Pada setiap sesi, Anda
+          akan diberikan sebuah teks bacaan kompleks berdurasi
+          <strong>1 menit</strong> untuk dihafal dan dianalisis secara detail.
+          <br /><br />
+          Setelah waktu habis, teks akan dihilangkan dan diganti dengan
+          <strong>5 pertanyaan logika kecermatan</strong>. Setiap soal hanya
+          muncul selama <strong>15 detik</strong> dan akan berganti otomatis
+          jika tidak dijawab. Jawablah dengan cepat dan teliti!
         </p>
         <button class="btn" onclick="startSession()">Mulai Tes</button>
-    </div>
+      </div>
 
-    <div id="reading-screen" class="hidden">
+      <div id="reading-screen" class="hidden">
         <div class="info-header">
-            <span id="reading-session-title">Sesi 1 dari 3</span>
-            <span style="color: var(--accent);" id="reading-timer">Sisa Waktu Membaca: 02:00</span>
+          <span id="reading-session-title">Sesi 1 dari 3</span>
+          <span style="color: var(--accent)" id="reading-timer"
+            >Sisa Waktu Membaca: 02:00</span
+          >
         </div>
-        <div class="timer-bar"><div id="reading-progress" class="timer-fill"></div></div>
+        <div class="timer-bar">
+          <div id="reading-progress" class="timer-fill"></div>
+        </div>
         <div id="reading-text-content" class="text-box"></div>
-        <button class="btn" onclick="endReadingEarly()" style="background-color: var(--success); max-width: 250px;">Saya Sudah Selesai Membaca</button>
-    </div>
+        <button
+          class="btn"
+          onclick="endReadingEarly()"
+          style="background-color: var(--success); max-width: 250px"
+        >
+          Saya Sudah Selesai Membaca
+        </button>
+      </div>
 
-    <div id="quiz-screen" class="hidden">
+      <div id="quiz-screen" class="hidden">
         <div class="info-header">
-            <span id="quiz-session-title">Sesi 1 - Soal 1 dari 5</span>
-            <span style="color: var(--accent);" id="quiz-timer">Waktu Soal: 30s</span>
+          <span id="quiz-session-title">Sesi 1 - Soal 1 dari 5</span>
+          <span style="color: var(--accent)" id="quiz-timer"
+            >Waktu Soal: 30s</span
+          >
         </div>
-        <div class="timer-bar"><div id="quiz-progress" class="timer-fill"></div></div>
-        
+        <div class="timer-bar">
+          <div id="quiz-progress" class="timer-fill"></div>
+        </div>
+
         <div id="question-text" class="question-box"></div>
         <div id="options-box" class="options-container"></div>
-    </div>
+      </div>
 
-    <div id="result-screen" class="hidden">
+      <div id="result-screen" class="hidden">
         <h1>Hasil Evaluasi Memori</h1>
-        <p id="score-summary" style="text-align: center; font-size: 1.2rem; font-weight: bold; margin: 30px 0; color: var(--primary);"></p>
+        <p
+          id="score-summary"
+          style="
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin: 30px 0;
+            color: var(--primary);
+          "
+        ></p>
         <button class="btn" onclick="location.reload()">Ulangi Tes</button>
-        <a href="index.html" class="btn" style="background: #7f8c8d; text-decoration: none;">Kembali ke Portal</a>
+        <a
+          href="index.html"
+          class="btn"
+          style="background: #7f8c8d; text-decoration: none"
+          >Kembali ke Portal</a
+        >
+      </div>
     </div>
-</div>
 
-<script>
-    // DATA DATABASE SOAL (3 SESI DENGAN PENGECOH LOGIKA)
-    const databaseSesi = [
+    <script>
+      // DATA DATABASE SOAL (3 SESI DENGAN PENGECOH LOGIKA)
+      // ==========================================
+      // DATABASE SOAL MULTI-SESI (TOTAL 15 SESI)
+      // ==========================================
+      const databaseSesi = [
         {
-            text: "Pada hari Selasa, 14 Maret 2023, terjadi kebakaran hebat di gudang logistik PT Sentosa Jaya yang terletak di Jalan Merdeka No. 45, Surabaya. Kebakaran dilaporkan oleh warga sekitar pukul 23.45 WIB, tepat satu jam setelah manajer operasional, Handoko, meninggalkan area pabrik. Petugas pemadam kebakaran mengerahkan 12 armada dan baru berhasil memadamkan api pada Rabu subuh pukul 04.15 WIB. Berdasarkan penyelidikan sementara, korsleting listrik di ruang panel belakang disinyalir menjadi pemicu utama, bukan area genset samping seperti yang diduga sebelumnya. Tidak ada korban jiwa, namun kerugian materiil ditaksir mencapai 2,5 miliar rupiah, termasuk rusaknya 500 unit komputer siap edar.",
-            questions: [
-                { q: "Kapan manajer operasional meninggalkan area pabrik?", o: ["Selasa pukul 22.45 WIB", "Selasa pukul 23.45 WIB", "Rabu pukul 04.15 WIB", "Selasa pukul 21.45 WIB"], a: 0 },
-                { q: "Di mana lokasi titik pemicu awal kebakaran terjadi?", o: ["Area genset samping", "Gudang logistik depan", "Ruang panel belakang", "Kantor utama PT Sentosa"], a: 2 },
-                { q: "Berapa jumlah armada pemadam kebakaran yang dikerahkan?", o: ["500 unit", "45 armada", "14 armada", "12 armada"], a: 3 },
-                { q: "Hari dan jam berapa api pada akhirnya berhasil dipadamkan sepenuhnya?", o: ["Selasa pukul 23.45 WIB", "Rabu pukul 04.15 WIB", "Rabu pukul 23.45 WIB", "Selasa pukul 04.15 WIB"], a: 1 },
-                { q: "Berapa taksiran total kerugian materiil akibat insiden tersebut?", o: ["45 Juta Rupiah", "14 Miliar Rupiah", "2,5 Miliar Rupiah", "500 Juta Rupiah"], a: 2 }
-            ]
+          text: "Pada hari Selasa, 14 Maret 2023, terjadi kebakaran hebat di gudang logistik PT Sentosa Jaya yang terletak di Jalan Merdeka No. 45, Surabaya. Kebakaran dilaporkan oleh warga sekitar pukul 23.45 WIB, tepat satu jam setelah manajer operasional, Handoko, meninggalkan area pabrik. Petugas pemadam kebakaran mengerahkan 12 armada dan baru berhasil memadamkan api pada Rabu subuh pukul 04.15 WIB. Berdasarkan penyelidikan sementara, korsleting listrik di ruang panel belakang disinyalir menjadi pemicu utama, bukan area genset samping seperti yang diduga sebelumnya. Tidak ada korban jiwa, namun kerugian materiil ditaksir mencapai 2,5 miliar rupiah, termasuk rusaknya 500 unit komputer siap edar.",
+          questions: [
+            {
+              q: "Kapan manajer operasional meninggalkan area pabrik?",
+              o: [
+                "Selasa pukul 22.45 WIB",
+                "Selasa pukul 23.45 WIB",
+                "Rabu pukul 04.15 WIB",
+                "Selasa pukul 21.45 WIB",
+              ],
+              a: "Selasa pukul 22.45 WIB",
+            },
+            {
+              q: "Di mana lokasi titik pemicu awal kebakaran terjadi?",
+              o: [
+                "Area genset samping",
+                "Gudang logistik depan",
+                "Ruang panel belakang",
+                "Kantor utama PT Sentosa",
+              ],
+              a: "Ruang panel belakang",
+            },
+            {
+              q: "Berapa jumlah armada pemadam kebakaran yang dikerahkan?",
+              o: ["500 unit", "45 armada", "14 armada", "12 armada"],
+              a: "12 armada",
+            },
+            {
+              q: "Hari dan jam berapa api pada akhirnya berhasil dipadamkan sepenuhnya?",
+              o: [
+                "Selasa pukul 23.45 WIB",
+                "Rabu pukul 04.15 WIB",
+                "Rabu pukul 23.45 WIB",
+                "Selasa pukul 04.15 WIB",
+              ],
+              a: "Rabu pukul 04.15 WIB",
+            },
+            {
+              q: "Berapa taksiran total kerugian materiil akibat insiden tersebut?",
+              o: [
+                "45 Juta Rupiah",
+                "14 Miliar Rupiah",
+                "2,5 Miliar Rupiah",
+                "500 Juta Rupiah",
+              ],
+              a: "2,5 Miliar Rupiah",
+            },
+          ],
         },
         {
-            text: "Kecelakaan beruntun melibatkan empat kendaraan terjadi di Tol Cipularang KM 92 arah Jakarta pada Kamis, 8 Juni 2023. Insiden bermula ketika truk kontainer bernomor polisi B 9011 XYZ mengalami rem blong tepat pada pukul 14.20 WIB saat kondisi cuaca hujan rintik-rintik. Truk tersebut menabrak minibus hitam yang berada tepat di depannya, yang kemudian memicu efek domino terhadap dua kendaraan pribadi di depan minibus. Korban luka-luka tercatat sebanyak 7 orang, di mana dua di antaranya mengalami luka berat dan langsung dilarikan ke RS Raden Saleh yang berjarak 15 kilometer dari lokasi kejadian. Evakuasi bangkai kendaraan baru selesai dilakukan oleh pihak Jasa Marga pada pukul 16.50 WIB, mengakibatkan kemacetan sepanjang 5 kilometer.",
-            questions: [
-                { q: "Berapa jumlah total kendaraan yang terlibat dalam kecelakaan beruntun?", o: ["2 kendaraan", "4 kendaraan", "7 kendaraan", "5 kendaraan"], a: 1 },
-                { q: "Kapan peristiwa rem blong pada truk kontainer terjadi?", o: ["Kamis pukul 14.20 WIB", "Kamis pukul 16.50 WIB", "Jumat pukul 14.20 WIB", "Kamis pukul 15.00 WIB"], a: 0 },
-                { q: "Berapakah jarak dari lokasi kecelakaan menuju rumah sakit rujukan korban?", o: ["92 Kilometer", "5 Kilometer", "15 Kilometer", "7 Kilometer"], a: 2 },
-                { q: "Berapa jumlah korban yang dilaporkan mengalami luka berat?", o: ["7 orang", "4 orang", "5 orang", "2 orang"], a: 3 },
-                { q: "Berapa panjang kemacetan tol yang ditimbulkan akibat proses evakuasi?", o: ["15 Kilometer", "5 Kilometer", "92 Kilometer", "4 Kilometer"], a: 1 }
-            ]
+          text: "Kecelakaan beruntun melibatkan empat kendaraan terjadi di Tol Cipularang KM 92 arah Jakarta pada Kamis, 8 Juni 2023. Insiden bermula ketika truk kontainer bernomor polisi B 9011 XYZ mengalami rem blong tepat pada pukul 14.20 WIB saat kondisi cuaca hujan rintik-rintik. Truk tersebut menabrak minibus hitam yang berada tepat di depannya, yang kemudian memicu efek domino terhadap dua kendaraan pribadi di depan minibus. Korban luka-luka tercatat sebanyak 7 orang, di mana dua di antaranya mengalami luka berat dan langsung dilarikan ke RS Raden Saleh yang berjarak 15 kilometer dari lokasi kejadian. Evakuasi bangkai kendaraan baru selesai dilakukan oleh pihak Jasa Marga pada pukul 16.50 WIB, mengakibatkan kemacetan sepanjang 5 kilometer.",
+          questions: [
+            {
+              q: "Berapa jumlah total kendaraan yang terlibat dalam kecelakaan beruntun?",
+              o: ["2 kendaraan", "4 kendaraan", "7 kendaraan", "5 kendaraan"],
+              a: "4 kendaraan",
+            },
+            {
+              q: "Kapan peristiwa rem blong pada truk kontainer terjadi?",
+              o: [
+                "Kamis pukul 14.20 WIB",
+                "Kamis pukul 16.50 WIB",
+                "Jumat pukul 14.20 WIB",
+                "Kamis pukul 15.00 WIB",
+              ],
+              a: "Kamis pukul 14.20 WIB",
+            },
+            {
+              q: "Berapakah jarak dari lokasi kecelakaan menuju rumah sakit rujukan korban?",
+              o: ["92 Kilometer", "5 Kilometer", "15 Kilometer", "7 Kilometer"],
+              a: "15 Kilometer",
+            },
+            {
+              q: "Berapa jumlah korban yang dilaporkan mengalami luka berat?",
+              o: ["7 orang", "4 orang", "5 orang", "2 orang"],
+              a: "2 orang",
+            },
+            {
+              q: "Berapa panjang kemacetan tol yang ditimbulkan akibat proses evakuasi?",
+              o: ["15 Kilometer", "5 Kilometer", "92 Kilometer", "4 Kilometer"],
+              a: "5 Kilometer",
+            },
+          ],
         },
         {
-            text: "Gubernur Jawa Barat meresmikan Taman Digital inklusif di pusat Kota Bandung pada Minggu, 22 Oktober 2023. Proyek ini dibangun di atas lahan bekas terminal bus seluas 2,4 hektare, yang pengerjaannya telah dimulai sejak awal Januari 2022, meleset tiga bulan dari target perencanaan awal akibat kendala cuaca ekstrem. Fasilitas ini menyediakan area Wi-Fi berkecepatan 500 Mbps, ruang baca terbuka dengan koleksi 3.000 buku digital, serta amfiteater seni. Anggaran pembangunan bersumber dari dana hibah swasta sebesar 40% dan sisanya diserap dari APBD Pemprov. Acara peresmian ini dihadiri oleh 150 tamu undangan terbatas dan dijaga ketat oleh 50 personel gabungan Satpol PP serta Kepolisian.",
-            questions: [
-                { q: "Kapan pengerjaan fisik proyek Taman Digital ini pertama kali dimulai?", o: ["Minggu, 22 Oktober 2023", "Januari 2022", "Oktober 2022", "Maret 2022"], a: 1 },
-                { q: "Berapakah luas lahan yang digunakan untuk pembangunan taman tersebut?", o: ["3.000 Hektare", "40 Hektare", "2,4 Hektare", "150 Hektare"], a: 2 },
-                { q: "Berapa persen proporsi anggaran pembangunan yang diambil dari APBD Pemprov?", o: ["40%", "50%", "30%", "60%"], a: 3 },
-                { q: "Taman Digital inklusif ini dibangun di atas lahan bekas apa?", o: ["Ruang panel belakang", "Terminal bus", "Stasiun kereta", "Gudang logistik"], a: 1 },
-                { q: "Berapa jumlah personel gabungan yang dikerahkan untuk menjaga peresmian?", o: ["150 personel", "40 personel", "50 personel", "200 personel"], a: 2 }
-            ]
+          text: "Sepanjang sejarah, pembunuhan atau pembuangan bayi terhadap anak-anak yang tidak diinginkan dianggap sebagai hal yang rutin oleh manyak orang. Dalam sejarah Sparta di Yunani kuno, anak-anak tersebut sering kali ditinggalkan di hutan belantara hingga binasa karena cuaca buruk, kelaparan, atau serangan hewan liar. Pemerintah Sparta meningkatkan pembunuhan bayi menjadi eugenika sebagai kebijakan negara demi menghasilkan prajurit yang kuat untuk mempertahankan dominasi militer. Menurut Plutarch dalam biografi tentang pemberi hukum Sparta kuno, Lycurgus, bayi yang baru lahir tidak dibesarkan atas kehendak ayah, melainkan dibawa ke tempat bernama Lesche untuk diperiksa oleh para tetua suku. Jika bayi lahir dengan buruk atau cacat, mereka akan dikirim ke Apothetae, sebuah tempat seperti jurang di kaki Gunung Taÿgetus. Meskipun demikian, terdapat contoh orang Yunani kuno yang dibesarkan hingga sukses meski lahir cacat, salah satunya adalah Raja Sparta, Agesilaus II (444–360 SM), yang terlahir timpang namun tumbuh menjadi pejuang tangguh.",
+          questions: [
+            {
+              q: "Siapakah nama pemberi hukum kuno di Sparta yang biografinya ditulis oleh Plutarch?",
+              o: ["Agesilaus II", "Lycurgus", "Plutarch", "Aristoteles"],
+              a: "Lycurgus",
+            },
+            {
+              q: "Apa nama tempat yang digunakan oleh para tetua suku Sparta untuk secara resmi memeriksa bayi yang baru lahir?",
+              o: ["Apothetae", "Taÿgetus", "Lesche", "Sparta"],
+              a: "Lesche",
+            },
+            {
+              q: "Ke manakah bayi yang terlahir buruk atau cacat akan dikirim oleh otoritas Sparta?",
+              o: [
+                "Hutan belantara Lesche",
+                "Jurang Apothetae",
+                "Kaki Gunung Taÿgetus",
+                "Sekolah militer",
+              ],
+              a: "Jurang Apothetae",
+            },
+            {
+              q: "Siapa nama Raja Sparta yang tetap dibesarkan dan menjadi pejuang tangguh meskipun terlahir timpang?",
+              o: ["Lycurgus", "Plutarch", "Agesilaus II", "Sextus Tarquinius"],
+              a: "Agesilaus II",
+            },
+            {
+              q: "Rentang tahun berapakah masa hidup Raja Sparta yang lahir cacat namun sukses tersebut?",
+              o: [
+                "444 – 360 SM",
+                "390 – 300 SM",
+                "509 – 444 SM",
+                "415 – 360 SM",
+              ],
+              a: "444 – 360 SM",
+            },
+          ],
+        },
+        {
+          text: "Baru-baru ini, Kedutaan Besar AS mengeluarkan peringatan resmi bagi wisatawan Amerika untuk tidak menggunakan aplikasi kencan (dating apps) saat berkunjung ke Kolombia. Kebijakan ini diambil setelah terjadi kasus pembunuhan tragis terhadap delapan pria Amerika Serikat yang mencoba berkencan dengan wanita lokal di sana. Fenomena ini juga menyeret sorotan tajam pada gerakan Passport Bros, sebuah komunitas pria yang mengklaim wanita di Amerika Serikat sudah manja dan tidak menyisakan lagi sosok yang baik. Mereka sengaja memilih bepergian ke negara-negara berkembang di mana para perempuannya berada dalam kondisi terdesak secara ekonomi atau dalam bahaya fisik, demi mengeruk keuntungan kencan pribadi secara egois tanpa memikirkan keselamatan hakiki perempuan tersebut.",
+          questions: [
+            {
+              q: "Lembaga mana yang mengeluarkan peringatan resmi terkait bahaya penggunaan aplikasi kencan?",
+              o: [
+                "Pemerintah Kolombia",
+                "Kedutaan Besar AS",
+                "Kepolisian Amerika",
+                "Komunitas Passport Bros",
+              ],
+              a: "Kedutaan Besar AS",
+            },
+            {
+              q: "Berapa jumlah pria Amerika Serikat yang dilaporkan dibunuh setelah mencoba berkencan di Kolombia?",
+              o: ["18 pria", "5 pria", "8 pria", "10 pria"],
+              a: "8 pria",
+            },
+            {
+              q: "Apa nama sebutan bagi komunitas pria yang menganggap wanita Amerika sudah manja?",
+              o: [
+                "Dating Apps User",
+                "Kolombia Travellers",
+                "Passport Bros",
+                "Rumania Brotherhood",
+              ],
+              a: "Passport Bros",
+            },
+            {
+              q: "Di negara mana delapan pria Amerika tersebut tewas dalam insiden kencan?",
+              o: ["Rumania", "Amerika Serikat", "Kolombia", "Meksiko"],
+              a: "Kolombia",
+            },
+            {
+              q: "Kondisi apa dari perempuan lokal yang dimanfaatkan oleh komunitas pria tersebut?",
+              o: [
+                "Pendidikan yang tinggi",
+                "Keterbukaan budaya kencan",
+                "Terdesak ekonomi atau dalam bahaya",
+                "Keahlian menggunakan teknologi",
+              ],
+              a: "Terdesak ekonomi atau dalam bahaya",
+            },
+          ],
+        },
+        {
+          text: "Dalam sebuah esai reflektif karya Amber Poe, ia membahas mengenai tekanan sosial psikologis mengapa perempuan merasa tidak bisa mengenakan pakaian yang sama dua kali. Penulis, yang bertahun-tahun hidup mengumpulkan pakaian sebagai pria, mencatat ia hanya memiliki 18 kemeja berkerah dan sekitar 10 campuran celana panjang atau khaki di lemarinya. Ia menyadari tidak ada orang yang peduli dengan pakaian pria yang diulang-ulang. Sebagai pria, ia biasanya hanya butuh waktu 5 menit untuk bangun tidur, mengambil celana bersih, mencari kemeja lama, dan langsung pergi keluar. Namun, setelah bertransisi sosial, pandangannya berubah total. Kini ia harus menghabiskan setidaknya 10 menit setiap malam hanya untuk merencanakan pakaian esok hari, dan jika kombinasi atasan tersebut dirasa tidak cocok atau pernah dipakai minggu lalu, ia akan merasa cemas berlebihan karena menganggapnya akhir dari dunia.",
+          questions: [
+            {
+              q: "Siapakah nama penulis artikel esai reflektif mengenai pakaian perempuan tersebut?",
+              o: ["Tom Holland", "Amber Poe", "Plutarch", "Agesilaus"],
+              a: "Amber Poe",
+            },
+            {
+              q: "Berapa jumlah kemeja berkerah yang dikumpulkan penulis selama bertahun-tahun hidup sebagai pria?",
+              o: ["10 kemeja", "5 kemeja", "18 kemeja", "28 kemeja"],
+              a: "18 kemeja",
+            },
+            {
+              q: "Berapa lama waktu yang biasanya dihabiskan penulis di malam hari hanya untuk merencanakan pakaian esok hari?",
+              o: ["5 menit", "10 menit", "15 menit", "20 menit"],
+              a: "10 menit",
+            },
+            {
+              q: "Berapa lama waktu yang dibutuhkan penulis untuk bersiap dan keluar rumah saat masih hidup sebagai pria?",
+              o: ["10 menit", "15 menit", "2 menit", "5 menit"],
+              a: "5 menit",
+            },
+            {
+              q: "Mengapa penulis merasa cemas berlebihan (merasa akhir dunia) jika menggunakan atasan tertentu?",
+              o: [
+                "Karena pakaiannya robek",
+                "Karena atasan tersebut baru dipakai minggu lalu",
+                "Because salah ukuran celana",
+                "Karena kemejanya belum disetrika",
+              ],
+              a: "Karena atasan tersebut baru dipakai minggu lalu",
+            },
+          ],
+        },
+        {
+          text: "Dalam artikel karya Ossiana Tepfenhart, seorang warga Rumania-Amerika menceritakan sejarah kencan orang tuanya. Ibunya bertemu dengan ayahnya ketika bekerja di Kedutaan Besar AS. Mereka termasuk salah satu pasangan pertama dalam situasi tersebut yang akhirnya memutuskan menikah. Setelah pernikahan, ibunya meninggalkan negara Rumania untuk pindah ke Amerika Serikat. Penulis menegaskan bahwa hubungan cinta yang tulus dan sehat sangat berbeda dengan motif komunitas Passport Bros yang cenderung datang ke negara berkembang hanya untuk mengeksploitasi perempuan lokal demi kepuasan seksual semata.",
+          questions: [
+            {
+              q: "Di manakah ibu dan ayah penulis pertama kali bertemu?",
+              o: [
+                "Kedutaan Besar AS",
+                "Pedesaan Rumania",
+                "Kota New York",
+                "Konsulat Kolombia",
+              ],
+              a: "Kedutaan Besar AS",
+            },
+            {
+              q: "Negara mana yang ditinggalkan oleh ibu penulis setelah menikah?",
+              o: ["Amerika Serikat", "Rumania", "Thailand", "Honduras"],
+              a: "Rumania",
+            },
+            {
+              q: "Siapakah penulis asli dari artikel 'Passport Bros yang Mengacau di Mana-Mana' tersebut?",
+              o: [
+                "Amber Poe",
+                "Gabrielle Judge",
+                "Ossiana Tepfenhart",
+                "Joanna Henderson",
+              ],
+              a: "Ossiana Tepfenhart",
+            },
+            {
+              q: "Pindah ke negara manakah ibu penulis setelah menikah dengan ayahnya?",
+              o: ["Rumania", "Kolombia", "Jerman Barat", "Amerika Serikat"],
+              a: "Amerika Serikat",
+            },
+            {
+              q: "Apa perbedaan utama turis biasa yang jatuh cinta dengan gerakan Passport Bros menurut teks?",
+              o: [
+                "Pendidikan yang ditempuh",
+                "Keseriusan dan ketulusan hubungan",
+                "Jumlah uang yang dibawa",
+                "Negara asal mereka",
+              ],
+              a: "Keseriusan dan ketulusan hubungan",
+            },
+          ],
+        },
+        {
+          text: "Pemerintah di berbagai negara mulai menindak tegas tindakan sewenang-wenang komunitas Passport Bros terhadap perempuan lokal. Di China, seorang pria Passport Bros asal Amerika Serikat dijatuhi hukuman mati oleh pengadilan karena terbukti membunuh pacarnya yang memohon untuk memutuskan hubungan. Selain China, negara seperti Rumania, Brazil, dan Thailand juga bergerak cepat menindak maraknya turisme seks. Pemerintah Brazil bahkan secara resmi mengeluarkan peringatan khusus bagi perempuan di negaranya mengenai ancaman Passport Bros yang mencari istri penurut namun menjadikannya kedok kekerasan.",
+          questions: [
+            {
+              q: "Hukuman apa yang dijatuhkan pemerintah China kepada pria Passport Bros yang membunuh pacarnya?",
+              o: [
+                "Hukuman seumur hidup",
+                "Hukuman mati",
+                "Deportasi massal",
+                "Denda materiil",
+              ],
+              a: "Hukuman mati",
+            },
+            {
+              q: "Negara mana yang mengeluarkan peringatan khusus bahwa kedok 'istri penurut' sering memicu kekerasan?",
+              o: ["Thailand", "Rumania", "China", "Brazil"],
+              a: "Brazil",
+            },
+            {
+              q: "Mengapa pria Passport Bros di China tega membunuh pacar lokalnya?",
+              o: [
+                "Karena uangnya habis dimaling",
+                "Karena pacarnya memohon putus hubungan",
+                "Karena masalah visa liburan",
+                "Karena ketahuan selingkuh",
+              ],
+              a: "Karena pacarnya memohon putus hubungan",
+            },
+            {
+              q: "Berikut adalah negara yang disebut aktif menindak praktik turisme seks, kecuali?",
+              o: ["Rumania", "Brazil", "Amerika Serikat", "Thailand"],
+              a: "Amerika Serikat",
+            },
+            {
+              q: "Apa alasan utama pacar dari Passport Bros di China meminta hubungan mereka diakhiri?",
+              o: [
+                "Masalah kriminalitas gang",
+                "Memohon memutuskan hubungan",
+                "Ingin pindah ke Amerika",
+                "Faktor ekonomi keluarga",
+              ],
+              a: "Memohon memutuskan hubungan",
+            },
+          ],
+        },
+        {
+          text: "Fenomena tren #LazyGirlJobs kini marak dan dipopulerkan di media sosial oleh seorang influencer TikTok bernama Gabrielle Judge sejak musim panas lalu. Istilah ini digunakan oleh Generasi Z untuk mendeskripsikan jenis pekerjaan yang menawarkan gaji baik, manfaat besar, serta jam kerja wajar dari pukul 9 pagi hingga 5 sore (9-5). Tagar ini bukan mengampanyekan kemalasan, melainkan sebuah gerakan untuk memprioritaskan kesehatan mental dan fisik di atas tuntutan perusahaan demi menghindari budaya kerja yang memicu kejenuhan ekstrem atau burnout.",
+          questions: [
+            {
+              q: "Siapakah nama influencer TikTok yang mempopulerkan tren 'lazy girl jobs'?",
+              o: [
+                "Gabrielle Judge",
+                "Ronke Babajide",
+                "Usman Aslam",
+                "Tom Iljas",
+              ],
+              a: "Gabrielle Judge",
+            },
+            {
+              q: "Sejak kapan video viral mengenai tren pekerjaan ini mulai ramai dipopulerkan?",
+              o: [
+                "Musim dingin tahun 2021",
+                "Awal Januari 2022",
+                "Musim panas lalu",
+                "Februari 2024",
+              ],
+              a: "Musim panas lalu",
+            },
+            {
+              q: "Jam kerja wajar berapakah yang dideskripsikan oleh Gen Z untuk lazy girl jobs?",
+              o: [
+                "Jam 08.00 - 16.00",
+                "Jam 09.00 - 17.00 (9-5)",
+                "Jam 10.00 - 18.00",
+                "Fleksibel 24 jam",
+              ],
+              a: "Jam 09.00 - 17.00 (9-5)",
+            },
+            {
+              q: "Budaya kerja buruk apa di perusahaan yang coba dihindari melalui tren ini?",
+              o: [
+                "Gaji yang telat dibayar",
+                "Budaya kerja yang membuat burnout",
+                "Sistem kerja remote",
+                "Ketiadaan fasilitas olahraga",
+              ],
+              a: "Budaya kerja yang membuat burnout",
+            },
+            {
+              q: "Apa esensi mendasar dari tagar #LazyGirlJobs menurut pandangan generasi muda?",
+              o: [
+                "Benar-benar malas bekerja",
+                "Mencari pesangon besar",
+                "Memprioritaskan diri di atas pekerjaan",
+                "Menuntut jabatan direktur",
+              ],
+              a: "Memprioritaskan diri di atas pekerjaan",
+            },
+          ],
+        },
+        {
+          text: "Menurut laporan majalah Forbes pada tahun 2021 mengenai riset yang dilakukan oleh ADP Research Institute, tekanan kerja demi produktivitas semakin membebani karyawan. Data riset tersebut menunjukkan bahwa para pekerja melakukan kerja tambahan yang tidak dibayar (unpaid work) rata-rata selama 9,2 jam per pekan. Angka ini mengalami kenaikan yang cukup signifikan jika dibandingkan dengan tahun sebelumnya, di mana waktu kerja gratis yang dihabiskan buruh berada pada angka 7,3 jam per pekan. Akibat ekspektasi berlebihan inilah banyak karyawan Generasi Z memilih menetapkan batasan kerja tegas.",
+          questions: [
+            {
+              q: "Majalah apa yang melaporkan data penelitian mengenai jam kerja tidak dibayar tersebut?",
+              o: [
+                "Forbes",
+                "Corporate Wellness",
+                "Ancient Pages",
+                "Britannica",
+              ],
+              a: "Forbes",
+            },
+            {
+              q: "Lembaga riset mana yang melakukan penelitian terhadap beban kerja karyawan tersebut?",
+              o: [
+                "FBI Research",
+                "ADP Research Institute",
+                "Vassar College",
+                "Jasa Marga Institute",
+              ],
+              a: "ADP Research Institute",
+            },
+            {
+              q: "Berapa rata-rata jam kerja tidak dibayar (unpaid) per pekan yang dilakukan pekerja pada tahun 2021?",
+              o: ["7,3 jam", "5,0 jam", "9,2 jam", "12 jam"],
+              a: "9,2 jam",
+            },
+            {
+              q: "Berapa angka jam kerja tidak dibayar pada tahun sebelum dilakukannya riset 2021?",
+              o: ["9,2 jam", "7,3 jam", "4,0 jam", "6,5 jam"],
+              a: "7,3 jam",
+            },
+            {
+              q: "Tahun berapakah laporan riset eksploitasi jam kerja gratis ini diterbitkan oleh Forbes?",
+              o: ["2023", "2021", "1992", "2024"],
+              a: "2021",
+            },
+          ],
+        },
+        {
+          text: "Sejarah Romawi kuno mencatat sebuah titik balik krusial pada tahun 509 SM melalui tragedi memilukan yang menimpa Lucretia, seorang wanita bangsawan cantik dan berbudi luhur. Kisah rudapaksa yang dialami Lucretia oleh Sextus Tarquinius (putra raja monarki Roma yang kejam) diikuti dengan aksi bunuh diri Lucretia demi menjaga kehormatan keluarga. Peristiwa tragis ini memicu kemarahan besar dan menginspirasi pemberontakan massal yang dipimpin oleh pamannya sendiri, Lucius Junius Brutus. Pemberontakan tersebut sukses mengusir keluarga tiran Tarquin, mengakhiri era monarki, dan menjadi fondasi berdirinya Republik Romawi.",
+          questions: [
+            {
+              q: "Tahun berapakah peristiwa kematian Lucretia yang menandai titik balik sejarah Romawi?",
+              o: ["390 SM", "509 SM", "1537 M", "1493 M"],
+              a: "509 SM",
+            },
+            {
+              q: "Siapakah pelaku yang merudapaksa Lucretia hingga memicu runtuhnya monarki?",
+              o: [
+                "Lucius Junius Brutus",
+                "Sextus Tarquinius",
+                "Spurius Lucretius",
+                "Collatinus",
+              ],
+              a: "Sextus Tarquinius",
+            },
+            {
+              q: "Siapa pemimpin pemberontakan Romawi yang juga merupakan paman dari Lucretia?",
+              o: [
+                "Lucius Junius Brutus",
+                "Lucius Tarquinius Collatinus",
+                "Presiden Sukarno",
+                "Henry VIII",
+              ],
+              a: "Lucius Junius Brutus",
+            },
+            {
+              q: "Sistem pemerintahan apa yang resmi berdiri di Roma setelah pengusiran Raja Tarquinius?",
+              o: [
+                "Monarki Absolut",
+                "Republik Romawi",
+                "Kekaisaran Etruria",
+                "Sistem Oligarki",
+              ],
+              a: "Republik Romawi",
+            },
+            {
+              q: "Bagaimana cara Lucretia menghukum dirinya sendiri akibat kehilangan kehormatan pasca-kejadian?",
+              o: [
+                "Memilih bunuh diri",
+                "Pergi ke pengasingan",
+                "Menikah lagi",
+                "Melapor ke konsul",
+              ],
+              a: "Memilih bunuh diri",
+            },
+          ],
+        },
+        {
+          text: "Pada abad pertengahan, Edward VI dinobatkan sebagai Raja Inggris terkecil dalam sejarah pada usia sembilan tahun tiga bulan. Edward merupakan pewaris laki-laki tunggal yang sangat dinanti oleh ayahnya, Raja Henry VIII, yang menyebut putranya sebagai permata paling berharga di dunia. Sang ibu, Jane Seymour, meninggal dunia secara tragis hanya 12 hari setelah melahirkan Edward, tepatnya pada dini hari tanggal 24 Oktober 1537. Sekah kecil, Edward dimanja dengan kemewahan melimpah dan dididik keras dalam Protestantisme evangelis untuk meneruskan cita-cita keagamaan sang ayah.",
+          questions: [
+            {
+              q: "Pada usia berapa Edward VI resmi dinobatkan menjadi Raja Inggris?",
+              o: ["15 tahun", "9 tahun 3 bulan", "12 tahun", "4 tahun"],
+              a: "9 tahun 3 bulan",
+            },
+            {
+              q: "Siapakah nama ibu kandung dari Raja Edward VI yang meninggal pasca-melahirkannya?",
+              o: [
+                "Ratu Mary",
+                "Ratu Elizabeth",
+                "Jane Seymour",
+                "Virginia Gorlinski",
+              ],
+              a: "Jane Seymour",
+            },
+            {
+              q: "Tanggal berapakah ibu dari Edward VI mengembuskan napas terakhirnya?",
+              o: [
+                "24 Oktober 1537",
+                "6 Juli 1553",
+                "4 November 1493",
+                "1 Februari 2024",
+              ],
+              a: "24 Oktober 1537",
+            },
+            {
+              q: "Berapa hari jarak kematian sang ibu terhitung sejak hari kelahiran Edward VI?",
+              o: ["2 minggu", "12 hari", "9 hari", "3 bulan"],
+              a: "12 hari",
+            },
+            {
+              q: "Siapa nama ayah dari Edward VI yang menyebutnya sebagai permata paling berharga?",
+              o: [
+                "Henry VIII",
+                "Duke of Northumberland",
+                "Lucius Junius",
+                "Agesilaus II",
+              ],
+              a: "Henry VIII",
+            },
+          ],
+        },
+        {
+          text: "Raja Inggris abad pertengahan, Edward VI, memiliki hubungan persaudaraan yang rumit dengan dua saudara perempuannya yang kelak sama-sama menjadi ratu, yaitu Mary dan Elizabeth. Mary, yang berusia 21 tahun lebih tua, awalnya sangat menyayangi Edward. Sementara Elizabeth, yang hanya 4 tahun lebih tua, memiliki ikatan masa kecil yang erat. Namun, kehangatan itu lenyap setelah Edward naik takhta. Konflik agama yang tajam terjadi karena Mary adalah penganut Katolik taat. Menjelang kematiannya akibat tuberkulosis pada Juli 1553, Edward mencoret Mary dan Elizabeth dari suksesi, memicu krisis takhta serta eksekusi mati sepupunya, Lady Jane Grey.",
+          questions: [
+            {
+              q: "Berapa tahun selisih usia antara Mary (kakak tertua) dengan Edward VI?",
+              o: ["4 tahun", "9 tahun", "21 tahun", "12 tahun"],
+              a: "21 tahun",
+            },
+            {
+              q: "Penyakit apa yang diderita oleh Edward VI berdasarkan hasil pemeriksaan bedah dadanya?",
+              o: [
+                "Campak akut",
+                "Tuberkulosis (paru-paru)",
+                "Gagal jantung",
+                "Cacar variola",
+              ],
+              a: "Tuberkulosis (paru-paru)",
+            },
+            {
+              q: "Mengapa hubungan Edward VI dan Mary dipenuhi perdebatan dramatis nan tegang?",
+              o: [
+                "Masalah pembagian harta",
+                "Perbedaan pandangan agama (Katolik vs Protestan)",
+                "Perebutan wilayah perang",
+                "Kematian Jane Seymour",
+              ],
+              a: "Perbedaan pandangan agama (Katolik vs Protestan)",
+            },
+            {
+              q: "Siapa nama sepupu Edward VI yang menjadi korban tewas akibat krisis suksesi tahun 1553?",
+              o: [
+                "Lady Jane Grey",
+                "Ratu Elizabeth",
+                "Jane Seymour",
+                "Gabrielle Judge",
+              ],
+              a: "Lady Jane Grey",
+            },
+            {
+              q: "Kapan Raja Edward VI meninggal dunia setelah terlihat kurus di depan umum untuk terakhir kali?",
+              o: [
+                "24 Oktober 1537",
+                "6 Juli 1553",
+                "8 Juni 2023",
+                "14 Maret 2023",
+              ],
+              a: "6 Juli 1553",
+            },
+          ],
+        },
+        {
+          text: "Berabad-abad lalu dalam sejarah dunia kuno, buah tropis nanas (Ananas comosus) merupakan simbol prestise kemakmuran yang ekstrem karena kelangkaannya. Buah ini pertama kali ditemukan oleh penjelajah Eropa, Christopher Columbus, saat mendarat di pulau Karibia (Santa Maria de Guadelope) pada pelayaran katanya yang kedua tanggal 4 November 1493. Penduduk asli dari masyarakat Tupinambá memanfaatkan nanas segar untuk dimakan, dipanggang, diolah menjadi minuman anggur, ramuan obat, hingga serat anyaman. Nanas dinilai sangat berharga karena kapal Atlantik zaman dulu tidak memiliki fasilitas penyimpanan dingin, membuat mayoritas buah busuk dalam perjalanan ke Eropa.",
+          questions: [
+            {
+              q: "Kapan tanggal Christopher Columbus pertama kali menemukan buah nanas di Dunia Baru?",
+              o: [
+                "4 November 1493",
+                "22 Oktober 2023",
+                "25 Agustus 1943",
+                "27 Oktober 1941",
+              ],
+              a: "4 November 1493",
+            },
+            {
+              q: "Apa nama ilmiah/latin dari tanaman buah nanas berdasarkan dokumen sejarah kuis?",
+              o: ["Pina Comosus", "Ananas comosus", "Cornucopia", "Apothetae"],
+              a: "Ananas comosus",
+            },
+            {
+              q: "Suku/masyarakat asli mana yang pertama kali mengenalkan budidaya nanas kepada Columbus?",
+              o: [
+                "Masyarakat Tupinambá",
+                "Suku Etruria",
+                "Warga Galia",
+                "Suku Sparta",
+              ],
+              a: "Masyarakat Tupinambá",
+            },
+            {
+              q: "Mengapa buah nanas sangat langka dan berharga mahal saat dibawa kembali ke benua Eropa?",
+              o: [
+                "Karena dilarang oleh raja Spanyol",
+                "Kurangnya fasilitas penyimpanan dingin di kapal laut",
+                "Nanas hanya berbuah 50 tahun sekali",
+                "Nanas digunakan untuk racun panah",
+              ],
+              a: "Kurangnya fasilitas penyimpanan dingin di kapal laut",
+            },
+            {
+              q: "Nama pulau Karibia tempat mendaratnya Columbus yang menjadi lokasi penemuan nanas adalah?",
+              o: [
+                "Crosse Ile",
+                "Sheepshead Bay",
+                "Santa Maria de Guadelope",
+                "Belitung",
+              ],
+              a: "Santa Maria de Guadelope",
+            },
+          ],
+        },
+        {
+          text: "Saking mahalnya nilai sebuah nanas dalam sejarah dunia kuno, orang kaya yang memilikinya sering kali enggan memakannya dan hanya memajangnya sebagai hiasan utama meja perjamuan kumpul sosial. Uniknya, orang miskin yang ingin pamer atau membuat teman-temannya iri dengan kemewahan semu dapat menyewa satu buah nanas untuk satu malam melalui toko khusus 'penyewaan nanas'. Simbol status ini baru runtuh pada era Victoria karena penemuan kapal uap mempercepat jalur penyeberangan samudra, memungkinkan impor massal nanas terjadi sehingga buah ini bisa dibeli oleh semua kelas sosial.",
+          questions: [
+            {
+              q: "Kapan sebuah nanas pajangan pada akhirnya benar-benar dimakan oleh pemilik kayanya?",
+              o: [
+                "Saat pesta makan malam selesai",
+                "Ketika nanas mulai membusuk",
+                "Saat disewa oleh orang miskin",
+                "Ketika kapal uap merapat",
+              ],
+              a: "Ketika nanas mulai membusuk",
+            },
+            {
+              q: "Layanan unik apa yang disediakan bagi kalangan kurang mampu untuk pamer di pesta makan malam?",
+              o: [
+                "Toko penyewaan nanas",
+                "Bantuan dana hibah swasta",
+                "Pembagian buah gratis era Victoria",
+                "Sertifikasi status kekayaan",
+              ],
+              a: "Toko penyewaan nanas",
+            },
+            {
+              q: "Era apa yang menandai berakhirnya status nanas sebagai simbol kemewahan kaum borjuis?",
+              o: [
+                "Abad Pertengahan",
+                "Era Orde Lama",
+                "Era Victoria",
+                "Zaman Romawi Kuno",
+              ],
+              a: "Era Victoria",
+            },
+            {
+              q: "Teknologi transportasi apa yang memicu penurunan status prestise nanas melalui impor massal?",
+              o: [
+                "Pesawat terbang",
+                "Kereta mesin uap",
+                "Kapal uap",
+                "Truk kontainer kontemporer",
+              ],
+              a: "Kapal uap",
+            },
+            {
+              q: "Wadah berbentuk tanduk dalam mitos lukisan yang sering digambarkan berisi buah nanas dan koin disebut?",
+              o: [
+                "Lesche",
+                "Apothetae",
+                "Tumpah ruah (Cornucopia)",
+                "Amfiteater",
+              ],
+              a: "Tumpah ruah (Cornucopia)",
+            },
+          ],
+        },
+        {
+          text: "Film dokumenter berjudul 'Eksil' karya sutradara Lola Amaria mengangkat kisah kelam para pelajar dan mahasiswa Indonesia yang dikirim belajar ke luar negeri dengan beasiswa pada masa pemerintahan Presiden Sukarno. Mimpi mereka membangun tanah air hancur setelah meletusnya peristiwa G30S 1965. Pada tahun 1966, para mahasiswa di luar negeri dipanggil ke Kedutaan Besar Indonesia dan dipaksa menandatangani surat perjanjian untuk mengutuk pembunuhan jenderal sekaligus mengutuk pemerintahan Sukarno. Karena menolak mengutuk Sukarno, paspor mereka dicabut secara sepihak oleh rezim baru, menjadikan mereka kehilangan kewarganegaraan atau stateless selama puluhan tahun di Eropa.",
+          questions: [
+            {
+              q: "Siapakah sutradara yang menggarap film dokumenter sejarah berjudul 'Eksil'?",
+              o: [
+                "Virginia Gorlinski",
+                "Lola Amaria",
+                "Amber Poe",
+                "Gabrielle Judge",
+              ],
+              a: "Lola Amaria",
+            },
+            {
+              q: "Tahun berapakah para mahasiswa Indonesia dipanggil ke Kedutaan Besar untuk meneken surat kutukan?",
+              o: ["1962", "1965", "1966", "2024"],
+              a: "1966",
+            },
+            {
+              q: "Apa dampak fatal bagi mahasiswa yang menolak menandatangani poin mengutuk Sukarno?",
+              o: [
+                "Dijatuhi hukuman mati",
+                "Paspor mereka dicabut dan menjadi stateless",
+                "Dipulangkan paksa ke Jakarta",
+                "Dihapus dari daftar beasiswa China",
+              ],
+              a: "Paspor mereka dicabut dan menjadi stateless",
+            },
+            {
+              q: "Berapa durasi penayangan dari film dokumenter 'Eksil' tersebut?",
+              o: ["118 menit", "150 menit", "92 menit", "45 menit"],
+              a: "118 menit",
+            },
+            {
+              q: "Di era kepresidenan siapa program pengiriman beasiswa mahasiswa eksil tersebut awalnya dilakukan?",
+              o: [
+                "Presiden Soeharto",
+                "Presiden Abdurrahman Wahid",
+                "Presiden Sukarno",
+                "Gus Dur",
+              ],
+              a: "Presiden Sukarno",
+            },
+          ],
+        },
+      ];
+
+      let currentSession = 0;
+      let currentQuestionIdx = 0;
+      let totalCorrectAnswers = 0;
+
+      // JUMLAH TOTAL SOAL OTOMATIS MENYESUAIKAN DATABASE (15 Sesi * 5 Soal = 75 Soal)
+      let totalQuestionsCount = databaseSesi.length * 5;
+
+      let countdownTimer = null;
+      let timeLeft = 0;
+
+      // FUNGSI ALGORITMA UNTUK MENGACAK ARRAY (Fisher-Yates Shuffle)
+      function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [array[i], array[j]] = [array[j], array[i]];
         }
-    ];
+        return array;
+      }
 
-    let currentSession = 0;
-    let currentQuestionIdx = 0;
-    let totalCorrectAnswers = 0;
-    let totalQuestionsCount = 15;
+      // FUNGSI INISIALISASI UNTUK ACAK SELURUH LAPISAN KONTEN KUIS
+      function siapkanDanAcakKuis() {
+        shuffleArray(databaseSesi); // Lapis 1: Mengacak urutan kemunculan seluruh sesi teks besar
+        databaseSesi.forEach((sesi) => {
+          shuffleArray(sesi.questions); // Lapis 2: Mengacak urutan 5 soal di dalam sesi terkait
+          sesi.questions.forEach((soal) => {
+            shuffleArray(soal.o); // Lapis 3: Mengacak letak pilihan opsi jawaban (A, B, C, D)
+          });
+        });
+      }
 
-    let countdownTimer = null;
-    let timeLeft = 0;
+      // --- LOGIKA SESI MEMBACA ---
+      function startSession() {
+        // Acak seluruh elemen hanya pada saat kuis pertama kali dijalankan
+        if (currentSession === 0 && currentQuestionIdx === 0) {
+          siapkanDanAcakKuis();
+        }
 
-    // --- LOGIKA SESI MEMBACA ---
-    function startSession() {
-        document.getElementById('start-screen').classList.add('hidden');
-        document.getElementById('result-screen').classList.add('hidden');
-        document.getElementById('quiz-screen').classList.add('hidden');
-        document.getElementById('reading-screen').classList.remove('hidden');
+        document.getElementById("start-screen").classList.add("hidden");
+        document.getElementById("result-screen").classList.add("hidden");
+        document.getElementById("quiz-screen").classList.add("hidden");
+        document.getElementById("reading-screen").classList.remove("hidden");
 
-        document.getElementById('reading-session-title').innerText = `Sesi ${currentSession + 1} dari 3`;
-        document.getElementById('reading-text-content').innerText = databaseSesi[currentSession].text;
+        document.getElementById("reading-session-title").innerText =
+          `Sesi ${currentSession + 1} dari ${databaseSesi.length}`;
+        document.getElementById("reading-text-content").innerText =
+          databaseSesi[currentSession].text;
 
-        timeLeft = 60; // 2 Menit dalam detik
+        timeLeft = 120; // Waktu membaca: 120 detik (2 menit)
         updateReadingTimerDisplay();
 
         clearInterval(countdownTimer);
         countdownTimer = setInterval(() => {
-            timeLeft--;
-            updateReadingTimerDisplay();
-            if (timeLeft <= 0) {
-                endReadingEarly();
-            }
+          timeLeft--;
+          updateReadingTimerDisplay();
+          if (timeLeft <= 0) {
+            endReadingEarly();
+          }
         }, 1000);
-    }
+      }
 
-    function updateReadingTimerDisplay() {
-        let min = Math.floor(timeLeft / 60).toString().padStart(2, '0');
-        let sec = (timeLeft % 60).toString().padStart(2, '0');
-        document.getElementById('reading-timer').innerText = `Sisa Waktu Membaca: ${min}:${sec}`;
-        
+      function updateReadingTimerDisplay() {
+        let min = Math.floor(timeLeft / 60)
+          .toString()
+          .padStart(2, "0");
+        let sec = (timeLeft % 60).toString().padStart(2, "0");
+        document.getElementById("reading-timer").innerText =
+          `Sisa Waktu Membaca: ${min}:${sec}`;
+
         let percent = (timeLeft / 120) * 100;
-        document.getElementById('reading-progress').style.width = `${percent}%`;
-    }
+        document.getElementById("reading-progress").style.width = `${percent}%`;
+      }
 
-    function endReadingEarly() {
+      function endReadingEarly() {
         clearInterval(countdownTimer);
         currentQuestionIdx = 0;
         startQuizMode();
-    }
+      }
 
-    // --- LOGIKA SESI PERTANYAAN ---
-    function startQuizMode() {
-        document.getElementById('reading-screen').classList.add('hidden');
-        document.getElementById('quiz-screen').classList.remove('hidden');
+      // --- LOGIKA SESI PERTANYAAN ---
+      function startQuizMode() {
+        document.getElementById("reading-screen").classList.add("hidden");
+        document.getElementById("quiz-screen").classList.remove("hidden");
         showQuestion();
-    }
+      }
 
-    function showQuestion() {
+      function showQuestion() {
         const sessionData = databaseSesi[currentSession];
         const currentQ = sessionData.questions[currentQuestionIdx];
 
-        document.getElementById('quiz-session-title').innerText = `Sesi ${currentSession + 1} - Soal ${currentQuestionIdx + 1} dari 5`;
-        document.getElementById('question-text').innerText = currentQ.q;
+        document.getElementById("quiz-session-title").innerText =
+          `Sesi ${currentSession + 1} - Soal ${currentQuestionIdx + 1} dari 5`;
+        document.getElementById("question-text").innerText = currentQ.q;
 
-        const optionsBox = document.getElementById('options-box');
-        optionsBox.innerHTML = '';
+        const optionsBox = document.getElementById("options-box");
+        optionsBox.innerHTML = "";
 
         currentQ.o.forEach((opt, idx) => {
-            let btn = document.createElement('button');
-            btn.className = 'option-btn';
-            btn.innerText = `${String.fromCharCode(65 + idx)}. ${opt}`;
-            btn.onclick = () => submitAnswer(idx);
-            optionsBox.appendChild(btn);
+          let btn = document.createElement("button");
+          btn.className = "option-btn";
+          btn.innerText = `${String.fromCharCode(65 + idx)}. ${opt}`;
+          btn.onclick = () => submitAnswer(opt);
+          optionsBox.appendChild(btn);
         });
 
-        timeLeft = 15; // 15 Detik per soal
+        timeLeft = 15; // Waktu per soal: 30 detik
         updateQuizTimerDisplay();
 
         clearInterval(countdownTimer);
         countdownTimer = setInterval(() => {
-            timeLeft--;
-            updateQuizTimerDisplay();
-            if (timeLeft <= 0) {
-                submitAnswer(-1); // Otomatis salah / terlewati jika waktu habis
-            }
+          timeLeft--;
+          updateQuizTimerDisplay();
+          if (timeLeft <= 0) {
+            submitAnswer(""); // Dianggap kosong jika waktu habis
+          }
         }, 1000);
-    }
+      }
 
-    function updateQuizTimerDisplay() {
-        document.getElementById('quiz-timer').innerText = `Waktu Soal: ${timeLeft}s`;
+      function updateQuizTimerDisplay() {
+        document.getElementById("quiz-timer").innerText =
+          `Waktu Soal: ${timeLeft}s`;
         let percent = (timeLeft / 30) * 100;
-        document.getElementById('quiz-progress').style.width = `${percent}%`;
-    }
+        document.getElementById("quiz-progress").style.width = `${percent}%`;
+      }
 
-    function submitAnswer(chosenIdx) {
+      function submitAnswer(chosenText) {
         clearInterval(countdownTimer);
         const sessionData = databaseSesi[currentSession];
         const currentQ = sessionData.questions[currentQuestionIdx];
 
-        if (chosenIdx === currentQ.a) {
-            totalCorrectAnswers++;
+        if (chosenText === currentQ.a) {
+          totalCorrectAnswers++;
         }
 
         currentQuestionIdx++;
         if (currentQuestionIdx < 5) {
-            showQuestion();
+          showQuestion();
         } else {
-            // Lanjut ke sesi teks berikutnya atau tamat
-            currentSession++;
-            if (currentSession < 3) {
-                alert(`Sesi ${currentSession} Selesai! Klik OK untuk bersiap masuk ke Sesi ${currentSession + 1}.`);
-                startSession();
-            } else {
-                showResults();
-            }
+          currentSession++;
+          if (currentSession < databaseSesi.length) {
+            alert(
+              `Sesi ${currentSession} Selesai! Klik OK untuk bersiap masuk ke Sesi ${currentSession + 1}.`,
+            );
+            startSession();
+          } else {
+            showResults();
+          }
         }
-    }
+      }
 
-    // --- SCREEN AKHIR ---
-    function showResults() {
-        document.getElementById('quiz-screen').classList.add('hidden');
-        document.getElementById('result-screen').classList.remove('hidden');
+      // --- SCREEN HASIL AKHIR ---
+      function showResults() {
+        document.getElementById("quiz-screen").classList.add("hidden");
+        document.getElementById("result-screen").classList.remove("hidden");
 
-        let scoreValue = Math.round((totalCorrectAnswers / totalQuestionsCount) * 100);
-        document.getElementById('score-summary').innerHTML = `
+        let scoreValue = Math.round(
+          (totalCorrectAnswers / totalQuestionsCount) * 100,
+        );
+        document.getElementById("score-summary").innerHTML = `
             Skor Akurasi: ${scoreValue} / 100 <br>
             <span style="font-size: 1rem; font-weight: normal; color: #666;">
                 Benar: ${totalCorrectAnswers} | Salah/Kosong: ${totalQuestionsCount - totalCorrectAnswers}
             </span>
         `;
-    }
-</script>
-
-</body>
+      }
+    </script>
+  </body>
 </html>
