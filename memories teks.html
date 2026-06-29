@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tes Memori & Rekonstruksi Informasi</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --accent: #e74c3c;
+            --success: #2ecc71;
+            --bg: #f8f9fa;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            margin: 0; padding: 20px;
+            display: flex; justify-content: center; align-items: center; min-height: 100vh;
+        }
+        .container {
+            background: white; padding: 30px; border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 700px;
+        }
+        h1, h2 { text-align: center; color: var(--primary); margin-top: 0; }
+        .hidden { display: none !important; }
+        .btn {
+            background: var(--primary); color: white; border: none; padding: 12px 25px;
+            font-size: 16px; font-weight: bold; border-radius: 6px; cursor: pointer;
+            display: block; margin: 20px auto 0 auto; width: 100%; max-width: 200px; text-align: center;
+        }
+        .btn:hover { background: #34495e; }
+        
+        .timer-bar {
+            background: #eee; border-radius: 4px; height: 10px; width: 100%;
+            margin-bottom: 20px; overflow: hidden;
+        }
+        .timer-fill {
+            background: var(--accent); height: 100%; width: 100%;
+            transition: width 1s linear;
+        }
+        .info-header {
+            display: flex; justify-content: space-between; font-weight: bold;
+            margin-bottom: 15px; color: #555; border-bottom: 2px solid #eee; padding-bottom: 10px;
+        }
+        
+        /* Box Teks Bacaan */
+        .text-box {
+            background: #fdfefe; border: 2px dashed #bdc3c7; padding: 20px;
+            border-radius: 8px; line-height: 1.7; font-size: 16px; color: #2c3e50;
+            text-align: justify; white-space: pre-line;
+        }
+
+        /* Desain Pilihan Ganda */
+        .question-box { font-size: 18px; font-weight: bold; margin-bottom: 20px; color: var(--primary); }
+        .options-container { display: flex; flex-direction: column; gap: 12px; }
+        .option-btn {
+            background: white; border: 2px solid #ebd3c7; padding: 14px;
+            border-radius: 8px; text-align: left; font-size: 15px; cursor: pointer;
+            font-weight: 500; transition: 0.2s; border: 2px solid #ccc;
+        }
+        .option-btn:hover { background: #f4f6f7; border-color: var(--primary); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="start-screen">
+        <h1>Tes Memori & Rekonstruksi Teks</h1>
+        <p style="line-height: 1.6; color: #555;">
+            Tes ini terdiri dari <strong>3 Sesi</strong>. Pada setiap sesi, Anda akan diberikan sebuah teks bacaan kompleks berdurasi <strong>1 menit</strong> untuk dihafal dan dianalisis secara detail. 
+            <br><br>
+            Setelah waktu habis, teks akan dihilangkan dan diganti dengan <strong>5 pertanyaan logika kecermatan</strong>. Setiap soal hanya muncul selama <strong>15 detik</strong> dan akan berganti otomatis jika tidak dijawab. Jawablah dengan cepat dan teliti!
+        </p>
+        <button class="btn" onclick="startSession()">Mulai Tes</button>
+    </div>
+
+    <div id="reading-screen" class="hidden">
+        <div class="info-header">
+            <span id="reading-session-title">Sesi 1 dari 3</span>
+            <span style="color: var(--accent);" id="reading-timer">Sisa Waktu Membaca: 02:00</span>
+        </div>
+        <div class="timer-bar"><div id="reading-progress" class="timer-fill"></div></div>
+        <div id="reading-text-content" class="text-box"></div>
+        <button class="btn" onclick="endReadingEarly()" style="background-color: var(--success); max-width: 250px;">Saya Sudah Selesai Membaca</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+        <div class="info-header">
+            <span id="quiz-session-title">Sesi 1 - Soal 1 dari 5</span>
+            <span style="color: var(--accent);" id="quiz-timer">Waktu Soal: 30s</span>
+        </div>
+        <div class="timer-bar"><div id="quiz-progress" class="timer-fill"></div></div>
+        
+        <div id="question-text" class="question-box"></div>
+        <div id="options-box" class="options-container"></div>
+    </div>
+
+    <div id="result-screen" class="hidden">
+        <h1>Hasil Evaluasi Memori</h1>
+        <p id="score-summary" style="text-align: center; font-size: 1.2rem; font-weight: bold; margin: 30px 0; color: var(--primary);"></p>
+        <button class="btn" onclick="location.reload()">Ulangi Tes</button>
+        <a href="index.html" class="btn" style="background: #7f8c8d; text-decoration: none;">Kembali ke Portal</a>
+    </div>
+</div>
+
+<script>
+    // DATA DATABASE SOAL (3 SESI DENGAN PENGECOH LOGIKA)
+    const databaseSesi = [
+        {
+            text: "Pada hari Selasa, 14 Maret 2023, terjadi kebakaran hebat di gudang logistik PT Sentosa Jaya yang terletak di Jalan Merdeka No. 45, Surabaya. Kebakaran dilaporkan oleh warga sekitar pukul 23.45 WIB, tepat satu jam setelah manajer operasional, Handoko, meninggalkan area pabrik. Petugas pemadam kebakaran mengerahkan 12 armada dan baru berhasil memadamkan api pada Rabu subuh pukul 04.15 WIB. Berdasarkan penyelidikan sementara, korsleting listrik di ruang panel belakang disinyalir menjadi pemicu utama, bukan area genset samping seperti yang diduga sebelumnya. Tidak ada korban jiwa, namun kerugian materiil ditaksir mencapai 2,5 miliar rupiah, termasuk rusaknya 500 unit komputer siap edar.",
+            questions: [
+                { q: "Kapan manajer operasional meninggalkan area pabrik?", o: ["Selasa pukul 22.45 WIB", "Selasa pukul 23.45 WIB", "Rabu pukul 04.15 WIB", "Selasa pukul 21.45 WIB"], a: 0 },
+                { q: "Di mana lokasi titik pemicu awal kebakaran terjadi?", o: ["Area genset samping", "Gudang logistik depan", "Ruang panel belakang", "Kantor utama PT Sentosa"], a: 2 },
+                { q: "Berapa jumlah armada pemadam kebakaran yang dikerahkan?", o: ["500 unit", "45 armada", "14 armada", "12 armada"], a: 3 },
+                { q: "Hari dan jam berapa api pada akhirnya berhasil dipadamkan sepenuhnya?", o: ["Selasa pukul 23.45 WIB", "Rabu pukul 04.15 WIB", "Rabu pukul 23.45 WIB", "Selasa pukul 04.15 WIB"], a: 1 },
+                { q: "Berapa taksiran total kerugian materiil akibat insiden tersebut?", o: ["45 Juta Rupiah", "14 Miliar Rupiah", "2,5 Miliar Rupiah", "500 Juta Rupiah"], a: 2 }
+            ]
+        },
+        {
+            text: "Kecelakaan beruntun melibatkan empat kendaraan terjadi di Tol Cipularang KM 92 arah Jakarta pada Kamis, 8 Juni 2023. Insiden bermula ketika truk kontainer bernomor polisi B 9011 XYZ mengalami rem blong tepat pada pukul 14.20 WIB saat kondisi cuaca hujan rintik-rintik. Truk tersebut menabrak minibus hitam yang berada tepat di depannya, yang kemudian memicu efek domino terhadap dua kendaraan pribadi di depan minibus. Korban luka-luka tercatat sebanyak 7 orang, di mana dua di antaranya mengalami luka berat dan langsung dilarikan ke RS Raden Saleh yang berjarak 15 kilometer dari lokasi kejadian. Evakuasi bangkai kendaraan baru selesai dilakukan oleh pihak Jasa Marga pada pukul 16.50 WIB, mengakibatkan kemacetan sepanjang 5 kilometer.",
+            questions: [
+                { q: "Berapa jumlah total kendaraan yang terlibat dalam kecelakaan beruntun?", o: ["2 kendaraan", "4 kendaraan", "7 kendaraan", "5 kendaraan"], a: 1 },
+                { q: "Kapan peristiwa rem blong pada truk kontainer terjadi?", o: ["Kamis pukul 14.20 WIB", "Kamis pukul 16.50 WIB", "Jumat pukul 14.20 WIB", "Kamis pukul 15.00 WIB"], a: 0 },
+                { q: "Berapakah jarak dari lokasi kecelakaan menuju rumah sakit rujukan korban?", o: ["92 Kilometer", "5 Kilometer", "15 Kilometer", "7 Kilometer"], a: 2 },
+                { q: "Berapa jumlah korban yang dilaporkan mengalami luka berat?", o: ["7 orang", "4 orang", "5 orang", "2 orang"], a: 3 },
+                { q: "Berapa panjang kemacetan tol yang ditimbulkan akibat proses evakuasi?", o: ["15 Kilometer", "5 Kilometer", "92 Kilometer", "4 Kilometer"], a: 1 }
+            ]
+        },
+        {
+            text: "Gubernur Jawa Barat meresmikan Taman Digital inklusif di pusat Kota Bandung pada Minggu, 22 Oktober 2023. Proyek ini dibangun di atas lahan bekas terminal bus seluas 2,4 hektare, yang pengerjaannya telah dimulai sejak awal Januari 2022, meleset tiga bulan dari target perencanaan awal akibat kendala cuaca ekstrem. Fasilitas ini menyediakan area Wi-Fi berkecepatan 500 Mbps, ruang baca terbuka dengan koleksi 3.000 buku digital, serta amfiteater seni. Anggaran pembangunan bersumber dari dana hibah swasta sebesar 40% dan sisanya diserap dari APBD Pemprov. Acara peresmian ini dihadiri oleh 150 tamu undangan terbatas dan dijaga ketat oleh 50 personel gabungan Satpol PP serta Kepolisian.",
+            questions: [
+                { q: "Kapan pengerjaan fisik proyek Taman Digital ini pertama kali dimulai?", o: ["Minggu, 22 Oktober 2023", "Januari 2022", "Oktober 2022", "Maret 2022"], a: 1 },
+                { q: "Berapakah luas lahan yang digunakan untuk pembangunan taman tersebut?", o: ["3.000 Hektare", "40 Hektare", "2,4 Hektare", "150 Hektare"], a: 2 },
+                { q: "Berapa persen proporsi anggaran pembangunan yang diambil dari APBD Pemprov?", o: ["40%", "50%", "30%", "60%"], a: 3 },
+                { q: "Taman Digital inklusif ini dibangun di atas lahan bekas apa?", o: ["Ruang panel belakang", "Terminal bus", "Stasiun kereta", "Gudang logistik"], a: 1 },
+                { q: "Berapa jumlah personel gabungan yang dikerahkan untuk menjaga peresmian?", o: ["150 personel", "40 personel", "50 personel", "200 personel"], a: 2 }
+            ]
+        }
+    ];
+
+    let currentSession = 0;
+    let currentQuestionIdx = 0;
+    let totalCorrectAnswers = 0;
+    let totalQuestionsCount = 15;
+
+    let countdownTimer = null;
+    let timeLeft = 0;
+
+    // --- LOGIKA SESI MEMBACA ---
+    function startSession() {
+        document.getElementById('start-screen').classList.add('hidden');
+        document.getElementById('result-screen').classList.add('hidden');
+        document.getElementById('quiz-screen').classList.add('hidden');
+        document.getElementById('reading-screen').classList.remove('hidden');
+
+        document.getElementById('reading-session-title').innerText = `Sesi ${currentSession + 1} dari 3`;
+        document.getElementById('reading-text-content').innerText = databaseSesi[currentSession].text;
+
+        timeLeft = 60; // 2 Menit dalam detik
+        updateReadingTimerDisplay();
+
+        clearInterval(countdownTimer);
+        countdownTimer = setInterval(() => {
+            timeLeft--;
+            updateReadingTimerDisplay();
+            if (timeLeft <= 0) {
+                endReadingEarly();
+            }
+        }, 1000);
+    }
+
+    function updateReadingTimerDisplay() {
+        let min = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+        let sec = (timeLeft % 60).toString().padStart(2, '0');
+        document.getElementById('reading-timer').innerText = `Sisa Waktu Membaca: ${min}:${sec}`;
+        
+        let percent = (timeLeft / 120) * 100;
+        document.getElementById('reading-progress').style.width = `${percent}%`;
+    }
+
+    function endReadingEarly() {
+        clearInterval(countdownTimer);
+        currentQuestionIdx = 0;
+        startQuizMode();
+    }
+
+    // --- LOGIKA SESI PERTANYAAN ---
+    function startQuizMode() {
+        document.getElementById('reading-screen').classList.add('hidden');
+        document.getElementById('quiz-screen').classList.remove('hidden');
+        showQuestion();
+    }
+
+    function showQuestion() {
+        const sessionData = databaseSesi[currentSession];
+        const currentQ = sessionData.questions[currentQuestionIdx];
+
+        document.getElementById('quiz-session-title').innerText = `Sesi ${currentSession + 1} - Soal ${currentQuestionIdx + 1} dari 5`;
+        document.getElementById('question-text').innerText = currentQ.q;
+
+        const optionsBox = document.getElementById('options-box');
+        optionsBox.innerHTML = '';
+
+        currentQ.o.forEach((opt, idx) => {
+            let btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerText = `${String.fromCharCode(65 + idx)}. ${opt}`;
+            btn.onclick = () => submitAnswer(idx);
+            optionsBox.appendChild(btn);
+        });
+
+        timeLeft = 15; // 15 Detik per soal
+        updateQuizTimerDisplay();
+
+        clearInterval(countdownTimer);
+        countdownTimer = setInterval(() => {
+            timeLeft--;
+            updateQuizTimerDisplay();
+            if (timeLeft <= 0) {
+                submitAnswer(-1); // Otomatis salah / terlewati jika waktu habis
+            }
+        }, 1000);
+    }
+
+    function updateQuizTimerDisplay() {
+        document.getElementById('quiz-timer').innerText = `Waktu Soal: ${timeLeft}s`;
+        let percent = (timeLeft / 30) * 100;
+        document.getElementById('quiz-progress').style.width = `${percent}%`;
+    }
+
+    function submitAnswer(chosenIdx) {
+        clearInterval(countdownTimer);
+        const sessionData = databaseSesi[currentSession];
+        const currentQ = sessionData.questions[currentQuestionIdx];
+
+        if (chosenIdx === currentQ.a) {
+            totalCorrectAnswers++;
+        }
+
+        currentQuestionIdx++;
+        if (currentQuestionIdx < 5) {
+            showQuestion();
+        } else {
+            // Lanjut ke sesi teks berikutnya atau tamat
+            currentSession++;
+            if (currentSession < 3) {
+                alert(`Sesi ${currentSession} Selesai! Klik OK untuk bersiap masuk ke Sesi ${currentSession + 1}.`);
+                startSession();
+            } else {
+                showResults();
+            }
+        }
+    }
+
+    // --- SCREEN AKHIR ---
+    function showResults() {
+        document.getElementById('quiz-screen').classList.add('hidden');
+        document.getElementById('result-screen').classList.remove('hidden');
+
+        let scoreValue = Math.round((totalCorrectAnswers / totalQuestionsCount) * 100);
+        document.getElementById('score-summary').innerHTML = `
+            Skor Akurasi: ${scoreValue} / 100 <br>
+            <span style="font-size: 1rem; font-weight: normal; color: #666;">
+                Benar: ${totalCorrectAnswers} | Salah/Kosong: ${totalQuestionsCount - totalCorrectAnswers}
+            </span>
+        `;
+    }
+</script>
+
+</body>
+</html>
