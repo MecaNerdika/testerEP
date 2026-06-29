@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UTBK Vocab Matching Game</title>
+    <style>
+        :root {
+            --bg-color: #12181f;
+            --card-bg: #1b242e;
+            --card-border: #2d3846;
+            --text-color: #e3e6e8;
+            --selected-color: #3b82f6;
+            --matched-color: #10b981;
+            --wrong-color: #ef4444;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        .status-panel {
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            color: #8892b0;
+        }
+
+        /* Grid Utama 2 Kolom mirip gambar */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .vocab-card {
+            background-color: var(--card-bg);
+            border: 2px solid var(--card-border);
+            border-radius: 12px;
+            padding: 20px 10px;
+            font-size: 1.1rem;
+            color: var(--text-color);
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 40px;
+        }
+
+        /* Status Card saat Interaksi */
+        .vocab-card.selected {
+            border-color: var(--selected-color);
+            background-color: rgba(59, 130, 246, 0.1);
+        }
+
+        .vocab-card.matched {
+            border-color: var(--matched-color);
+            background-color: rgba(16, 185, 129, 0.1);
+            color: #a7f3d0;
+            visibility: hidden; /* Sembunyikan jika sudah benar, atau hilangkan baris ini jika ingin tetap tampil */
+            opacity: 0;
+            transition: opacity 0.5s ease, visibility 0.5s;
+        }
+
+        .vocab-card.wrong {
+            border-color: var(--wrong-color);
+            background-color: rgba(239, 68, 68, 0.1);
+            animation: shake 0.3s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .btn {
+            background-color: var(--selected-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn:hover {
+            background-color: #2563eb;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>UTBK Vocab Challenge</h1>
+        <div class="status-panel">
+            <span id="session-info">Sesi: 1 / 5</span> | 
+            <span id="score-info">Skor: 0</span>
+        </div>
+
+        <div id="setup-screen">
+            <p>Atur jumlah sesi bermain yang Anda inginkan:</p>
+            <input type="number" id="total-sessions-input" value="5" min="1" max="10" style="padding: 8px; width: 60px; text-align: center; border-radius: 5px; border: 1px solid var(--card-border); background: var(--card-bg); color: white; font-size: 1rem; margin-bottom: 15px;"><br>
+            <button class="btn" onclick="startGame()">Mulai Game</button>
+        </div>
+
+        <div id="game-screen" class="hidden">
+            <div class="grid-container" id="vocab-grid">
+                </div>
+            <button class="btn hidden" id="next-btn" onclick="nextSession()">Sesi Berikutnya</button>
+        </div>
+
+        <div id="end-screen" class="hidden">
+            <h2>Selesai! 🎉</h2>
+            <p id="final-score"></p>
+            <button class="btn" onclick="resetToSetup()">Main Lagi</button>
+        </div>
+    </div>
+
+<script>
+// 1. BANK VOCABULARY UTBK (Bisa ditambah sebanyak mungkin)
+const vocabBank = [
+    { en: "abandon", id: "meninggalkan" },
+    { en: "acquire", id: "memperoleh" },
+    { en: "advocate", id: "mendukung" },
+    { en: "alter", id: "mengubah" },
+    { en: "ambiguous", id: "ambigu/samar" },
+    { en: "analyze", id: "menganalisis" },
+    { en: "anticipate", id: "mengantisipasi" },
+    { en: "assert", id: "menegaskan" },
+    { en: "bias", id: "keberpihakan" },
+    { en: "brief", id: "singkat" },
+    { en: "capable", id: "mampu" },
+    { en: "clarify", id: "mengklarifikasi" },
+    { en: "conclude", id: "menyimpulkan" },
+    { en: "consequence", id: "konsekuensi" },
+    { en: "considerable", id: "signifikan/besar" },
+    { en: "contradict", id: "menyanggah" },
+    { en: "crucial", id: "sangat penting" },
+    { en: "decline", id: "menurun" },
+    { en: "derive", id: "berasal dari" },
+    { en: "diminish", id: "berkurang" },
+    { en: "distinct", id: "berbeda/jelas" },
+    { en: "elaborate", id: "menjelaskan rinci" },
+    { en: "emphasize", id: "menekankan" },
+    { en: "evaluate", id: "menevaluasi" },
+    { en: "fluctuate", id: "berfluktuasi" },
+    { en: "hence", id: "oleh karena itu" },
+    { en: "hypothesis", id: "dugaan sementara" },
+    { en: "imply", id: "menyiratkan" },
+    { en: "indicate", id: "menunjukkan" },
+    { en: "inevitable", id: "tidak bisa dihindari" },
+    { en: "infer", id: "menyimpulkan" },
+    { en: "innovation", id: "inovasi" },
+    { en: "justify", id: "membenarkan" },
+    { en: "maintain", id: "mempertahankan" },
+    { en: "negligible", id: "bisa diabaikan" },
+    { en: "notion", id: "gagasan" },
+    { en: "obstacle", id: "hambatan" },
+    { en: "persist", id: "bertahan terus" },
+    { en: "predict", id: "memprediksi" },
+    { en: "prominent", id: "terkemuka" },
+    { en: "reinforce", id: "memperkuat" },
+    { en: "reluctant", id: "enggan" },
+    { en: "significant", id: "berarti/penting" },
+    { en: "subsequent", id: "berikutnya" },
+    { en: "thrive", id: "berkembang pesat" },
+    { en: "undergo", id: "menjalani" },
+    { en: "valid", id: "sahih/sah" },
+    { en: "vary", id: "bervariasi" },
+    { en: "widespread", id: "tersebar luas" },
+    { en: "yield", id: "menghasilkan" }
+];
+
+// State Aplikasi
+let currentSession = 1;
+let totalSessions = 5;
+let score = 0;
+let selectedCards = [];
+let matchedPairsInSession = 0;
+let usedPairs = []; // Memastikan kata yang sudah muncul tidak langsung muncul lagi jika kuota cukup
+
+// Fungsi Pengacak Array (Fisher-Yates Shuffle)
+function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
+// Memulai Game dari Layar Setup
+function startGame() {
+    totalSessions = parseInt(document.getElementById('total-sessions-input').value) || 5;
+    currentSession = 1;
+    score = 0;
+    usedPairs = [];
+    
+    document.getElementById('setup-screen').classList.add('hidden');
+    document.getElementById('game-screen').classList.remove('hidden');
+    document.getElementById('end-screen').classList.add('hidden');
+    
+    loadSession();
+}
+
+// Menyiapkan 1 Sesi (6 pasang kata acak)
+function loadSession() {
+    matchedPairsInSession = 0;
+    selectedCards = [];
+    document.getElementById('next-btn').classList.add('hidden');
+    document.getElementById('session-info').innerText = `Sesi: ${currentSession} / ${totalSessions}`;
+    document.getElementById('score-info').innerText = `Skor: ${score}`;
+
+    // Filter kata yang belum dipakai (jika bank data habis, reset tracker)
+    let availableBank = vocabBank.filter(item => !usedPairs.includes(item.en));
+    if (availableBank.length < 6) {
+        usedPairs = [];
+        availableBank = vocabBank;
+    }
+
+    // Ambil 6 pasang secara acak
+    shuffle(availableBank);
+    const selectedPairs = availableBank.slice(0, 6);
+    
+    // Catat kata yang dipakai agar sesi depan berbeda
+    selectedPairs.forEach(pair => usedPairs.push(pair.en));
+
+    // Pecah menjadi 12 item tunggal (6 Bahasa Inggris, 6 Bahasa Indonesia)
+    let displayItems = [];
+    selectedPairs.forEach((pair, index) => {
+        displayItems.push({ id: `pair-${index}`, type: 'en', text: pair.en });
+        displayItems.push({ id: `pair-${index}`, type: 'id', text: pair.id });
+    });
+
+    // Acak urutan 12 item tersebut agar posisinya campur aduk
+    shuffle(displayItems);
+
+    // Render ke HTML Grid
+    const grid = document.getElementById('vocab-grid');
+    grid.innerHTML = '';
+    
+    displayItems.forEach(item => {
+        const card = document.createElement('div');
+        card.classList.add('vocab-card');
+        card.innerText = item.text;
+        card.dataset.pairId = item.id;
+        card.dataset.type = item.type;
+        card.addEventListener('click', onCardClick);
+        grid.appendChild(card);
+    });
+}
+
+// Logika Klik Kartu
+function onCardClick(e) {
+    const card = e.currentTarget;
+
+    // Abaikan jika kartu sudah match atau diklik ulang saat status terpilh
+    if (card.classList.contains('matched') || card.classList.contains('selected') || selectedCards.length >= 2) {
+        return;
+    }
+
+    card.classList.add('selected');
+    selectedCards.push(card);
+
+    if (selectedCards.length === 2) {
+        checkMatch();
+    }
+}
+
+// Logika Validasi Pencocokan
+function checkMatch() {
+    const card1 = selectedCards[0];
+    const card2 = selectedCards[1];
+
+    // Cek apakah berasal dari pasangan yang sama tapi tipe bahasa berbeda (en & id)
+    if (card1.dataset.pairId === card2.dataset.pairId && card1.dataset.type !== card2.dataset.type) {
+        // BENAR
+        setTimeout(() => {
+            card1.classList.remove('selected');
+            card2.classList.remove('selected');
+            card1.classList.add('matched');
+            card2.classList.add('matched');
+            
+            score += 10;
+            document.getElementById('score-info').innerText = `Skor: ${score}`;
+            matchedPairsInSession++;
+            selectedCards = [];
+
+            // Jika 6 pasang dalam sesi ini sudah ketemu semua
+            if (matchedPairsInSession === 6) {
+                if (currentSession < totalSessions) {
+                    document.getElementById('next-btn').classList.remove('hidden');
+                } else {
+                    endGame();
+                }
+            }
+        }, 300);
+    } else {
+        // SALAH
+        setTimeout(() => {
+            card1.classList.add('wrong');
+            card2.classList.add('wrong');
+        }, 200);
+
+        setTimeout(() => {
+            card1.classList.remove('selected', 'wrong');
+            card2.classList.remove('selected', 'wrong');
+            selectedCards = [];
+        }, 800);
+    }
+}
+
+// Lanjut ke sesi berikutnya
+function nextSession() {
+    currentSession++;
+    loadSession();
+}
+
+// Game Berakhir
+function endGame() {
+    document.getElementById('game-screen').classList.add('hidden');
+    document.getElementById('end-screen').classList.remove('hidden');
+    document.getElementById('final-score').innerText = `Total Skor Anda: ${score} poin dari ${totalSessions} sesi.`;
+}
+
+// Reset Kembali ke Setup
+function resetToSetup() {
+    document.getElementById('end-screen').classList.add('hidden');
+    document.getElementById('setup-screen').classList.remove('hidden');
+}
+</script>
+</body>
+</html>
