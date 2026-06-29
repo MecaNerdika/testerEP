@@ -896,7 +896,7 @@
       let totalCorrectAnswers = 0;
 
       // JUMLAH TOTAL SOAL OTOMATIS MENYESUAIKAN DATABASE (15 Sesi * 5 Soal = 75 Soal)
-      let totalQuestionsCount = databaseSesi.length * 5;
+      let totalQuestionsCount = 5 * 5;
 
       let countdownTimer = null;
       let timeLeft = 0;
@@ -912,14 +912,18 @@
 
       // FUNGSI INISIALISASI UNTUK ACAK SELURUH LAPISAN KONTEN KUIS
       function siapkanDanAcakKuis() {
-        shuffleArray(databaseSesi); // Lapis 1: Mengacak urutan kemunculan seluruh sesi teks besar
-        databaseSesi.forEach((sesi) => {
-          shuffleArray(sesi.questions); // Lapis 2: Mengacak urutan 5 soal di dalam sesi terkait
-          sesi.questions.forEach((soal) => {
-            shuffleArray(soal.o); // Lapis 3: Mengacak letak pilihan opsi jawaban (A, B, C, D)
-          });
+        shuffleArray(databaseSesi); // Lapis 1: Mengacak seluruh 15 sesi
+        
+        // POTONG ARRAY: Ambil 5 sesi pertama hasil acakan, buang sisanya untuk ujian kali ini
+        databaseSesi.splice(5); 
+        
+        databaseSesi.forEach(sesi => {
+            shuffleArray(sesi.questions); // Lapis 2: Mengacak urutan soal
+            sesi.questions.forEach(soal => {
+                shuffleArray(soal.o); // Lapis 3: Mengacak pilihan opsi A, B, C, D
+            });
         });
-      }
+    }
 
       // --- LOGIKA SESI MEMBACA ---
       function startSession() {
