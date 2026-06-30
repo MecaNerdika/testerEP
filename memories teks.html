@@ -942,7 +942,7 @@
         document.getElementById("reading-text-content").innerText =
           databaseSesi[currentSession].text;
 
-        timeLeft = 120; // Waktu membaca: 120 detik (2 menit)
+        timeLeft = 60; // Waktu membaca: 120 detik (2 menit)
         updateReadingTimerDisplay();
 
         clearInterval(countdownTimer);
@@ -963,7 +963,7 @@
         document.getElementById("reading-timer").innerText =
           `Sisa Waktu Membaca: ${min}:${sec}`;
 
-        let percent = (timeLeft / 120) * 100;
+        let percent = (timeLeft / 60) * 100;
         document.getElementById("reading-progress").style.width = `${percent}%`;
       }
 
@@ -999,7 +999,7 @@
           optionsBox.appendChild(btn);
         });
 
-        timeLeft = 15; // Waktu per soal: 30 detik
+        timeLeft = 8; // Waktu per soal: 30 detik
         updateQuizTimerDisplay();
 
         clearInterval(countdownTimer);
