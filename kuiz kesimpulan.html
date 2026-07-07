@@ -1,0 +1,1048 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kuiz kesimpulan</title>
+    <style>
+      :root {
+        --bg: #060000; /* slate-900 */
+        --card: #111827; /* gray-900 */
+        --muted: #334155; /* slate-600 */
+        --text: #ffffff; /* gray-200 */
+        --accent: #38bdf8; /* sky-400 */
+        --accent-2: #22c55e; /* green-500 */
+        --danger: #ef4444; /* red-500 */
+        --warn: #f59e0b; /* amber-500 */
+        --shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+        --radius: 16px;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          Segoe UI,
+          Roboto,
+          "Helvetica Neue",
+          Arial;
+        background:
+          radial-gradient(1200px 800px at 10% -10%, #1e293b, transparent),
+          radial-gradient(800px 600px at 120% 0%, #0b3b47, transparent),
+          var(--bg);
+        color: var(--text);
+        min-height: 100svh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+      }
+      .app {
+        width: 100%;
+        max-width: 980px;
+      }
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+      .brand {
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        font-size: clamp(18px, 3.5vw, 24px);
+      }
+      .timer {
+        font-variant-numeric: tabular-nums;
+        font-weight: 700;
+        padding: 10px 14px;
+        border-radius: 999px;
+        background: #0b1220;
+        border: 1px solid #1f2a44;
+        box-shadow: var(--shadow);
+      }
+      .card {
+        background: linear-gradient(180deg, #0b1220, #0a1020);
+        border: 1px solid #1f2a44;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+      }
+      .section {
+        display: none;
+      }
+      .active {
+        display: block;
+      }
+      .card-inner {
+        padding: 20px;
+      }
+      .grid {
+        display: grid;
+        gap: 16px;
+      }
+      .grid-2 {
+        grid-template-columns: 1fr 1fr;
+      }
+      .grid-responsive {
+        grid-template-columns: 1fr;
+      }
+      @media (min-width: 720px) {
+        .grid-responsive {
+          grid-template-columns: 1fr 320px;
+        }
+      }
+
+      input[type="text"],
+      input[type="password"] {
+        width: 100%;
+        padding: 12px 14px;
+        border-radius: 12px;
+        border: 1px solid #26314d;
+        background: #0b1220;
+        color: var(--text);
+        outline: none;
+        box-shadow: inset 0 0 0 9999px rgba(255, 255, 255, 0);
+      }
+      label {
+        font-size: 14px;
+        color: #cbd5e1;
+      }
+      .btn {
+        cursor: pointer;
+        padding: 12px 16px;
+        border-radius: 14px;
+        background: var(--accent);
+        color: #001219;
+        border: none;
+        font-weight: 700;
+        box-shadow: var(--shadow);
+        transition: 0.2s transform ease;
+      }
+      .btn:active {
+        transform: translateY(1px);
+      }
+      .btn.secondary {
+        background: #1f2937;
+        color: #e2e8f0;
+        border: 1px solid #334155;
+      }
+      .btn.warn {
+        background: var(--warn);
+        color: #0b1220;
+      }
+      .btn.danger {
+        background: var(--danger);
+        color: #0b1220;
+      }
+      .muted {
+        color: #94a3b8;
+      }
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: #0b1220;
+        border: 1px solid #223156;
+        font-size: 12px;
+        color: #cbd5e1;
+      }
+
+      .question-area {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+      .q-title {
+        font-weight: 400;
+        font-size: 12px;
+      }
+      .choices {
+        display: grid;
+        gap: 10px;
+      }
+      .choice {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        border: 1px solid #1f2a44;
+        background: #0b1220;
+        padding: 12px;
+        border-radius: 12px;
+        cursor: pointer;
+      }
+      .choice input {
+        margin-top: 4px;
+      }
+
+      .nav {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        max-height: 240px;
+        overflow: auto;
+        padding: 10px;
+      }
+      .nav button {
+        width: 44px;
+        height: 40px;
+        border-radius: 10px;
+        border: 1px solid #1f2a44;
+        background: #0b1220;
+        color: #cbd5e1;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .nav button.active {
+        outline: 2px solid var(--accent);
+        color: #0ea5e9;
+      }
+      .nav button.done {
+        background: #07291f;
+        border-color: #0b7a53;
+        color: #34d399;
+      }
+
+      .footer-actions {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-top: 10px;
+      }
+
+      .legend {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .results {
+        display: grid;
+        gap: 12px;
+      }
+      .score-box {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      .score-card {
+        background: #0b1220;
+        border: 1px solid #1f2a44;
+        border-radius: 14px;
+        padding: 14px;
+      }
+
+      .info-row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  </head>
+  <body>
+    <div class="app">
+      <header>
+        <div class="brand">Ide Pokok, Kalimat Utama dan Kesimpulan</div>
+        <div class="pill" id="infoUser">Belum login</div>
+        <div class="timer" id="timer">15:00</div>
+      </header>
+
+      <!-- SECTION 1: FORM MINIMAL -->
+      <section id="section-form" class="section active">
+        <div class="card">
+          <div class="card-inner grid">
+            <div>
+              <h2 style="margin: 0 0 10px 0">Masuk Kuis</h2>
+              <p class="muted" style="margin-top: 0">
+                Masukkan nama dan password untuk memulai. Tidak ada pengaturan
+                tambahan.
+              </p>
+              <div class="grid">
+                <div>
+                  <label for="nama">Nama</label>
+                  <input id="nama" type="text" placeholder="Nama peserta" />
+                </div>
+                <div>
+                  <label for="pass">Password</label>
+                  <input id="pass" type="password" placeholder="Password" />
+                </div>
+                <button class="btn" id="btnMulai">Mulai Kuis</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 2: QUIZ -->
+      <section id="section-quiz" class="section">
+        <div class="grid grid-responsive">
+          <div class="card">
+            <div class="card-inner">
+              <div class="info-row">
+                <div class="pill" id="infoKategori">Kategori: -</div>
+                <div class="pill" id="infoSoal">Soal 0 / 180</div>
+              </div>
+              <div class="question-area" id="questionArea">
+                <!-- Question inject here -->
+              </div>
+              <div class="footer-actions">
+                <button class="btn secondary" id="prevBtn">Prev</button>
+                <div class="legend">
+                  <span class="pill">• Biru = aktif</span>
+                  <span
+                    class="pill"
+                    style="
+                      background: #07291f;
+                      color: #34d399;
+                      border-color: #0b7a53;
+                    "
+                    >• Hijau = terjawab</span
+                  >
+                </div>
+                <button class="btn" id="nextBtn">Next</button>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-inner">
+              <h3 style="margin-top: 0">Navigasi Soal</h3>
+              <div class="nav" id="nav">
+                <!-- Nav buttons injected here -->
+              </div>
+              <div class="grid" style="margin-top: 8px">
+                <button class="btn warn" id="btnSubmit">
+                  Kumpulkan Jawaban
+                </button>
+                <button class="btn danger" id="btnReset">Reset Jawaban</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 3: HASIL -->
+      <section id="section-result" class="section">
+        <div class="card">
+          <div class="card-inner results">
+            <h2 style="margin: 0">Hasil Ujian</h2>
+            <p class="muted" id="resultUser">Peserta: -</p>
+            <div class="score-box">
+              <div class="score-card" style="grid-column: span 2">
+                <div class="muted">Total Skor</div>
+                <div id="scoreTotal" style="font-size: 30px; font-weight: 900">
+                  0 / 180
+                </div>
+              </div>
+            </div>
+            <div>
+              <button class="btn" id="btnUlang">Mulai Lagi</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      /** UTIL **/
+      const el = (sel) => document.querySelector(sel);
+      const els = (sel) => Array.from(document.querySelectorAll(sel));
+      const shuffle = (arr) =>
+        arr
+          .map((v) => [Math.random(), v])
+          .sort((a, b) => a[0] - b[0])
+          .map((x) => x[1]);
+
+      /** BANK SOAL (40/40/40) **/
+      // Format: {type:'sinonim'|'antonim'|'hiponim', q:'', options:['','','',''], answer: index}
+
+      const SOAL_fungsi = [
+        // ======================== TEKS 1 — SAINS: AI ========================
+        {
+          q: `
+      <div style="background:#011651; border-left:4px solid #3b82f6; padding:16px; margin-bottom:16px; border-radius:0 8px 8px 0; font-size:14px; line-height:1.8;">
+        <strong style="color:#1e40af;">📖 Teks Bacaan</strong><br><br>
+        Kecerdasan buatan, yang kerap disingkat AI, kini telah merevolusi berbagai sektor kehidupan manusia, termasuk dunia kesehatan yang selama ini sangat bergantung pada keahlian medis secara manual. Di berbagai rumah sakit ternama di dunia—seperti Mayo Clinic di Amerika Serikat dan Raffles Hospital di Singapura—AI digunakan untuk mendeteksi penyakit kanker secara dini melalui analisis citra radiologi yang akurasinya mencapai 95%, jauh melampaui kemampuan deteksi manusia yang rata-rata hanya berkisar 88%. Meskipun demikian, para ahli, yang sebagian besar berasal dari kalangan akademisi kedokteran, tetap menekankan bahwa AI tidak akan sepenuhnya menggantikan peran dokter karena aspek empati dan penilaian klinis holistik—yang melibatkan pertimbangan psikologis pasien serta kondisi sosial-ekonominya—belum dapat direplikasi oleh mesin manapun. Dengan demikian, kolaborasi antara teknologi AI dan tenaga medis profesional menjadi kunci utama untuk meningkatkan kualitas layanan kesehatan di masa depan.
+      </div>
+      <p><strong>Ide pokok teks di atas adalah...</strong></p>
+    `,
+          o: [
+            "AI lebih unggul dari dokter dalam segala hal",
+            "AI dapat menggantikan seluruh fungsi dokter di rumah sakit",
+            "AI berperan besar dalam dunia kesehatan, namun tetap memerlukan kolaborasi dengan tenaga medis",
+            "Rumah sakit di Asia lebih maju dalam penggunaan AI dibandingkan rumah sakit di Eropa",
+            "Kanker tidak dapat disembuhkan tanpa bantuan teknologi AI",
+          ],
+          a: 2,
+        },
+        {
+          q: `
+      <div style="background:#011651; border-left:4px solid #3b82f6; padding:16px; margin-bottom:16px; border-radius:0 8px 8px 0; font-size:14px; line-height:1.8;">
+        <strong style="color:#1e40af;">📖 Teks Bacaan</strong><br><br>
+        Kecerdasan buatan, yang kerap disingkat AI, kini telah merevolusi berbagai sektor kehidupan manusia, termasuk dunia kesehatan yang selama ini sangat bergantung pada keahlian medis secara manual. Di berbagai rumah sakit ternama di dunia—seperti Mayo Clinic di Amerika Serikat dan Raffles Hospital di Singapura—AI digunakan untuk mendeteksi penyakit kanker secara dini melalui analisis citra radiologi yang akurasinya mencapai 95%, jauh melampaui kemampuan deteksi manusia yang rata-rata hanya berkisar 88%. Meskipun demikian, para ahli, yang sebagian besar berasal dari kalangan akademisi kedokteran, tetap menekankan bahwa AI tidak akan sepenuhnya menggantikan peran dokter karena aspek empati dan penilaian klinis holistik—yang melibatkan pertimbangan psikologis pasien serta kondisi sosial-ekonominya—belum dapat direplikasi oleh mesin manapun. Dengan demikian, kolaborasi antara teknologi AI dan tenaga medis profesional menjadi kunci utama untuk meningkatkan kualitas layanan kesehatan di masa depan.
+      </div>
+      <p><strong>Kalimat utama teks tersebut terdapat pada kalimat...</strong></p>
+    `,
+          o: ["Pertama", "Kedua", "Ketiga", "Keempat", "Kelima"],
+          a: 0,
+        },
+        {
+          q: `
+      <div style="background:#011651; border-left:4px solid #3b82f6; padding:16px; margin-bottom:16px; border-radius:0 8px 8px 0; font-size:14px; line-height:1.8;">
+        <strong style="color:#1e40af;">📖 Teks Bacaan</strong><br><br>
+        Kecerdasan buatan, yang kerap disingkat AI, kini telah merevolusi berbagai sektor kehidupan manusia, termasuk dunia kesehatan yang selama ini sangat bergantung pada keahlian medis secara manual. Di berbagai rumah sakit ternama di dunia—seperti Mayo Clinic di Amerika Serikat dan Raffles Hospital di Singapura—AI digunakan untuk mendeteksi penyakit kanker secara dini melalui analisis citra radiologi yang akurasinya mencapai 95%, jauh melampaui kemampuan deteksi manusia yang rata-rata hanya berkisar 88%. Meskipun demikian, para ahli, yang sebagian besar berasal dari kalangan akademisi kedokteran, tetap menekankan bahwa AI tidak akan sepenuhnya menggantikan peran dokter karena aspek empati dan penilaian klinis holistik—yang melibatkan pertimbangan psikologis pasien serta kondisi sosial-ekonominya—belum dapat direplikasi oleh mesin manapun. Dengan demikian, kolaborasi antara teknologi AI dan tenaga medis profesional menjadi kunci utama untuk meningkatkan kualitas layanan kesehatan di masa depan.
+      </div>
+      <p><strong>Berdasarkan teks, akurasi deteksi kanker menggunakan AI mencapai...</strong></p>
+    `,
+          o: ["85%", "88%", "90%", "95%", "100%"],
+          a: 3,
+        },
+        {
+          q: `
+      <div style="background:#011651; border-left:4px solid #3b82f6; padding:16px; margin-bottom:16px; border-radius:0 8px 8px 0; font-size:14px; line-height:1.8;">
+        <strong style="color:#1e40af;">📖 Teks Bacaan</strong><br><br>
+        Kecerdasan buatan, yang kerap disingkat AI, kini telah merevolusi berbagai sektor kehidupan manusia, termasuk dunia kesehatan yang selama ini sangat bergantung pada keahlian medis secara manual. Di berbagai rumah sakit ternama di dunia—seperti Mayo Clinic di Amerika Serikat dan Raffles Hospital di Singapura—AI digunakan untuk mendeteksi penyakit kanker secara dini melalui analisis citra radiologi yang akurasinya mencapai 95%, jauh melampaui kemampuan deteksi manusia yang rata-rata hanya berkisar 88%. Meskipun demikian, para ahli, yang sebagian besar berasal dari kalangan akademisi kedokteran, tetap menekankan bahwa AI tidak akan sepenuhnya menggantikan peran dokter karena aspek empati dan penilaian klinis holistik—yang melibatkan pertimbangan psikologis pasien serta kondisi sosial-ekonominya—belum dapat direplikasi oleh mesin manapun. Dengan demikian, kolaborasi antara teknologi AI dan tenaga medis profesional menjadi kunci utama untuk meningkatkan kualitas layanan kesehatan di masa depan.
+      </div>
+      <p><strong>Dari teks dapat disimpulkan secara <em>tersirat</em> bahwa...</strong></p>
+    `,
+          o: [
+            "Seluruh rumah sakit di Indonesia sudah menggunakan AI",
+            "Dokter yang tidak bisa menggunakan AI akan dipecat",
+            "Kemampuan empati dan pertimbangan holistik merupakan keunggulan dokter yang tidak dimiliki AI",
+            "AI diciptakan khusus hanya untuk mendeteksi penyakit kanker",
+            "Pasien lebih memilih ditangani mesin daripada dokter",
+          ],
+          a: 2,
+        },
+
+        // ======================== TEKS 2 — POLITIK: PEMILU ========================
+        {
+          q: `
+      <div style="background:#011651; border-left:4px solid #f59e0b; padding:16px; margin-bottom:16px; border-radius:0 8px 8px 0; font-size:14px; line-height:1.8;">
+        <strong style="color:#92400e;">📖 Teks Bacaan</strong><br><br>
+        Partisipasi politik generasi muda—yang dalam konteks ini merujuk pada kelompok usia 17–30 tahun—dalam Pemilihan Umum 2024 menunjukkan peningkatan yang cukup signifikan dibandingkan pemilu sebelumnya, yakni dari 62% pada tahun 2019 menjadi sekitar 71% pada tahun 2024. Peningkatan tersebut, yang dipengaruhi oleh maraknya kampanye digital melalui platform media sosial seperti TikTok dan Instagram, menunjukkan bahwa strategi politik konvensional melalui rapat umum dan pamflet fisik sudah tidak lagi efektif untuk menjangkau pemilih pemula. Namun, sejumlah pengamat politik, di antaranya dari lembaga survei Indikator Politik Indonesia, mengingatkan bahwa tingginya partisipasi pemuda tidak serta-merta menjamin kualitas pilihan karena banyak di antara mereka yang cenderung memilih kandidat berdasarkan popularitas di media sosial, bukan atas dasar visi-misi atau track record yang jelas. Oleh karena itu, pendidikan politik yang komprehensif menjadi kebutuhan mendesak agar demokrasi Indonesia dapat berkembang secara matang dan bermartabat.
+      </div>
+      <p><strong>Ide pokok teks tersebut adalah...</strong></p>
+    `,
+          o: [
+            "Pemilu 2024 berjalan lebih baik dari pemilu sebelumnya",
+            "Media sosial merupakan satu-satunya faktor keberhasilan pemilu",
+            "Peningkatan partisipasi pemuda dalam pemilu perlu diimbangi pendidikan politik agar pilihan berkualitas",
+            "Generasi muda tidak tertarik dengan politik sama sekali",
+            "Kampanye konvensional masih lebih efektif daripada kampanye digital",
+          ],
+          a: 2,
+        },
+        {
+          q: `
+      <div style="background:#011651; border-left:4px solid #f59e0b; padding:16px; margin-bottom:16px; border-radius:0 8px 8px 0; font-size:14px; line-height:1.8;">
+        <strong style="color:#92400e;">📖 Teks Bacaan</strong><br><br>
+        Partisipasi politik generasi muda—yang dalam konteks ini merujuk pada kelompok usia 17–30 tahun—dalam Pemilihan Umum 2024 menunjukkan peningkatan yang cukup signifikan dibandingkan pemilu sebelumnya, yakni dari 62% pada tahun 2019 menjadi sekitar 71% pada tahun 2024. Peningkatan tersebut, yang dipengaruhi oleh maraknya kampanye digital melalui platform media sosial seperti TikTok dan Instagram, menunjukkan bahwa strategi politik konvensional melalui rapat umum dan pamflet fisik sudah tidak lagi efektif untuk menjangkau pemilih pemula. Namun, sejumlah pengamat politik, di antaranya dari lembaga survei Indikator Politik Indonesia, mengingatkan bahwa tingginya partisipasi pemuda tidak serta-merta menjamin kualitas pilihan karena banyak di antara mereka yang cenderung memilih kandidat berdasarkan popularitas di media sosial, bukan atas dasar visi-misi atau track record yang jelas. Oleh karena itu, pendidikan politik yang komprehensif menjadi kebutuhan mendesak agar demokrasi Indonesia dapat berkembang secara matang dan bermartabat.
+      </div>
+      <p><strong>Kesimpulan yang secara <em>tersurat</em> (langsung) terdapat dalam teks adalah...</strong></p>
+    `,
+          o: [
+            "Pemilu 2024 lebih buruk dari pemilu 2019",
+            "Partisipasi politik pemuda meningkat dari 62% menjadi 71%",
+            "Seluruh pemuda menggunakan TikTok untuk mengikuti pemilu",
+            "Pendidikan politik sudah berjalan sangat baik di Indonesia",
+            "Rapat umum merupakan cara paling efektif menjangkau pemilih pemula",
+          ],
+          a: 1,
+        },
+        {
+          q: `
+      <div style="background:#011651; border-left:4px solid #f59e0b; padding:16px; margin-bottom:16px; border-radius:0 8px 8px 0; font-size:14px; line-height:1.8;">
+        <strong style="color:#92400e;">📖 Teks Bacaan</strong><br><br>
+        Partisipasi politik generasi muda—yang dalam konteks ini merujuk pada kelompok usia 17–30 tahun—dalam Pemilihan Umum 2024 menunjukkan peningkatan yang cukup signifikan dibandingkan pemilu sebelumnya, yakni dari 62% pada tahun 2019 menjadi sekitar 71% pada tahun 2024. Peningkatan tersebut, yang dipengaruhi oleh maraknya kampanye digital melalui platform media sosial seperti TikTok dan Instagram, menunjukkan bahwa strategi politik konvensional melalui rapat umum dan pamflet fisik sudah tidak lagi efektif untuk menjangkau pemilih pemula. Namun, sejumlah pengamat politik, di antaranya dari lembaga survei Indikator Politik Indonesia, mengingatkan bahwa tingginya partisipasi pemuda tidak serta-merta menjamin kualitas pilihan karena banyak di antara mereka yang cenderung memilih kandidat berdasarkan popularitas di media sosial, bukan atas dasar visi-misi atau track record yang jelas. Oleh karena itu, pendidikan politik yang komprehensif menjadi kebutuhan mendesak agar demokrasi Indonesia dapat berkembang secara matang dan bermartabat.
+      </div>
+      <p><strong>Berdasarkan teks, kesimpulan yang <em>tersirat</em> adalah...</strong></p>
+    `,
+          o: [
+            "Semua pemuda sudah memahami visi-misi setiap kandidat",
+            "Popularitas di media sosial tidak selalu berkorelasi dengan kemampuan memimpin",
+            "Lembaga survei tidak memiliki peran penting dalam pemilu",
+            "Kampanye digital sepenuhnya positif dan tidak ada dampak negatifnya",
+            "Pemilu tanpa media sosial akan gagal total",
+          ],
+          a: 1,
+        },
+        {
+          q: `
+      <div style="background:#011651; border-left:4px solid #f59e0b; padding:16px; margin-bottom:16px; border-radius:0 8px 8px 0; font-size:14px; line-height:1.8;">
+        <strong style="color:#92400e;">📖 Teks Bacaan</strong><br><br>
+        Partisipasi politik generasi muda—yang dalam konteks ini merujuk pada kelompok usia 17–30 tahun—dalam Pemilihan Umum 2024 menunjukkan peningkatan yang cukup signifikan dibandingkan pemilu sebelumnya, yakni dari 62% pada tahun 2019 menjadi sekitar 71% pada tahun 2024. Peningkatan tersebut, yang dipengaruhi oleh maraknya kampanye digital melalui platform media sosial seperti TikTok dan Instagram, menunjukkan bahwa strategi politik konvensional melalui rapat umum dan pamflet fisik sudah tidak lagi efektif untuk menjangkau pemilih pemula. Namun, sejumlah pengamat politik, di antaranya dari lembaga survei Indikator Politik Indonesia, mengingatkan bahwa tingginya partisipasi pemuda tidak serta-merta menjamin kualitas pilihan karena banyak di antara mereka yang cenderung memilih kandidat berdasarkan popularitas di media sosial, bukan atas dasar visi-misi atau track record yang jelas. Oleh karena itu, pendidikan politik yang komprehensif menjadi kebutuhan mendesak agar demokrasi Indonesia dapat berkembang secara matang dan bermartabat.
+      </div>
+      <p><strong>Platform media sosial yang disebutkan dalam teks sebagai alat kampanye digital adalah...</strong></p>
+    `,
+          o: [
+            "Facebook dan Twitter",
+            "YouTube dan WhatsApp",
+            "TikTok dan Instagram",
+            "Telegram dan LinkedIn",
+            "Snapchat dan Pinterest",
+          ],
+          a: 2,
+        },
+
+        // ======================== TEKS 3 — TEKNOLOGI: KENDARAAN LISTRIK ========================
+        {
+          q: `
+      <div style="background:#011651; border-left:4px solid #10b981; padding:16px; margin-bottom:16px; border-radius:0 8px 8px 0; font-size:14px; line-height:1.8;">
+        <strong style="color:#065f46;">📖 Teks Bacaan</strong><br><br>
+        Kendaraan listrik, yang merupakan salah satu solusi utama dalam mengurangi emisi karbon di sektor transportasi, kini mulai menunjukkan peningkatan adopsi yang cukup pesat di Indonesia meskipun masih menghadapi berbagai tantangan struktural. Berdasarkan data dari Asosiasi Industri Kendaraan Listrik Indonesia (PERIKLINDO), penjualan kendaraan listrik di tanah air mencapai sekitar 15.500 unit sepanjang tahun 2023, meningkat tiga kali lipat dibandingkan tahun 2022 yang hanya tercatat 5.100 unit. Namun demikian, infrastruktur pendukung—yang mencakup ketersediaan Stasiun Pengisian Kendaraan Listrik Umum (SPKLU) di luar Pulau Jawa—masih sangat terbatas, sehingga menimbulkan kekhawatiran tersendiri bagi calon konsumen di wilayah luar Jawa yang ingin beralih ke kendaraan listrik. Pemerintah, melalui Kementerian ESDM, telah menargetkan pembangunan 31.000 SPKLU hingga tahun 2030, tetapi realisasi hingga pertengahan tahun 2024 baru mencapai kurang dari 10% dari target tersebut, yang menunjukkan bahwa komitmen eksekusi di lapangan masih perlu ditingkatkan secara signifikan.
+      </div>
+      <p><strong>Kalimat utama teks di atas adalah...</strong></p>
+    `,
+          o: [
+            "Kendaraan listrik, yang merupakan salah satu solusi utama dalam mengurangi emisi karbon di sektor transportasi, kini mulai menunjukkan peningkatan adopsi yang cukup pesat di Indonesia meskipun masih menghadapi berbagai tantangan struktural.",
+            "Berdasarkan data dari PERIKLINDO, penjualan kendaraan listrik mencapai 15.500 unit.",
+            "Namun demikian, infrastruktur pendukung masih sangat terbatas.",
+            "Pemerintah telah menargetkan pembangunan 31.000 SPKLU hingga tahun 2030.",
+            "Realisasi SPKLU baru mencapai kurang dari 10% dari target.",
+          ],
+          a: 0,
+        },
+        {
+          q: `
+      <div style="background:#011651; border-left:4px solid #10b981; padding:16px; margin-bottom:16px; border-radius:0 8px 8px 0; font-size:14px; line-height:1.8;">
+        <strong style="color:#065f46;">📖 Teks Bacaan</strong><br><br>
+        Kendaraan listrik, yang merupakan salah satu solusi utama dalam mengurangi emisi karbon di sektor transportasi, kini mulai menunjukkan peningkatan adopsi yang cukup pesat di Indonesia meskipun masih menghadapi berbagai tantangan struktural. Berdasarkan data dari Asosiasi Industri Kendaraan Listrik Indonesia (PERIKLINDO), penjualan kendaraan listrik di tanah air mencapai sekitar 15.500 unit sepanjang tahun 2023, meningkat tiga kali lipat dibandingkan tahun 2022 yang hanya tercatat 5.100 unit. Namun demikian, infrastruktur pendukung—yang mencakup ketersediaan Stasiun Pengisian Kendaraan Listrik Umum (SPKLU) di luar Pulau Jawa—masih sangat terbatas, sehingga menimbulkan kekhawatiran tersendiri bagi calon konsumen di wilayah luar Jawa yang ingin beralih ke kendaraan listrik. Pemerintah, melalui Kementerian ESDM, telah menargetkan pembangunan 31.000 SPKLU hingga tahun 2030, tetapi realisasi hingga pertengahan tahun 2024 baru mencapai kurang dari 10% dari target tersebut, yang menunjukkan bahwa komitmen eksekusi di lapangan masih perlu ditingkatkan secara signifikan.
+      </div>
+      <p><strong>Dari teks dapat disimpulkan secara <em>tersirat</em> bahwa...</strong></p>
+    `,
+          o: [
+            "Seluruh wilayah Indonesia sudah memiliki SPKLU yang memadai",
+            "Pembangunan SPKLU berjalan sesuai target pemerintah",
+            "Ketimpangan infrastruktur antara Pulau Jawa dan luar Jawa menjadi hambatan pemerataan adopsi kendaraan listrik",
+            "Kendaraan listrik tidak diminati masyarakat Indonesia",
+            "PERIKLINDO bertanggung jawab langsung membangun SPKLU",
+          ],
+          a: 2,
+        },
+        {
+          q: `
+      <div style="background:#011651; border-left:4px solid #10b981; padding:16px; margin-bottom:16px; border-radius:0 8px 8px 0; font-size:14px; line-height:1.8;">
+        <strong style="color:#065f46;">📖 Teks Bacaan</strong><br><br>
+        Kendaraan listrik, yang merupakan salah satu solusi utama dalam mengurangi emisi karbon di sektor transportasi, kini mulai menunjukkan peningkatan adopsi yang cukup pesat di Indonesia meskipun masih menghadapi berbagai tantangan struktural. Berdasarkan data dari Asosiasi Industri Kendaraan Listrik Indonesia (PERIKLINDO), penjualan kendaraan listrik di tanah air mencapai sekitar 15.500 unit sepanjang tahun 2023, meningkat tiga kali lipat dibandingkan tahun 2022 yang hanya tercatat 5.100 unit. Namun demikian, infrastruktur pendukung—yang mencakup ketersediaan Stasiun Pengisian Kendaraan Listrik Umum (SPKLU) di luar Pulau Jawa—masih sangat terbatas, sehingga menimbulkan kekhawatiran tersendiri bagi calon konsumen di wilayah luar Jawa yang ingin beralih ke kendaraan listrik. Pemerintah, melalui Kementerian ESDM, telah menargetkan pembangunan 31.000 SPKLU hingga tahun 2030, tetapi realisasi hingga pertengahan tahun 2024 baru mencapai kurang dari 10% dari target tersebut, yang menunjukkan bahwa komitmen eksekusi di lapangan masih perlu ditingkatkan secara signifikan.
+      </div>
+      <p><strong>Kesimpulan yang <em>tersirat</em> dari teks tersebut adalah...</strong></p>
+    `,
+          o: [
+            "Target 31.000 SPKLU pasti akan tercapai tepat waktu",
+            "Peningkatan penjualan tidak sebanding dengan kesiapan infrastruktur pendukung",
+            "Kendaraan listrik sudah tidak lagi memerlukan SPKLU di masa depan",
+            "Harga kendaraan listrik menjadi satu-satunya hambatan adopsi",
+            "Kementerian ESDM tidak memiliki peran dalam pembangunan SPKLU",
+          ],
+          a: 1,
+        },
+
+        // ======================== INFOGRAFIS 1 — TABEL EMISI KARBON ========================
+        {
+          q: `
+      <div style="background:#011651; border-left:4px solid #ef4444; padding:16px; margin-bottom:16px; border-radius:0 8px 8px 0;">
+        <strong style="color:#991b1b;">📊 Infografis: Emisi Karbon per Sektor di Indonesia (2023)</strong><br><br>
+        <table style="width:100%; border-collapse:collapse; font-size:14px;">
+          <thead>
+            <tr style="background:#011651; color:white;">
+              <th style="padding:10px; border:1px solid #fca5a5; text-align:left;">Sektor</th>
+              <th style="padding:10px; border:1px solid #fca5a5; text-align:right;">Emisi Karbon (juta ton CO₂)</th>
+              <th style="padding:10px; border:1px solid #fca5a5; text-align:right;">Persentase</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="background:#011651;">
+              <td style="padding:10px; border:1px solid #fca5a5;">Energi & Listrik</td>
+              <td style="padding:10px; border:1px solid #fca5a5; text-align:right;">620</td>
+              <td style="padding:10px; border:1px solid #fca5a5; text-align:right;">42%</td>
+            </tr>
+            <tr style="background:#011651;">
+              <td style="padding:10px; border:1px solid #fca5a5;">Transportasi</td>
+              <td style="padding:10px; border:1px solid #fca5a5; text-align:right;">345</td>
+              <td style="padding:10px; border:1px solid #fca5a5; text-align:right;">23%</td>
+            </tr>
+            <tr style="background:#011651;">
+              <td style="padding:10px; border:1px solid #fca5a5;">Industri</td>
+              <td style="padding:10px; border:1px solid #fca5a5; text-align:right;">268</td>
+              <td style="padding:10px; border:1px solid #fca5a5; text-align:right;">18%</td>
+            </tr>
+            <tr style="background:#011651;">
+              <td style="padding:10px; border:1px solid #fca5a5;">Pertanian</td>
+              <td style="padding:10px; border:1px solid #fca5a5; text-align:right;">148</td>
+              <td style="padding:10px; border:1px solid #fca5a5; text-align:right;">10%</td>
+            </tr>
+            <tr style="background:#011651;">
+              <td style="padding:10px; border:1px solid #fca5a5;">Lain-lain</td>
+              <td style="padding:10px; border:1px solid #fca5a5; text-align:right;">107</td>
+              <td style="padding:10px; border:1px solid #fca5a5; text-align:right;">7%</td>
+            </tr>
+            <tr style="background:#011651; color:white; font-weight:bold;">
+              <td style="padding:10px; border:1px solid #fca5a5;">Total</td>
+              <td style="padding:10px; border:1px solid #fca5a5; text-align:right;">1.488</td>
+              <td style="padding:10px; border:1px solid #fca5a5; text-align:right;">100%</td>
+            </tr>
+          </tbody>
+        </table>
+        <p style="font-size:12px; color:#6b7280; margin-top:8px;">Sumber: Kementerian Lingkungan Hidup dan Kehutanan, 2024</p>
+      </div>
+      <p><strong>Berdasarkan tabel, sektor yang menghasilkan emisi karbon <em>terbesar</em> adalah...</strong></p>
+    `,
+          o: [
+            "Transportasi",
+            "Industri",
+            "Pertanian",
+            "Energi & Listrik",
+            "Lain-lain",
+          ],
+          a: 3,
+        },
+        {
+          q: `
+      <div style="background:#011651; border-left:4px solid #ef4444; padding:16px; margin-bottom:16px; border-radius:0 8px 8px 0;">
+        <strong style="color:#991b1b;">📊 Infografis: Emisi Karbon per Sektor di Indonesia (2023)</strong><br><br>
+        <table style="width:100%; border-collapse:collapse; font-size:14px;">
+          <thead>
+            <tr style="background:#011651; color:white;">
+              <th style="padding:10px; border:1px solid #fca5a5; text-align:left;">Sektor</th>
+              <th style="padding:10px; border:1px solid #fca5a5; text-align:right;">Emisi Karbon (juta ton CO₂)</th>
+              <th style="padding:10px; border:1px solid #fca5a5; text-align:right;">Persentase</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="background:#011651;">
+              <td style="padding:10px; border:1px solid #fca5a5;">Energi & Listrik</td>
+              <td style="padding:10px; border:1px solid #fca5a5; text-align:right;">620</td>
+              <td style="padding:10px; border:1px solid #fca5a5; text-align:right;">42%</td>
+            </tr>
+            <tr style="background:#011651;">
+              <td style="padding:10px; border:1px solid #fca5a5;">Transportasi</td>
+              <td style="padding:10px; border:1px solid #fca5a5; text-align:right;">345</td>
+              <td style="padding:10px; border:1px solid #fca5a5; text-align:right;">23%</td>
+            </tr>
+            <tr style="background:#011651;">
+              <td style="padding:10px; border:1px solid #fca5a5;">Industri</td>
+              <td style="padding:10px; border:1px solid #fca5a5; text-align:right;">268</td>
+              <td style="padding:10px; border:1px solid #fca5a5; text-align:right;">18%</td>
+            </tr>
+            <tr style="background:#011651;">
+              <td style="padding:10px; border:1px solid #fca5a5;">Pertanian</td>
+              <td style="padding:10px; border:1px solid #fca5a5; text-align:right;">148</td>
+              <td style="padding:10px; border:1px solid #fca5a5; text-align:right;">10%</td>
+            </tr>
+            <tr style="background:#011651;">
+              <td style="padding:10px; border:1px solid #fca5a5;">Lain-lain</td>
+              <td style="padding:10px; border:1px solid #fca5a5; text-align:right;">107</td>
+              <td style="padding:10px; border:1px solid #fca5a5; text-align:right;">7%</td>
+            </tr>
+            <tr style="background:#011651; color:white; font-weight:bold;">
+              <td style="padding:10px; border:1px solid #fca5a5;">Total</td>
+              <td style="padding:10px; border:1px solid #fca5a5; text-align:right;">1.488</td>
+              <td style="padding:10px; border:1px solid #fca5a5; text-align:right;">100%</td>
+            </tr>
+          </tbody>
+        </table>
+        <p style="font-size:12px; color:#6b7280; margin-top:8px;">Sumber: Kementerian Lingkungan Hidup dan Kehutanan, 2024</p>
+      </div>
+      <p><strong>Total emisi karbon dari sektor <em>Transportasi dan Industri</em> secara gabungan adalah...</strong></p>
+    `,
+          o: [
+            "268 juta ton CO₂",
+            "345 juta ton CO₂",
+            "596 juta ton CO₂",
+            "613 juta ton CO₂",
+            "965 juta ton CO₂",
+          ],
+          a: 3,
+        },
+        {
+          q: `
+      <div style="background:#011651; border-left:4px solid #ef4444; padding:16px; margin-bottom:16px; border-radius:0 8px 8px 0;">
+        <strong style="color:#991b1b;">📊 Infografis: Emisi Karbon per Sektor di Indonesia (2023)</strong><br><br>
+        <table style="width:100%; border-collapse:collapse; font-size:14px;">
+          <thead>
+            <tr style="background:#011651; color:white;">
+              <th style="padding:10px; border:1px solid #fca5a5; text-align:left;">Sektor</th>
+              <th style="padding:10px; border:1px solid #fca5a5; text-align:right;">Emisi Karbon (juta ton CO₂)</th>
+              <th style="padding:10px; border:1px solid #fca5a5; text-align:right;">Persentase</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="background:#011651;">
+              <td style="padding:10px; border:1px solid #fca5a5;">Energi & Listrik</td>
+              <td style="padding:10px; border:1px solid #fca5a5; text-align:right;">620</td>
+              <td style="padding:10px; border:1px solid #fca5a5; text-align:right;">42%</td>
+            </tr>
+            <tr style="background:#011651;">
+              <td style="padding:10px; border:1px solid #fca5a5;">Transportasi</td>
+              <td style="padding:10px; border:1px solid #fca5a5; text-align:right;">345</td>
+              <td style="padding:10px; border:1px solid #fca5a5; text-align:right;">23%</td>
+            </tr>
+            <tr style="background:#011651;">
+              <td style="padding:10px; border:1px solid #fca5a5;">Industri</td>
+              <td style="padding:10px; border:1px solid #fca5a5; text-align:right;">268</td>
+              <td style="padding:10px; border:1px solid #fca5a5; text-align:right;">18%</td>
+            </tr>
+            <tr style="background:#011651;">
+              <td style="padding:10px; border:1px solid #fca5a5;">Pertanian</td>
+              <td style="padding:10px; border:1px solid #fca5a5; text-align:right;">148</td>
+              <td style="padding:10px; border:1px solid #fca5a5; text-align:right;">10%</td>
+            </tr>
+            <tr style="background:#011651;">
+              <td style="padding:10px; border:1px solid #fca5a5;">Lain-lain</td>
+              <td style="padding:10px; border:1px solid #fca5a5; text-align:right;">107</td>
+              <td style="padding:10px; border:1px solid #fca5a5; text-align:right;">7%</td>
+            </tr>
+            <tr style="background:#011651; color:white; font-weight:bold;">
+              <td style="padding:10px; border:1px solid #fca5a5;">Total</td>
+              <td style="padding:10px; border:1px solid #fca5a5; text-align:right;">1.488</td>
+              <td style="padding:10px; border:1px solid #fca5a5; text-align:right;">100%</td>
+            </tr>
+          </tbody>
+        </table>
+        <p style="font-size:12px; color:#011651; margin-top:8px;">Sumber: Kementerian Lingkungan Hidup dan Kehutanan, 2024</p>
+      </div>
+      <p><strong>Berdasarkan data tabel, kesimpulan yang <em>tersirat</em> adalah...</strong></p>
+    `,
+          o: [
+            "Sektor pertanian tidak menghasilkan emisi karbon sama sekali",
+            "Jika sektor energi & listrik dapat direduksi emisinya secara drastis, maka total emisi karbon Indonesia akan menurun secara signifikan",
+            "Seluruh emisi karbon Indonesia berasal dari sektor transportasi",
+            'Sektor "Lain-lain" merupakan sektor yang paling perlu diperhatikan',
+            "Tidak ada hubungan antara penggunaan energi dan emisi karbon",
+          ],
+          a: 1,
+        },
+
+        // ======================== INFOGRAFIS 2 — GRAFIK GARIS: PENGGUNA INTERNET ========================
+        {
+          q: `
+      <div style="background:#011651; border-left:4px solid #8b5cf6; padding:16px; margin-bottom:16px; border-radius:0 8px 8px 0;">
+        <strong style="color:#5b21b6;">📈 Infografis: Pertumbuhan Pengguna Internet di Indonesia (2018–2024)</strong><br><br>
+        <div style="position:relative; width:100%; height:280px; background:#faf5ff; border:1px solid #c4b5fd; border-radius:8px; padding:10px;">
+          <svg viewBox="0 0 400 250" style="width:100%; height:100%;" preserveAspectRatio="xMidYMid meet">
+            <!-- Grid horizontal -->
+            <line x1="50" y1="20" x2="380" y2="20" stroke="#e9d5ff" stroke-width="1"/>
+            <line x1="50" y1="68" x2="380" y2="68" stroke="#e9d5ff" stroke-width="1"/>
+            <line x1="50" y1="116" x2="380" y2="116" stroke="#e9d5ff" stroke-width="1"/>
+            <line x1="50" y1="164" x2="380" y2="164" stroke="#e9d5ff" stroke-width="1"/>
+            <line x1="50" y1="212" x2="380" y2="212" stroke="#7c3aed" stroke-width="1.5"/>
+            <!-- Label Y -->
+            <text x="45" y="24" text-anchor="end" font-size="10" fill="#7c3aed">220</text>
+            <text x="45" y="72" text-anchor="end" font-size="10" fill="#7c3aed">180</text>
+            <text x="45" y="120" text-anchor="end" font-size="10" fill="#7c3aed">140</text>
+            <text x="45" y="168" text-anchor="end" font-size="10" fill="#7c3aed">100</text>
+            <!-- Label X -->
+            <text x="80" y="230" text-anchor="middle" font-size="10" fill="#7c3aed">2018</text>
+            <text x="135" y="230" text-anchor="middle" font-size="10" fill="#7c3aed">2019</text>
+            <text x="190" y="230" text-anchor="middle" font-size="10" fill="#7c3aed">2020</text>
+            <text x="245" y="230" text-anchor="middle" font-size="10" fill="#7c3aed">2021</text>
+            <text x="300" y="230" text-anchor="middle" font-size="10" fill="#7c3aed">2022</text>
+            <text x="340" y="230" text-anchor="middle" font-size="10" fill="#7c3aed">2023</text>
+            <text x="375" y="230" text-anchor="middle" font-size="10" fill="#7c3aed">2024</text>
+            <!-- Area fill -->
+            <polygon points="80,212 135,186 190,159 245,133 300,106 340,80 375,20 375,212" fill="url(#purpleGrad)" opacity="0.3"/>
+            <defs>
+              <linearGradient id="purpleGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#8b5cf6"/>
+                <stop offset="100%" stop-color="#ede9fe"/>
+              </linearGradient>
+            </defs>
+            <!-- Line -->
+            <polyline points="80,212 135,186 190,159 245,133 300,106 340,80 375,20" fill="none" stroke="#8b5cf6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- Dots -->
+            <circle cx="80" cy="212" r="5" fill="#fff" stroke="#8b5cf6" stroke-width="2.5"/>
+            <circle cx="135" cy="186" r="5" fill="#fff" stroke="#8b5cf6" stroke-width="2.5"/>
+            <circle cx="190" cy="159" r="5" fill="#fff" stroke="#8b5cf6" stroke-width="2.5"/>
+            <circle cx="245" cy="133" r="5" fill="#fff" stroke="#8b5cf6" stroke-width="2.5"/>
+            <circle cx="300" cy="106" r="5" fill="#fff" stroke="#8b5cf6" stroke-width="2.5"/>
+            <circle cx="340" cy="80" r="5" fill="#fff" stroke="#8b5cf6" stroke-width="2.5"/>
+            <circle cx="375" cy="20" r="6" fill="#8b5cf6" stroke="#fff" stroke-width="2.5"/>
+            <!-- Value labels -->
+            <text x="80" y="204" text-anchor="middle" font-size="9" font-weight="bold" fill="#5b21b6">100</text>
+            <text x="135" y="178" text-anchor="middle" font-size="9" font-weight="bold" fill="#5b21b6">121</text>
+            <text x="190" y="151" text-anchor="middle" font-size="9" font-weight="bold" fill="#5b21b6">143</text>
+            <text x="245" y="125" text-anchor="middle" font-size="9" font-weight="bold" fill="#5b21b6">165</text>
+            <text x="300" y="98" text-anchor="middle" font-size="9" font-weight="bold" fill="#5b21b6">188</text>
+            <text x="340" y="72" text-anchor="middle" font-size="9" font-weight="bold" fill="#5b21b6">198</text>
+            <text x="375" y="14" text-anchor="middle" font-size="10" font-weight="bold" fill="#5b21b6">220</text>
+            <!-- Y-axis title -->
+            <text x="12" y="125" text-anchor="middle" font-size="10" fill="#7c3aed" transform="rotate(-90,12,125)">Juta Orang</text>
+          </svg>
+        </div>
+        <p style="font-size:12px; color:#6b7280; margin-top:8px;">Sumber: Asosiasi Penyelenggara Jasa Internet Indonesia (APJII), 2024</p>
+      </div>
+      <p><strong>Berdasarkan grafik pertumbuhan pengguna internet di atas, pernyataan yang <em>tersirat</em> adalah...</strong></p>
+    `,
+          o: [
+            "Jumlah pengguna internet di Indonesia mengalami penurunan pada tahun 2020",
+            "Pertumbuhan pengguna internet cenderung konsisten meningkat setiap tahun",
+            "Pada tahun 2024, jumlah pengguna internet mencapai 100 juta orang",
+            "Tidak ada korelasi antara kemajuan teknologi dan peningkatan pengguna internet",
+            "Pengguna internet di Indonesia menurun setelah pandemi COVID-19",
+          ],
+          a: 1,
+        },
+      ].map((x) => ({
+        type: "kesimpulan",
+        q: x.q,
+        options: x.o,
+        answer: x.a,
+      }));
+
+      S_fungsi = shuffle(SOAL_fungsi);
+
+      /*  Validasi jumlah
+                                  if(SINONIM.length!==90||ANTONIM.length!==90){
+                                    console.warn('Jumlah soal tidak 90/90:', SINONIM.length, ANTONIM.length);
+                                  }  */
+
+      // /* Gabung & acak
+      function shuffleOptions(q) {
+        let opts = q.options.map((opt, i) => ({ opt, i }));
+        opts = shuffle(opts); // pake fungsi shuffle yang sudah kamu punya
+        let newAnswer = opts.findIndex((o) => o.i === q.answer);
+        return {
+          ...q,
+          options: opts.map((o) => o.opt),
+          answer: newAnswer,
+        };
+      }
+      //*/
+      let QUESTIONS = [...S_fungsi].map((q, i) => ({
+        id: i + 1,
+        ...shuffleOptions(q),
+      }));
+      // let QUESTIONS = [...SINONIM, ...ANTONIM].map((q,i)=>({id:i+1, ...q }));
+      // State
+      let state = {
+        user: null,
+        timeLeft: 15 * 60, // 25 menit
+        currentIndex: 0,
+        answers: Array(180).fill(null), // simpan index jawaban (0..3) atau null
+      };
+
+      /** RENDERING **/
+      function formatTime(s) {
+        const m = Math.floor(s / 60)
+          .toString()
+          .padStart(2, "0");
+        const r = (s % 60).toString().padStart(2, "0");
+        return `${m}:${r}`;
+      }
+
+      function renderTimer() {
+        el("#timer").textContent = formatTime(state.timeLeft);
+        if (state.timeLeft <= 60) {
+          el("#timer").style.background = "#331a1a";
+          el("#timer").style.borderColor = "#7f1d1d";
+        }
+        if (state.timeLeft <= 0) {
+          submitQuiz();
+        }
+      }
+
+      let tick = null;
+      function startTimer() {
+        if (tick) clearInterval(tick);
+        tick = setInterval(() => {
+          state.timeLeft--;
+          renderTimer();
+          if (state.timeLeft <= 0) clearInterval(tick);
+        }, 1000);
+      }
+
+      function mountNav() {
+        const nav = el("#nav");
+        nav.innerHTML = "";
+        QUESTIONS.forEach((q, idx) => {
+          const b = document.createElement("button");
+          b.textContent = idx + 1;
+          b.addEventListener("click", () => {
+            goTo(idx);
+          });
+          nav.appendChild(b);
+        });
+        updateNavActive();
+      }
+
+      function updateNavActive() {
+        const buttons = els("#nav button");
+        buttons.forEach((b, idx) => {
+          b.classList.toggle("active", idx === state.currentIndex);
+          b.classList.toggle("done", state.answers[idx] !== null);
+        });
+        el("#infoSoal").textContent = `Soal ${state.currentIndex + 1} / ${
+          QUESTIONS.length
+        }`;
+        el("#infoKategori").textContent = `Kategori: ${QUESTIONS[
+          state.currentIndex
+        ].type.toUpperCase()}`;
+      }
+
+      function renderQuestion() {
+        const q = QUESTIONS[state.currentIndex];
+        const container = el("#questionArea");
+        container.innerHTML = "";
+        const title = document.createElement("div");
+        title.className = "q-title";
+
+        title.innerHTML = q.q;
+        container.appendChild(title);
+
+        const list = document.createElement("div");
+        list.className = "choices";
+        q.options.forEach((opt, i) => {
+          const row = document.createElement("label");
+          row.className = "choice";
+          const input = document.createElement("input");
+          input.type = "radio";
+          input.name = "choice";
+          input.value = i;
+          input.checked = state.answers[state.currentIndex] === i;
+          input.addEventListener("change", () => {
+            state.answers[state.currentIndex] = i;
+            updateNavActive();
+          });
+          const span = document.createElement("div");
+          span.innerHTML = opt;
+          row.appendChild(input);
+          row.appendChild(span);
+          list.appendChild(row);
+        });
+        container.appendChild(list);
+        MathJax.typeset();
+      }
+
+      function goTo(idx) {
+        state.currentIndex = Math.max(0, Math.min(QUESTIONS.length - 1, idx));
+        updateNavActive();
+        renderQuestion();
+      }
+
+      function next() {
+        if (state.currentIndex < QUESTIONS.length - 1) {
+          goTo(state.currentIndex + 1);
+        }
+      }
+      function prev() {
+        if (state.currentIndex > 0) {
+          goTo(state.currentIndex - 1);
+        }
+      }
+
+      function resetAnswers() {
+        if (!confirm("Yakin reset semua jawaban?")) return;
+        state.answers = Array(QUESTIONS.length).fill(null);
+        updateNavActive();
+        renderQuestion();
+      }
+
+      function submitQuiz() {
+        // hitung skor per kategori
+        let sSin = 0,
+          sAnt = 0,
+          sHip = 0;
+        QUESTIONS.forEach((q, idx) => {
+          const pick = state.answers[idx];
+          const correct = q.answer;
+          if (pick === correct) {
+            if (q.type === "kesimpulan") sSin++;
+          }
+        });
+        const total = sSin + sAnt + sHip;
+
+        // tampilkan
+        let total_question = QUESTIONS.length;
+
+        el("#scoreTotal").textContent = `${total} / ${total_question}`;
+        el("#resultUser").textContent = `Peserta: ${
+          state.user?.nama || "-"
+        } (waktu habis/kumpul)`;
+
+        // stop timer, ganti section
+        if (tick) clearInterval(tick);
+        showSection("result");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      function showSection(which) {
+        el("#section-form").classList.remove("active");
+        el("#section-quiz").classList.remove("active");
+        el("#section-result").classList.remove("active");
+        if (which === "form") el("#section-form").classList.add("active");
+        if (which === "quiz") el("#section-quiz").classList.add("active");
+        if (which === "result") el("#section-result").classList.add("active");
+      }
+
+      // EVENTS
+      el("#btnMulai").addEventListener("click", () => {
+        const nama = el("#nama").value.trim();
+        const pass = el("#pass").value.trim();
+        if (!nama || !pass) {
+          alert("Nama dan password wajib diisi.");
+          return;
+        }
+        if (pass !== "KATYUSHA") {
+          alert(
+            "password salah! tanya password ke sir hardi. klo sir hardi dak tau tanya ke sir meca",
+          );
+          return;
+        }
+        state.user = { nama, pass };
+        el("#infoUser").textContent = `Peserta: ${nama}`;
+        showSection("quiz");
+        startTimer();
+        mountNav();
+        goTo(0);
+        renderTimer();
+      });
+
+      el("#prevBtn").addEventListener("click", prev);
+      el("#nextBtn").addEventListener("click", next);
+      el("#btnReset").addEventListener("click", resetAnswers);
+      el("#btnSubmit").addEventListener("click", () => {
+        if (confirm("BENIAN BAE KAU NIH CEK LAGI JAWABAN KAU TUH!"))
+          submitQuiz();
+      });
+
+      // Keyboard nav: panah kiri/kanan, angka 1-4 untuk memilih A-D
+      window.addEventListener("keydown", (e) => {
+        if (!el("#section-quiz").classList.contains("active")) return;
+        if (e.key === "ArrowRight") next();
+        if (e.key === "ArrowLeft") prev();
+        if (["1", "2", "3", "4"].includes(e.key)) {
+          const idx = parseInt(e.key) - 1;
+          state.answers[state.currentIndex] = idx;
+          updateNavActive();
+          renderQuestion();
+        }
+      });
+
+      // Ulang dari hasil
+      el("#btnUlang").addEventListener("click", () => {
+        state = {
+          user: state.user,
+          timeLeft: 15 * 60,
+          currentIndex: 0,
+          answers: Array(180).fill(null),
+        };
+        QUESTIONS = shuffle(QUESTIONS); // acak ulang urutan
+        showSection("quiz");
+        startTimer();
+        mountNav();
+        goTo(0);
+        renderTimer();
+      });
+    </script>
+  </body>
+</html>
