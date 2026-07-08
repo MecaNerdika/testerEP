@@ -1,0 +1,577 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mini Kuis Kata Baku UTBK</title>
+    <style>
+      :root {
+        --primary-color: #4a90e2;
+        --success-color: #2ecc71;
+        --danger-color: #e74c3c;
+        --dark-color: #2c3e50;
+        --light-color: #f8f9fa;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #eef2f7;
+        margin: 0;
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+      }
+
+      .quiz-container {
+        background-color: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 650px;
+        padding: 30px;
+        box-sizing: border-box;
+        text-align: center;
+      }
+
+      h1 {
+        color: var(--dark-color);
+        margin-top: 0;
+        font-size: 24px;
+      }
+
+      .stats-container {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+        font-weight: bold;
+        font-size: 16px;
+        background-color: var(--light-color);
+        padding: 10px 15px;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+      }
+
+      #timer {
+        color: var(--danger-color);
+      }
+
+      .question-box {
+        font-size: 18px;
+        color: var(--dark-color);
+        margin-bottom: 25px;
+        font-weight: 600;
+        line-height: 1.5;
+      }
+
+      .options-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 25px;
+      }
+
+      .option-btn {
+        background-color: #ffffff;
+        border: 2px solid #cbd5e1;
+        border-radius: 8px;
+        padding: 14px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        text-align: left;
+        transition: all 0.2s ease;
+        font-weight: 500;
+        color: var(--dark-color);
+      }
+
+      .option-btn:hover:not([disabled]) {
+        background-color: #f1f5f9;
+        border-color: var(--primary-color);
+      }
+
+      .correct {
+        background-color: #d4edda !important;
+        border-color: var(--success-color) !important;
+        color: #155724 !important;
+      }
+
+      .wrong {
+        background-color: #f8d7da !important;
+        border-color: var(--danger-color) !important;
+        color: #721c24 !important;
+      }
+
+      .start-btn,
+      .restart-btn {
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 15px 30px;
+        font-size: 18px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: background 0.2s;
+        box-shadow: 0 4px 6px rgba(74, 144, 226, 0.2);
+      }
+
+      .start-btn:hover,
+      .restart-btn:hover {
+        background-color: #357abd;
+      }
+
+      .hidden {
+        display: none !important;
+      }
+
+      .result-title {
+        font-size: 22px;
+        color: var(--dark-color);
+        margin-bottom: 15px;
+      }
+
+      .score-display {
+        font-size: 48px;
+        font-weight: bold;
+        color: var(--primary-color);
+        margin-bottom: 10px;
+      }
+
+      /* Desain Tabel Kunci Jawaban / Review */
+      .review-section {
+        margin-top: 30px;
+        text-align: left;
+        max-height: 350px;
+        overflow-y: auto;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+      }
+
+      .review-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+      }
+
+      .review-table th,
+      .review-table td {
+        padding: 12px;
+        border-bottom: 1px solid #e2e8f0;
+        text-align: left;
+      }
+
+      .review-table th {
+        background-color: var(--light-color);
+        position: sticky;
+        top: 0;
+        color: var(--dark-color);
+        z-index: 1;
+      }
+
+      .status-badge {
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: bold;
+        display: inline-block;
+      }
+
+      .badge-success {
+        background-color: #d4edda;
+        color: #155724;
+      }
+      .badge-danger {
+        background-color: #f8d7da;
+        color: #721c24;
+      }
+
+      .explanation-text {
+        font-size: 13px;
+        color: #64748b;
+        margin-top: 2px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="quiz-container">
+      <h1>Kuis Kata Baku UTBK</h1>
+      <hr
+        style="border: 0; height: 1px; background: #e2e8f0; margin-bottom: 20px"
+      />
+
+      <!-- HALAMAN AWAL -->
+      <div id="start-screen">
+        <p style="color: #64748b; font-size: 16px; margin-bottom: 25px">
+          Pilihlah <strong>satu kata TIDAK BAKU</strong> di antara 5 pilihan
+          yang disajikan.<br />
+          Selesaikan soal sebanyak-banyaknya sebelum waktu habis!
+        </p>
+        <div style="margin-bottom: 25px">
+          <label
+            for="time-select"
+            style="font-weight: 600; color: var(--dark-color)"
+            >Atur Waktu:
+          </label>
+          <select
+            id="time-select"
+            style="
+              padding: 8px 12px;
+              font-size: 16px;
+              border-radius: 6px;
+              border: 1px solid #cbd5e1;
+            "
+          >
+            <option value="60">1 Menit</option>
+            <option value="120">2 Menit</option>
+            <option value="180">3 Menit</option>
+          </select>
+        </div>
+        <button class="start-btn" onclick="startQuiz()">Mulai Kuis</button>
+      </div>
+
+      <!-- HALAMAN KUIS -->
+      <div id="quiz-screen" class="hidden">
+        <div class="stats-container">
+          <div>Skor: <span id="score">0</span></div>
+          <div>Waktu: <span id="timer">00:00</span></div>
+        </div>
+
+        <div class="question-box">
+          Manakah di antara berikut yang merupakan kata yang TIDAK BAKU?
+        </div>
+
+        <div class="options-list" id="options-container">
+          <!-- Tombol pilihan otomatis lewat JS -->
+        </div>
+      </div>
+
+      <!-- HALAMAN HASIL -->
+      <div id="result-screen" class="hidden">
+        <div class="result-title">Kuis Selesai!</div>
+        <p style="color: #64748b; margin-bottom: 5px">
+          Total Soal Dijawab Benar:
+        </p>
+        <div class="score-display" id="final-score">0</div>
+        <p style="color: #64748b; margin-bottom: 25px" id="accuracy-text">
+          Akurasi: 0%
+        </p>
+
+        <button class="restart-btn" onclick="showStartScreen()">
+          Coba Lagi
+        </button>
+
+        <!-- Bagian Pembahasan / Kunci Jawaban -->
+        <h3
+          style="
+            text-align: left;
+            margin-top: 30px;
+            margin-bottom: 10px;
+            color: var(--dark-color);
+          "
+        >
+          Evaluasi & Kunci Jawaban:
+        </h3>
+        <div class="review-section">
+          <table class="review-table">
+            <thead>
+              <tr>
+                <th>No</th>
+                <th>Pilihan Anda</th>
+                <th>Kata Tidak Baku (Kunci)</th>
+                <th>Perbaikan (Kata Baku)</th>
+              </tr>
+            </thead>
+            <tbody id="review-tbody">
+              <!-- Riwayat baris akan di-generate via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Bank Kata Baku & Tidak Baku
+      const wordBank = [
+        { baku: "analisis", tidak_baku: "analisa" },
+        { baku: "apotek", tidak_baku: "apotik" },
+        { baku: "atlet", tidak_baku: "atlit" },
+        { baku: "atmosfer", tidak_baku: "atmosfir" },
+        { baku: "bus", tidak_baku: "bis" },
+        { baku: "cabai", tidak_baku: "cabe" },
+        { baku: "cedera", tidak_baku: "cedera/cidera" },
+        { baku: "detail", tidak_baku: "detil" },
+        { baku: "definisi", tidak_baku: "defenisi" },
+        { baku: "efektif", tidak_baku: "efektip" },
+        { baku: "efektivitas", tidak_baku: "efektifitas" },
+        { baku: "ekstrem", tidak_baku: "ekstrim" },
+        { baku: "februari", tidak_baku: "pebruari" },
+        { baku: "foto", tidak_baku: "photo" },
+        { baku: "fotokopi", tidak_baku: "photo kopi/fotocopy" },
+        { baku: "frekuensi", tidak_baku: "frekwensi" },
+        { baku: "gizi", tidak_baku: "giji" },
+        { baku: "hakikat", tidak_baku: "hakekat" },
+        { baku: "hierarki", tidak_baku: "hirarki" },
+        { baku: "ijazah", tidak_baku: "ijasah" },
+        { baku: "ikhlas", tidak_baku: "ihlas" },
+        { baku: "imbauan", tidak_baku: "himbauan" },
+        { baku: "indra", tidak_baku: "indera" },
+        { baku: "intens", tidak_baku: "inten" },
+        { baku: "isap", tidak_baku: "hisap" },
+        { baku: "istri", tidak_baku: "isteri" },
+        { baku: "izin", tidak_baku: "ijin" },
+        { baku: "jadwal", tidak_baku: "jadual" },
+        { baku: "jenazah", tidak_baku: "jenasah" },
+        { baku: "jenderal", tidak_baku: "jendral" },
+        { baku: "justru", tidak_baku: "justeru" },
+        { baku: "karena", tidak_baku: "karna" },
+        { baku: "karier", tidak_baku: "karir" },
+        { baku: "kategori", tidak_baku: "katagori" },
+        { baku: "komoditas", tidak_baku: "komoditi" },
+        { baku: "kompleks", tidak_baku: "komplek" },
+        { baku: "konkret", tidak_baku: "konkrit" },
+        { baku: "kreativitas", tidak_baku: "kreatifitas" },
+        { baku: "kualitatif", tidak_baku: "kwalitatif" },
+        { baku: "kualitas", tidak_baku: "kwalitas" },
+        { baku: "kuantitas", tidak_baku: "kwantitas" },
+        { baku: "kuitansi", tidak_baku: "kwitansi" },
+        { baku: "kuno", tidak_baku: "kuno/kuna" },
+        { baku: "kurnia", tidak_baku: "karunia" },
+        { baku: "legalisasi", tidak_baku: "legalisir" },
+        { baku: "lemari", tidak_baku: "almari" },
+        { baku: "lubang", tidak_baku: "lobang" },
+        { baku: "makhluk", tidak_baku: "mahluk" },
+        { baku: "manajemen", tidak_baku: "managemen" },
+        { baku: "manajer", tidak_baku: "manager" },
+        { baku: "metode", tidak_baku: "metoda" },
+        { baku: "miliar", tidak_baku: "milyar" },
+        { baku: "miskin", tidak_baku: "meskin" },
+        { baku: "modern", tidak_baku: "moderen" },
+        { baku: "mulia", tidak_baku: "moelia" },
+        { baku: "nasihat", tidak_baku: "nasehat" },
+        { baku: "negeri", tidak_baku: "negri" },
+        { baku: "nomor", tidak_baku: "nomer" },
+        { baku: "november", tidak_baku: "nopember" },
+        { baku: "objek", tidak_baku: "obyek" },
+        { baku: "objektif", tidak_baku: "obyektif" },
+        { baku: "paham", tidak_baku: "faham" },
+        { baku: "pikir", tidak_baku: "pikir/fikir" },
+        { baku: "praktik", tidak_baku: "praktek" },
+        { baku: "provinsi", tidak_baku: "propinsi" },
+        { baku: "proyek", tidak_baku: "projek" },
+        { baku: "rapi", tidak_baku: "rapih" },
+        { baku: "realisasi", tidak_baku: "realisir" },
+        { baku: "respons", tidak_baku: "respon" },
+        { baku: "rezeki", tidak_baku: "rejeki/riski" },
+        { baku: "risiko", tidak_baku: "resiko" },
+        { baku: "sah", tidak_baku: "syah" },
+        { baku: "saklar", tidak_baku: "sakelar" },
+        { baku: "sekadar", tidak_baku: "sekedar" },
+        { baku: "sekretaris", tidak_baku: "sekertaris" },
+        { baku: "sempurna", tidak_baku: "sempurna/sempurna" },
+        { baku: "sentral", tidak_baku: "sentril" },
+        { baku: "sistem", tidak_baku: "sistim" },
+        { baku: "sistematis", tidak_baku: "sistimatis" },
+        { baku: "standardisasi", tidak_baku: "standardisasi/standarisasi" },
+        { baku: "subjek", tidak_baku: "subyek" },
+        { baku: "sutera", tidak_baku: "sutra" },
+        { baku: "syukur", tidak_baku: "sukur" },
+        { baku: "tahu", tidak_baku: "tau" },
+        { baku: "tampak", tidak_baku: "nampak" },
+        { baku: "taoge", tidak_baku: "toge" },
+        { baku: "tarif", tidak_baku: "tarip" },
+        { baku: "teoretis", tidak_baku: "teoritis" },
+        { baku: "terampil", tidak_baku: "trampil" },
+        { baku: "tentram", tidak_baku: "tenteram" },
+        { baku: "tim", tidak_baku: "team" },
+        { baku: "tobat", tidak_baku: "taubat" },
+        { baku: "tradisional", tidak_baku: "tradisionil" },
+        { baku: "transpor", tidak_baku: "transport" },
+        { baku: "ubah", tidak_baku: "rubah/merubah" },
+        { baku: "utang", tidak_baku: "hutang" },
+        { baku: "varietas", tidak_baku: "varitas" },
+        { baku: "zaman", tidak_baku: "jaman" },
+        { baku: "standard", tidak_baku: "standar" },
+        { baku: "khalayak", tidak_baku: "kalayak" },
+        { baku: "khawatir", tidak_baku: "kuatir" },
+        { baku: "yogyakarta", tidak_baku: "jogjakarta" },
+      ];
+
+      // State game
+      let timeLeft = 60;
+      let timerInterval = null;
+      let score = 0;
+      let totalAnswered = 0;
+      let isAnsweringBlocked = false;
+
+      // Data penyimpan riwayat jawaban untuk ditaruh di halaman akhir
+      let currentQuizPair = null;
+      let quizHistory = [];
+
+      const startScreen = document.getElementById("start-screen");
+      const quizScreen = document.getElementById("quiz-screen");
+      const resultScreen = document.getElementById("result-screen");
+      const timerDisplay = document.getElementById("timer");
+      const scoreDisplay = document.getElementById("score");
+      const optionsContainer = document.getElementById("options-container");
+      const timeSelect = document.getElementById("time-select");
+      const finalScoreDisplay = document.getElementById("final-score");
+      const accuracyText = document.getElementById("accuracy-text");
+      const reviewTbody = document.getElementById("review-tbody");
+
+      function showStartScreen() {
+        startScreen.classList.remove("hidden");
+        quizScreen.classList.add("hidden");
+        resultScreen.classList.add("hidden");
+        clearInterval(timerInterval);
+      }
+
+      function startQuiz() {
+        score = 0;
+        totalAnswered = 0;
+        isAnsweringBlocked = false;
+        quizHistory = []; // Reset riwayat
+        timeLeft = parseInt(timeSelect.value);
+
+        scoreDisplay.textContent = score;
+        updateTimerDisplay();
+
+        startScreen.classList.add("hidden");
+        quizScreen.classList.remove("hidden");
+
+        timerInterval = setInterval(() => {
+          timeLeft--;
+          updateTimerDisplay();
+          if (timeLeft <= 0) endQuiz();
+        }, 1000);
+
+        generateQuestion();
+      }
+
+      function updateTimerDisplay() {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerDisplay.textContent = `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+      }
+
+      function shuffle(array) {
+        return array.sort(() => Math.random() - 0.5);
+      }
+
+      function generateQuestion() {
+        isAnsweringBlocked = false;
+        optionsContainer.innerHTML = "";
+
+        // Ambil 1 pasangan kata acak (yang tidak baku adalah kunci jawaban)
+        currentQuizPair = wordBank[Math.floor(Math.random() * wordBank.length)];
+
+        // Ambil 4 kata baku acak lain
+        let filteredBakuWords = wordBank
+          .filter((item) => item.baku !== currentQuizPair.baku)
+          .map((item) => item.baku);
+
+        filteredBakuWords = shuffle(filteredBakuWords).slice(0, 4);
+
+        let choices = [
+          { text: currentQuizPair.tidak_baku, isCorrectKey: true },
+          { text: filteredBakuWords[0], isCorrectKey: false },
+          { text: filteredBakuWords[1], isCorrectKey: false },
+          { text: filteredBakuWords[2], isCorrectKey: false },
+          { text: filteredBakuWords[3], isCorrectKey: false },
+        ];
+
+        choices = shuffle(choices);
+
+        choices.forEach((choice) => {
+          const button = document.createElement("button");
+          button.classList.add("option-btn");
+          button.textContent = choice.text;
+          button.onclick = () => checkAnswer(button, choice.isCorrectKey);
+          optionsContainer.appendChild(button);
+        });
+      }
+
+      function checkAnswer(selectedButton, isCorrectKey) {
+        if (isAnsweringBlocked) return;
+        isAnsweringBlocked = true;
+        totalAnswered++;
+
+        const userChoice = selectedButton.textContent;
+        const allButtons = optionsContainer.querySelectorAll(".option-btn");
+
+        if (isCorrectKey) {
+          selectedButton.classList.add("correct");
+          score++;
+          scoreDisplay.textContent = score;
+        } else {
+          selectedButton.classList.add("wrong");
+          allButtons.forEach((btn) => {
+            if (btn.textContent === currentQuizPair.tidak_baku) {
+              btn.classList.add("correct");
+            }
+          });
+        }
+
+        // Simpan data ke dalam riwayat evaluasi kuis
+        quizHistory.push({
+          userAnswer: userChoice,
+          isCorrect: isCorrectKey,
+          correctKey: currentQuizPair.tidak_baku,
+          bakuFix: currentQuizPair.baku,
+        });
+
+        allButtons.forEach((btn) => (btn.disabled = true));
+
+        setTimeout(() => {
+          if (timeLeft > 0) generateQuestion();
+        }, 1000);
+      }
+
+      function endQuiz() {
+        clearInterval(timerInterval);
+        quizScreen.classList.add("hidden");
+        resultScreen.classList.remove("hidden");
+
+        finalScoreDisplay.textContent = score;
+        const accuracy =
+          totalAnswered > 0 ? Math.round((score / totalAnswered) * 100) : 0;
+        accuracyText.textContent = `Akurasi: ${accuracy}% (Menjawab ${score} benar dari ${totalAnswered} soal)`;
+
+        // Render isi Tabel Kunci Jawaban & Pembahasan
+        renderReviewTable();
+      }
+
+      function renderReviewTable() {
+        reviewTbody.innerHTML = ""; // Bersihkan tabel sebelumnya
+
+        if (quizHistory.length === 0) {
+          reviewTbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#64748b;">Tidak ada soal yang sempat dijawab.</td></tr>`;
+          return;
+        }
+
+        quizHistory.forEach((item, index) => {
+          const tr = document.createElement("tr");
+
+          // Kolom Status badge (Benar / Salah)
+          const statusBadge = item.isCorrect
+            ? `<span class="status-badge badge-success">✓ Benar</span>`
+            : `<span class="status-badge badge-danger">✗ Salah</span>`;
+
+          tr.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>
+                        <strong>${item.userAnswer}</strong><br>
+                        ${statusBadge}
+                    </td>
+                    <td style="color: var(--danger-color); font-weight: 600;">${item.correctKey}</td>
+                    <td>
+                        <strong style="color: var(--success-color);">${item.bakuFix}</strong>
+                        <div class="explanation-text">Kata baku yang benar adalah "${item.bakuFix}".</div>
+                    </td>
+                `;
+          reviewTbody.appendChild(tr);
+        });
+      }
+    </script>
+  </body>
+</html>
