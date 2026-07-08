@@ -563,7 +563,6 @@
         const r = (s % 60).toString().padStart(2, "0");
         return `${m}:${r}`;
       }
-
       function renderTimer() {
         el("#timer").textContent = formatTime(state.timeLeft);
         if (state.timeLeft <= 60) {
@@ -578,12 +577,22 @@
       let tick = null;
       function startTimer() {
         if (tick) clearInterval(tick);
+        const waktuTarget = Date.now() + state.timeLeft * 1000;
         tick = setInterval(() => {
-          state.timeLeft--;
-          renderTimer();
-          if (state.timeLeft <= 0) clearInterval(tick);
-        }, 1000);
+          const waktuSekarang = Date.now();
+
+          state.timeLeft = Math.ceil((waktuTarget - waktuSekarang) / 1000);
+
+          if (state.timeLeft > 0) {
+            renderTimer();
+          } else {
+            state.timeLeft = 0;
+            renderTimer();
+            clearInterval(tick);
+          }
+        }, 200);
       }
+
 
       function mountNav() {
         const nav = el("#nav");
