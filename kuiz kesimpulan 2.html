@@ -1,0 +1,851 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>kuis Kesimpulan 2</title>
+    <style>
+      :root {
+        --bg: #060000; /* slate-900 */
+        --card: #111827; /* gray-900 */
+        --muted: #334155; /* slate-600 */
+        --text: #ffffff; /* gray-200 */
+        --accent: #38bdf8; /* sky-400 */
+        --accent-2: #22c55e; /* green-500 */
+        --danger: #ef4444; /* red-500 */
+        --warn: #f59e0b; /* amber-500 */
+        --shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+        --radius: 16px;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          Segoe UI,
+          Roboto,
+          "Helvetica Neue",
+          Arial;
+        background:
+          radial-gradient(1200px 800px at 10% -10%, #1e293b, transparent),
+          radial-gradient(800px 600px at 120% 0%, #0b3b47, transparent),
+          var(--bg);
+        color: var(--text);
+        min-height: 100svh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+      }
+      .app {
+        width: 100%;
+        max-width: 980px;
+      }
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+      .brand {
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        font-size: clamp(18px, 3.5vw, 24px);
+      }
+      .timer {
+        font-variant-numeric: tabular-nums;
+        font-weight: 700;
+        padding: 10px 14px;
+        border-radius: 999px;
+        background: #0b1220;
+        border: 1px solid #1f2a44;
+        box-shadow: var(--shadow);
+      }
+      .card {
+        background: linear-gradient(180deg, #0b1220, #0a1020);
+        border: 1px solid #1f2a44;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+      }
+      .section {
+        display: none;
+      }
+      .active {
+        display: block;
+      }
+      .card-inner {
+        padding: 20px;
+      }
+      .grid {
+        display: grid;
+        gap: 16px;
+      }
+      .grid-2 {
+        grid-template-columns: 1fr 1fr;
+      }
+      .grid-responsive {
+        grid-template-columns: 1fr;
+      }
+      @media (min-width: 720px) {
+        .grid-responsive {
+          grid-template-columns: 1fr 320px;
+        }
+      }
+
+      input[type="text"],
+      input[type="password"] {
+        width: 100%;
+        padding: 12px 14px;
+        border-radius: 12px;
+        border: 1px solid #26314d;
+        background: #0b1220;
+        color: var(--text);
+        outline: none;
+        box-shadow: inset 0 0 0 9999px rgba(255, 255, 255, 0);
+      }
+      label {
+        font-size: 14px;
+        color: #cbd5e1;
+      }
+      .btn {
+        cursor: pointer;
+        padding: 12px 16px;
+        border-radius: 14px;
+        background: var(--accent);
+        color: #001219;
+        border: none;
+        font-weight: 700;
+        box-shadow: var(--shadow);
+        transition: 0.2s transform ease;
+      }
+      .btn:active {
+        transform: translateY(1px);
+      }
+      .btn.secondary {
+        background: #1f2937;
+        color: #e2e8f0;
+        border: 1px solid #334155;
+      }
+      .btn.warn {
+        background: var(--warn);
+        color: #0b1220;
+      }
+      .btn.danger {
+        background: var(--danger);
+        color: #0b1220;
+      }
+      .muted {
+        color: #94a3b8;
+      }
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: #0b1220;
+        border: 1px solid #223156;
+        font-size: 12px;
+        color: #cbd5e1;
+      }
+
+      .question-area {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+      .q-title {
+        font-weight: 400;
+        font-size: 12px;
+      }
+      .choices {
+        display: grid;
+        gap: 10px;
+      }
+      .choice {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        border: 1px solid #1f2a44;
+        background: #0b1220;
+        padding: 12px;
+        border-radius: 12px;
+        cursor: pointer;
+      }
+      .choice input {
+        margin-top: 4px;
+      }
+
+      .nav {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        max-height: 240px;
+        overflow: auto;
+        padding: 10px;
+      }
+      .nav button {
+        width: 44px;
+        height: 40px;
+        border-radius: 10px;
+        border: 1px solid #1f2a44;
+        background: #0b1220;
+        color: #cbd5e1;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .nav button.active {
+        outline: 2px solid var(--accent);
+        color: #0ea5e9;
+      }
+      .nav button.done {
+        background: #07291f;
+        border-color: #0b7a53;
+        color: #34d399;
+      }
+
+      .footer-actions {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-top: 10px;
+      }
+
+      .legend {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .results {
+        display: grid;
+        gap: 12px;
+      }
+      .score-box {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      .score-card {
+        background: #0b1220;
+        border: 1px solid #1f2a44;
+        border-radius: 14px;
+        padding: 14px;
+      }
+
+      .info-row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  </head>
+  <body>
+    <div class="app">
+      <header>
+        <div class="brand">Bahasa Indonesia</div>
+        <div class="pill" id="infoUser">Belum login</div>
+        <div class="timer" id="timer">20:00</div>
+      </header>
+
+      <!-- SECTION 1: FORM MINIMAL -->
+      <section id="section-form" class="section active">
+        <div class="card">
+          <div class="card-inner grid">
+            <div>
+              <h2 style="margin: 0 0 10px 0">Masuk Kuis</h2>
+              <p class="muted" style="margin-top: 0">
+                Masukkan nama dan password untuk memulai. Tidak ada pengaturan
+                tambahan.
+              </p>
+              <div class="grid">
+                <div>
+                  <label for="nama">Nama</label>
+                  <input id="nama" type="text" placeholder="Nama peserta" />
+                </div>
+                <div>
+                  <label for="pass">Password</label>
+                  <input id="pass" type="password" placeholder="Password" />
+                </div>
+                <button class="btn" id="btnMulai">Mulai Kuis</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 2: QUIZ -->
+      <section id="section-quiz" class="section">
+        <div class="grid grid-responsive">
+          <div class="card">
+            <div class="card-inner">
+              <div class="info-row">
+                <div class="pill" id="infoKategori">Kategori: -</div>
+                <div class="pill" id="infoSoal">Soal 0 / 180</div>
+              </div>
+              <div class="question-area" id="questionArea">
+                <!-- Question inject here -->
+              </div>
+              <div class="footer-actions">
+                <button class="btn secondary" id="prevBtn">Prev</button>
+                <div class="legend">
+                  <span class="pill">• Biru = aktif</span>
+                  <span
+                    class="pill"
+                    style="
+                      background: #07291f;
+                      color: #34d399;
+                      border-color: #0b7a53;
+                    "
+                    >• Hijau = terjawab</span
+                  >
+                </div>
+                <button class="btn" id="nextBtn">Next</button>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-inner">
+              <h3 style="margin-top: 0">Navigasi Soal</h3>
+              <div class="nav" id="nav">
+                <!-- Nav buttons injected here -->
+              </div>
+              <div class="grid" style="margin-top: 8px">
+                <button class="btn warn" id="btnSubmit">
+                  Kumpulkan Jawaban
+                </button>
+                <button class="btn danger" id="btnReset">Reset Jawaban</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 3: HASIL -->
+      <section id="section-result" class="section">
+        <div class="card">
+          <div class="card-inner results">
+            <h2 style="margin: 0">Hasil Ujian</h2>
+            <p class="muted" id="resultUser">Peserta: -</p>
+            <div class="score-box">
+              <div class="score-card" style="grid-column: span 2">
+                <div class="muted">Total Skor</div>
+                <div id="scoreTotal" style="font-size: 30px; font-weight: 900">
+                  0 / 180
+                </div>
+              </div>
+            </div>
+            <div>
+              <button class="btn" id="btnUlang">Mulai Lagi</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      /** UTIL **/
+      const el = (sel) => document.querySelector(sel);
+      const els = (sel) => Array.from(document.querySelectorAll(sel));
+      const shuffle = (arr) =>
+        arr
+          .map((v) => [Math.random(), v])
+          .sort((a, b) => a[0] - b[0])
+          .map((x) => x[1]);
+
+      /** BANK SOAL (40/40/40) **/
+      // Format: {type:'sinonim'|'antonim'|'hiponim', q:'', options:['','','',''], answer: index}
+
+      const SOAL_fungsi = [
+        {
+          q: ' "Infeksi HIV memiliki tiga tahapan, yakni akut, kronis, dan Acquired Immunodeficiency Syndrome (AIDS). AIDS merupakan kondisi terparah HIV karena tubuh tak lagi punya kemampuan untuk melawan infeksi oportunistik, yaitu komplikasi peradangan atau kanker akibat infeksi virus. Tanpa ada intervensi masif, pengidap AIDS biasanya hanya bisa bertahan hidup sekitar tiga tahun. Itulah mengapa para dokter menganjurkan masyarakat untuk melakukan tes HIV rutin guna mendeteksi dini keberadaan virus tersebut. Seperti yang dijelaskan sebelumnya, AIDS adalah tahap akhir infeksi HIV. Jadi, jika seseorang dengan HIV terlambat didiagnosis atau dengan sengaja menunda pengobatan, timbulah penyakit AIDS. Terlebih, infeksi HIV di tahap awal jarang sekali menunjukan gejala khusus atau bahkan tidak bergejala sama sekali. Dikutip dari WebMD, orang dengan HIV akut biasanya menunjukan tanda-tanda flu, seperti mudah lelah, nyeri otot, sakit tenggorokan, demam, ruam kulit, dan pembengkakan kelenjar getah bening. Oleh karena itu, pendeteksian dini sangat penting guna mencegah perkembangan virus dan meningkatkan progresivitas penyembuhan. Jadi, sudah tahu ya bedanya HIV Vs AIDS? Guna memerangi virus tersebut, lakukanlah pencegahan dengan tidak menggonta-ganti pasangan, menerapkan praktik seks sehat menggunakan pelindung (kondom), dan jauhi narkoba."<br>11. Manakah kesimpulan yang bisa diambil tentang perbedaan HIV vs AIDS',
+          o: [
+            " AIDS merupakan tahapan terakhir penderita HIV setelah lewat dari tahap akut.",
+            " HIV memiliki tiga tahapan sebelum sampai pada AIDS sehingga diperlukan pengecekan awal agar bisa diberi penanganan.",
+            " AIDS adalah sebuah virus yang nantinya dapat berkembang ke tahap terakhir HIV dan berakibat fatal bagi penderita.",
+            " AIDS akan sulit disembuhkan berbeda dengan HIV yang merupakan tahap awal virus.",
+            " AIDS mempunyai perbedaan yang besar dengan HIV yaitu jenis virus yang menyerang kekebalan tubuh.",
+          ],
+          a: 3,
+        },
+        {
+          q: ' "Infeksi HIV memiliki tiga tahapan, yakni akut, kronis, dan Acquired Immunodeficiency Syndrome (AIDS). AIDS merupakan kondisi terparah HIV karena tubuh tak lagi punya kemampuan untuk melawan infeksi oportunistik, yaitu komplikasi peradangan atau kanker akibat infeksi virus. Tanpa ada intervensi masif, pengidap AIDS biasanya hanya bisa bertahan hidup sekitar tiga tahun. Itulah mengapa para dokter menganjurkan masyarakat untuk melakukan tes HIV rutin guna mendeteksi dini keberadaan virus tersebut. Seperti yang dijelaskan sebelumnya, AIDS adalah tahap akhir infeksi HIV. Jadi, jika seseorang dengan HIV terlambat didiagnosis atau dengan sengaja menunda pengobatan, timbulah penyakit AIDS. Terlebih, infeksi HIV di tahap awal jarang sekali menunjukan gejala khusus atau bahkan tidak bergejala sama sekali. Dikutip dari WebMD, orang dengan HIV akut biasanya menunjukan tanda-tanda flu, seperti mudah lelah, nyeri otot, sakit tenggorokan, demam, ruam kulit, dan pembengkakan kelenjar getah bening. Oleh karena itu, pendeteksian dini sangat penting guna mencegah perkembangan virus dan meningkatkan progresivitas penyembuhan. Jadi, sudah tahu ya bedanya HIV Vs AIDS? Guna memerangi virus tersebut, lakukanlah pencegahan dengan tidak menggonta-ganti pasangan, menerapkan praktik seks sehat menggunakan pelindung (kondom), dan jauhi narkoba."<br>12. Menurut teks diatas, mengapa AIDS menjadi sangat berbahaya ...',
+          o: [
+            " AIDS hanya memberikan waktu 3 tahun bagi penderita sebelum menewaskan penderita.",
+            " HIV sulit ditangani karena tidak terdeteksi pada tahap-tahap awal.",
+            " Karena tubuh kehilangan kemampuan untuk melawan infeksi oportunistik.",
+            " Karena AIDS merupakan tahapan akhir dari HIV yang dapat menyebabkan kematian.",
+            " Karena menyebabkan komplikasi peradangan atau kanker disebabkan oleh virus.",
+          ],
+          a: 2,
+        },
+        {
+          q: ' "Infeksi HIV memiliki tiga tahapan, yakni akut, kronis, dan Acquired Immunodeficiency Syndrome (AIDS). AIDS merupakan kondisi terparah HIV karena tubuh tak lagi punya kemampuan untuk melawan infeksi oportunistik, yaitu komplikasi peradangan atau kanker akibat infeksi virus. Tanpa ada intervensi masif, pengidap AIDS biasanya hanya bisa bertahan hidup sekitar tiga tahun. Itulah mengapa para dokter menganjurkan masyarakat untuk melakukan tes HIV rutin guna mendeteksi dini keberadaan virus tersebut. Seperti yang dijelaskan sebelumnya, AIDS adalah tahap akhir infeksi HIV. Jadi, jika seseorang dengan HIV terlambat didiagnosis atau dengan sengaja menunda pengobatan, timbulah penyakit AIDS. Terlebih, infeksi HIV di tahap awal jarang sekali menunjukan gejala khusus atau bahkan tidak bergejala sama sekali. Dikutip dari WebMD, orang dengan HIV akut biasanya menunjukan tanda-tanda flu, seperti mudah lelah, nyeri otot, sakit tenggorokan, demam, ruam kulit, dan pembengkakan kelenjar getah bening. Oleh karena itu, pendeteksian dini sangat penting guna mencegah perkembangan virus dan meningkatkan progresivitas penyembuhan. Jadi, sudah tahu ya bedanya HIV Vs AIDS? Guna memerangi virus tersebut, lakukanlah pencegahan dengan tidak menggonta-ganti pasangan, menerapkan praktik seks sehat menggunakan pelindung (kondom), dan jauhi narkoba."<br>13. Dalam teks diatas terdapat penyataan implisit, yaitu ...',
+          o: [
+            " Penderita HIV harus segera diobati sebelum berkembang ke tahap beriktnya.",
+            " Pengidap AIDS biasanya hanya bisa bertahan hidup sekitar tiga tahun.",
+            " Pengecekan dini terhadap virus HIV baiknya dilakukan sejak balita.",
+            " HIV terus berkembang di tubuh penderita sampai akhirnya menewaskannya.",
+            " HIV dan AIDS adalah penyakit yang telah memakan ratusan bahkan ribuan korban tewas.",
+          ],
+          a: 0,
+        },
+        {
+          q: ' "Tanggal 21 November 2022 siang hari (13:21:10 WIB) telah terjadi gempa bumi Mw 5.6 di daerah Cianjur, Jawa Barat. Berdasarkan data BMKG, hingga tanggal 22 November 2022 telah tercatat 140 gempa-gempa susulan (aftershocks) dengan magnitudo 1.2-4.2 dan kedalaman rata-rata sekitar 10 km, dimana 5 gempa diantaranya dirasakan oleh masyarakat sekitar. Gempa bumi utama (mainshock) Mw 5.6 berdampak dan dirasakan di kota Cianjur dengan skala intensitas V-VI MMI (Modified Mercalli Insensity); Garut dan Sukabumi IV-V MMI; Cimahi, Lembang, Kota Bandung, Cikalong Wetan, Rangkasbitung, Bogor dan Bayah dengan skala intensitas III MMI; Tangerang Selatan, Jakarta dan Depok dengan skala intensitas II-III MMI. Menurut informasi sementara dari BNPB sampai tanggal 22 November 2022 pukul 17.00 WIB bahwa gempa bumi ini menimbulkan 268 korban jiwa dan lebih dari 2.000 rumah mengalami kerusakan."<br>14. Kesimpulan yang tersirat dari bacaan diatas adalah',
+          o: [
+            " Gempa Cianjur telah menewaskan ribuan korban jiwa dan rumah sehingga perlu dilakukan penanganan dengan baik.",
+            " Gempa Cianjur terjadi secara tiba-tiba pada waktu siang hari dan menewaskan sampai ribuan jiwa.",
+            " Tercatat pada tanggal 22 November 2022, 268 korban jiwa telah terkonfirmasi akibat gempa yang terjadi di siang hari.",
+            " Telah terkonfirmasi ratusan korban jiwa dan ribuan rumah mengalami kerusakan akibat gempa bumi di Cianjur.",
+            " Gempa berkekuatan 5.6 telah menelan banyak korban jiwa pada 21 November 2022 hingga keesokan harinya masih ada gempa-gempa susulan.",
+          ],
+          a: 4,
+        },
+        {
+          q: ' "Tanggal 21 November 2022 siang hari (13:21:10 WIB) telah terjadi gempa bumi Mw 5.6 di daerah Cianjur, Jawa Barat. Berdasarkan data BMKG, hingga tanggal 22 November 2022 telah tercatat 140 gempa-gempa susulan (aftershocks) dengan magnitudo 1.2-4.2 dan kedalaman rata-rata sekitar 10 km, dimana 5 gempa diantaranya dirasakan oleh masyarakat sekitar. Gempa bumi utama (mainshock) Mw 5.6 berdampak dan dirasakan di kota Cianjur dengan skala intensitas V-VI MMI (Modified Mercalli Insensity); Garut dan Sukabumi IV-V MMI; Cimahi, Lembang, Kota Bandung, Cikalong Wetan, Rangkasbitung, Bogor dan Bayah dengan skala intensitas III MMI; Tangerang Selatan, Jakarta dan Depok dengan skala intensitas II-III MMI. Menurut informasi sementara dari BNPB sampai tanggal 22 November 2022 pukul 17.00 WIB bahwa gempa bumi ini menimbulkan 268 korban jiwa dan lebih dari 2.000 rumah mengalami kerusakan."<br>15. Pernyataan yang sesuai dengan bacaan diatas adalah',
+          o: [
+            " Gempa-gempa susulan yang berkekuatan lebih kecil masih terjadi sampai 22 November 2022.",
+            " Gempa yang terjadi di Cianjur pada siang hari tidak hanya memakan korban jiwa tapi juga merusak ribuan rumah warga.",
+            " Gempa dengan kekuatan 4.2 telah mengguncang Cianjur pada siang hari.",
+            " Menurut informasi BNPB tercatat sudah 2000 korban jiwa akibat gempa bumi.",
+            " Gempa Cianjur merupakan gempa yang paling kuat di dua bulan terakhir ini.",
+          ],
+          a: 0,
+        },
+        {
+          q: ' "Kayu Cendana (Sanlalum album Linn.) merupakan satu jenis produk terpenting yang dihasilkan oleh sumber daya alam berupa hutan di wilayah Provinsi Nusa Tenggara Timur (NTT). Perlu pengelolaan cendana lebih intensif dan pemanfaatan optimal bagi peningkatan kesejahteraan rakyat NTT dan Pendapatan Asli Daerah dalam menyongsong Otonomi Daerah. Sumber ekonomi yang diperoleh daerah NTT melalui penjualan kayu cendana sebagai bahan mentah ke daerah lain kiranya patut ditinjau kembali. Pemanfaatan sebagai bahan baku bagi industri kecil dan menengah perlu ditumbuhkan, dibina dan dikembangkan di daerah NTT merupakan alternatif yang selayaknya ditempuh. Pemanfaatan kayu cendana sangat beragam. Berdasarkan sifat kayu dan kandungan minyak atsirinya, kayu cendana sudah digunakan sebagai bahan baku bagi industri minyak atsiri, industri serbuk (tepung) kayu dan industri kerajinan kayu. Industri kerajinan kayu merupakan industri yang paling potensial, meningkatkan kesejahteraan rakyat karena penciptaan lapangan kerja dan nilai tambah yang langsung menyangkut masyarakat di tingkat bawah. Produk kerajinan berupa patung, ukiran dan topeng sering kali mengalami cacat retak atau pecah. Cacat ini akan menurunkan nilai produk tersebut. Penurunan ini dapat dihindarkan dengan penerapan teknologi pengeringan dan teknologi stabilisasi dimensi dengan Poli Etilen GUkol (PEG). Teknologi stabilisasi melalui perendaman selama 5 hari dalam PEG-1000 berkonsentrasi 40%, terhadap patung (hasil kerajinan) akan membebaskan sepenuhnya dari cacat retak dan pecah, tetapi mengubah warna kayu dari putih kekuningan menjadi putih keabu-abuan dan mengurangi bahkan menihilkan aroma cendana. Penerapan teknologi pengeringan kayu berdampak yang serupa dengan dampak teknologi stabilisasi dimensi."<br>16. Kalimat implisit dari bacaan diatas adalah',
+          o: [
+            " Pemanfaatan kayu cendana yang beragam patut ditumbuhkan, dibina, dan dikembangkan di daerah NTT.",
+            " Produk kerajinan berupa topeng, patung, dan ukiran sering kali pecah dan akan menurunkan nilai produk.",
+            " Pencegahan agar kayu cendana tidak retak dapat dilakukan tapi berdampak pada kualitas hasil kerajinan.",
+            " Wilayah NTT memiliki hasil sumber daya alam berupa kayu cendana yang bisa dimanfaatkan untuk banyak kegunaan.",
+            " Perlu pengelolaan cendana lebih intensif dan pemanfaatan optimal bagi peningkatan kesejahteraan rakyat NTT dan Pendapatan Asli Daerah dalam menyongsong Otonomi Daerah.",
+          ],
+          a: 3,
+        },
+        {
+          q: ' "Kayu Cendana (Sanlalum album Linn.) merupakan satu jenis produk terpenting yang dihasilkan oleh sumber daya alam berupa hutan di wilayah Provinsi Nusa Tenggara Timur (NTT). Perlu pengelolaan cendana lebih intensif dan pemanfaatan optimal bagi peningkatan kesejahteraan rakyat NTT dan Pendapatan Asli Daerah dalam menyongsong Otonomi Daerah. Sumber ekonomi yang diperoleh daerah NTT melalui penjualan kayu cendana sebagai bahan mentah ke daerah lain kiranya patut ditinjau kembali. Pemanfaatan sebagai bahan baku bagi industri kecil dan menengah perlu ditumbuhkan, dibina dan dikembangkan di daerah NTT merupakan alternatif yang selayaknya ditempuh. Pemanfaatan kayu cendana sangat beragam. Berdasarkan sifat kayu dan kandungan minyak atsirinya, kayu cendana sudah digunakan sebagai bahan baku bagi industri minyak atsiri, industri serbuk (tepung) kayu dan industri kerajinan kayu. Industri kerajinan kayu merupakan industri yang paling potensial, meningkatkan kesejahteraan rakyat karena penciptaan lapangan kerja dan nilai tambah yang langsung menyangkut masyarakat di tingkat bawah. Produk kerajinan berupa patung, ukiran dan topeng sering kali mengalami cacat retak atau pecah. Cacat ini akan menurunkan nilai produk tersebut. Penurunan ini dapat dihindarkan dengan penerapan teknologi pengeringan dan teknologi stabilisasi dimensi dengan Poli Etilen GUkol (PEG). Teknologi stabilisasi melalui perendaman selama 5 hari dalam PEG-1000 berkonsentrasi 40%, terhadap patung (hasil kerajinan) akan membebaskan sepenuhnya dari cacat retak dan pecah, tetapi mengubah warna kayu dari putih kekuningan menjadi putih keabu-abuan dan mengurangi bahkan menihilkan aroma cendana. Penerapan teknologi pengeringan kayu berdampak yang serupa dengan dampak teknologi stabilisasi dimensi."<br>17. Berdasarkan bacaan diatas, dampak yang ditimbulkan akibat penggunaan Poli Etilen GUkol (PEG) adalah',
+          o: [
+            " Dapat membuat semua kerajinan dari kayu cendana terbebas dari retak tapi tetap dapat pecah.",
+            " Membuat kerajinan patung dari kayu cendana terbebas dari retak dan pecah namun ada efek sampingnya.",
+            " Efek samping yang ditimbulkan dari penggunaan PEG sangat berbahaya dapat mengubah warna kulit menjadi putih keabu-abuan.",
+            " Dapat menghilangkan keretakan pada patung sehingga menjadi seperti baru Kembali.",
+            " PEG dapat membuat kayu cendana menjadi tidak berwarna keputihan dan meningkatkan aroma kayu cendana.",
+          ],
+          a: 1,
+        },
+        {
+          q: ' "Kayu Cendana (Sanlalum album Linn.) merupakan satu jenis produk terpenting yang dihasilkan oleh sumber daya alam berupa hutan di wilayah Provinsi Nusa Tenggara Timur (NTT). Perlu pengelolaan cendana lebih intensif dan pemanfaatan optimal bagi peningkatan kesejahteraan rakyat NTT dan Pendapatan Asli Daerah dalam menyongsong Otonomi Daerah. Sumber ekonomi yang diperoleh daerah NTT melalui penjualan kayu cendana sebagai bahan mentah ke daerah lain kiranya patut ditinjau kembali. Pemanfaatan sebagai bahan baku bagi industri kecil dan menengah perlu ditumbuhkan, dibina dan dikembangkan di daerah NTT merupakan alternatif yang selayaknya ditempuh. Pemanfaatan kayu cendana sangat beragam. Berdasarkan sifat kayu dan kandungan minyak atsirinya, kayu cendana sudah digunakan sebagai bahan baku bagi industri minyak atsiri, industri serbuk (tepung) kayu dan industri kerajinan kayu. Industri kerajinan kayu merupakan industri yang paling potensial, meningkatkan kesejahteraan rakyat karena penciptaan lapangan kerja dan nilai tambah yang langsung menyangkut masyarakat di tingkat bawah. Produk kerajinan berupa patung, ukiran dan topeng sering kali mengalami cacat retak atau pecah. Cacat ini akan menurunkan nilai produk tersebut. Penurunan ini dapat dihindarkan dengan penerapan teknologi pengeringan dan teknologi stabilisasi dimensi dengan Poli Etilen GUkol (PEG). Teknologi stabilisasi melalui perendaman selama 5 hari dalam PEG-1000 berkonsentrasi 40%, terhadap patung (hasil kerajinan) akan membebaskan sepenuhnya dari cacat retak dan pecah, tetapi mengubah warna kayu dari putih kekuningan menjadi putih keabu-abuan dan mengurangi bahkan menihilkan aroma cendana. Penerapan teknologi pengeringan kayu berdampak yang serupa dengan dampak teknologi stabilisasi dimensi."<br>18. Menurut bacaan diatas, manakah pernyataan berikut yang pasti benar',
+          o: [
+            " Penggunaan PEG-1000 dengan konsentrasi lebih dari 40% dapat dapat menyelesaikan masalah cacat dan retak pada hasil kerajinan kayu cendana.",
+            " Masih perlu dilakukan peninjauan kembali terhadap pemanfaatan kayu cendana di daerah-daerah terpencil.",
+            " Produk kerajinan dari kayu cendana sering terjadi cacat dan retak dan menambah nilai produk tersebut.",
+            " Industri kerajinan kayu cendana merupakan industri yang berpotensi untuk menciptakan lapangan pekerjaan dan meningkatkan kesejahteraan rakyat.",
+            " Pemanfaatan kayu cendana berdasarkan sifat dan kandungan minyaknya baru saja dikembangkan oleh masyarakat sekitar.",
+          ],
+          a: 3,
+        },
+        {
+          q: ' Infografis "Pengaruh Konsumsi GARAM Berlebih Terhadap Penyakit Tidak Menular". Konsumsi garam yang kurang maupun berlebih tidak baik bagi kesehatan tubuh.\n- Konsumsi Garam Kurang: Dapat menyebabkan natrium dalam sel rendah, sehingga fungsi natrium untuk menahan cairan dalam sel terganggu, maka tubuh dapat mengalami dehidrasi dan kehilangan nafsu makan.\n- Konsumsi Garam Berlebih: Akan meningkatkan jumlah natrium dalam sel dan mengganggu keseimbangan cairan. Masuknya cairan ke dalam sel akan mengecilkan diameter pembuluh darah arteri sehingga jantung harus memompa darah lebih kuat yang berakibat meningkatnya tekanan darah. Peningkatan tekanan darah berpengaruh pada peningkatan kerja jantung, yang akhirnya akan meningkatkan risiko mengalami serangan jantung dan stroke.<br>19. Berdasarkan infografis di atas, dapat disimpulkan bahwa',
+          o: [
+            " Lebih baik tidak mengkonsumsi garam karena dapat menyebabkan serangan jantung dan stroke.",
+            " Tidak dianjurkan untuk mengkonsumsi garam dalam jumlah yang terlalu banyak.",
+            " Disarankan untuk menjaga kadar garam dalam tubuh tetap dalam kondisi seimbang.",
+            " Kadar garam yang sedikit dapat berakibat pada hilangnya nafsu makan.",
+            " Meningkatnya tekanan darah dapat diatasi dengan mengurangi konsumsi garam berlebih.",
+          ],
+          a: 2,
+        },
+        {
+          q: ' Infografis "Pengaruh Konsumsi GARAM Berlebih Terhadap Penyakit Tidak Menular". Konsumsi garam yang kurang maupun berlebih tidak baik bagi kesehatan tubuh.\n- Konsumsi Garam Kurang: Dapat menyebabkan natrium dalam sel rendah, sehingga fungsi natrium untuk menahan cairan dalam sel terganggu, maka tubuh dapat mengalami dehidrasi dan kehilangan nafsu makan.\n- Konsumsi Garam Berlebih: Akan meningkatkan jumlah natrium dalam sel dan mengganggu keseimbangan cairan. Masuknya cairan ke dalam sel akan mengecilkan diameter pembuluh darah arteri sehingga jantung harus memompa darah lebih kuat yang berakibat meningkatnya tekanan darah. Peningkatan tekanan darah berpengaruh pada peningkatan kerja jantung, yang akhirnya akan meningkatkan risiko mengalami serangan jantung dan stroke.<br>20. Mengapa konsumsi garam berlebih dapat memicu penyakit',
+          o: [
+            " Karena konsumsi garam dapat menyebabkan turunnya natrium dalam sel.",
+            " Karena menyebabkan hilangnya nafsu makan dan dehidrasi.",
+            " Karena dapat memicu naiknya tekanan darah dalam tubuh.",
+            " Karena tubuh membutuhkan asupan garam per harinya.",
+            " Karena keseimbangan natrium dalam sel tubuh berkurang.",
+          ],
+          a: 2,
+        },
+        {
+          q: ' "Jadi, lempeng tektonik bergerak tak henti di atas lapisan batuan yang sebagian padat, sebagian cair. Saat lempeng bertabrakan atau bergerak misalnya, Bumi ikut bergerak. Pegunungan seperti Andes di Amerika Selatan dan Rocky di Amerika Utara, serta gunung berapi terbentuk melalui tumbukan lempeng tektonik itu. Banyak gunung berapi di Ring of Fire tercipta melalui proses yang disebut sebagai subduksi. Nah, sebagian besar zona subduksi di Bumi adanya ya di area Ring of Fire. Subduksi terjadi kala lempeng tektonik bergeser dan satu lempeng terdorong ke bawah lempeng lain. Pergerakan dasar laut ini menghasilkan transmutasi mineral, yang mengarah pada pencairan dan pemadatan magma, yang berarti terjadi pembentukan gunung berapi. Gempa Bumi terparah di Ring of Fire dan juga dunia, melanda Chile pada 22 Mei 1960, berkekuatan magintudo 9,5. Posisi kedua adalah Gempa Besar Alaska tahun 1964 (magnitudo 9,2). Kemudian berikutnya gempa Bumi Aceh atau juga dikenal sebagai Tsunami Samudra Hindia pada 26 Desember 2004 (magnitudo 9,1). Satu lagi adalah gempa di Pantai Timur Honshu, Jepang, pada 11 Maret 2011 (magnitudo 9,0), yang menyebabkan tsunami dan bencana nuklir di Fukushima."<br>21. Berdasarkan bacaan diatas, manakah simpulan berikut ini yang benar',
+          o: [
+            " Tercatat ada tiga gempa bumi terparah yang terjadi di Ring of Fire dengan kekuatan diatas 9,5.",
+            " Proses subduksi jarang terjadi di daerah Ring of Fire karena merupakan zona yang rawan terhadap gempa.",
+            " Banyak gunung berapi tercipta akibat proses subduksi yang sering terjadi di daerah Ring of Fire.",
+            " Tsunami Samudra Hindia memiliki kekuatan gempa magnitudo 9,0 merupakan yang paling parang tercatat di dunia.",
+            " Proses subduksi terjadi akibat pertemuan lempeng bumi yang menyebabkan terjadinya pembentukan Ring of Fire.",
+          ],
+          a: 2,
+        },
+        {
+          q: ' "Jadi, lempeng tektonik bergerak tak henti di atas lapisan batuan yang sebagian padat, sebagian cair. Saat lempeng bertabrakan atau bergerak misalnya, Bumi ikut bergerak. Pegunungan seperti Andes di Amerika Selatan dan Rocky di Amerika Utara, serta gunung berapi terbentuk melalui tumbukan lempeng tektonik itu. Banyak gunung berapi di Ring of Fire tercipta melalui proses yang disebut sebagai subduksi. Nah, sebagian besar zona subduksi di Bumi adanya ya di area Ring of Fire. Subduksi terjadi kala lempeng tektonik bergeser dan satu lempeng terdorong ke bawah lempeng lain. Pergerakan dasar laut ini menghasilkan transmutasi mineral, yang mengarah pada pencairan dan pemadatan magma, yang berarti terjadi pembentukan gunung berapi. Gempa Bumi terparah di Ring of Fire dan juga dunia, melanda Chile pada 22 Mei 1960, berkekuatan magintudo 9,5. Posisi kedua adalah Gempa Besar Alaska tahun 1964 (magnitudo 9,2). Kemudian berikutnya gempa Bumi Aceh atau juga dikenal sebagai Tsunami Samudra Hindia pada 26 Desember 2004 (magnitudo 9,1). Satu lagi adalah gempa di Pantai Timur Honshu, Jepang, pada 11 Maret 2011 (magnitudo 9,0), yang menyebabkan tsunami dan bencana nuklir di Fukushima."<br>22. Kalimat dibawah ini tidak sama dengan teks bacaan diatas, kecuali ..',
+          o: [
+            " Seluruh zona subduksi di bumi terdapat pada daerah Ring of Fire.",
+            " Subduksi merupakan proses terbentuknya gunung berapi di daerah luar Ring of Fire.",
+            " Ring of Fire merupakan daerah yang berbahaya karena banyak ditemukan gunung berapi.",
+            " Subduksi terjadi saat bertemunya dua lempeng tektonik dan mengakibatkan gempa dahsyat.",
+            " Seluruh gunung api yang terbentuk adalah hasil dari proses yang disebut dengan subduksi.",
+          ],
+          a: 2,
+        },
+        {
+          q: ' "Jadi, lempeng tektonik bergerak tak henti di atas lapisan batuan yang sebagian padat, sebagian cair. Saat lempeng bertabrakan atau bergerak misalnya, Bumi ikut bergerak. Pegunungan seperti Andes di Amerika Selatan dan Rocky di Amerika Utara, serta gunung berapi terbentuk melalui tumbukan lempeng tektonik itu. Banyak gunung berapi di Ring of Fire tercipta melalui proses yang disebut sebagai subduksi. Nah, sebagian besar zona subduksi di Bumi adanya ya di area Ring of Fire. Subduksi terjadi kala lempeng tektonik bergeser dan satu lempeng terdorong ke bawah lempeng lain. Pergerakan dasar laut ini menghasilkan transmutasi mineral, yang mengarah pada pencairan dan pemadatan magma, yang berarti terjadi pembentukan gunung berapi. Gempa Bumi terparah di Ring of Fire dan juga dunia, melanda Chile pada 22 Mei 1960, berkekuatan magintudo 9,5. Posisi kedua adalah Gempa Besar Alaska tahun 1964 (magnitudo 9,2). Kemudian berikutnya gempa Bumi Aceh atau juga dikenal sebagai Tsunami Samudra Hindia pada 26 Desember 2004 (magnitudo 9,1). Satu lagi adalah gempa di Pantai Timur Honshu, Jepang, pada 11 Maret 2011 (magnitudo 9,0), yang menyebabkan tsunami dan bencana nuklir di Fukushima."<br>23. Kesimpulan apa yang dapat diambil pada paragraph ke-tiga pada bacaan diatas',
+          o: [
+            " Gempa bumi terparah yang terjadi di wilayah Ring of Fire terjadi pada tahun 1964 di Chile.",
+            " Gempa bumi pada 11 Maret 2011 memiliki kekuatan gempa yang sama dengan yang terjadi di Alaska.",
+            " There are four areas hit by the worst earthquakes with each having an earthquake strength above 9.0.",
+            " Gempa terparah yang terjadi di dunia pada daerah Ring of Fire memiliki kekuatan gempa sebesar 9,5.",
+            " Proses subduksi adalah proses pembentukan gunung dibawah laut.",
+          ],
+          a: 3,
+        },
+        {
+          q: ' "Setelah mengalami 15 kali erupsi, Gunung Marapi hari ini mulai "tenang". Hingga pukul 09.00 WIB, Pos Pengamatan Gunung Marapi di Bukittinggi tidak mendeteksi adanya erupsi lanjutan. Pantauan detikSumut, pada Minggu (8/1/2023) pagi, Gunung Marapi tidak bisa dilihat dengan mata telanjang, karena tertutup kabut. Kepala Pos Pengamatan Gunung Marapi, Teguh Purnomo menyebutkan, salah satu gunung berapi aktif di Sumatera Barat tersebut mengalami letusan sebanyak 15 kali sepanjang Sabtu (7/1) kemarin. "Teramati 15 kali letusan dengan tinggi 200-300 meter dengan warna asap putih dan kelabu," kata Teguh kepada detikSumut, Minggu (8/1/2023) pagi. Letusan tersebut terekam di seismogram dengan amplitudo 1-23.4 mm dengan durasi antara 45 hingga 109 detik. Selain letusan, juga terdeteksi 4 kali hembusan, satu kali gempa Tornillo dengan durasi 12 detik, 1 kali gempa tektonik lokal dengan amplitudo 19.5 mm dan durasi 20.8 detik serta gempa tektonik jauh sebanyak 4 kali dengan durasi antara 45 hingga 200 detik. Selain itu juga terekam gempa tremor secara terus menerus. "Gunung Marapi saat ini berada di level II atau waspada," katanya. Masyarakat sekitar dan pengunjung atau wisatawan diminta tidak melakukan pendakian pada radius 3 Kilometer dari kawah atau puncak. Erupsi pertama kali terjadi pada Sabtu (7/1/2023) pukul 06.11 WIB, disusul erupsi erupsi berikutnya yang mencapai 15 kali. Saat erupsi terjadi, sejumlah pendaki sedang berada di puncak. Menurut catatan resmi BKSDA Sumbar, pendaki berjumlah 40-an orang. Namun diperkirakan jumlahnya lebih dari seratusan orang, karena ada yang melakukan pendakian tanpa melapor atau melakukan registrasi. Saat ini baru diketahui 20 orang yang turun dari gunung. Gunung Marapi merupakan salah satu Gunung api aktif yang ada di Sumatera Barat. Posisinya berada di Kabupaten Tanah Datar dan Kabupaten Agam, Sumatera Barat dengan ketinggian 2.891 mdpl."<br>24. Kesimpulan yang tepat pada paragraph terakhir adalah',
+          o: [
+            " Diperkirakan total lebih dari ratusan orang mendaki Gunung Marapi dan baru 20 orang yang diketahui turun dari gunung.",
+            " Gunung marapi berada di Kabupaten Tanah Datar dan Kabupaten Agam, Sumatera Barat.",
+            " Telah tercatat 20 orang lebih turun dari Gunung Marapi.",
+            " Gunung Marapi memiliki ketinggian 2.891 mdpl.",
+            " Tersisa 20 orang pendaki yang belum menuruni Gunung Marapi.",
+          ],
+          a: 0,
+        },
+        {
+          q: ' "Setelah mengalami 15 kali erupsi, Gunung Marapi hari ini mulai "tenang". Hingga pukul 09.00 WIB, Pos Pengamatan Gunung Marapi di Bukittinggi tidak mendeteksi adanya erupsi lanjutan. Pantauan detikSumut, pada Minggu (8/1/2023) pagi, Gunung Marapi tidak bisa dilihat dengan mata telanjang, karena tertutup kabut. Kepala Pos Pengamatan Gunung Marapi, Teguh Purnomo menyebutkan, salah satu gunung berapi aktif di Sumatera Barat tersebut mengalami letusan sebanyak 15 kali sepanjang Sabtu (7/1) kemarin. "Teramati 15 kali letusan dengan tinggi 200-300 meter dengan warna asap putih dan kelabu," kata Teguh kepada detikSumut, Minggu (8/1/2023) pagi. Letusan tersebut terekam di seismogram dengan amplitudo 1-23.4 mm dengan durasi antara 45 hingga 109 detik. Selain letusan, juga terdeteksi 4 kali hembusan, satu kali gempa Tornillo dengan durasi 12 detik, 1 kali gempa tektonik lokal dengan amplitudo 19.5 mm dan durasi 20.8 detik serta gempa tektonik jauh sebanyak 4 kali dengan durasi antara 45 hingga 200 detik. Selain itu juga terekam gempa tremor secara terus menerus. "Gunung Marapi saat ini berada di level II atau waspada," katanya. Masyarakat sekitar dan pengunjung atau wisatawan diminta tidak melakukan pendakian pada radius 3 Kilometer dari kawah atau puncak. Erupsi pertama kali terjadi pada Sabtu (7/1/2023) pukul 06.11 WIB, disusul erupsi erupsi berikutnya yang mencapai 15 kali. Saat erupsi terjadi, sejumlah pendaki sedang berada di puncak. Menurut catatan resmi BKSDA Sumbar, pendaki berjumlah 40-an orang. Namun diperkirakan jumlahnya lebih dari seratusan orang, karena ada yang melakukan pendakian tanpa melapor atau melakukan registrasi. Saat ini baru diketahui 20 orang yang turun dari gunung. Gunung Marapi merupakan salah satu Gunung api aktif yang ada di Sumatera Barat. Posisinya berada di Kabupaten Tanah Datar dan Kabupaten Agam, Sumatera Barat dengan ketinggian 2.891 mdpl."<br>25. Dari bacaan di atas, mengapa para pendaki Gunung Marapi diminta untuk turun',
+          o: [
+            'A. Karena Gunung Marapi dianggap sudah mulai "tenang" saat sudah 15 kali erupsi.',
+            " Dikarenakan Gunung Marapi sudah masuk di level II (waspada).",
+            " Karena sudah beberapa kali terjadi erupsi di Gunung Marapi.",
+            " Dikarenakan kabut tebal sehingga tidak bisa melihat dengan jelas.",
+            " Agar tidak terjadi lagi korban akibat erupsi Gunung Marapi.",
+          ],
+          a: 1,
+        },
+        {
+          q: ' "Karya buatan mahasiswa Fakultas Peternakan Universitas Brawijaya (Fapet UB) itu mengadopsi sistem model kandang closed house pada ternak ayam. Dengan sistem tersebut, kandang sanggup menciptakan keamanan secara biologi (meminimalisir kontak dengan organisme yang lain) dengan pengaturan ventilasi yang baik, sehingga mengurangi stres pada ternak. "Energi yang digunakan merupakan energi terbarukan dari gas metana yang dihasilkan oleh limbah feses sapi. Sedangkan sistem perkandangan dapat dipantau dari aplikasi smartphone SI SEMMUT guna mempermudah pengecekan kondisi ternak dan kerja dari sistem perkandangan." jelas Fahrudin, selaku perwakilan tim. Tak hanya menciptakan inovasi, karya tersebut juga diikutsertakan dalam ajang internasional World Youth Invention and Innovation Award (WYIIA). Kompetisi tersebut dilakukan secara daring dengan mengangkat bidang matematika, teknologi, lingkungan, ilmu sosial, pendidikan dan fisika. Peserta WYIIA 2021 berasal dari Amerika Serikat, Saudi Arabia, Malaysia, Thailand, Turki, Azerbaijan, Korea, dan Indonesia."<br>26. Kesimpulan yang tepat yang dapat diambil pada paragraph pertama adalah',
+          o: [
+            " Kandang ciptaan mahasiswa UB mengadopsi model closed house dengan pengaturan ventilasi yang cukup baik.",
+            " Energi yang digunakan berasal dari limbah feses sapi.",
+            " Mahasiswa UB menciptakan aplikasi SI SEMMUT untuk mengawasi kondisi ternak.",
+            " Mahasiswa UB menciptakan kandang dengan sistem closed house yang terbukti dapat menciptakan keamanan biologis yang baik.",
+            " Mahasiswa UB memenangkan kompetisi WYIIA pada tahun 2021 dengan karya ciptaannya berupa kandang ternak.",
+          ],
+          a: 3,
+        },
+        {
+          q: ' "Karya buatan mahasiswa Fakultas Peternakan Universitas Brawijaya (Fapet UB) itu mengadopsi sistem model kandang closed house pada ternak ayam. Dengan sistem tersebut, kandang sanggup menciptakan keamanan secara biologi (meminimalisir kontak dengan organisme yang lain) dengan pengaturan ventilasi yang baik, sehingga mengurangi stres pada ternak. "Energi yang digunakan merupakan energi terbarukan dari gas metana yang dihasilkan oleh limbah feses sapi. Sedangkan sistem perkandangan dapat dipantau dari aplikasi smartphone SI SEMMUT guna mempermudah pengecekan kondisi ternak dan kerja dari sistem perkandangan." jelas Fahrudin, selaku perwakilan tim. Tak hanya menciptakan inovasi, karya tersebut juga diikutsertakan dalam ajang internasional World Youth Invention and Innovation Award (WYIIA). Kompetisi tersebut dilakukan secara daring dengan mengangkat bidang matematika, teknologi, lingkungan, ilmu sosial, pendidikan dan fisika. Peserta WYIIA 2021 berasal dari Amerika Serikat, Saudi Arabia, Malaysia, Thailand, Turki, Azerbaijan, Korea, dan Indonesia."<br>27. Apa kegunaan aplikasi SI SEMMUT yang diciptakan oleh mahasiswa UB',
+          o: [
+            " Untuk mengatur udara masuk dan keluar di dalam kandang.",
+            " Untuk memantau tingkat stress pada hewan ternak yang ada di dalam kandang.",
+            " Untuk dapat mengurangi tingkat stress pada hewan ternak yang ada di kandang.",
+            " Untuk dapat diikutsertakan pada kompetisi WYIIA.",
+            " Untuk memantau apa saja yang terjadi di dalam kandang dan juga mengatur sistem perkandangan.",
+          ],
+          a: 4,
+        },
+        {
+          q: ' "Karya buatan mahasiswa Fakultas Peternakan Universitas Brawijaya (Fapet UB) itu mengadopsi sistem model kandang closed house pada ternak ayam. Dengan sistem tersebut, kandang sanggup menciptakan keamanan secara biologi (meminimalisir kontak dengan organisme yang lain) dengan pengaturan ventilasi yang baik, sehingga mengurangi stres pada ternak. "Energi yang digunakan merupakan energi terbarukan dari gas metana yang dihasilkan oleh limbah feses sapi. Sedangkan sistem perkandangan dapat dipantau dari aplikasi smartphone SI SEMMUT guna mempermudah pengecekan kondisi ternak dan kerja dari sistem perkandangan." jelas Fahrudin, selaku perwakilan tim. Tak hanya menciptakan inovasi, karya tersebut juga diikutsertakan dalam ajang internasional World Youth Invention and Innovation Award (WYIIA). Kompetisi tersebut dilakukan secara daring dengan mengangkat bidang matematika, teknologi, lingkungan, ilmu sosial, pendidikan dan fisika. Peserta WYIIA 2021 berasal dari Amerika Serikat, Saudi Arabia, Malaysia, Thailand, Turki, Azerbaijan, Korea, dan Indonesia."<br>28. Manakah kalimat dibawah ini yang benar berdasarkan teks diatas',
+          o: [
+            " Kandang ciptaan mahasiswa UB meningkatkan keamanan agar hewan aman terjaga.",
+            " Energi yang digunakan pada kandang berasal dari gas metana yang di dapat dari kotoran makhluk hidup.",
+            " Karya yang diciptakan oleh mahasiswa UB diikutsertakan juga pada WYIIA tahun 2022.",
+            " Kandang ciptaan mahasiswa UB dapat digunakan untuk mengamani hewan ternak dari ancaman predator.",
+            " Mahasiswa UB tidak hanya menciptakan kandang untuk hewan ternak tapi juga aplikasi untuk memantau kondisi dan kerja di kandang.",
+          ],
+          a: 4,
+        },
+        {
+          q: " \"Dikutip dari iMedia, kandungan purin dari 100 gram kangkung hanya 17,5mg. Setelah direbus dengan air mendidih, purin yang tersisa tidak banyak. Oleh karena itu, kabar asam urat yang disebabkan oleh konsumsi kangkung pada dasarnya tidak dapat diyakini sepenuhnya. Dikarenakan angkanya tergolong kecil, sayuran hijau ini pun termasuk ke dalam makanan rendah purin. Namun bagaimanapun juga, masyarakat masih bisa dihantui kadar asam urat tinggi jika konsumsi kangkung yang terlalu banyak. Terlebih, cara pengolahannya yang menggunakan minyak dan bumbu berlemak berlebihan. Perlu diketahui juga bahwa kangkung kaya nutrisi dan mengandung kalsium yang hampir sama dengan susu. Jadi, tak perlu khawatir menyantap kangkung asalkan masih dalam batas wajar. Jadi, sudah tahukan fakta di balik 'apakah kangkung menyebabkan asam urat?' Untuk menjaga kadar asam urat tetap stabil, hindarilah konsumsi daging merah berlemak, minyak nabati, makanan manis, serta cukupi hidrasi harian. Berolahraga juga sangat diwajibkan bagi pengidap asam urat melatih kekuatan dan kelenturan otot.\"<br>29. Fakta apa yang dapat diambil tentang kangkung",
+          o: [
+            " Kangkung dapat menyebabkan asam urat bagi orang yang mengkonsumsinya.",
+            " Kandungan purin pada kangkung cukup banyak apa lagi setelah direbus.",
+            " Kangkung memiliki kandungan nutrisi dan kalsium yang lebih dibandingkan susu.",
+            " Kangkung merupakan sayuran yang memiliki kandungan purin rendah.",
+            " Kangkung aman untuk dikonsumsi dalam porsi besar oleh siapapun.",
+          ],
+          a: 3,
+        },
+        {
+          q: " \"Dikutip dari iMedia, kandungan purin dari 100 gram kangkung hanya 17,5mg. Setelah direbus dengan air mendidih, purin yang tersisa tidak banyak. Oleh karena itu, kabar asam urat yang disebabkan oleh konsumsi kangkung pada dasarnya tidak dapat diyakini sepenuhnya. Dikarenakan angkanya tergolong kecil, sayuran hijau ini pun termasuk ke dalam makanan rendah purin. Namun bagaimanapun juga, masyarakat masih bisa dihantui kadar asam urat tinggi jika konsumsi kangkung yang terlalu banyak. Terlebih, cara pengolahannya yang menggunakan minyak dan bumbu berlemak berlebihan. Perlu diketahui juga bahwa kangkung kaya nutrisi dan mengandung kalsium yang hampir sama dengan susu. Jadi, tak perlu khawatir menyantap kangkung asalkan masih dalam batas wajar. Jadi, sudah tahukan fakta di balik 'apakah kangkung menyebabkan asam urat?' Untuk menjaga kadar asam urat tetap stabil, hindarilah konsumsi daging merah berlemak, minyak nabati, makanan manis, serta cukupi hidrasi harian. Berolahraga juga sangat diwajibkan bagi pengidap asam urat melatih kekuatan dan kelenturan otot.\"<br>30. Kesimpulan yang tepat dari teks diatas adalah",
+          o: [
+            " Kangkung aman dikonsumsi dan tidak menyebabkan asam urat karena memiliki kandungan purin yang rendah.",
+            " Kandungan purin yang ada di dalam kangkung masih dalam taraf yang cukup tinggi untuk dikonsumsi.",
+            " Kangkung memiliki kandungan nutrisi yang sama dengan kebanyakan sayuran lain.",
+            " Kangkung dapat di konsumsi pengidap asam urat dalam porsi besar.",
+            " Kandungan purin dalam kangkung masih sangat besar walau sudah direbus dengan air.",
+          ],
+          a: 0,
+        },
+      ].map((x) => ({
+        type: "bahasa indonesia kesimpulan dan ide pokok ",
+        q: x.q,
+        options: x.o,
+        answer: x.a,
+      }));
+
+      S_fungsi = shuffle(SOAL_fungsi);
+
+      /*  Validasi jumlah
+                                  if(SINONIM.length!==90||ANTONIM.length!==90){
+                                    console.warn('Jumlah soal tidak 90/90:', SINONIM.length, ANTONIM.length);
+                                  }  */
+
+      // /* Gabung & acak
+      function shuffleOptions(q) {
+        let opts = q.options.map((opt, i) => ({ opt, i }));
+        opts = shuffle(opts); // pake fungsi shuffle yang sudah kamu punya
+        let newAnswer = opts.findIndex((o) => o.i === q.answer);
+        return {
+          ...q,
+          options: opts.map((o) => o.opt),
+          answer: newAnswer,
+        };
+      }
+      //*/
+      let QUESTIONS = [...S_fungsi].map((q, i) => ({
+        id: i + 1,
+        ...shuffleOptions(q),
+      }));
+      // let QUESTIONS = [...SINONIM, ...ANTONIM].map((q,i)=>({id:i+1, ...q }));
+      // State
+      let state = {
+        user: null,
+        timeLeft: 20 * 60, // 25 menit
+        currentIndex: 0,
+        answers: Array(180).fill(null), // simpan index jawaban (0..3) atau null
+      };
+
+      /** RENDERING **/
+      function formatTime(s) {
+        const m = Math.floor(s / 60)
+          .toString()
+          .padStart(2, "0");
+        const r = (s % 60).toString().padStart(2, "0");
+        return `${m}:${r}`;
+      }
+
+      function renderTimer() {
+        el("#timer").textContent = formatTime(state.timeLeft);
+        if (state.timeLeft <= 60) {
+          el("#timer").style.background = "#331a1a";
+          el("#timer").style.borderColor = "#7f1d1d";
+        }
+        if (state.timeLeft <= 0) {
+          submitQuiz();
+        }
+      }
+
+      let tick = null;
+      function startTimer() {
+        if (tick) clearInterval(tick);
+        const waktuTarget = Date.now() + state.timeLeft * 1000;
+        tick = setInterval(() => {
+          const waktuSekarang = Date.now();
+
+          state.timeLeft = Math.ceil((waktuTarget - waktuSekarang) / 1000);
+
+          if (state.timeLeft > 0) {
+            renderTimer();
+          } else {
+            state.timeLeft = 0;
+            renderTimer();
+            clearInterval(tick);
+          }
+        }, 200);
+      }
+
+      function mountNav() {
+        const nav = el("#nav");
+        nav.innerHTML = "";
+        QUESTIONS.forEach((q, idx) => {
+          const b = document.createElement("button");
+          b.textContent = idx + 1;
+          b.addEventListener("click", () => {
+            goTo(idx);
+          });
+          nav.appendChild(b);
+        });
+        updateNavActive();
+      }
+
+      function updateNavActive() {
+        const buttons = els("#nav button");
+        buttons.forEach((b, idx) => {
+          b.classList.toggle("active", idx === state.currentIndex);
+          b.classList.toggle("done", state.answers[idx] !== null);
+        });
+        el("#infoSoal").textContent = `Soal ${state.currentIndex + 1} / ${
+          QUESTIONS.length
+        }`;
+        el("#infoKategori").textContent = `Kategori: ${QUESTIONS[
+          state.currentIndex
+        ].type.toUpperCase()}`;
+      }
+
+      function renderQuestion() {
+        const q = QUESTIONS[state.currentIndex];
+        const container = el("#questionArea");
+        container.innerHTML = "";
+        const title = document.createElement("div");
+        title.className = "q-title";
+
+        title.innerHTML = q.q;
+        container.appendChild(title);
+
+        const list = document.createElement("div");
+        list.className = "choices";
+        q.options.forEach((opt, i) => {
+          const row = document.createElement("label");
+          row.className = "choice";
+          const input = document.createElement("input");
+          input.type = "radio";
+          input.name = "choice";
+          input.value = i;
+          input.checked = state.answers[state.currentIndex] === i;
+          input.addEventListener("change", () => {
+            state.answers[state.currentIndex] = i;
+            updateNavActive();
+          });
+          const span = document.createElement("div");
+          span.innerHTML = opt;
+          row.appendChild(input);
+          row.appendChild(span);
+          list.appendChild(row);
+        });
+        container.appendChild(list);
+        MathJax.typeset();
+      }
+
+      function goTo(idx) {
+        state.currentIndex = Math.max(0, Math.min(QUESTIONS.length - 1, idx));
+        updateNavActive();
+        renderQuestion();
+      }
+
+      function next() {
+        if (state.currentIndex < QUESTIONS.length - 1) {
+          goTo(state.currentIndex + 1);
+        }
+      }
+      function prev() {
+        if (state.currentIndex > 0) {
+          goTo(state.currentIndex - 1);
+        }
+      }
+
+      function resetAnswers() {
+        if (!confirm("Yakin reset semua jawaban?")) return;
+        state.answers = Array(QUESTIONS.length).fill(null);
+        updateNavActive();
+        renderQuestion();
+      }
+
+      function submitQuiz() {
+        // hitung skor per kategori
+        let sSin = 0,
+          sAnt = 0,
+          sHip = 0;
+        QUESTIONS.forEach((q, idx) => {
+          const pick = state.answers[idx];
+          const correct = q.answer;
+          if (pick === correct) {
+            if (q.type === "bahasa indonesia kesimpulan dan ide pokok ") sSin++;
+          }
+        });
+        const total = sSin + sAnt + sHip;
+
+        // tampilkan
+        let total_question = QUESTIONS.length;
+
+        el("#scoreTotal").textContent = `${total} / ${total_question}`;
+        el("#resultUser").textContent = `Peserta: ${
+          state.user?.nama || "-"
+        } (waktu habis/kumpul)`;
+
+        // stop timer, ganti section
+        if (tick) clearInterval(tick);
+        showSection("result");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      function showSection(which) {
+        el("#section-form").classList.remove("active");
+        el("#section-quiz").classList.remove("active");
+        el("#section-result").classList.remove("active");
+        if (which === "form") el("#section-form").classList.add("active");
+        if (which === "quiz") el("#section-quiz").classList.add("active");
+        if (which === "result") el("#section-result").classList.add("active");
+      }
+
+      // EVENTS
+      el("#btnMulai").addEventListener("click", () => {
+        const nama = el("#nama").value.trim();
+        const pass = el("#pass").value.trim();
+        if (!nama || !pass) {
+          alert("Nama dan password wajib diisi.");
+          return;
+        }
+        if (pass !== "ARMATA") {
+          alert(
+            "password salah! tanya password ke sir hardi. klo sir hardi dak tau tanya ke sir meca",
+          );
+          return;
+        }
+        state.user = { nama, pass };
+        el("#infoUser").textContent = `Peserta: ${nama}`;
+        showSection("quiz");
+        startTimer();
+        mountNav();
+        goTo(0);
+        renderTimer();
+      });
+
+      el("#prevBtn").addEventListener("click", prev);
+      el("#nextBtn").addEventListener("click", next);
+      el("#btnReset").addEventListener("click", resetAnswers);
+      el("#btnSubmit").addEventListener("click", () => {
+        if (confirm("BENIAN BAE KAU NIH CEK LAGI JAWABAN KAU TUH!"))
+          submitQuiz();
+      });
+
+      // Keyboard nav: panah kiri/kanan, angka 1-4 untuk memilih A-D
+      window.addEventListener("keydown", (e) => {
+        if (!el("#section-quiz").classList.contains("active")) return;
+        if (e.key === "ArrowRight") next();
+        if (e.key === "ArrowLeft") prev();
+        if (["1", "2", "3", "4"].includes(e.key)) {
+          const idx = parseInt(e.key) - 1;
+          state.answers[state.currentIndex] = idx;
+          updateNavActive();
+          renderQuestion();
+        }
+      });
+
+      // Ulang dari hasil
+      el("#btnUlang").addEventListener("click", () => {
+        state = {
+          user: state.user,
+          timeLeft: 5 * 60,
+          currentIndex: 0,
+          answers: Array(180).fill(null),
+        };
+        QUESTIONS = shuffle(QUESTIONS); // acak ulang urutan
+        showSection("quiz");
+        startTimer();
+        mountNav();
+        goTo(0);
+        renderTimer();
+      });
+    </script>
+  </body>
+</html>
