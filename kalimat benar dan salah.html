@@ -1,0 +1,882 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kuis Tata Bahasa Indonesia</title>
+    <style>
+      :root {
+        --primary: #4a6fa5;
+        --secondary: #16a085;
+        --bg: #f5f7fa;
+        --text: #333;
+        --card-bg: #ffffff;
+      }
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: var(--bg);
+        color: var(--text);
+        margin: 0;
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+      }
+      .container {
+        background: var(--card-bg);
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        max-width: 600px;
+        width: 100%;
+        box-sizing: border-box;
+      }
+      .screen {
+        display: none;
+      }
+      .active {
+        display: block;
+      }
+      h1,
+      h2 {
+        text-align: center;
+        color: var(--primary);
+      }
+      button {
+        display: block;
+        width: 100%;
+        background-color: var(--primary);
+        color: white;
+        border: none;
+        padding: 12px;
+        font-size: 16px;
+        border-radius: 6px;
+        cursor: pointer;
+        margin-top: 20px;
+        transition: 0.3s;
+      }
+      button:hover {
+        background-color: #3b5984;
+      }
+      .option-btn {
+        background-color: #f0f4f8;
+        color: var(--text);
+        text-align: left;
+        margin-bottom: 10px;
+        border: 1px solid #dcdcdc;
+      }
+      .option-btn:hover {
+        background-color: #e2e8f0;
+      }
+      .progress {
+        font-size: 14px;
+        color: #666;
+        margin-bottom: 15px;
+      }
+      .review-item {
+        border-bottom: 1px solid #eee;
+        padding: 15px 0;
+      }
+      .correct {
+        color: #27ae60;
+        font-weight: bold;
+      }
+      .incorrect {
+        color: #c0392b;
+        font-weight: bold;
+      }
+      .explanation {
+        background: #f9f9f9;
+        padding: 10px;
+        border-left: 4px solid var(--primary);
+        margin-top: 5px;
+        font-size: 14px;
+      }
+      .stat-box {
+        display: flex;
+        justify-content: space-around;
+        margin: 20px 0;
+        background: #f0f4f8;
+        padding: 15px;
+        border-radius: 8px;
+      }
+      .stat-item {
+        text-align: center;
+      }
+      .stat-num {
+        font-size: 24px;
+        font-weight: bold;
+        color: var(--primary);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- 1. HALAMAN DEPAN -->
+      <div id="home-screen" class="screen active">
+        <h1>Uji Tata Bahasa Indonesia</h1>
+        <p style="text-align: center">
+          Uji kemampuanmu dalam mendeteksi kalimat yang tidak baku atau salah
+          menurut tata bahasa Indonesia.
+        </p>
+        <button onclick="startQuiz()">Mulai Kuis</button>
+      </div>
+
+      <!-- 2. HALAMAN SOAL -->
+      <div id="quiz-screen" class="screen">
+        <div class="progress">
+          Soal <span id="current-question-num">1</span> dari
+          <span id="total-questions-num">5</span>
+        </div>
+        <h3 id="question-text">
+          Manakah berikut ini kalimat yang tidak benar?
+        </h3>
+        <div id="options-container">
+          <!-- Pilihan jawaban akan digenerate via JS -->
+        </div>
+      </div>
+
+      <!-- 3. HALAMAN AKHIR -->
+      <div id="result-screen" class="screen">
+        <h2>Hasil Kuis</h2>
+        <div class="stat-box">
+          <div class="stat-item">
+            <div class="stat-num" id="res-skor">0</div>
+            <div>Skor</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-num" id="res-akurasi">0%</div>
+            <div>Akurasi</div>
+          </div>
+        </div>
+
+        <h3>Pembahasan:</h3>
+        <div id="review-container">
+          <!-- Detail pembahasan akan digenerate via JS -->
+        </div>
+        <button onclick="resetQuiz()">Coba Lagi</button>
+      </div>
+    </div>
+
+    <script>
+      // Bank Kalimat sesuai struktur permintaan
+      const bankKalimat = [
+        {
+          benar:
+            "Bagi semua mahasiswa semester lima wajib mengambil mata kuliah magang.", // Diubah jadi benar dengan menghilangkan 'Bagi' agar subjek jelas, atau versi simpel:
+          benar:
+            "Semua mahasiswa semester lima wajib mengambil mata kuliah magang.",
+          salah:
+            "Bagi semua mahasiswa semester lima wajib mengambil mata kuliah magang.",
+          penjelasan:
+            "Penggunaan kata depan 'Bagi' di awal kalimat membuat subjek kalimat menjadi kabur (berubah fungsi menjadi keterangan).",
+        },
+        {
+          benar: "Andi memesan makanan, sedangkan Budi membeli minuman.",
+          salah: "Andi memesan makanan. Sedangkan Budi membeli minuman.",
+          penjelasan:
+            "Kata 'sedangkan' adalah konjungsi intrakalimat (menghubungkan klausa), tidak boleh diletakkan di awal kalimat setelah tanda titik.",
+        },
+        {
+          benar: "Rapat itu membahas masalah anggaran.",
+          salah: "Rapat itu membahas tentang masalah anggaran.",
+          penjelasan:
+            "Kata kerja aktif transitif seperti 'membahas' langsung diikuti objek, tidak perlu disisipi kata depan 'tentang'.",
+        },
+        {
+          benar: "Ia sangat pandai memasak.",
+          salah: "Ia sangat pandai sekali memasak.",
+          penjelasan:
+            "Penggunaan kata 'sangat' dan 'sekali' secara bersamaan menyebabkan pleonasme (pemborosan kata) karena maknanya sama.",
+        },
+        {
+          benar: "Demi kelancaran acara, mari kita berdoa bersama.",
+          salah: "Demi untuk kelancaran acara, mari kita berdoa bersama.",
+          penjelasan:
+            "Kata 'demi' dan 'untuk' memiliki fungsi yang sama, sehingga menggunakan keduanya sekaligus adalah pemborosan kata.",
+        },
+        {
+          benar: "Buku itu sudah saya baca kemarin.",
+          salah: "Buku itu saya sudah baca kemarin.",
+          penjelasan:
+            "Untuk kalimat pasif persona (saya, kamu, kita), kata aspek seperti 'sudah', 'akan', 'belum' harus diletakkan sebelum pronomina (Contoh yang benar: sudah saya baca).",
+        },
+        // --- PARAMETER: KATA BAKU & TIDAK BAKU (Berdasarkan Lampiran Dokumen) ---
+        {
+          benar: "Ibu membeli obat batuk di apotek dekat rumah.",
+          salah: "Ibu membeli obat batuk di apotik dekat rumah.",
+          penjelasan:
+            "Kata 'apotik' tidak baku. Bentuk yang baku menurut kamus dan dokumen referensi adalah 'apotek'.",
+        },
+        {
+          benar: "Jadwal pelajaran semester ini sudah diterbitkan.",
+          salah: "Jadual pelajaran semester ini sudah diterbitkan.",
+          penjelasan:
+            "Penulisan kata 'jadual' tidak baku. Bentuk baku yang benar menggunakan huruf 'w', yaitu 'jadwal'.",
+        },
+        {
+          benar: "Kakak sedang menyusun analisis data untuk skripsinya.",
+          salah: "Kakak sedang menyusun analisa data untuk skripsinya.",
+          penjelasan:
+            "Kata 'analisa' merupakan bentuk tidak baku. Kata baku yang diserap ke dalam bahasa Indonesia adalah 'analisis'.",
+        },
+        {
+          benar:
+            "Kita harus selalu bersyukur atas anugerah yang diberikan Tuhan.",
+          salah:
+            "Kita harus selalu bersyukur atas anugrah yang diberikan Tuhan.",
+          penjelasan:
+            "Kata 'anugrah' tidak baku karena kekurangan huruf 'e'. Penulisan baku yang benar adalah 'anugerah'.",
+        },
+        {
+          benar: "Para atlet sedang berlatih keras menjelang turnamen.",
+          salah: "Para atlit sedang berlatih keras menjelang turnamen.",
+          penjelasan:
+            "Kata 'atlit' tidak baku. Berdasarkan dokumen referensi, bentuk vokal yang benar adalah 'atlet'.",
+        },
+        {
+          benar: "Ayah meminta adik untuk mengosongkan lemari pakaian.",
+          salah: "Ayah meminta adik untuk mengosongkan almari pakaian.",
+          penjelasan:
+            "Kata 'almari' merupakan bentuk tidak baku. Kata baku yang terdaftar resmi adalah 'lemari'.",
+        },
+        {
+          benar:
+            "Sebelum melakukan tindakan medis, dokter membuat diagnosis penyakit.",
+          salah:
+            "Sebelum melakukan tindakan medis, dokter membuat diagnosa penyakit.",
+          penjelasan:
+            "Kata 'diagnosa' tidak baku. Bentuk penyerapan yang benar ke dalam bahasa Indonesia adalah 'diagnosis'.",
+        },
+        {
+          benar:
+            "Perusahaan itu berhasil meningkatkan efektivitas kerja karyawannya.",
+          salah:
+            "Perusahaan itu berhasil meningkatkan efektifitas kerja karyawannya.",
+          penjelasan:
+            "Kata 'efektifitas' salah karena menggunakan huruf 'f' di tengah. Akhiran '-itas' diserap dari '-ity', sehingga yang baku adalah 'efektivitas' menggunakan huruf 'v'.",
+        },
+        {
+          benar: "Kita harus mematuhi kaidah kebahasaan yang berlaku.",
+          salah: "Kita harus mematuhi kaedah kebahasaan yang berlaku.",
+          penjelasan:
+            "Kata 'kaedah' merupakan bentuk tidak baku. Penulisan baku yang benar adalah 'kaidah'.",
+        },
+        {
+          benar: "Andi sedang menempuh ujian praktik mengemudi.",
+          salah: "Andi sedang menempuh ujian praktek mengemudi.",
+          penjelasan:
+            "Kata 'praktek' tidak baku. Penulisan yang sesuai dengan pedoman kata baku adalah 'praktik'.",
+        },
+
+        // --- PARAMETER: HURUF KAPITAL & HURUF MIRING (EYD) ---
+        {
+          benar: "Bapak membeli jeruk bali di pasar kemarin pagi.",
+          salah: "Bapak membeli jeruk Bali di pasar kemarin pagi.",
+          penjelasan:
+            "Huruf 'bali' pada 'jeruk bali' harus ditulis dengan huruf kecil karena merupakan nama jenis buah/bukan nama geografis asal produk tersebut.",
+        },
+        {
+          benar: "Salah satu suku bangsa di Indonesia adalah suku Jawa.",
+          salah: "Salah satu suku bangsa di Indonesia adalah Suku Jawa.",
+          penjelasan:
+            "Kata 'suku' yang mendahului nama suku tidak ditulis dengan huruf kapital, hanya nama sukunya saja yang kapital ('suku Jawa').",
+        },
+        {
+          benar: "Kami sekeluarga berencana berlibur ke Selat Sunda.",
+          salah: "Kami sekeluarga berencana berlibur ke selat Sunda.",
+          penjelasan:
+            "Kata 'selat' harus ditulis dengan huruf kapital ('Selat') karena diikuti oleh nama diri geografis yang spesifik.",
+        },
+        {
+          benar: "Kemarin malam, saya membaca majalah <i>Tempo</i> di kamar.",
+          salah: "Kemarin malam, saya membaca majalah Tempo di kamar.",
+          penjelasan:
+            "Nama majalah, koran, atau buku yang dikutip dalam kalimat harus ditulis menggunakan huruf miring (*Tempo*).",
+        },
+        {
+          benar: "Tumbuhan padi memiliki nama ilmiah *Oryza sativa*.",
+          salah: "Tumbuhan padi memiliki nama ilmiah Oryza sativa.",
+          penjelasan:
+            "Istilah ilmiah biologi atau bahasa asing yang belum diserap ke dalam bahasa Indonesia wajib ditulis menggunakan huruf miring.",
+        },
+
+        // --- PARAMETER: TANDA BACA (EYD) ---
+        {
+          benar: "Ibu membeli bayam, tomat, dan cabai di pasar.",
+          salah: "Ibu membeli bayam, tomat dan cabai di pasar.",
+          penjelasan:
+            "Sebelum konjungsi 'dan' pada perincian yang lebih dari dua unsur, wajib diletakkan tanda baca koma (,).",
+        },
+        {
+          benar: "Karena hari hujan, kami tidak jadi pergi bermain bola.",
+          salah: "Kami tidak jadi pergi bermain bola, karena hari hujan.",
+          penjelasan:
+            "Tanda koma tidak digunakan jika anak kalimat (klausa keterangan) berada di belakang induk kalimat.",
+        },
+
+        // --- PARAMETER: PENGGUNAAN KONJUNGSI & JENIS KATA ---
+        {
+          benar: "Rapat hari ini membahas masalah anggaran tahun depan.",
+          salah:
+            "Rapat hari ini membahas tentang masalah anggaran tahun depan.",
+          penjelasan:
+            "Kata kerja aktif transitif seperti 'membahas' langsung mengikat objek tanpa perlu disisipi kata depan seperti 'tentang'.",
+        },
+        {
+          benar: "Andi rajin belajar agar lulus ujian dengan nilai baik.",
+          salah: "Andi rajin belajar demi untuk lulus ujian dengan nilai baik.",
+          penjelasan:
+            "Penggunaan 'demi untuk' secara bersamaan adalah pemborosan kata karena kedua konjungsi tersebut memiliki fungsi yang sama.",
+        },
+
+        // --- PARAMETER: STRUKTUR KALIMAT (S-P-O-K / Efektifitas Kalimat) ---
+        {
+          benar:
+            "Semua mahasiswa semester akhir wajib menyerahkan draf skripsi.",
+          salah:
+            "Bagi semua mahasiswa semester akhir wajib menyerahkan draf skripsi.",
+          penjelasan:
+            "Penggunaan kata depan 'Bagi' di awal kalimat merusak fungsi Subjek (S) menjadi Keterangan (K), sehingga kalimat kehilangan subjeknya.",
+        },
+        // PARAMETER 1: KATA BAKU - TIDAK BAKU
+        {
+          benar:
+            "Kami telah melakukan analisis terhadap data tersebut secara mendalam.",
+          salah:
+            "Kami telah melakukan analisa terhadap data tersebut secara mendalam.",
+          penjelasan:
+            "Kata 'analisa' merupakan kata tidak baku. Bentuk baku yang benar sesuai KBBI adalah 'analisis'.",
+        },
+        {
+          benar:
+            "Siswa itu sangat aktif dalam setiap kegiatan organisasi sekolah.",
+          salah:
+            "Siswa itu sangat aktip dalam setiap kegiatan organisasi sekolah.",
+          penjelasan:
+            "Penggunaan kata 'aktip' tidak baku. Kata baku yang tepat untuk menyatakan tidak diam atau bergerak adalah 'aktif'.",
+        },
+        {
+          benar:
+            "Ayah selalu memberikan nasihat yang berharga untuk masa depan saya.",
+          salah:
+            "Ayah selalu memberikan nasehat yang berharga untuk masa depan saya.",
+          penjelasan:
+            "Kata 'nasehat' adalah bentuk tidak baku. Penulisan yang benar sesuai EYD/KBBI adalah 'nasihat'.",
+        },
+        {
+          benar: "Silakan duduk dan menunggu giliran Anda untuk dipanggil.",
+          salah: "Silahkan duduk dan menunggu giliran Anda untuk dipanggil.",
+          penjelasan:
+            "Kata 'silahkan' merupakan bentuk tidak baku. Penulisan kata baku yang benar adalah 'silakan'.",
+        },
+        {
+          benar:
+            "Rapat membahas kosakata baru bahasa Indonesia akan dimulai sore ini.",
+          salah:
+            "Rapat membahas kosa kata baru bahasa Indonesia akan dimulai sore ini.",
+          penjelasan:
+            "Kata 'kosa kata' merupakan bentuk tidak baku. Kata baku yang benar adalah 'kosakata' (ditulis serangkai).",
+        },
+        {
+          benar: "Kemarin ia mengalami kecelakaan kecil di jalan tol.",
+          salah: "Kemaren ia mengalami kecelakaan kecil di jalan tol.",
+          penjelasan:
+            "Kata 'kemaren' adalah kata tidak baku. Bentuk baku yang tepat adalah 'kemarin'.",
+        },
+
+        // PARAMETER 2: HURUF MIRING
+        {
+          benar:
+            "Saya sudah membaca buku <i>Salah Asuhan karangan Abdoel Moeis</i>.",
+          salah: "Saya sudah membaca buku Salah Asuhan karangan Abdoel Moeis.",
+          penjelasan:
+            "Judul buku yang dikutip dalam tulisan harus ditulis dengan huruf miring, sehingga 'Salah Asuhan' ditulis miring.",
+        },
+        {
+          benar: "Nama ilmiah buah manggis ialah <i>Garcinia mangostana</i>.",
+          salah: "Nama ilmiah buah manggis ialah Garcinia mangostana.",
+          penjelasan:
+            "Kata atau ungkapan dalam bahasa asing yang disisipkan dalam kalimat bahasa Indonesia, seperti nama ilmiah, harus ditulis dengan huruf miring.",
+        },
+        {
+          benar: "Saya bertemu dengan World Health Organization di Jenewa.",
+          salah:
+            "Saya bertemu dengan <i>World Health Organization</i> di Jenewa.",
+          penjelasan:
+            "Nama lembaga dalam bahasa asing termasuk nama diri, sehingga tidak boleh ditulis dengan huruf miring, melainkan tetap menggunakan huruf kapital.",
+        },
+        {
+          benar:
+            "Upacara <i>peusijuek menarik perhatian wisatawan asing yang berkunjung ke Aceh.",
+          salah:
+            "Upacara peusijuek menarik perhatian wisatawan asing yang berkunjung ke Aceh.",
+          penjelasan:
+            "Kata atau ungkapan dalam bahasa daerah yang disisipkan dalam kalimat bahasa Indonesia harus ditulis dengan huruf miring.",
+        },
+        {
+          benar: "Huruf terakhir kata aba<i>d</i> adalah d.",
+          salah: "Huruf terakhir kata abad adalah d.",
+          penjelasan:
+            "Huruf miring dipakai untuk menegaskan atau mengkhususkan huruf bagian kata dalam kalimat.",
+        },
+
+        // PARAMETER 3: KONJUNGSI & PENGGUNAAN KOMA
+        {
+          benar:
+            "Mahasiswa itu rajin dan pandai. Oleh karena itu, dia memperoleh beasiswa belajar di luar negeri.",
+          salah:
+            "Mahasiswa itu rajin dan pandai. Oleh karena itu dia memperoleh beasiswa belajar di luar negeri.",
+          penjelasan:
+            "Konjungsi antarkalimat seperti 'oleh karena itu' yang diletakkan di awal kalimat wajib langsung diikuti oleh tanda koma.",
+        },
+        {
+          benar: "Meskipun hujan deras, ia tetap pergi ke sekolah.",
+          salah: "Meskipun hujan deras, tetapi ia tetap pergi ke sekolah.",
+          penjelasan:
+            "Hindari penggunaan konjungsi ganda yang bermakna pertentangan seperti 'meskipun... tetapi...'. Pilih salah satu konjungsi saja.",
+        },
+        {
+          benar: "Ia sudah berusaha keras, tetapi hasilnya tetap nihil.",
+          salah: "Ia sudah berusaha keras. Tetapi, hasilnya tetap nihil.",
+          penjelasan:
+            "Konjungsi koordinatif (setara) seperti 'tetapi' tidak boleh diletakkan pada awal kalimat, melainkan menghubungkan dua klausa setara dalam satu kalimat dan didahului tanda koma.",
+        },
+        {
+          benar: "Budi bukanlah seorang dokter, melainkan seorang perawat.",
+          salah: "Budi bukanlah seorang dokter melainkan seorang perawat.",
+          penjelasan:
+            "Konjungsi 'melainkan' termasuk konjungsi yang harus didahului oleh tanda koma sebelum menghubungkan klausa setara.",
+        },
+        {
+          benar: "Rina berusaha keras agar bisa lulus tepat waktu.",
+          salah: "Rina berusaha keras, agar bisa lulus tepat waktu.",
+          penjelasan:
+            "Konjungsi subordinatif 'agar' tidak didahului oleh tanda koma jika berada di tengah kalimat.",
+        },
+        {
+          benar:
+            "Pebulu tangkis Indonesia kalah di set pertama. Namun, ia berusaha bangkit di set berikutnya.",
+          salah:
+            "Pebulu tangkis Indonesia kalah di set pertama. Namun, walaupun ia berusaha bangkit, skor akhir tetap menunjukkan kekalahan.",
+          penjelasan:
+            "Hindari penumpukan konjungsi seperti 'Namun, walaupun...' karena mengganggu struktur kalimat dan melanggar aturan konjungsi yang tepat.",
+        },
+        {
+          benar: "Dia mempunyai banyak teman karena baik hati.",
+          salah: "Karena baik hati, dia mempunyai banyak teman.",
+          penjelasan:
+            "Jika induk kalimat mendahului anak kalimat, tanda koma tidak dipakai. Kalimat yang benar adalah 'Dia mempunyai banyak teman karena baik hati.'",
+        },
+
+        // PARAMETER 4: TANDA BACA
+        {
+          benar:
+            "Syarat pendaftaran meliputi (1) fotokopi KTP; (2) ijazah terakhir; dan (3) pas foto.",
+          salah:
+            "Syarat pendaftaran meliputi (1) fotokopi KTP, (2) ijazah terakhir, dan (3) pas foto.",
+          penjelasan:
+            "Tanda titik koma (;) dipakai pada akhir perincian yang berupa klausa di dalam kalimat, bukan tanda koma.",
+        },
+        {
+          benar: "Kita memerlukan kursi, meja, dan lemari untuk acara ini.",
+          salah: "Kita memerlukan kursi: meja, dan lemari untuk acara ini.",
+          penjelasan:
+            "Tanda titik dua (:) tidak dipakai jika perincian itu merupakan pelengkap yang mengakhiri pernyataan tanpa adanya pernyataan umum sebelumnya.",
+        },
+        {
+          benar: 'Marilah kita menyanyikan lagu "Indonesia Raya" bersama-sama.',
+          salah: "Marilah kita menyanyikan lagu Indonesia Raya bersama-sama.",
+          penjelasan:
+            'Judul lagu yang dipakai dalam kalimat harus diapit oleh tanda petik dua ("...").',
+        },
+        {
+          benar: "Perpustakaan daerah itu dibangun pada tahun 2010—2013.",
+          salah: "Perpustakaan daerah itu dibangun pada tahun 2010-2013.",
+          penjelasan:
+            "Tanda pisah (—) dipakai di antara dua bilangan atau tahun yang berarti 'sampai dengan', bukan tanda hubung (-).",
+        },
+        {
+          benar:
+            "Ia berhasil meraih peringkat ke-2 dalam kompetisi sains nasional.",
+          salah:
+            "Ia berhasil meraih peringkat ke 2 dalam kompetisi sains nasional.",
+          penjelasan:
+            "Tanda hubung (-) wajib dipakai untuk merangkai awalan 'ke-' dengan angka.",
+        },
+        {
+          benar: "Kalau diundang, saya akan datang ke pesta pernikahannya.",
+          salah: "Kalau diundang saya akan datang ke pesta pernikahannya.",
+          penjelasan:
+            "Tanda koma wajib dipakai untuk memisahkan anak kalimat yang mendahului induk kalimatnya agar tidak terjadi salah baca.",
+        },
+        {
+          benar: "Harganya Rp1.500,00/lembar.",
+          salah: "Harganya Rp1.500,00 setiap lembar.",
+          penjelasan:
+            "Tanda garis miring (/) dapat dipakai sebagai pengganti kata 'setiap' pada penulisan satuan harga.",
+        },
+        {
+          benar: '"Kapan Saudara tinggal?" tanya Pak Lurah.',
+          salah: '"Kapan Saudara tinggal?", tanya Pak Lurah.',
+          penjelasan:
+            "Tanda koma tidak dipakai untuk memisahkan petikan langsung yang berupa kalimat tanya dari bagian lain yang mengikutinya.",
+        },
+        {
+          benar:
+            "Kemerdekaan bangsa itu—saya yakin akan tercapai—diperjuangkan oleh bangsa itu sendiri.",
+          salah:
+            "Kemerdekaan bangsa itu (saya yakin akan tercapai) diperjuangkan oleh bangsa itu sendiri.",
+          penjelasan:
+            "Tanda pisah (—) dipakai untuk membatasi penyisipan kata atau kalimat yang memberi penjelasan di luar bangun kalimat, bukan tanda kurung.",
+        },
+        {
+          benar: "Indonesia memiliki lebih dari 13.000 pulau.",
+          salah: "Indonesia memiliki lebih dari 13,000 pulau.",
+          penjelasan:
+            "Tanda titik (.) dipakai untuk memisahkan bilangan ribuan atau kelipatannya yang menunjukkan jumlah, bukan tanda koma.",
+        },
+
+        // KONTEKS: KESEHATAN & SAINS (Gabungan Baku + Huruf Miring)
+        {
+          benar:
+            "Dokter spesialis tersebut memberikan diagnosis awal bahwa penderita terinfeksi bakteri <i>Escherichia coli</i>.",
+          salah:
+            "Dokter spesialis tersebut memberikan diagnosa awal bahwa penderita terinfeksi bakteri Escherichia coli.",
+          penjelasan:
+            "Kata 'diagnosa' merupakan kata tidak baku (baku: diagnosis). Selain itu, nama ilmiah bakteri dalam bahasa asing yang disisipkan wajib ditulis dengan huruf miring.",
+        },
+        {
+          benar:
+            "Proses fotosintesis pada tumbuhan menghasilkan oksigen yang sangat dibutuhkan oleh manusia.",
+          salah:
+            "Proses fotosintesa pada tumbuhan menghasilkan oksigen yang sangat dibutuhkan oleh manusia.",
+          penjelasan:
+            "Kata 'fotosintesa' adalah bentuk tidak baku. Kata baku yang benar dalam konteks ilmiah biologi adalah 'fotosintesis'.",
+        },
+
+        // KONTEKS: BISNIS & EKONOMI (Tanda Baca Titik Koma + Konjungsi Antarkalimat)
+        {
+          benar:
+            "Perusahaan mengalami kerugian besar di kuartal pertama. Namun, manajemen tetap optimis dan tidak melakukan pemutusan hubungan kerja.",
+          salah:
+            "Perusahaan mengalami kerugian besar di kuartal pertama. Namun manajemen tetap optimis dan tidak melakukan pemutusan hubungan kerja.",
+          penjelasan:
+            "Konjungsi antarkalimat 'namun' yang diletakkan di awal kalimat wajib langsung diikuti oleh tanda koma.",
+        },
+        {
+          benar:
+            "Panitia telah menyiapkan konsumsi berupa makanan berat, minuman, dan snack; dekorasi panggung dan ruangan; serta souvenir untuk para tamu undangan.",
+          salah:
+            "Panitia telah menyiapkan konsumsi berupa makanan berat, minuman, dan snack, dekorasi panggung dan ruangan, serta souvenir untuk para tamu undangan.",
+          penjelasan:
+            "Tanda titik koma (;) dipakai untuk memisahkan bagian-bagian pemerincian dalam kalimat yang sudah menggunakan tanda koma, agar tidak terjadi ambiguitas.",
+        },
+
+        // KONTEKS: SENI & BUDAYA (Huruf Miring Judul + Tanda Petik)
+        {
+          benar:
+            'Puisi berjudul "Aku" karya Chairil Anwar pertama kali dimuat dalam majalah <i>Siasat</i>.',
+          salah:
+            "Puisi berjudul Aku karya Chairil Anwar pertama kali dimuat dalam majalah Siasat.",
+          penjelasan:
+            'Judul sajak atau puisi yang dipakai dalam kalimat harus diapit tanda petik dua ("..."), sedangkan nama majalah yang dikutip ditulis dengan huruf miring.',
+        },
+        {
+          benar:
+            'Film "Laskar Pelangi" berhasil mengangkat budaya literasi masyarakat di wilayah terpencil.',
+          salah:
+            "Film Laskar Pelangi berhasil mengangkat budaya literasi masyarakat di wilayah terpencil.",
+          penjelasan:
+            'Judul film yang disebutkan dalam kalimat wajib diapit oleh tanda petik dua ("...").',
+        },
+
+        // KONTEKS: OLAHRAGA (Konjungsi Korelatif)
+        {
+          benar:
+            "Atlet nasional itu bukan mengikuti cabang olahraga atletik, melainkan cabang olahraga angkat besi.",
+          salah:
+            "Atlet nasional itu bukan mengikuti cabang olahraga atletik, tetapi cabang olahraga angkat besi.",
+          penjelasan:
+            "Pasangan konjungsi korelatif yang benar untuk menunjukkan perlawanan/kebalikan adalah 'bukan... melainkan...', bukan 'bukan... tetapi...'. Pasangan korelatif tidak boleh ditukar.",
+        },
+        {
+          benar:
+            "Pertandingan final akan dihadiri baik presiden federasi maupun para pendukung fanatik.",
+          salah:
+            "Pertandingan final akan dihadiri baik presiden federasi atau para pendukung fanatik.",
+          penjelasan:
+            "Pasangan konjungsi korelatif yang benar adalah 'baik... maupun...', bukan 'baik... atau...'.",
+        },
+
+        // KONTEKS: PENDIDIKAN (Konjungsi Intrakalimat & Aturan Posisi)
+        {
+          benar:
+            "Siswa yang rajin serta disiplin akan memperoleh beasiswa penuh dari sekolah.",
+          salah:
+            "Serta siswa yang rajin dan disiplin akan memperoleh beasiswa penuh dari sekolah.",
+          penjelasan:
+            "Konjungsi koordinatif (setara) seperti 'serta' tidak boleh diletakkan pada awal kalimat.",
+        },
+        {
+          benar:
+            "Guru mata pelajaran Matematika menjelaskan materi tersebut, sedangkan murid-murid mencatat dengan seksama.",
+          salah:
+            "Guru mata pelajaran Matematika menjelaskan materi tersebut sedangkan murid-murid mencatat dengan seksama.",
+          penjelasan:
+            "Konjungsi 'sedangkan' yang menghubungkan dua klausa setara dalam kalimat majemuk wajib didahului oleh tanda koma.",
+        },
+
+        // --- PARAMETER: PENGGUNAAN KONJUNGSI (Berdasarkan Referensi Dokumen) ---
+        {
+          benar: "Bukan pangkat yang dia cari, melainkan nama baik keluarga.",
+          salah: "Bukan pangkat yang dia cari, tetapi nama baik keluarga.",
+          penjelasan:
+            "Konjungsi korelatif memiliki pasangan tetap. Pasangan kata 'bukan' adalah 'melainkan', sedangkan 'tidak' berpasangan dengan 'tetapi'.",
+        },
+        {
+          benar:
+            "Baik mahasiswa maupun dosen menghadiri upacara bendera tersebut.",
+          salah:
+            "Baik mahasiswa ataupun dosen menghadiri upacara bendera tersebut.",
+          penjelasan:
+            "Konjungsi korelatif 'baik' memiliki pasangan baku yaitu 'maupun', bukan 'ataupun'.",
+        },
+        {
+          benar: "Meskipun hari hujan lebat, Andi tetap pergi ke sekolah.",
+          salah:
+            "Meskipun hari hujan lebat, tetapi Andi tetap pergi ke sekolah.",
+          penjelasan:
+            "Hindari penggunaan konjungsi ganda yang bertentangan. Jika sudah memakai kata 'meskipun' di awal, tidak perlu lagi menggunakan kata 'tetapi' di induk kalimat.",
+        },
+        {
+          benar: "Rencana itu sudah matang. Namun, kita tetap harus waspada.",
+          salah: "Rencana itu sudah matang. Namun kita tetap harus waspada.",
+          penjelasan:
+            "Konjungsi antarkalimat seperti 'Namun' wajib diletakkan di awal kalimat baru dan harus langsung diikuti oleh tanda baca koma (,).",
+        },
+        {
+          benar: "Adik menyapu lantai rumah, sedangkan Kakak mencuci piring.",
+          salah: "Adik menyapu lantai rumah. Sedangkan Kakak mencuci piring.",
+          penjelasan:
+            "Kata 'sedangkan' adalah konjungsi intrakalimat (koordinatif) yang berfungsi menghubungkan klausa, sehingga tidak boleh diletakkan di awal kalimat baru setelah tanda titik.",
+        },
+        {
+          benar:
+            "Nilai ujiannya sangat rendah sehingga ia tidak lulus seleksi.",
+          salah:
+            "Nilai ujiannya sangat rendah. Sehingga ia tidak lulus seleksi.",
+          penjelasan:
+            "Konjungsi subordinatif 'sehingga' tidak bisa diletakkan pada awal kalimat baru setelah tanda titik.",
+        },
+        {
+          benar:
+            "Dia tidak hanya pandai di kelas, tetapi juga aktif berorganisasi.",
+          salah:
+            "Dia tidak hanya pandai di kelas, melainkan juga aktif berorganisasi.",
+          penjelasan:
+            "Berdasarkan aturan konjungsi korelatif, pasangan kata 'tidak (hanya)' yang tepat dan baku adalah 'tetapi (juga)'.",
+        },
+        // --- PARAMETER: KATA DEPAN (Berdasarkan Lampiran Dokumen) ---
+        {
+          benar:
+            "Bermalam saja di sini, kau tidak cukup sehat untuk pulang malam ini.", // Sesuai contoh dokumen hlm 1
+          salah:
+            "Bermalam saja disini, kau tidak cukup sehat untuk pulang malam ini.",
+          penjelasan:
+            "Kata depan 'di' yang menunjukkan arah atau tempat ('di sini') harus ditulis secara terpisah dari kata yang mengikutinya.",
+        },
+        {
+          benar:
+            "Hari sudah semakin gelap, kapan kamu akan berangkat ke Gilimanuk?", // Sesuai contoh dokumen hlm 1
+          salah:
+            "Hari sudah semakin gelap, kapan kamu akan berangkat kegilimanuk?",
+          penjelasan:
+            "Kata depan 'ke' yang diikuti oleh nama tempat atau arah geografis ('ke Gilimanuk') wajib ditulis terpisah.",
+        },
+        {
+          benar: "Semua makanan di atas meja itu habis dimakan kucing.", // Sesuai contoh dokumen hlm 1
+          salah: "Semua makanan di atas meja itu habis di makan kucing.",
+          penjelasan:
+            "Kata 'di' pada 'dimakan' berfungsi sebagai imbuhan kata kerja pasif, sehingga penulisannya harus digabung (serangkai).",
+        },
+        {
+          benar: "Pakaian-pakaian itu sudah rapi disetrika oleh kakak.", // Sesuai contoh dokumen hlm 1
+          salah: "Pakaian-pakaian itu sudah rapi di setrika oleh kakak.",
+          penjelasan:
+            "Penulisan 'di' untuk menerangkan kalimat pasif seperti 'disetrika' harus digabungkan dengan kata kerjanya.",
+        },
+        {
+          benar:
+            "Ketika kami mempunyai beberapa masalah, kami selalu mengadu kepadanya.", // Sesuai contoh dokumen hlm 1
+          salah:
+            "Ketika kami mempunyai beberapa masalah, kami selalu mengadu kepada nya.",
+          penjelasan:
+            "Kata depan 'ke' yang bertemu dengan pronomina/bukan tempat ('kepadanya') ditulis serangkai atau digabung.",
+        },
+        {
+          benar:
+            "Ternyata dia baru saja di-PHK oleh perusahaan tempatnya bekerja.", // Sesuai contoh dokumen hlm 1
+          salah:
+            "Ternyata dia baru saja di PHK oleh perusahaan tempatnya bekerja.",
+          penjelasan:
+            "Penulisan kata 'di' sebagai imbuhan yang dihubungkan dengan singkatan kapital wajib dirangkaikan dengan tanda hubung (-).",
+        },
+        {
+          benar:
+            "Sebaiknya sistem pada komputermu di-upgrade dengan versi terbaru.", // Sesuai contoh dokumen hlm 1
+          salah:
+            "Sebaiknya sistem pada komputermu diupgrade dengan versi terbaru.",
+          penjelasan:
+            "Penggabungan imbuhan 'di' dengan kata singkatan atau istilah yang bukan dari bahasa Indonesia wajib menggunakan tanda hubung (-).",
+        },
+        {
+          benar: "Aku sangat senang kau tidak jadi keluar kampus semester ini.", // Sesuai contoh dokumen hlm 1
+          salah:
+            "Aku sangat senang kau tidak jadi ke luar kampus semester ini.",
+          penjelasan:
+            "Kata 'keluar' yang berfungsi sebagai kata kerja (lawan kata dari 'masuk') harus ditulis serangkai/digabung.",
+        },
+        {
+          benar:
+            "Saudara perempuanku itu baru saja datang dari Surabaya kemarin.", // Sesuai contoh dokumen hlm 1
+          salah:
+            "Saudara perempuanku itu baru saja datang darisurabaya kemarin.",
+          penjelasan:
+            "Kata depan 'dari' yang menyatakan asal tempat ('dari Surabaya') wajib ditulis terpisah menggunakan spasi.",
+        },
+        {
+          benar: "Anak-anak itu lari tunggang langgang dikejar anjing liar.", // Sesuai contoh dokumen hlm 1
+          salah: "Anak-anak itu lari tunggang langgang di kejar anjing liar.",
+          penjelasan:
+            "Kata 'dikejar' adalah bentuk kalimat pasif, maka penulisan kata 'di' di awal wajib digabungkan tanpa spasi.",
+        },
+      ];
+
+      let totalSoal = 15; // Jumlah soal per sesi kuis
+      let kuisData = [];
+      let currentIndex = 0;
+      let skor = 0;
+      let riwayatUser = [];
+
+      function startQuiz() {
+        skor = 0;
+        currentIndex = 0;
+        riwayatUser = [];
+
+        // Acak bank kalimat dan ambil sebanyak totalSoal
+        let diacak = [...bankKalimat].sort(() => 0.5 - Math.random());
+        kuisData = diacak.slice(0, totalSoal);
+
+        switchScreen("quiz-screen");
+        tampilkanSoal();
+      }
+
+      function tampilkanSoal() {
+        if (currentIndex >= kuisData.length) {
+          tampilkanHasil();
+          return;
+        }
+
+        document.getElementById("current-question-num").innerText =
+          currentIndex + 1;
+        document.getElementById("total-questions-num").innerText =
+          kuisData.length;
+
+        const soalSaatIni = kuisData[currentIndex];
+
+        // ALGORITMA: Mengambil 4 kalimat BENAR dari bank kalimat lain secara acak sebagai pengecoh
+        let bankBenarLain = bankKalimat
+          .filter((item) => item.benar !== soalSaatIni.benar)
+          .map((item) => item.benar);
+
+        // Acak kalimat benar lainnya dan ambil 4
+        bankBenarLain.sort(() => 0.5 - Math.random());
+        let pilihanBenar = bankBenarLain.slice(0, 4);
+
+        // Gabungkan 1 kalimat SALAH (kunci) dengan 4 kalimat BENAR
+        let semuaPilihan = [
+          { teks: soalSaatIni.salah, benar: false }, // Ini yang dicari (kalimat tidak benar)
+          { teks: pilihanBenar[0], benar: true },
+          { teks: pilihanBenar[1], benar: true },
+          { teks: pilihanBenar[2], benar: true },
+          { teks: pilihanBenar[3], benar: true },
+        ];
+
+        // Acak urutan tampil pilihan jawaban agar dinamis
+        semuaPilihan.sort(() => 0.5 - Math.random());
+
+        // Tampilkan ke HTML
+        const optionsContainer = document.getElementById("options-container");
+        optionsContainer.innerHTML = "";
+
+        semuaPilihan.forEach((pilihan) => {
+          const btn = document.createElement("button");
+          btn.className = "option-btn";
+          btn.innerHTML = pilihan.teks;
+          // Jika diklik, jalankan fungsi cek jawaban
+          btn.onclick = () =>
+            jawabSoal(pilihan.teks, soalSaatIni.salah, soalSaatIni);
+          optionsContainer.appendChild(btn);
+        });
+      }
+
+      function jawabSoal(pilihanTeks, kunciSalah, dataAsli) {
+        // Karena pertanyaannya "Manakah yang tidak benar?", user benar jika memilih kalimat yang 'salah'
+        const isCorrect = pilihanTeks === kunciSalah;
+        if (isCorrect) {
+          skor += 20; // 5 soal x 20 = 100
+        }
+
+        riwayatUser.push({
+          soalKe: currentIndex + 1,
+          pilihanUser: pilihanTeks,
+          kunciJawaban: kunciSalah,
+          isCorrect: isCorrect,
+          penjelasan: dataAsli.penjelasan,
+        });
+
+        currentIndex++;
+        tampilkanSoal();
+      }
+
+      function tampilkanHasil() {
+        switchScreen("result-screen");
+
+        document.getElementById("res-skor").innerText = skor;
+        document.getElementById("res-akurasi").innerText =
+          (skor / 100) * 100 + "%";
+
+        const reviewContainer = document.getElementById("review-container");
+        reviewContainer.innerHTML = "";
+
+        riwayatUser.forEach((item) => {
+          const div = document.createElement("div");
+          div.className = "review-item";
+
+          div.innerHTML = `
+                  <p><strong>Soal ${item.soalKe}:</strong></p>
+                  <p>Pilihan Kamu: <span class="${item.isCorrect ? "correct" : "incorrect"}">${item.pilihanUser}</span></p>
+                  ${!item.isCorrect ? `<p>Kunci Jawaban (Kalimat Salah): <span class="correct">${item.kunciJawaban}</span></p>` : ""}
+                  <div class="explanation">
+                      <strong>Pembahasan:</strong> Kalimat tersebut salah karena ${item.penjelasan.toLowerCase()}
+                  </div>
+              `;
+          reviewContainer.appendChild(div);
+        });
+      }
+
+      function resetQuiz() {
+        switchScreen("home-screen");
+      }
+
+      function switchScreen(screenId) {
+        document.querySelectorAll(".screen").forEach((screen) => {
+          screen.classList.remove("active");
+        });
+        document.getElementById(screenId).classList.add("active");
+      }
+    </script>
+  </body>
+</html>
