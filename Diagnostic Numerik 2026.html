@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Diagnostic Test - Numerik</title>
+
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [
+            ["$", "$"],
+            ["\\(", "\\)"],
+          ],
+          displayMath: [
+            ["$$", "$$"],
+            ["\\[", "\\]"],
+          ],
+        },
+        svg: { fontCache: "global" },
+      };
+    </script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+      id="MathJax-script"
+      async
+    ></script>
+
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f4f7f6;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        overflow: hidden;
+      }
+      .container {
+        text-align: center;
+        width: 85%;
+        max-width: 900px;
+        padding: 50px 40px;
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 4px 25px rgba(0, 0, 0, 0.08);
+      }
+      h1 {
+        color: #2c3e50;
+        margin-bottom: 10px;
+        font-size: 28px;
+      }
+      h2 {
+        color: #7f8c8d;
+        font-size: 18px;
+        font-weight: normal;
+        margin-bottom: 30px;
+      }
+      .btn {
+        padding: 14px 40px;
+        font-size: 20px;
+        background-color: #3498db;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: bold;
+        transition:
+          background 0.2s,
+          transform 0.1s;
+      }
+      .btn:hover {
+        background-color: #2980b9;
+        transform: scale(1.02);
+      }
+      /* Area Konten Soal */
+      #display-area {
+        font-size: 28px;
+        line-height: 1.8;
+        color: #2c3e50;
+        min-height: 180px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+      }
+      /* Indikator Waktu */
+      #timer {
+        font-size: 18px;
+        color: #e74c3c;
+        margin-top: 30px;
+        font-weight: bold;
+        letter-spacing: 0.5px;
+      }
+      .hidden {
+        display: none !important;
+      }
+      .info-soal {
+        font-size: 16px;
+        color: #95a5a6;
+        margin-bottom: 15px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div id="start-screen">
+        <h1>Diagnostic Test - Numerik</h1>
+        <h2>Education Priority (Kedinasan, POLRI, dan TNI)</h2>
+        <button class="btn" onclick="mulaiSimulasi()">Mulai Tes</button>
+      </div>
+
+      <div id="quiz-screen" class="hidden">
+        <div id="info-nomor" class="info-soal"></div>
+        <div id="display-area"></div>
+        <div id="timer"></div>
+      </div>
+
+      <div id="end-screen" class="hidden">
+        <h1>Tes Selesai</h1>
+        <p style="color: #7f8c8d; font-size: 18px; margin-top: 10px">
+          Semua soal telah ditampilkan. Terima kasih.
+        </p>
+      </div>
+    </div>
+
+    <script>
+      // DATA SOAL BERDASARKAN DOKUMEN ANDA
+      const daftarSoal = [
+        { teks: "$-8-(-12)=$", durasi: 5 },
+        { teks: "$-5+3$", durasi: 5 },
+        { teks: "$-17-3\\times2=$", durasi: 8 },
+        { teks: "$1+2+3\\div3+2+1$", durasi: 8 },
+        { teks: "$3+4+5-3+4+5$", durasi: 8 },
+        { teks: "$56\\div(-7)\\times(-4)-5=$", durasi: 30 },
+        { teks: "$\\frac{4}{8}+\\frac{5}{4}=$", durasi: 25 },
+        { teks: "$3\\times\\frac{2}{5}$", durasi: 20 },
+        { teks: "$\\frac{2}{3}-4=$", durasi: 20 },
+        { teks: "$-\\frac{4}{5}+1\\frac{1}{2}=$", durasi: 30 },
+        { teks: "$2\\frac{2}{3}\\times-\\frac{2}{3}=$", durasi: 30 },
+        { teks: "$50\\%\\times0,2-\\frac{3}{2}=$", durasi: 23 },
+        { teks: "$\\frac{3}{4}-40\\%\\times\\frac{4}{5}=$", durasi: 33 },
+        { teks: "$20\\%+0.1-0.15$", durasi: 28 },
+        { teks: "Tentukan 20% dari $\\frac{2}{3}=$", durasi: 20 },
+        {
+          teks: "Sir Hardi memiliki uang Rp. 21.000,- dapat membeli 3kg apel. Jika Sir Hardi memiliki uang Rp. 56.000,- maka akan memperoleh ... kg apel.",
+          durasi: 35,
+        },
+        {
+          teks: "Kelas Education Priority dibangun oleh 12 orang dalam waktu 6 hari. Jika 3 pekerja sakit dan tidak dapat bekerja maka pekerjaan tersebut akan selesai dalam waktu...hari.",
+          durasi: 43,
+        },
+        {
+          teks: "Jika perbandingan kelereng siswa A dan B Adalah 2 : 5 dan ternyata Siswa A memiliki 16 kelereng. Berapakah kelereng Siswa B?",
+          durasi: 40,
+        },
+        { teks: "$15+X=30$ Tentukan Nilai X.", durasi: 32 },
+        { teks: "$3X+15=8+4X.$ Tentukan Nilai X.", durasi: 40 },
+        {
+          teks: "Jika 75% dari X adalah 6. Tentukan Nilai X tersebut.",
+          durasi: 32,
+        },
+        {
+          teks: "Deret 3, 5, 8, 13, 20, dan A. Tentukan nilai A sebagai angka deret selanjutnya.",
+          durasi: 37,
+        },
+      ];
+
+      const durasiJeda = 3; // Durasi tampilan jeda bersiap (dalam detik)
+
+      let indeksSekarang = 0;
+      let waktuSisa = 0;
+      let intervalTimer;
+
+      const startScreen = document.getElementById("start-screen");
+      const quizScreen = document.getElementById("quiz-screen");
+      const endScreen = document.getElementById("end-screen");
+      const displayArea = document.getElementById("display-area");
+      const timerArea = document.getElementById("timer");
+      const infoNomor = document.getElementById("info-nomor");
+
+      function mulaiSimulasi() {
+        startScreen.classList.add("hidden");
+        quizScreen.classList.remove("hidden");
+        indeksSekarang = 0;
+        tampilkanSoal();
+      }
+
+      function tampilkanSoal() {
+        if (indeksSekarang < daftarSoal.length) {
+          const soal = daftarSoal[indeksSekarang];
+
+          // Tampilkan nomor soal aktif
+          infoNomor.innerHTML = `Soal ${indeksSekarang + 1} dari ${daftarSoal.length}`;
+
+          // Masukkan teks soal
+          displayArea.innerHTML = soal.teks;
+
+          // Menghitung "Waktu Target" kapan soal harus selesai (Waktu Sekarang + Durasi Soal)
+          const waktuMulai = Date.now();
+          const waktuTarget = waktuMulai + soal.durasi * 1000;
+
+          waktuSisa = soal.durasi;
+          timerArea.innerHTML = `Sisa Waktu: ${waktuSisa} detik`;
+
+          // Proses render MathJax
+          if (window.MathJax) {
+            MathJax.typesetPromise([displayArea]);
+          }
+
+          // Jalankan hitung mundur berbasis waktu asli komputer
+          clearInterval(intervalTimer);
+          intervalTimer = setInterval(() => {
+            const waktuSekarang = Date.now();
+            // Hitung selisih waktu riil yang tersisa dalam detik
+            waktuSisa = Math.ceil((waktuTarget - waktuSekarang) / 1000);
+
+            if (waktuSisa > 0) {
+              timerArea.innerHTML = `Sisa Waktu: ${waktuSisa} detik`;
+            } else {
+              clearInterval(intervalTimer);
+              tampilkanJeda();
+            }
+          }, 200); // Dipercepat ke 200ms agar pemeriksaan waktu lebih responsif saat kembali ke tab
+        } else {
+          selesaiSimulasi();
+        }
+      }
+
+      function tampilkanJeda() {
+        infoNomor.innerHTML = "JEDA REHAT";
+        displayArea.innerHTML =
+          "<em style='color: #95a5a6; font-size: 24px;'>Bersiap-siap untuk soal berikutnya...</em>";
+        timerArea.innerHTML = "";
+        indeksSekarang++;
+
+        // Durasi Blank with Intention / Bersiap-siap
+        setTimeout(() => {
+          tampilkanSoal();
+        }, durasiJeda * 1000);
+      }
+
+      function selesaiSimulasi() {
+        quizScreen.classList.add("hidden");
+        endScreen.classList.remove("hidden");
+      }
+    </script>
+  </body>
+</html>
