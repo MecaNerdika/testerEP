@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnostic Test - Penalaran</title>
+    
+    <!-- Integrasi MathJax untuk Rumus/Simbol Logika jika diperlukan -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f3f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .container {
+            text-align: center;
+            width: 85%;
+            max-width: 900px;
+            padding: 50px 40px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 6px 25px rgba(0,0,0,0.06);
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        h2 {
+            color: #7f8c8d;
+            font-size: 18px;
+            font-weight: normal;
+            margin-bottom: 30px;
+        }
+        .btn {
+            padding: 14px 40px;
+            font-size: 20px;
+            background-color: #e67e22; /* Warna oranye khusus versi penalaran */
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s, transform 0.1s;
+        }
+        .btn:hover {
+            background-color: #d35400;
+            transform: scale(1.02);
+        }
+        /* Area Konten Soal */
+        #display-area {
+            font-size: 24px;
+            line-height: 1.8;
+            color: #2c3e50;
+            min-height: 220px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            white-space: pre-line; /* Menjaga baris baru agar teks soal rapi */
+            padding: 0 20px;
+        }
+        /* Indikator Waktu */
+        #timer {
+            font-size: 18px;
+            color: #c0392b;
+            margin-top: 30px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+        .hidden {
+            display: none !important;
+        }
+        .info-soal {
+            font-size: 16px;
+            color: #95a5a6;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Halaman Utama / Mulai -->
+    <div id="start-screen">
+        <h1>Diagnostic Test - Penalaran</h1>
+        <h2>Education Priority (Kedinasan, POLRI, dan TNI)</h2>
+        <button class="btn" onclick="mulaiSimulasi()">Mulai Tes</button>
+    </div>
+
+    <!-- Halaman Tampilan Soal & Jeda -->
+    <div id="quiz-screen" class="hidden">
+        <div id="info-nomor" class="info-soal"></div>
+        <div id="display-area">
+            <!-- Soal atau pesan tunggu akan muncul di sini -->
+        </div>
+        <div id="timer"></div>
+    </div>
+
+    <!-- Halaman Selesai -->
+    <div id="end-screen" class="hidden">
+        <h1>Tes Selesai</h1>
+        <p style="color: #7f8c8d; font-size: 18px; margin-top: 10px;">Semua soal penalaran telah ditampilkan. Terima kasih.</p>
+    </div>
+</div>
+
+<script>
+    // DATA SOAL PENALARAN BERDASARKAN DOKUMEN ANDA
+    // Menggunakan tanda `\n` untuk memisahkan premis agar tampil berbaris ke bawah dengan rapi
+    const daftarSoal = [
+        { 
+            teks: "Hubungan kata berikut sama dengan hubungan kata....\n\nAyam : Bebek", 
+            durasi: 15 
+        },
+        { 
+            teks: "Jika hari hujan, maka jalan menjadi basah.\nHari ini hujan.\n\nKesimpulan yang benar adalah ...", 
+            durasi: 40 
+        },
+        { 
+            teks: "Hari ini hujan atau angin bertiup kencang.\nTernyata hari ini tidak hujan.\n\nKesimpulan yang benar adalah ...", 
+            durasi: 45 
+        },
+        { 
+            teks: "Jika sebuah kendaraan kehabisan bensin, maka mesin tidak dapat menyala.\nMesin kendaraan tersebut dapat menyala.\n\nKesimpulan yang benar adalah ...", 
+            durasi: 45 
+        },
+        { 
+            teks: "Jika seseorang belajar dengan tekun, maka ia memahami materi.\nJika seseorang memahami materi, maka ia mampu mengerjakan soal.\nDina belajar dengan tekun.\n\nKesimpulan yang benar adalah ...", 
+            durasi: 45 
+        },
+        { 
+            teks: "Lima siswa A, B, C, D, dan E berdiri berjajar.\nB berada di sebelah kanan A.\nD berada di sebelah kiri C.\nE berada paling kanan.\nJika A berada paling kiri, urutan yang benar adalah ...", 
+            durasi: 45 
+        },
+        { 
+            teks: "Semua dokter adalah lulusan perguruan tinggi.\nAndi adalah lulusan perguruan tinggi.\n\nKesimpulan yang tepat adalah ...", 
+            durasi: 45 
+        }
+    ];
+
+    const durasiJeda = 3; // Durasi tampilan jeda bersiap (dalam detik)
+
+    let indeksSekarang = 0;
+    let waktuSisa = 0;
+    let intervalTimer;
+
+    const startScreen = document.getElementById('start-screen');
+    const quizScreen = document.getElementById('quiz-screen');
+    const endScreen = document.getElementById('end-screen');
+    const displayArea = document.getElementById('display-area');
+    const timerArea = document.getElementById('timer');
+    const infoNomor = document.getElementById('info-nomor');
+
+    function mulaiSimulasi() {
+        startScreen.classList.add('hidden');
+        quizScreen.classList.remove('hidden');
+        indeksSekarang = 0;
+        tampilkanSoal();
+    }
+
+    function tampilkanSoal() {
+        if (indeksSekarang < daftarSoal.length) {
+            const soal = daftarSoal[indeksSekarang];
+            
+            // Tampilkan nomor soal aktif
+            infoNomor.innerHTML = `Soal ${indeksSekarang + 1} dari ${daftarSoal.length}`;
+            
+            // Masukkan teks soal
+            displayArea.innerHTML = soal.teks;
+            waktuSisa = soared = soal.durasi;
+            timerArea.innerHTML = `Sisa Waktu: ${waktuSisa} detik`;
+
+            // Proses render MathJax (berjaga-jaga jika ada simbol logika/matematika)
+            if (window.MathJax) {
+                MathJax.typesetPromise([displayArea]);
+            }
+
+            // Jalankan hitung mundur per detik
+            clearInterval(intervalTimer);
+            intervalTimer = setInterval(() => {
+                waktuSisa--;
+                timerArea.innerHTML = `Sisa Waktu: ${waktuSisa} detik`;
+
+                if (waktuSisa <= 0) {
+                    clearInterval(intervalTimer);
+                    tampilkanJeda();
+                }
+            }, 1000);
+        } else {
+            selesaiSimulasi();
+        }
+    }
+
+    function tampilkanJeda() {
+        infoNomor.innerHTML = "JEDA REHAT";
+        displayArea.innerHTML = "<em style='color: #95a5a6; font-size: 24px;'>Bersiap-siap untuk soal berikutnya...</em>";
+        timerArea.innerHTML = ""; 
+        indeksSekarang++;
+
+        // Durasi Blank with Intention / Bersiap-siap
+        setTimeout(() => {
+            tampilkanSoal();
+        }, durasiJeda * 1000);
+    }
+
+    function selesaiSimulasi() {
+        quizScreen.classList.add('hidden');
+        endScreen.classList.remove('hidden');
+    }
+</script>
+
+</body>
+</html>
