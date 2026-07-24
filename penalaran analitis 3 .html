@@ -366,309 +366,359 @@
       // Format: {type:'sinonim'|'antonim'|'hiponim', q:'', options:['','','',''], answer: index}
 
       const Soal = [
-        // --- TES PENALARAN LOGIS ---
-        {
-          q: "Hanya koki profesional yang mampu membuat masakan Beef Wellington sempurna. Rafi mampu membuat masakan Beef Wellington sempurna. Orang ini bukan koki profesional. Pernyataan yang sesuai dengan pernyataan di atas adalah ...",
-          o: [
-            "Orang ini pasti Rafi.",
-            "Beef Wellington bisa dibuat Rafi, namun Rafi tidak bisa membuat masakan lainnya.",
-            "Orang ini mampu membuat masakan Beef Wellington sempurna.",
-            "Orang ini pasti bukan Rafi.",
-            "Rafi koki tidak profesional.",
-          ],
-          a: 3,
-        },
-        {
-          q: "Semua mobil yang dimiliki Budi bukan mobil listrik. Sebagian mobil yang dimiliki Budi adalah mobil SUV. Dengan demikian, ...",
-          o: [
-            "Sebagian mobil yang dimiliki Budi adalah mobil SUV dan bukan mobil listrik.",
-            "Semua mobil yang dimiliki Budi adalah mobil SUV namun bukan mobil listrik.",
-            "Semua mobil yang dimiliki Budi bukan mobil SUV dan juga bukan mobil listrik.",
-            "Semua mobil yang dimiliki Budi adalah mobil SUV.",
-            "Sebagian mobil yang dimiliki Budi adalah mobil SUV dan sebagian sisanya adalah mobil sedan.",
-          ],
-          a: 0,
-        },
-        {
-          q: "Semua siswa laki-laki menjadi anggota klub basket. Sebagian siswa laki-laki gemar membaca komik. Pernyataan yang sesuai dengan pernyataan di atas adalah ...",
-          o: [
-            "Siswa perempuan tidak gemar membaca komik.",
-            "Siswa laki-laki yang tidak gemar membaca komik bukan anggota klub basket.",
-            "Sebagian siswa laki-laki yang tidak gemar membaca komik tidak menjadi anggota klub basket.",
-            "Semua anggota klub basket gemar membaca komik.",
-            "Tidak dapat ditarik kesimpulan.",
-          ],
-          a: 4,
-        },
-        {
-          q: "Budi anggota klub basket. Anggota klub basket pintar melompat tinggi. Pernyataan yang sesuai dengan pernyataan di atas adalah ...",
-          o: [
-            "Budi anggota klub basket tapi tidak pintar melompat tinggi.",
-            "Budi pintar melompat tinggi setelah menjadi anggota klub basket.",
-            "Budi pintar melompat tinggi.",
-            "Melompat tinggi menjadi syarat untuk menjadi anggota klub basket.",
-            "Semua anggota klub basket dilatih melompat tinggi.",
-          ],
-          a: 2,
-        },
-        {
-          q: "Dari Surabaya ke Malang harus melewati Sidoarjo. Sidoarjo terletak di selatan Surabaya. Pernyataan yang sesuai dengan pernyataan di atas adalah ...",
-          o: [
-            "Dari Surabaya bisa ke Malang meski tidak harus melewati Sidoarjo.",
-            "Sidoarjo terletak di utara Malang.",
-            "Sidoarjo terletak di tengah-tengah antara Surabaya dan Malang.",
-            "Letak Surabaya di sebelah utara Sidoarjo.",
-            "Tidak dapat ditarik kesimpulan.",
-          ],
-          a: 3,
-        },
-        {
-          q: "Semua karyawan di divisi itu gemar minum kopi namun tidak senang minum teh. Pernyataan yang tidak sesuai dengan pernyataan di atas adalah ...",
-          o: [
-            "Karyawan divisi itu tidak gemar minum teh.",
-            "Karyawan divisi itu senang minum kopi.",
-            "Tidak seorang pun karyawan divisi itu yang gemar minum teh.",
-            "Tidak seorang pun karyawan divisi itu yang gemar minum kopi.",
-            "Ada karyawan divisi itu yang tidak senang minum teh.",
-          ],
-          a: 3,
-        },
-        {
-          q: "Maya kakaknya Rina namun adiknya Fikri. Nita juga adik Maya dan lebih tua usianya dibandingkan Rina. Sebutkan urutan keempat saudara itu dimulai dari yang paling muda usianya!",
-          o: [
-            "Maya - Rina - Nita - Fikri",
-            "Rina - Nita - Maya - Fikri",
-            "Fikri - Maya - Rina - Nita",
-            "Fikri - Nita - Maya - Rina",
-            "Maya - Fikri - Nita - Rina",
-          ],
-          a: 1,
-        },
-        {
-          q: "Doni tinggi dan atletis. Pernyataan yang sesuai dengan pernyataan di atas adalah ...",
-          o: [
-            "Farhan dan Doni atletis.",
-            "Gilang dan Rezza tidak tinggi.",
-            "Irfan dan Bagas tidak atletis.",
-            "Gilang dan Doni atletis tapi tidak tinggi.",
-            "Irfan dan Doni tinggi tapi tidak atletis.",
-          ],
-          a: 0,
-        },
-        {
-          q: "Tari menyukai Dimas. Siapa yang menyukai Dimas tentu juga akan menyukai Gilang. Tari hanya menyukai pemuda yang cerdas saja. Pernyataan yang sesuai dengan pernyataan di atas adalah ...",
-          o: [
-            "Gilang tidak cerdas.",
-            "Gilang menyukai Tari.",
-            "Tari menyukai Dimas namun tidak menyukai Gilang.",
-            "Gilang cerdas namun tidak menyukai Tari.",
-            "Gilang cerdas.",
-          ],
-          a: 4,
-        },
-        {
-          q: "Semua programmer mengetik dengan keyboard mekanis. Sebagian programmer membuat aplikasi gim. Pernyataan yang sesuai dengan pernyataan di atas adalah ...",
-          o: [
-            "Tidak semua programmer membuat aplikasi gim dan tidak menggunakan keyboard mekanis.",
-            "Tidak semua programmer membuat aplikasi gim namun menggunakan keyboard mekanis.",
-            "Programmer yang tidak menggunakan keyboard mekanis tidak membuat aplikasi gim.",
-            "Sebagian programmer membuat aplikasi gim dengan tidak menggunakan keyboard mekanis.",
-            "Tidak semua programmer mengetik dengan keyboard mekanis.",
-          ],
-          a: 1,
-        },
-        {
-          q: "Semua bus antarkota menggunakan bahan bakar solar. Bus milik Pak Tono rusak hingga harus diperbaiki di bengkel. Pernyataan yang tidak sesuai dengan pernyataan di atas adalah ...",
-          o: [
-            "Bus yang rusak harus diperbaiki di bengkel.",
-            "Bus milik Pak Tono menggunakan bahan bakar solar.",
-            "Bus milik Pak Tono rusak karena menggunakan bahan bakar solar.",
-            "Tidak ada bus antarkota yang tidak menggunakan bahan bakar solar.",
-            "Pak Tono harus membawa busnya ke bengkel untuk diperbaiki.",
-          ],
-          a: 2,
-        },
-        {
-          q: "Sebagian atlet ada pada level nasional. Semua yang ada pada level nasional mendatangkan bonus besar. Pernyataan yang tidak sesuai dengan pernyataan di atas adalah ...",
-          o: [
-            "Semua atlet yang mendapat bonus besar tidak ada pada level nasional.",
-            "Sebagian atlet mendapatkan bonus besar.",
-            "Tidak semua atlet ada pada level nasional.",
-            "Tidak semua atlet mendapat bonus besar.",
-            "Semua atlet yang tidak mendapat bonus besar tidak ada pada level nasional.",
-          ],
-          a: 0,
-        },
-        {
-          q: "Jika tidak memasak, Lani membaca buku. Jika tidak membaca buku, Siska menonton TV. Pernyataan yang sesuai dengan pernyataan di atas adalah ...",
-          o: [
-            "Lani tidak suka menonton TV.",
-            "Siska menonton TV setelah membaca buku.",
-            "Lani membaca buku setelah memasak.",
-            "Siska tidak bisa memasak.",
-            "Tidak dapat ditarik kesimpulan.",
-          ],
-          a: 4,
-        },
-        {
-          q: "Semua sapi memakan rumput. Sebagian hewan adalah sapi. Pernyataan yang sesuai dengan pernyataan di atas adalah ...",
-          o: [
-            "Semua hewan pemakan rumput adalah sapi.",
-            "Sebagian hewan pemakan rumput.",
-            "Sebagian sapi pemakan rumput.",
-            "Sapi yang bukan pemakan rumput bukan termasuk hewan.",
-            "Sebagian sapi tidak memakan rumput.",
-          ],
-          a: 1,
-        },
-        {
-          q: "Semua jenis unggas bertelur. Mamalia tidak bertelur. Pernyataan yang sesuai dengan pernyataan di atas adalah ...",
-          o: [
-            "Mamalia bukan termasuk jenis unggas.",
-            "Sebagian unggas bertelur.",
-            "Sebagian mamalia bertelur.",
-            "Jenis unggas yang tidak bertelur adalah mamalia.",
-            "Mamalia termasuk jenis unggas.",
-          ],
-          a: 0,
-        },
+  // --- TES PENALARAN LOGIS ---
+  {
+    q: "Hanya koki profesional yang mampu membuat masakan Beef Wellington sempurna. Rafi mampu membuat masakan Beef Wellington sempurna. Orang ini bukan koki profesional. Pernyataan yang sesuai dengan pernyataan di atas adalah ...",
+    o: [
+      "Orang ini pasti Rafi.",
+      "Beef Wellington bisa dibuat Rafi, namun Rafi tidak bisa membuat masakan lainnya.",
+      "Orang ini mampu membuat masakan Beef Wellington sempurna.",
+      "Orang ini pasti bukan Rafi.",
+      "Rafi koki tidak profesional."
+    ],
+    a: 3
+  },
+  {
+    q: "Semua mobil yang dimiliki Budi bukan mobil listrik. Sebagian mobil yang dimiliki Budi adalah mobil SUV. Dengan demikian, ...",
+    o: [
+      "Sebagian mobil yang dimiliki Budi adalah mobil SUV dan bukan mobil listrik.",
+      "Semua mobil yang dimiliki Budi adalah mobil SUV namun bukan mobil listrik.",
+      "Semua mobil yang dimiliki Budi bukan mobil SUV dan juga bukan mobil listrik.",
+      "Semua mobil yang dimiliki Budi adalah mobil SUV.",
+      "Sebagian mobil yang dimiliki Budi adalah mobil SUV dan sebagian sisanya adalah mobil sedan."
+    ],
+    a: 0
+  },
+  {
+    q: "Semua siswa laki-laki menjadi anggota klub basket. Sebagian siswa laki-laki gemar membaca komik. Pernyataan yang sesuai dengan pernyataan di atas adalah ...",
+    o: [
+      "Siswa perempuan tidak gemar membaca komik.",
+      "Siswa laki-laki yang tidak gemar membaca komik bukan anggota klub basket.",
+      "Sebagian siswa laki-laki yang tidak gemar membaca komik tidak menjadi anggota klub basket.",
+      "Semua anggota klub basket gemar membaca komik.",
+      "Tidak dapat ditarik kesimpulan."
+    ],
+    a: 4
+  },
+  {
+    q: "Budi anggota klub basket. Anggota klub basket pintar melompat tinggi. Pernyataan yang sesuai dengan pernyataan di atas adalah ...",
+    o: [
+      "Budi anggota klub basket tapi tidak pintar melompat tinggi.",
+      "Budi pintar melompat tinggi setelah menjadi anggota klub basket.",
+      "Budi pintar melompat tinggi.",
+      "Melompat tinggi menjadi syarat untuk menjadi anggota klub basket.",
+      "Semua anggota klub basket dilatih melompat tinggi."
+    ],
+    a: 2
+  },
+  {
+    q: "Dari Surabaya ke Malang harus melewati Sidoarjo. Sidoarjo terletak di selatan Surabaya. Pernyataan yang sesuai dengan pernyataan di atas adalah ...",
+    o: [
+      "Dari Surabaya bisa ke Malang meski tidak harus melewati Sidoarjo.",
+      "Sidoarjo terletak di utara Malang.",
+      "Sidoarjo terletak di tengah-tengah antara Surabaya dan Malang.",
+      "Letak Surabaya di sebelah utara Sidoarjo.",
+      "Tidak dapat ditarik kesimpulan."
+    ],
+    a: 3
+  },
+  {
+    q: "Semua karyawan di divisi itu gemar minum kopi namun tidak senang minum teh. Pernyataan yang tidak sesuai dengan pernyataan di atas adalah ...",
+    o: [
+      "Karyawan divisi itu tidak gemar minum teh.",
+      "Karyawan divisi itu senang minum kopi.",
+      "Tidak seorang pun karyawan divisi itu yang gemar minum teh.",
+      "Tidak seorang pun karyawan divisi itu yang gemar minum kopi.",
+      "Ada karyawan divisi itu yang tidak senang minum teh."
+    ],
+    a: 3
+  },
+  {
+    q: "Maya kakaknya Rina namun adiknya Fikri. Nita juga adik Maya dan lebih tua usianya dibandingkan Rina. Sebutkan urutan keempat saudara itu dimulai dari yang paling muda usianya!",
+    o: [
+      "Maya - Rina - Nita - Fikri",
+      "Rina - Nita - Maya - Fikri",
+      "Fikri - Maya - Rina - Nita",
+      "Fikri - Nita - Maya - Rina",
+      "Maya - Fikri - Nita - Rina"
+    ],
+    a: 1
+  },
+  {
+    q: "Doni tinggi dan atletis. Pernyataan yang sesuai dengan pernyataan di atas adalah ...",
+    o: [
+      "Farhan dan Doni atletis.",
+      "Gilang dan Rezza tidak tinggi.",
+      "Irfan dan Bagas tidak atletis.",
+      "Gilang dan Doni atletis tapi tidak tinggi.",
+      "Irfan dan Doni tinggi tapi tidak atletis."
+    ],
+    a: 0
+  },
+  {
+    q: "Tari menyukai Dimas. Siapa yang menyukai Dimas tentu juga akan menyukai Gilang. Tari hanya menyukai pemuda yang cerdas saja. Pernyataan yang sesuai dengan pernyataan di atas adalah ...",
+    o: [
+      "Gilang tidak cerdas.",
+      "Gilang menyukai Tari.",
+      "Tari menyukai Dimas namun tidak menyukai Gilang.",
+      "Gilang cerdas namun tidak menyukai Tari.",
+      "Gilang cerdas."
+    ],
+    a: 4
+  },
+  {
+    q: "Semua programmer mengetik dengan keyboard mekanis. Sebagian programmer membuat aplikasi gim. Pernyataan yang sesuai dengan pernyataan di atas adalah ...",
+    o: [
+      "Tidak semua programmer membuat aplikasi gim dan tidak menggunakan keyboard mekanis.",
+      "Tidak semua programmer membuat aplikasi gim namun menggunakan keyboard mekanis.",
+      "Programmer yang tidak menggunakan keyboard mekanis tidak membuat aplikasi gim.",
+      "Sebagian programmer membuat aplikasi gim dengan tidak menggunakan keyboard mekanis.",
+      "Tidak semua programmer mengetik dengan keyboard mekanis."
+    ],
+    a: 1
+  },
+  {
+    q: "Semua bus antarkota menggunakan bahan bakar solar. Bus milik Pak Tono rusak hingga harus diperbaiki di bengkel. Pernyataan yang tidak sesuai dengan pernyataan di atas adalah ...",
+    o: [
+      "Bus yang rusak harus diperbaiki di bengkel.",
+      "Bus milik Pak Tono menggunakan bahan bakar solar.",
+      "Bus milik Pak Tono rusak karena menggunakan bahan bakar solar.",
+      "Tidak ada bus antarkota yang tidak menggunakan bahan bakar solar.",
+      "Pak Tono harus membawa busnya ke bengkel untuk diperbaiki."
+    ],
+    a: 2
+  },
+  {
+    q: "Sebagian atlet ada pada level nasional. Semua yang ada pada level nasional mendatangkan bonus besar. Pernyataan yang tidak sesuai dengan pernyataan di atas adalah ...",
+    o: [
+      "Semua atlet yang mendapat bonus besar tidak ada pada level nasional.",
+      "Sebagian atlet mendapatkan bonus besar.",
+      "Tidak semua atlet ada pada level nasional.",
+      "Tidak semua atlet mendapat bonus besar.",
+      "Semua atlet yang tidak mendapat bonus besar tidak ada pada level nasional."
+    ],
+    a: 0
+  },
+  {
+    q: "Jika tidak memasak, Lani membaca buku. Jika tidak membaca buku, Siska menonton TV. Pernyataan yang sesuai dengan pernyataan di atas adalah ...",
+    o: [
+      "Lani tidak suka menonton TV.",
+      "Siska menonton TV setelah membaca buku.",
+      "Lani membaca buku setelah memasak.",
+      "Siska tidak bisa memasak.",
+      "Tidak dapat ditarik kesimpulan."
+    ],
+    a: 4
+  },
+  {
+    q: "Semua sapi memakan rumput. Sebagian hewan adalah sapi. Pernyataan yang sesuai dengan pernyataan di atas adalah ...",
+    o: [
+      "Semua hewan pemakan rumput adalah sapi.",
+      "Sebagian hewan pemakan rumput.",
+      "Sebagian sapi pemakan rumput.",
+      "Sapi yang bukan pemakan rumput bukan termasuk hewan.",
+      "Sebagian sapi tidak memakan rumput."
+    ],
+    a: 1
+  },
+  {
+    q: "Semua jenis unggas bertelur. Mamalia tidak bertelur. Pernyataan yang sesuai dengan pernyataan di atas adalah ...",
+    o: [
+      "Mamalia bukan termasuk jenis unggas.",
+      "Sebagian unggas bertelur.",
+      "Sebagian mamalia bertelur.",
+      "Jenis unggas yang tidak bertelur adalah mamalia.",
+      "Mamalia termasuk jenis unggas."
+    ],
+    a: 0
+  },
 
-        // --- TES PENALARAN ANALITIS ---
-        {
-          q: "Pagi ini Rendy punya rencana. Dia ingin mengembalikan berkas laptop kepada Bayu setelah merasakan kelezatan mie ayam di Jalan Merdeka 45 Bandung. Rendy ingin makan 2 pisang molen hangat di kantin Bu Sri di dekat kampus ITB. Setelah makan pisang molen dia tidak mau minum es jeruk di kantin Bu Sri tetapi ingin minum es kelapa di dekat Stadion GBLA. Sesudah dari Stadion GBLA, Rendy menuju Jalan Merdeka. Kesimpulan:",
-          o: [
-            "Rendy pertama-tama akan pergi ke Jalan Merdeka.",
-            "Sebelum ke Stadion GBLA, Rendy ingin mengembalikan berkas kepada Bayu sebab takut terlupa.",
-            "Setelah makan mie ayam, Rendy minum es kelapa di dekat Stadion GBLA.",
-            "Pisang molen adalah makanan pertama yang akan disantap Rendy.",
-            "Mie ayam adalah makanan pertama yang akan disantap Rendy.",
-          ],
-          a: 3,
-        },
-        {
-          q: "Aris adalah adik Budi. Cici adalah kakak Aris dan lebih muda daripada Budi. Siapa yang paling tua?",
-          o: [
-            "Aris",
-            "Budi",
-            "Cici",
-            "Cici dan Budi",
-            "Tidak dapat ditentukan",
-          ],
-          a: 1,
-        },
-        {
-          q: "Fikri adalah anak yang sulit disuruh belajar. Fikri bersedia belajar jika sudah dibelikan mainan favoritnya. Jika sudah punya robot mainan, Fikri bisa melupakan mobil-mobilan. Mobil-mobilan lebih disukai Fikri daripada pistol air sehingga Fikri bersedia menukar pistol air dengan mobil-mobilan. Kesukaan Fikri terhadap pistol air sama besarnya dengan kesukaannya terhadap pancingan mainan. Dan Fikri lebih menyukai mobil-mobilan daripada puzzle. Mainan paling favorit apakah yang bisa dibelikan Ibu untuk Fikri agar bersedia belajar?",
-          o: [
-            "Mobil-mobilan",
-            "Puzzle",
-            "Pistol air",
-            "Robot mainan",
-            "Pancingan mainan",
-          ],
-          a: 3,
-        },
-        {
-          q: "Kejujuran P tidak sebaik Q. Terkadang R kurang jujur, tapi sesungguhnya dia masih lebih jujur daripada S. T lebih suka berbohong daripada U. Q cukup jujur, tapi secara umum R lebih jujur daripada Q. Dan V sama jujurnya dengan W. Q lebih jujur daripada U dan W. Siapakah di antara mereka yang paling jujur?",
-          o: ["W", "U", "V", "Q", "R"],
-          a: 4,
-        },
-        {
-          q: "Jarak antara kantor A dan B adalah dua kali jarak kantor C dan D. Kantor E terletak di tengah-tengah antara kantor C dan D. Selanjutnya diketahui bahwa jarak kantor C ke kantor A sama dengan jarak kantor D ke B, yaitu setengah dari jarak kantor A ke kantor E. Kantor yang jaraknya paling jauh dari A adalah ....",
-          o: ["kantor A", "kantor B", "kantor C", "kantor D", "kantor E"],
-          a: 4,
-        },
-        {
-          q: "Pak Broto akan ke luar kota selama 1 bulan untuk urusan dinas sehingga ia harus memilih salah satu dari 3 stafnya (Andi, Hendra, Rizky) yang akan menggantikannya:\n- Andi: cukup kreatif dan cukup baik memimpin, namun sering sakit sehingga terkesan kurang rajin.\n- Hendra: paling kreatif dan cukup sehat, tetapi kalah rajin dari Rizky dan kalah memimpin dari Andi.\n- Rizky: paling rajin, paling sehat, paling bagus memimpin, namun kreativitas di bawah Hendra dan Andi.\nJika dilihat keunggulan masing-masing aspek, maka orang yang paling besar peluangnya untuk dipilih Pak Broto adalah ...",
-          o: [
-            "Rizky",
-            "Andi",
-            "Hendra",
-            "Rizky dan Hendra sama besar peluangnya",
-            "Ketiganya sama besar peluangnya",
-          ],
-          a: 0,
-        },
-        {
-          q: "Berdasarkan informasi mengenai Andi, Hendra, dan Rizky pada soal sebelumnya, pernyataan berikut yang TIDAK tepat adalah ...",
-          o: [
-            "Andi dan Hendra masih kalah sehat dibandingkan dengan Rizky.",
-            "Andi dan Rizky mengalahkan Hendra dalam hal kepemimpinan.",
-            "Tidak ada yang dapat mengalahkan Hendra dalam hal kreativitas.",
-            "Kekurangan Andi dibandingkan dengan Hendra dan Rizky adalah dalam hal kerajinan dan kesehatan.",
-            "Andi masih lebih rajin daripada Hendra dan lebih baik dalam memimpin.",
-          ],
-          a: 4,
-        },
-        {
-          q: "Berdasarkan informasi mengenai Andi, Hendra, dan Rizky, calon pengganti Pak Broto yang paling berpeluang untuk dipilih secara berurutan adalah ...",
-          o: [
-            "Andi, Rizky, Hendra",
-            "Rizky, Andi, Hendra",
-            "Hendra, Rizky, Andi",
-            "Andi, Hendra, Rizky",
-            "Rizky, Hendra, Andi",
-          ],
-          a: 4,
-        },
-        {
-          q: "Jika Pak Broto mempertimbangkan aspek kreativitas saja sebagai kriteria utama, maka pernyataan yang paling tepat adalah ...",
-          o: [
-            "Andi adalah pilihan terbaik.",
-            "Hendra paling tepat untuk dipilih.",
-            "Pak Broto paling tepat memilih Rizky.",
-            "Peluang Rizky lebih besar dibandingkan dengan Hendra.",
-            "Hendra memiliki peluang yang sama besarnya dengan Rizky.",
-          ],
-          a: 1,
-        },
-        {
-          q: "Pada suatu modul pelatihan, setiap peserta diharuskan menyelesaikan 8 modul: P, Q, R, S, T, U, V, dan W. Modul diambil satu per satu secara berurutan setiap bulan tanpa pengulangan, dengan aturan:\n- W selalu diambil di bulan 1\n- P selalu diambil segera setelah Q\n- R harus diambil sebelum P\n- S dan V dipisahkan oleh 2 bulan yang berurutan\nUrutan jadwal berikut yang memenuhi persyaratan untuk bulan ke-2 hingga bulan ke-8 adalah ...",
-          o: [
-            "S, R, Q, P, V, T, U",
-            "Q, S, P, R, V, T, U",
-            "V, R, U, S, Q, P, T",
-            "V, T, U, S, Q, P, R",
-            "P, Q, R, S, T, U, V",
-          ],
-          a: 2,
-        },
-        {
-          q: "Berdasarkan aturan pengambilan modul (W, P, Q, R, S, T, U, V), modul R dapat diambil pada setiap bulan berikut ini KECUALI ...",
-          o: ["Bulan 2", "Bulan 3", "Bulan 4", "Bulan 6", "Bulan 8"],
-          a: 4,
-        },
-        {
-          q: "Berdasarkan aturan pengambilan modul, bulan paling cepat yang dapat digunakan oleh peserta untuk mengambil modul P adalah bulan ...",
-          o: ["Bulan 5", "Bulan 4", "Bulan 3", "Bulan 2", "Bulan 1"],
-          a: 1,
-        },
-        {
-          q: "Berdasarkan aturan pengambilan modul, apabila S diambil pada bulan ke-4, maka Q harus diambil pada bulan ...",
-          o: ["Bulan 2", "Bulan 3", "Bulan 5", "Bulan 6", "Bulan 7"],
-          a: 2,
-        },
-        {
-          q: "Donu seorang anak yatim dan anak bungsu berwajah imut di kelas 1 SD yang sangat disayangi Bu Ani. Ia berteman akrab dengan Tiko (beda angkatan) dan sering bermain di sungai/sawah. Tiko suka mengolok-olok Donu anak manja secara bergurau. Rumah Donu cukup jauh dari sekolah sehingga ia kadang menumpang motor Pak Hadi (tetangganya) yang tempat kerjanya searah dengan sekolah. Mana yang mungkin terjadi?",
-          o: [
-            "Tiko dan Donu sering berkelahi karena Tiko suka mengolok-olok Donu.",
-            "Tiko suka mengejek Donu sehingga Donu sangat membencinya.",
-            "Donu tidak disukai teman-teman kelasnya karena berwajah galak.",
-            "Rumah Donu dan Pak Hadi berada 4 km di selatan sekolah, sedangkan tempat kerja Pak Hadi 2 km di utara sekolah.",
-            "Bu Ani lebih menyukai anak sulung karena lebih bertanggung jawab.",
-          ],
-          a: 3,
-        },
-        {
-          q: "Berdasarkan cerita Donu pada soal sebelumnya, mana yang mungkin terjadi?",
-          o: [
-            "Ibu Donu sudah meninggal dunia setelah sakit parah dan dirawat di rumah sakit selama 2 tahun.",
-            "Tiko adalah murid kelas 2 SD di sekolah Donu.",
-            "Di sekolah, ada teman Donu bernama Nina dan Dina yang paling disayang Bu Ani karena kembar manis.",
-            "Donu anak yang sangat manja.",
-            "Donu tidak suka kakinya terkena lumpur sawah karena susah dibersihkan.",
-          ],
-          a: 1,
-        },
+  // --- TES PENALARAN ANALITIS ---
+  {
+    q: "Pagi ini Rendy punya rencana. Dia ingin mengembalikan berkas laptop kepada Bayu setelah merasakan kelezatan mie ayam di Jalan Merdeka 45 Bandung. Rendy ingin makan 2 pisang molen hangat di kantin Bu Sri di dekat kampus ITB. Setelah makan pisang molen dia tidak mau minum es jeruk di kantin Bu Sri tetapi ingin minum es kelapa di dekat Stadion GBLA. Sesudah dari Stadion GBLA, Rendy menuju Jalan Merdeka. Kesimpulan:",
+    o: [
+      "Rendy pertama-tama akan pergi ke Jalan Merdeka.",
+      "Sebelum ke Stadion GBLA, Rendy ingin mengembalikan berkas kepada Bayu sebab takut terlupa.",
+      "Setelah makan mie ayam, Rendy minum es kelapa di dekat Stadion GBLA.",
+      "Pisang molen adalah makanan pertama yang akan disantap Rendy.",
+      "Mie ayam adalah makanan pertama yang akan disantap Rendy."
+    ],
+    a: 3
+  },
+  {
+    q: "Aris adalah adik Budi. Cici adalah kakak Aris dan lebih muda daripada Budi. Siapa yang paling tua?",
+    o: [
+      "Aris",
+      "Budi",
+      "Cici",
+      "Cici dan Budi",
+      "Tidak dapat ditentukan"
+    ],
+    a: 1
+  },
+  {
+    q: "Fikri adalah anak yang sulit disuruh belajar. Fikri bersedia belajar jika sudah dibelikan mainan favoritnya. Jika sudah punya robot mainan, Fikri bisa melupakan mobil-mobilan. Mobil-mobilan lebih disukai Fikri daripada pistol air sehingga Fikri bersedia menukar pistol air dengan mobil-mobilan. Kesukaan Fikri terhadap pistol air sama besarnya dengan kesukaannya terhadap pancingan mainan. Dan Fikri lebih menyukai mobil-mobilan daripada puzzle. Mainan paling favorit apakah yang bisa dibelikan Ibu untuk Fikri agar bersedia belajar?",
+    o: [
+      "Mobil-mobilan",
+      "Puzzle",
+      "Pistol air",
+      "Robot mainan",
+      "Pancingan mainan"
+    ],
+    a: 3
+  },
+  {
+    q: "Kejujuran P tidak sebaik Q. Terkadang R kurang jujur, tapi sesungguhnya dia masih lebih jujur daripada S. T lebih suka berbohong daripada U. Q cukup jujur, tapi secara umum R lebih jujur daripada Q. Dan V sama jujurnya dengan W. Q lebih jujur daripada U dan W. Siapakah di antara mereka yang paling jujur?",
+    o: [
+      "W",
+      "U",
+      "V",
+      "Q",
+      "R"
+    ],
+    a: 4
+  },
+  {
+    q: "Jarak antara kantor A dan B adalah dua kali jarak kantor C dan D. Kantor E terletak di tengah-tengah antara kantor C dan D. Selanjutnya diketahui bahwa jarak kantor C ke kantor A sama dengan jarak kantor D ke B, yaitu setengah dari jarak kantor A ke kantor E. Kantor yang jaraknya paling jauh dari A adalah ....",
+    o: [
+      "kantor A",
+      "kantor B",
+      "kantor C",
+      "kantor D",
+      "kantor E"
+    ],
+    a: 4
+  },
+
+  // --- KASUS STAF PAK BROTO (SOAL 1) ---
+  {
+    q: "Pak Broto akan ke luar kota selama 1 bulan untuk urusan dinas sehingga ia harus memilih salah satu dari 3 stafnya yang akan menggantikannya di kantor. Beberapa informasi yang menjadi dasar keputusan Pak Broto sebagai berikut:\n- Andi cukup kreatif dan cukup baik memimpin namun ia sering sakit sehingga terkesan kurang rajin bekerja.\n- Hendra paling kreatif dan cukup sehat, tetapi masih kalah dari Rizky dalam hal kerajinan dan masih kalah dari Andi dalam kepemimpinan.\n- Dalam kreativitas, Rizky masih di bawah Hendra dan Andi, tetapi ia paling rajin, paling sehat, dan paling bagus memimpin.\n\nJika dilihat keunggulan masing-masing aspek, maka orang yang paling besar peluangnya untuk dipilih Pak Broto adalah ...",
+    o: [
+      "Rizky",
+      "Andi",
+      "Hendra",
+      "Rizky dan Hendra sama besar peluangnya",
+      "Ketiganya sama besar peluangnya"
+    ],
+    a: 0
+  },
+
+  // --- KASUS STAF PAK BROTO (SOAL 2) ---
+  {
+    q: "Pak Broto akan ke luar kota selama 1 bulan untuk urusan dinas sehingga ia harus memilih salah satu dari 3 stafnya yang akan menggantikannya di kantor. Beberapa informasi yang menjadi dasar keputusan Pak Broto sebagai berikut:\n- Andi cukup kreatif dan cukup baik memimpin namun ia sering sakit sehingga terkesan kurang rajin bekerja.\n- Hendra paling kreatif dan cukup sehat, tetapi masih kalah dari Rizky dalam hal kerajinan dan masih kalah dari Andi dalam kepemimpinan.\n- Dalam kreativitas, Rizky masih di bawah Hendra dan Andi, tetapi ia paling rajin, paling sehat, dan paling bagus memimpin.\n\nPernyataan berikut yang TIDAK tepat adalah ...",
+    o: [
+      "Andi dan Hendra masih kalah sehat dibandingkan dengan Rizky.",
+      "Andi dan Rizky mengalahkan Hendra dalam hal kepemimpinan.",
+      "Tidak ada yang dapat mengalahkan Hendra dalam hal kreativitas.",
+      "Kekurangan Andi dibandingkan dengan Hendra dan Rizky adalah dalam hal kerajinan dan kesehatan.",
+      "Andi masih lebih rajin daripada Hendra dan lebih baik dalam memimpin."
+    ],
+    a: 4
+  },
+
+  // --- KASUS STAF PAK BROTO (SOAL 3) ---
+  {
+    q: "Pak Broto akan ke luar kota selama 1 bulan untuk urusan dinas sehingga ia harus memilih salah satu dari 3 stafnya yang akan menggantikannya di kantor. Beberapa informasi yang menjadi dasar keputusan Pak Broto sebagai berikut:\n- Andi cukup kreatif dan cukup baik memimpin namun ia sering sakit sehingga terkesan kurang rajin bekerja.\n- Hendra paling kreatif dan cukup sehat, tetapi masih kalah dari Rizky dalam hal kerajinan dan masih kalah dari Andi dalam kepemimpinan.\n- Dalam kreativitas, Rizky masih di bawah Hendra dan Andi, tetapi ia paling rajin, paling sehat, dan paling bagus memimpin.\n\nCalon pengganti Pak Broto yang paling berpeluang untuk dipilih secara berurutan adalah ...",
+    o: [
+      "Andi, Rizky, Hendra",
+      "Rizky, Andi, Hendra",
+      "Hendra, Rizky, Andi",
+      "Andi, Hendra, Rizky",
+      "Rizky, Hendra, Andi"
+    ],
+    a: 4
+  },
+
+  // --- KASUS STAF PAK BROTO (SOAL 4) ---
+  {
+    q: "Pak Broto akan ke luar kota selama 1 bulan untuk urusan dinas sehingga ia harus memilih salah satu dari 3 stafnya yang akan menggantikannya di kantor. Beberapa informasi yang menjadi dasar keputusan Pak Broto sebagai berikut:\n- Andi cukup kreatif dan cukup baik memimpin namun ia sering sakit sehingga terkesan kurang rajin bekerja.\n- Hendra paling kreatif dan cukup sehat, tetapi masih kalah dari Rizky dalam hal kerajinan dan masih kalah dari Andi dalam kepemimpinan.\n- Dalam kreativitas, Rizky masih di bawah Hendra dan Andi, tetapi ia paling rajin, paling sehat, dan paling bagus memimpin.\n\nJika Pak Broto mempertimbangkan aspek kreativitas saja sebagai kriteria utama, maka pernyataan yang paling tepat adalah ...",
+    o: [
+      "Andi adalah pilihan terbaik.",
+      "Hendra paling tepat untuk dipilih.",
+      "Pak Broto paling tepat memilih Rizky.",
+      "Peluang Rizky lebih besar dibandingkan dengan Hendra.",
+      "Hendra memiliki peluang yang sama besarnya dengan Rizky."
+    ],
+    a: 1
+  },
+
+  // --- KASUS JADWAL MODUL (SOAL 1) ---
+  {
+    q: "Pada suatu perguruan tinggi, setiap mahasiswa diharuskan untuk menjadwalkan 8 modul pelatihan, yaitu P, Q, R, S, T, U, V, dan W. Seluruh peserta mengambil satu modul secara berurutan setiap bulannya, dan tidak ada modul yang diulang. Jadwal dari kedelapan modul tersebut dibatasi oleh hal-hal berikut:\n- W selalu diambil di bulan pertama\n- P selalu diambil segera setelah modul Q diambil\n- R harus diambil sebelum modul P\n- S dan V harus dipisahkan oleh dua bulan yang berurutan\n\nUrutan jadwal berikut yang memenuhi persyaratan-persyaratan di atas untuk bulan ke-2 hingga bulan ke-8 adalah ...",
+    o: [
+      "S, R, Q, P, V, T, U",
+      "Q, S, P, R, V, T, U",
+      "V, R, U, S, Q, P, T",
+      "V, T, U, S, Q, P, R",
+      "P, Q, R, S, T, U, V"
+    ],
+    a: 2
+  },
+
+  // --- KASUS JADWAL MODUL (SOAL 2) ---
+  {
+    q: "Pada suatu perguruan tinggi, setiap mahasiswa diharuskan untuk menjadwalkan 8 modul pelatihan, yaitu P, Q, R, S, T, U, V, dan W. Seluruh peserta mengambil satu modul secara berurutan setiap bulannya, dan tidak ada modul yang diulang. Jadwal dari kedelapan modul tersebut dibatasi oleh hal-hal berikut:\n- W selalu diambil di bulan pertama\n- P selalu diambil segera setelah modul Q diambil\n- R harus diambil sebelum modul P\n- S dan V harus dipisahkan oleh dua bulan yang berurutan\n\nR dapat diambil pada setiap bulan berikut ini KECUALI ...",
+    o: [
+      "Bulan 2",
+      "Bulan 3",
+      "Bulan 4",
+      "Bulan 6",
+      "Bulan 8"
+    ],
+    a: 4
+  },
+
+  // --- KASUS JADWAL MODUL (SOAL 3) ---
+  {
+    q: "Pada suatu perguruan tinggi, setiap mahasiswa diharuskan untuk menjadwalkan 8 modul pelatihan, yaitu P, Q, R, S, T, U, V, dan W. Seluruh peserta mengambil satu modul secara berurutan setiap bulannya, dan tidak ada modul yang diulang. Jadwal dari kedelapan modul tersebut dibatasi oleh hal-hal berikut:\n- W selalu diambil di bulan pertama\n- P selalu diambil segera setelah modul Q diambil\n- R harus diambil sebelum modul P\n- S dan V harus dipisahkan oleh dua bulan yang berurutan\n\nBulan paling cepat yang dapat digunakan oleh peserta untuk mengambil modul P adalah bulan ...",
+    o: [
+      "Bulan 5",
+      "Bulan 4",
+      "Bulan 3",
+      "Bulan 2",
+      "Bulan 1"
+    ],
+    a: 1
+  },
+
+  // --- KASUS JADWAL MODUL (SOAL 4) ---
+  {
+    q: "Pada suatu perguruan tinggi, setiap mahasiswa diharuskan untuk menjadwalkan 8 modul pelatihan, yaitu P, Q, R, S, T, U, V, dan W. Seluruh peserta mengambil satu modul secara berurutan setiap bulannya, dan tidak ada modul yang diulang. Jadwal dari kedelapan modul tersebut dibatasi oleh hal-hal berikut:\n- W selalu diambil di bulan pertama\n- P selalu diambil segera setelah modul Q diambil\n- R harus diambil sebelum modul P\n- S dan V harus dipisahkan oleh dua bulan yang berurutan\n\nApabila S diambil pada bulan ke-4, maka Q harus diambil pada bulan ...",
+    o: [
+      "Bulan 2",
+      "Bulan 3",
+      "Bulan 5",
+      "Bulan 6",
+      "Bulan 7"
+    ],
+    a: 2
+  },
+
+  // --- KASUS DONU (SOAL 1) ---
+  {
+    q: "Donu seorang anak yatim. Dia memiliki anjing kesayangan yang dinamakan Deno. Donu dan Deno ke mana-mana sering berdua, bagaikan kakak beradik. Di sekolah Donu sangat disayangi oleh Bu Ani. Di antara seluruh murid kelas 1 SD, Bu Ani paling menyayangi Donu karena selain sudah yatim, dia juga anak bungsu dan berwajah imut. Tiko adalah teman paling akrab Donu. Meski tidak seangkatan, mereka berdua sangat akrab dan sering bermain di sungai dan sawah bersama. Tiko sering mengolok-olok Donu sebagai anak manja, tapi itu hanya gurauan dan Donu menerima hal itu. Sebab jalan dari rumah Donu menuju ke sekolah cukup jauh sehingga terkadang dia meminta tolong dibonceng sepeda motor Pak Hadi, tetangganya yang tempat kerjanya searah dengan arah sekolah Donu.\n\nMana yang mungkin terjadi?",
+    o: [
+      "Tiko dan Donu sering berkelahi karena Tiko suka mengolok-olok Donu.",
+      "Tiko suka mengejek Donu sehingga Donu sangat membencinya.",
+      "Donu tidak disukai teman-teman kelasnya karena berwajah galak.",
+      "Rumah Donu dan Pak Hadi berada 4 kilometer di sebelah selatan sekolah Donu. Sedangkan tempat kerja Pak Hadi berada 2 kilometer di sebelah utara sekolah Donu.",
+      "Bu Ani lebih menyukai anak sulung, karena anak sulung lebih memiliki tanggung jawab besar daripada anak bungsu."
+    ],
+    a: 3
+  },
+
+  // --- KASUS DONU (SOAL 2) ---
+  {
+    q: "Donu seorang anak yatim. Dia memiliki anjing kesayangan yang dinamakan Deno. Donu dan Deno ke mana-mana sering berdua, bagaikan kakak beradik. Di sekolah Donu sangat disayangi oleh Bu Ani. Di antara seluruh murid kelas 1 SD, Bu Ani paling menyayangi Donu karena selain sudah yatim, dia juga anak bungsu dan berwajah imut. Tiko adalah teman paling akrab Donu. Meski tidak seangkatan, mereka berdua sangat akrab dan sering bermain di sungai dan sawah bersama. Tiko sering mengolok-olok Donu sebagai anak manja, tapi itu hanya gurauan dan Donu menerima hal itu. Sebab jalan dari rumah Donu menuju ke sekolah cukup jauh sehingga terkadang dia meminta tolong dibonceng sepeda motor Pak Hadi, tetangganya yang tempat kerjanya searah dengan arah sekolah Donu.\n\nMana yang mungkin terjadi?",
+    o: [
+      "Ibu Donu sudah meninggal dunia setelah sakit parah dan dirawat di rumah sakit selama 2 tahun belakangan ini.",
+      "Tiko adalah murid kelas 2 SD di sekolah Donu.",
+      "Di sekolah, ada teman Donu bernama Nina dan Dina yang paling disayang Bu Ani karena keduanya adalah anak kembar yang berwajah sangat manis.",
+      "Donu anak yang sangat manja.",
+      "Donu tidak suka kakinya terkena lumpur sawah karena susah dibersihkan."
+    ],
+    a: 1
+  }
       ].map((x) => ({
         type: "Penalaran",
         q: x.q,
