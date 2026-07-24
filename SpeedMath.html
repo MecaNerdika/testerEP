@@ -176,7 +176,7 @@ function fmt(sec){
 }
 
 function newQuestion(){
-  let A=rand(1,maxNum),B=rand(1,maxNum),C=A*B;
+  let A=rand(minNum,maxNum),B=rand(minNum,maxNum),C=A*B;
   if(Math.random()<0.5){
     qEl.textContent=`${A} × ${B} = ?`;
     currentAnswer=C;
@@ -189,18 +189,42 @@ function newQuestion(){
 }
 
 function startTest(){
-  maxNum=parseInt(document.getElementById("level").value);
+  let level = parseInt(document.getElementById("level").value);
+  
+  // Semua case wajib berada di dalam kurung kurawal switch
+  switch(level) { 
+    case 5:
+      maxNum = 5;
+      minNum = 1;
+      break; // Menghentikan eksekusi agar tidak lanjut ke bawah
+    case 10:
+      maxNum = 10;
+      minNum = 5;
+      break;
+    case 15:
+      maxNum = 15;
+      minNum = 7;
+      break;
+    case 20:
+      maxNum = 20;
+      minNum = 8;
+      break;
+    default:
+      // Antisipasi jika level tidak ada yang cocok
+      maxNum = 5;
+      minNum = 1;
+  }
 
-  let h=parseInt(document.getElementById("h").value)||0;
-  let m=parseInt(document.getElementById("m").value)||0;
-  let s=parseInt(document.getElementById("s").value)||0;
+  let h = parseInt(document.getElementById("h").value) || 0;
+  let m = parseInt(document.getElementById("m").value) || 0;
+  let s = parseInt(document.getElementById("s").value) || 0;
 
-  totalSeconds=startSeconds=h*3600+m*60+s;
-  if(totalSeconds<=0){
+  totalSeconds = startSeconds = h * 3600 + m * 60 + s;
+  if(totalSeconds <= 0){
     alert("Waktu harus lebih dari 0 detik");
     return;
   }
-
+}
   document.getElementById("startScreen").classList.add("hidden");
   document.getElementById("testScreen").classList.remove("hidden");
 
