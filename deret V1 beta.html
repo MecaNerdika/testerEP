@@ -41,6 +41,8 @@
       }
       label {
         font-weight: 600;
+        display: block;
+        margin-bottom: 6px;
       }
       input,
       select,
@@ -55,11 +57,15 @@
         background: var(--primary);
         color: #fff;
         border: none;
-        margin-top: 8px;
+        margin-top: 12px;
+        cursor: pointer;
       }
       button.secondary {
         background: #e9ebff;
         color: #000;
+      }
+      button.secondary:hover {
+        background: #d4d8ff;
       }
       .row {
         display: grid;
@@ -71,10 +77,17 @@
         font-size: 20px;
         letter-spacing: 1px;
         margin: 16px 0;
+        font-weight: bold;
       }
       .timer {
         text-align: center;
         font-weight: 600;
+      }
+      .seed-info {
+        text-align: center;
+        font-size: 13px;
+        color: #666;
+        margin-bottom: 8px;
       }
       .hidden {
         display: none;
@@ -91,11 +104,14 @@
       <h1>Tes Numerik Deret</h1>
 
       <div class="card" id="setup">
+        <label>Kode Ujian / Seed (Opsional)</label>
+        <input type="text" id="seedInput" placeholder="Contoh: KELAS12A / Boleh dikosongkan" /><br /><br />
+
         <label>Mode Tes</label>
         <select id="mode">
           <option value="latihan">Latihan</option>
-          <option value="evaluasi">Evaluasi</option></select
-        ><br /><br />
+          <option value="evaluasi">Evaluasi</option>
+        </select><br /><br />
 
         <label>Waktu (menit)</label>
         <input type="number" id="timeInput" value="5" min="1" />
@@ -105,15 +121,17 @@
 
       <div class="card hidden" id="test">
         <div class="timer" id="timer"></div>
+        <div class="seed-info" id="seedInfo"></div>
         <div class="deret" id="deret"></div>
         <div class="row" id="options"></div>
       </div>
 
       <div class="card hidden" id="result">
         <h2>Hasil Tes</h2>
-        <p>Total: <span id="total"></span></p>
+        <p>Total Soal Dijawab: <span id="total"></span></p>
         <p>Benar: <span id="benar"></span></p>
         <p>Salah: <span id="salah"></span></p>
+        <button onclick="location.reload()">Ulangi Tes</button>
       </div>
     </div>
 
@@ -123,64 +141,67 @@
         total = 0,
         benar = 0,
         currentAnswer = null,
-        mode = "latihan";
+        mode = "latihan",
+        currentSeed = 0;
 
-      const rand = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a;
-
-      function weightedIndex() {
-        const w = [3, 2, 1, 1, 1, 5, 1, 1, 8];
-        let s = w.reduce((a, b) => a + b, 0),
-          r = Math.random() * s;
-        for (let i = 0; i < w.length; i++) {
-          if (r < w[i]) return i;
-          r -= w[i];
+      // ====== SEEDABLE RANDOM GENERATOR (Mulberry32 + Hash) ======
+      function stringToSeed(str) {
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+          hash = (Math.imul(31, hash) + str.charCodeAt(i)) | 0;
         }
+        return hash;
       }
 
-      // ====== GENERATOR DERET (VERSI AWAL + LENGKAP) ======
+      function seededRandom() {
+        let t = (currentSeed += 0x6d2b79f5);
+        t = Math.imul(t ^ (t >>> 15), t | 1);
+        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      }
+
+      // Fungsi acak berbasis Seed menggantikan Math.random
+      const rand = (a, b) => Math.floor(seededRandom() * (b - a + 1)) + a;
+
+      function getQuestionIndex(len) {
+        return rand(2, len - 1);
+      }
+
+      // ====== GENERATOR DERET ======
       function genDeret() {
-        const n = 10;
-        const t = rand(0, 14);
+        const n = 9;
+        const t = rand(0, 20);
         let d = [];
+
         switch (t) {
-          case 0: {
-            // Aritmatika
-            let a = rand(-5, 10),
-              b = rand(1, 5);
+          case 0: { // Aritmatika
+            let a = rand(1, 10), b = rand(2, 6);
             for (let i = 0; i < n; i++) d.push(a + i * b);
             break;
           }
-          case 1: {
-            // Geometri
-            const rs = [-2, -3, 2, 3];
-            let a = rand(1, 5),
-              r = rs[rand(0, rs.length - 1)];
+          case 1: { // Geometri
+            const rs = [2, 3];
+            let a = rand(1, 4), r = rs[rand(0, rs.length - 1)];
             for (let i = 0; i < n; i++) d.push(a * Math.pow(r, i));
             break;
           }
-          case 2: {
-            // Fibonacci
+          case 2: { // Fibonacci
             d = [rand(1, 5), rand(1, 5)];
             for (let i = 2; i < n; i++) d.push(d[i - 1] + d[i - 2]);
             break;
           }
-          case 3: {
-            // Kuadrat
-            let s = rand(1, 3);
+          case 3: { // Kuadrat
+            let s = rand(1, 5);
             for (let i = s; i < s + n; i++) d.push(i * i);
             break;
           }
-          case 4: {
-            // Kubik
+          case 4: { // Kubik
             let s = rand(1, 3);
             for (let i = s; i < s + n; i++) d.push(i * i * i);
             break;
           }
-          case 5: {
-            // Bertingkat (beda naik)
-            let x = rand(1, 5),
-              b = rand(1, 3),
-              pb = rand(1, 2);
+          case 5: { // Bertingkat (beda naik)
+            let x = rand(1, 5), b = rand(1, 3), pb = rand(1, 2);
             d = [x];
             for (let i = 1; i < n; i++) {
               x += b;
@@ -189,10 +210,8 @@
             }
             break;
           }
-          case 6: {
-            // Bertingkat genap
-            let x = rand(1, 5),
-              b = 2;
+          case 6: { // Bertingkat genap (+2, +4, +6...)
+            let x = rand(1, 5), b = 2;
             d = [x];
             for (let i = 1; i < n; i++) {
               x += b;
@@ -201,10 +220,8 @@
             }
             break;
           }
-          case 7: {
-            // Bertingkat ganjil
-            let x = rand(1, 5),
-              b = 1;
+          case 7: { // Bertingkat ganjil (+1, +3, +5...)
+            let x = rand(1, 5), b = 1;
             d = [x];
             for (let i = 1; i < n; i++) {
               x += b;
@@ -213,10 +230,8 @@
             }
             break;
           }
-          case 8: {
-            // Bertingkat kelipatan
-            let x = rand(1, 5),
-              k = rand(1, 3);
+          case 8: { // Bertingkat kelipatan
+            let x = rand(1, 5), k = rand(2, 4);
             d = [x];
             for (let i = 1; i < n; i++) {
               x += k * i;
@@ -224,8 +239,7 @@
             }
             break;
           }
-          case 9: {
-            // Bertingkat kuadrat
+          case 9: { // Bertingkat kuadrat
             let x = rand(1, 5);
             d = [x];
             for (let i = 1; i < n; i++) {
@@ -234,74 +248,124 @@
             }
             break;
           }
-          case 10: {
-            // Larik dua
-            let a1 = rand(1, 5),
-              a2 = rand(1, 5),
-              b1 = rand(1, 4),
-              b2 = rand(1, 4);
+          case 10: { // Larik Dua (Seling 2)
+            let a1 = rand(1, 5), a2 = rand(10, 15);
+            let b1 = rand(2, 4), b2 = rand(2, 4);
             d = [a1, a2];
-            for (let i = 2; i < n; i++)
+            for (let i = 2; i < n; i++) {
               d.push(d[i - 2] + (i % 2 === 0 ? b1 : b2));
+            }
             break;
           }
-          case 11: {
-            // Larik dua bertingkat
-            let a1 = rand(1, 5),
-              a2 = rand(1, 5),
-              b1 = rand(1, 3),
-              b2 = rand(1, 3),
-              p1 = rand(1, 2),
-              p2 = rand(1, 2);
+          case 11: { // Larik Dua Bertingkat
+            let a1 = rand(1, 5), a2 = rand(1, 5);
+            let x = rand(1, 3), y = rand(1, 3);
             d = [a1, a2];
-            let x = b1,
-              y = b2;
             for (let i = 2; i < n; i++) {
               if (i % 2 === 0) {
                 d.push(d[i - 2] + x);
-                x += p1;
+                x += 1;
               } else {
                 d.push(d[i - 2] + y);
-                y += p2;
+                y += 2;
               }
             }
             break;
           }
-          case 12: {
-            // Huruf
-            let start = rand(1, 26),
-              step = rand(1, 3);
-            for (let i = 0; i < n; i++)
-              d.push(
-                String.fromCharCode(64 + (((start + i * step - 1) % 26) + 1)),
-              );
+          case 12: { // Huruf Alphabet
+            let start = rand(1, 10), step = rand(1, 3);
+            for (let i = 0; i < n; i++) {
+              d.push(String.fromCharCode(64 + (((start + i * step - 1) % 26) + 1)));
+            }
             break;
           }
-          case 13: {
-            // Campuran + dan *
-            let x = rand(2, 5);
+          case 13: { // Campuran (+ dan *)
+            let x = rand(1, 5), m = rand(2, 3), a = rand(2, 4);
             d = [x];
-            for (let i = 1; i < n; i++)
-              d.push(i % 2 === 0 ? d[i - 1] + 2 : d[i - 1] * 2);
+            for (let i = 1; i < n; i++) {
+              d.push(i % 2 === 1 ? d[i - 1] * m : d[i - 1] + a);
+            }
             break;
           }
-          case 14: {
-            // Pola selisih berulang
-            let x = rand(1, 5);
-            const diff = [1, 3, 1, 3];
+          case 14: { // Selang-seling Bagi dan Tambah
+            let x = rand(100, 300);
+            let div = 2, add = rand(2, 5);
             d = [x];
-            for (let i = 1; i < n; i++) d.push(d[i - 1] + diff[(i - 1) % 4]);
+            for (let i = 1; i < n; i++) {
+              d.push(i % 2 === 1 ? Math.floor(d[i - 1] / div) : d[i - 1] + add);
+            }
             break;
           }
-          case 15: {
-            //pola prima
-            const prima = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37];
-            let a = rand(1, 10);
-            let current = a;
-            let startIndex = rand(0, 3); // mulai dari prima ke-berapa
+          case 15: { // Pola 4 Operasi (*3, :6, +5, -4)
+            let x = rand(20, 50);
+            d = [x];
+            for (let i = 1; i < n; i++) {
+              let step = (i - 1) % 4;
+              if (step === 0) d.push(d[i - 1] * 3);
+              else if (step === 1) d.push(Math.floor(d[i - 1] / 6));
+              else if (step === 2) d.push(d[i - 1] + 5);
+              else d.push(d[i - 1] - 4);
+            }
+            break;
+          }
+          case 16: { // Pola Perkalian Tetap & Pengurangan Bertahap
+            let x = rand(10, 20);
+            let sub = 9;
+            d = [x];
+            for (let i = 1; i < n; i++) {
+              if (i % 2 === 1) {
+                let prev = d[i - 1] - sub;
+                d.push(prev);
+                sub -= 2;
+              } else {
+                d.push(d[i - 1] * 3);
+              }
+            }
+            break;
+          }
+          case 17: { // Pola Tambah Bertahap & Perkalian Tetap
+            let x = rand(10, 20);
+            let add = 9;
+            d = [x];
+            for (let i = 1; i < n; i++) {
+              if (i % 2 === 1) {
+                d.push(d[i - 1] + add);
+                add -= 1;
+              } else {
+                d.push(d[i - 1] * 2);
+              }
+            }
+            break;
+          }
+          case 18: { // Larik Tiga (Seling 3)
+            let a1 = rand(1, 5), a2 = rand(10, 15), a3 = rand(20, 25);
+            d = [a1, a2, a3];
+            for (let i = 3; i < n; i++) {
+              if (i % 3 === 0) d.push(d[i - 3] + 2);
+              else if (i % 3 === 1) d.push(d[i - 3] + 3);
+              else d.push(d[i - 3] + 4);
+            }
+            break;
+          }
+          case 19: { // Pola Kelompok 3 Angka
+            let base = rand(3, 6);
+            d = [];
+            for (let g = 0; g < 3; g++) {
+              let step1 = base + g * 3;
+              let step2 = step1 + 1;
+              let start = rand(3, 8) + g * 3;
+              d.push(start, start + step1, start + step1 + step2);
+            }
+            d = d.slice(0, n);
+            break;
+          }
+          case 20: { // Pola Bilangan Prima
+            const prima = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31];
+            let current = rand(1, 10);
+            let startIndex = rand(0, 2);
             for (let i = 0; i < n; i++) {
               d.push(current);
-              current += primes[startIndex + i]; // ditambah prima yang berbeda tiap langkah
+              current += prima[startIndex + i];
             }
             break;
           }
@@ -311,24 +375,44 @@
 
       function newQuestion() {
         const d = genDeret();
-        const k = weightedIndex();
+        const k = getQuestionIndex(d.length);
         currentAnswer = d[k];
+
         document.getElementById("deret").innerText = d
           .map((v, i) => (i === k ? "..." : v))
           .join(" , ");
+
         let ops = new Set([currentAnswer]);
-        while (ops.size < 4) ops.add(currentAnswer + rand(-15, 15));
+        let isChar = typeof currentAnswer === "string";
+
+        while (ops.size < 4) {
+          if (isChar) {
+            let randChar = String.fromCharCode(65 + rand(0, 25));
+            ops.add(randChar);
+          } else {
+            let offset = rand(-10, 10);
+            if (offset !== 0) ops.add(currentAnswer + offset);
+          }
+        }
+
         const box = document.getElementById("options");
         box.innerHTML = "";
-        [...ops]
-          .sort(() => Math.random() - 0.5)
-          .forEach((o) => {
-            const b = document.createElement("button");
-            b.className = "secondary";
-            b.innerText = o;
-            b.onclick = () => check(o);
-            box.appendChild(b);
-          });
+        
+        // Pengacakan opsi berbasis Seed
+        let arrOps = [...ops];
+        let shuffled = [];
+        while (arrOps.length > 0) {
+          let idx = rand(0, arrOps.length - 1);
+          shuffled.push(arrOps.splice(idx, 1)[0]);
+        }
+
+        shuffled.forEach((o) => {
+          const b = document.createElement("button");
+          b.className = "secondary";
+          b.innerText = o;
+          b.onclick = () => check(o);
+          box.appendChild(b);
+        });
       }
 
       function check(v) {
@@ -336,7 +420,9 @@
         if (v === currentAnswer) {
           benar++;
           if (mode === "latihan") alert("Benar ✔");
-        } else if (mode === "latihan") alert("Salah ✖");
+        } else if (mode === "latihan") {
+          alert("Salah ✖! Jawaban yang benar: " + currentAnswer);
+        }
         newQuestion();
       }
 
@@ -344,9 +430,20 @@
         total = 0;
         benar = 0;
         mode = document.getElementById("mode").value;
+        let rawSeed = document.getElementById("seedInput").value.trim();
+
+        // Jika Seed tidak diisi, gunakan timestamp acak
+        if (!rawSeed) {
+          rawSeed = "RAND-" + Date.now();
+        }
+
+        currentSeed = stringToSeed(rawSeed);
+
         document.getElementById("setup").classList.add("hidden");
         document.getElementById("result").classList.add("hidden");
         document.getElementById("test").classList.remove("hidden");
+        document.getElementById("seedInfo").innerText = "Kode Ujian: " + rawSeed;
+
         timeLeft = parseInt(document.getElementById("timeInput").value) * 60;
         updateTimer();
         timerInterval = setInterval(() => {
