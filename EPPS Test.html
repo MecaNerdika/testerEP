@@ -1,1290 +1,805 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="id">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Aplikasi Tes EPPS Online</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Chart.js for Results -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Google Fonts: Inter -->
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-    <style>
-      body {
-        font-family: "Inter", sans-serif;
-        background-color: #f8fafc;
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tes EPPS Online - Edwards Personal Preference Schedule</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0f7ff',
+              100: '#e0effe',
+              300: '#7dd3fc',
+              500: '#0284c7',
+              600: '#0284c7',
+              700: '#0369a1',
+              800: '#075985',
+              900: '#0c4a6e',
+            }
+          }
+        }
       }
-      .custom-scrollbar::-webkit-scrollbar {
-        width: 6px;
-        height: 6px;
-      }
-      .custom-scrollbar::-webkit-scrollbar-track {
-        background: #f1f5f9;
-      }
-      .custom-scrollbar::-webkit-scrollbar-thumb {
-        background: #cbd5e1;
-        border-radius: 4px;
-      }
-      .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-        background: #94a3b8;
-      }
-      /* Custom radio option transitions */
-      .option-card {
-        transition: all 0.2s ease-in-out;
-      }
-      .option-card:hover {
-        transform: translateY(-2px);
-      }
-    </style>
-  </head>
-  <body
-    class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between selection:bg-blue-500 selection:text-white"
-  >
-    <!-- HEADER BAR -->
-    <header
-      id="appHeader"
-      class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm transition-all duration-300"
-    >
-      <div
-        class="max-w-6xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between"
-      >
-        <div class="flex items-center space-x-3">
-          <div
-            class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white font-bold text-lg shadow-md shadow-blue-500/20"
-          >
-            E
-          </div>
-          <div>
-            <h1
-              class="font-bold text-slate-800 text-base sm:text-lg leading-tight"
-            >
-              Tes EPPS Online
-            </h1>
-            <p class="text-xs text-slate-500 font-medium hidden sm:block">
-              Edwards Personal Preference Schedule
-            </p>
-          </div>
-        </div>
+    }
+  </script>
+  <style>
+    @media print {
+      .no-print { display: none !important; }
+      body { background: white !important; font-size: 12pt; }
+      .print-shadow-none { box-shadow: none !important; border: 1px solid #ccc !important; }
+    }
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    button:disabled { opacity: .4; cursor: not-allowed; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col justify-between selection:bg-brand-500 selection:text-white">
 
-        <!-- Action buttons in header based on current section -->
-        <div id="headerActions" class="flex items-center space-x-3">
-          <!-- Instruction modal trigger when in Exam Section -->
-          <button
-            id="btnOpenInstructionsModal"
-            onclick="toggleInstructionsModal(true)"
-            class="hidden items-center space-x-2 bg-blue-50 hover:bg-blue-100 text-blue-700 font-medium px-4 py-2 rounded-lg text-sm transition-colors border border-blue-200"
-          >
-            <svg
-              class="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              ></path>
-            </svg>
-            <span>Petunjuk Ujian</span>
-          </button>
+  <!-- HEADER -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm no-print">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="bg-brand-600 text-white p-2 rounded-lg font-bold text-xl tracking-wider">
+          <i class="fa-solid fa-clipboard-check"></i>
+        </div>
+        <div>
+          <h1 class="font-bold text-slate-800 text-lg leading-tight">EPPS Online</h1>
+          <p class="text-xs text-slate-500">Edwards Personal Preference Schedule</p>
         </div>
       </div>
-    </header>
-
-    <main class="flex-grow max-w-6xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8">
-      <!-- SECTION 1: PETUNJUK & BIODATA -->
-      <section id="secPetunjuk" class="space-y-6">
-        <div
-          class="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 shadow-sm"
-        >
-          <div class="max-w-3xl">
-            <span
-              class="inline-block px-3 py-1 bg-blue-100 text-blue-800 text-xs font-semibold rounded-full mb-3"
-              >Persiapan Tes</span
-            >
-            <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-4">
-              Petunjuk Pengerjaan Tes EPPS
-            </h2>
-            <p class="text-slate-600 mb-6 leading-relaxed">
-              Pada tes ini terdapat 225 pasangan pernyataan. Tugas Anda adalah
-              memilih **satu pernyataan dari setiap pasangan** yang paling
-              menggambarkan diri Anda atau yang paling Anda sukai.
-            </p>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-              <div
-                class="bg-slate-50 p-4 rounded-xl border border-slate-200/80 flex space-x-3"
-              >
-                <div class="text-blue-600 pt-0.5">
-                  <svg
-                    class="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                    ></path>
-                  </svg>
-                </div>
-                <div class="text-sm">
-                  <strong class="block font-semibold text-slate-800 mb-1"
-                    >Tidak Ada Jawaban Benar/Salah</strong
-                  >
-                  <span class="text-slate-500"
-                    >Pilihlah jawaban yang secara jujur mencerminkan kepribadian
-                    dan dorongan alami Anda.</span
-                  >
-                </div>
-              </div>
-
-              <div
-                class="bg-slate-50 p-4 rounded-xl border border-slate-200/80 flex space-x-3"
-              >
-                <div class="text-blue-600 pt-0.5">
-                  <svg
-                    class="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                    ></path>
-                  </svg>
-                </div>
-                <div class="text-sm">
-                  <strong class="block font-semibold text-slate-800 mb-1"
-                    >Batas Waktu Pengerjaan</strong
-                  >
-                  <span class="text-slate-500"
-                    >Waktu yang disediakan adalah 40 menit. Usahakan menjawab
-                    seluruh soal tanpa ada yang terlewat.</span
-                  >
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- BIODATA FORM -->
-          <div class="border-t border-slate-100 pt-6">
-            <h3 class="text-lg font-bold text-slate-800 mb-4">
-              Informasi Peserta Tes
-            </h3>
-            <form
-              id="biodataForm"
-              onsubmit="
-                event.preventDefault();
-                startExam();
-              "
-              class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl"
-            >
-              <div>
-                <label
-                  class="block text-xs font-semibold text-slate-600 uppercase mb-1"
-                  >Nama Lengkap *</label
-                >
-                <input
-                  type="text"
-                  id="participantName"
-                  required
-                  placeholder="Masukkan nama Anda"
-                  class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm outline-none transition"
-                />
-              </div>
-              <div>
-                <label
-                  class="block text-xs font-semibold text-slate-600 uppercase mb-1"
-                  >Jenis Kelamin *</label
-                >
-                <select
-                  id="participantGender"
-                  required
-                  class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm outline-none transition bg-white"
-                >
-                  <option value="">Select Jenis Kelamin</option>
-                  <option value="L">Laki-laki</option>
-                  <option value="P">Perempuan</option>
-                </select>
-              </div>
-              <div>
-                <label
-                  class="block text-xs font-semibold text-slate-600 uppercase mb-1"
-                  >Usia / Tanggal Lahir</label
-                >
-                <input
-                  type="text"
-                  id="participantAge"
-                  placeholder="Contoh: 25 Tahun"
-                  class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm outline-none transition"
-                />
-              </div>
-              <div>
-                <label
-                  class="block text-xs font-semibold text-slate-600 uppercase mb-1"
-                  >Pendidikan / Posisi</label
-                >
-                <input
-                  type="text"
-                  id="participantRole"
-                  placeholder="Contoh: S1 Psikologi / Staff HR"
-                  class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm outline-none transition"
-                />
-              </div>
-              <div class="sm:col-span-2 pt-2">
-                <button
-                  type="submit"
-                  class="w-full sm:w-auto px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-lg shadow-blue-600/30 transition-all flex items-center justify-center space-x-2"
-                >
-                  <span>Mulai Ujian Sekarang</span>
-                  <svg
-                    class="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M14 5l7 7m0 0l-7 7m7-7H3"
-                    ></path>
-                  </svg>
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </section>
-
-      <!-- SECTION 2: UJIAN (Fokus Utama pada Soal) -->
-      <section id="secUjian" class="hidden space-y-6">
-        <!-- Exam Status Bar (Progress & Timer) -->
-        <div
-          class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4"
-        >
-          <div class="flex items-center space-x-4 flex-1">
-            <div
-              class="w-full bg-slate-100 h-3 rounded-full overflow-hidden border border-slate-200 max-w-md"
-            >
-              <div
-                id="progressBar"
-                class="bg-blue-600 h-full w-0 transition-all duration-300 rounded-full"
-              ></div>
-            </div>
-            <span
-              id="progressText"
-              class="text-xs font-bold text-slate-600 whitespace-nowrap"
-              >0 / 225 (0%)</span
-            >
-          </div>
-
-          <!-- Live Timer Badge (With Real Timestamp Correction) -->
-          <div
-            class="flex items-center justify-between sm:justify-end space-x-3 border-t sm:border-t-0 pt-3 sm:pt-0 border-slate-100"
-          >
-            <span class="text-xs font-semibold text-slate-500 uppercase"
-              >Sisa Waktu:</span
-            >
-            <div
-              class="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-slate-900 text-amber-400 font-mono font-bold text-base shadow-inner"
-            >
-              <svg
-                class="w-4 h-4 text-amber-400 animate-pulse"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                ></path>
-              </svg>
-              <span id="timerDisplay">40:00</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Main Question Box & Grid Layout -->
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
-          <!-- Question Card Container (3 Cols) -->
-          <div
-            class="lg:col-span-3 bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-6"
-          >
-            <div
-              class="flex items-center justify-between border-b border-slate-100 pb-4"
-            >
-              <span
-                id="questionNumBadge"
-                class="px-3.5 py-1 bg-blue-100 text-blue-800 font-bold text-sm rounded-lg"
-                >Soal #1</span
-              >
-              <span class="text-xs text-slate-400 font-medium"
-                >Pilih salah satu (A atau B)</span
-              >
-            </div>
-
-            <!-- Question Content -->
-            <div class="space-y-4 my-4">
-              <p class="text-slate-700 text-sm sm:text-base font-medium">
-                Manakah dari dua pernyataan berikut yang lebih menggambarkan
-                diri Anda?
-              </p>
-
-              <div class="space-y-3">
-                <!-- Option A -->
-                <label
-                  id="cardOptionA"
-                  onclick="selectAnswer('A')"
-                  class="option-card flex items-start p-4 sm:p-5 rounded-xl border-2 border-slate-200 cursor-pointer bg-slate-50 hover:bg-blue-50/50 hover:border-blue-300"
-                >
-                  <div class="flex items-center h-5 mr-3 mt-0.5">
-                    <input
-                      type="radio"
-                      name="currentAnswer"
-                      value="A"
-                      id="optA"
-                      class="w-4 h-4 text-blue-600 focus:ring-blue-500 border-slate-300"
-                    />
-                  </div>
-                  <div class="flex-1">
-                    <span class="font-bold text-blue-700 mr-2 text-base"
-                      >A.</span
-                    >
-                    <span
-                      id="textOptionA"
-                      class="text-slate-800 text-sm sm:text-base leading-relaxed"
-                      >Pernyataan A</span
-                    >
-                  </div>
-                </label>
-
-                <!-- Option B -->
-                <label
-                  id="cardOptionB"
-                  onclick="selectAnswer('B')"
-                  class="option-card flex items-start p-4 sm:p-5 rounded-xl border-2 border-slate-200 cursor-pointer bg-slate-50 hover:bg-blue-50/50 hover:border-blue-300"
-                >
-                  <div class="flex items-center h-5 mr-3 mt-0.5">
-                    <input
-                      type="radio"
-                      name="currentAnswer"
-                      value="B"
-                      id="optB"
-                      class="w-4 h-4 text-blue-600 focus:ring-blue-500 border-slate-300"
-                    />
-                  </div>
-                  <div class="flex-1">
-                    <span class="font-bold text-blue-700 mr-2 text-base"
-                      >B.</span
-                    >
-                    <span
-                      id="textOptionB"
-                      class="text-slate-800 text-sm sm:text-base leading-relaxed"
-                      >Pernyataan B</span
-                    >
-                  </div>
-                </label>
-              </div>
-            </div>
-
-            <!-- Question Navigation Controls -->
-            <div
-              class="flex items-center justify-between pt-4 border-t border-slate-100"
-            >
-              <button
-                id="btnPrev"
-                onclick="navigateQuestion(-1)"
-                class="px-5 py-2.5 rounded-xl border border-slate-300 font-semibold text-slate-600 text-sm hover:bg-slate-50 transition disabled:opacity-40 disabled:cursor-not-allowed"
-              >
-                &larr; Sebelumnya
-              </button>
-
-              <div class="flex items-center space-x-2">
-                <button
-                  id="btnNext"
-                  onclick="navigateQuestion(1)"
-                  class="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm shadow-md shadow-blue-600/20 transition"
-                >
-                  Selanjutnya &rarr;
-                </button>
-                <button
-                  id="btnFinishExam"
-                  onclick="confirmSubmitExam()"
-                  class="hidden px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm shadow-md shadow-emerald-600/20 transition"
-                >
-                  Selesai & Kirim Ujian
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Navigation Drawer/Grid (1 Col) -->
-          <div
-            class="lg:col-span-1 bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-4"
-          >
-            <div class="flex items-center justify-between">
-              <h3 class="font-bold text-slate-800 text-sm">Navigasi Soal</h3>
-              <span id="gridSummary" class="text-xs text-slate-500"
-                >Terjawab: 0</span
-              >
-            </div>
-
-            <!-- Scrollable Grid -->
-            <div
-              id="questionGrid"
-              class="grid grid-cols-5 gap-2 max-h-72 lg:max-h-96 overflow-y-auto custom-scrollbar p-1"
-            >
-              <!-- Generated dynamically -->
-            </div>
-
-            <div
-              class="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500"
-            >
-              <div class="flex items-center space-x-1.5">
-                <span class="w-3 h-3 rounded bg-blue-600 inline-block"></span>
-                <span>Sudah</span>
-              </div>
-              <div class="flex items-center space-x-1.5">
-                <span
-                  class="w-3 h-3 rounded bg-slate-100 border border-slate-300 inline-block"
-                ></span>
-                <span>Belum</span>
-              </div>
-              <div class="flex items-center space-x-1.5">
-                <span
-                  class="w-3 h-3 rounded ring-2 ring-amber-400 bg-white inline-block"
-                ></span>
-                <span>Aktif</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- SECTION 3: HASIL & ANALISIS -->
-      <section id="secHasil" class="hidden space-y-6">
-        <div
-          class="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6"
-        >
-          <!-- Header Hasil -->
-          <div
-            class="flex flex-col md:flex-row md:items-center justify-between border-b border-slate-100 pb-6 gap-4"
-          >
-            <div>
-              <span
-                class="px-3 py-1 bg-emerald-100 text-emerald-800 text-xs font-semibold rounded-full"
-                >Hasil Laporan Resmi</span
-              >
-              <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 mt-2">
-                Profil Kepribadian EPPS
-              </h2>
-              <p class="text-slate-500 text-sm mt-1">
-                Laporan analisis kebutuhan psikologis berdasarkan pilihan tes.
-              </p>
-            </div>
-            <div class="flex items-center space-x-3">
-              <button
-                onclick="window.print()"
-                class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-sm transition flex items-center space-x-2"
-              >
-                <svg
-                  class="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"
-                  ></path>
-                </svg>
-                <span>Cetak Hasil</span>
-              </button>
-              <button
-                onclick="restartExam()"
-                class="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl text-sm transition"
-              >
-                Ulangi Tes
-              </button>
-            </div>
-          </div>
-
-          <!-- Ringkasan Biodata & Konsistensi -->
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
-              <span class="text-xs font-semibold text-slate-400 uppercase"
-                >Nama Peserta</span
-              >
-              <p id="resName" class="font-bold text-slate-800 text-base mt-0.5">
-                -
-              </p>
-            </div>
-            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
-              <span class="text-xs font-semibold text-slate-400 uppercase"
-                >Jenis Kelamin / Usia</span
-              >
-              <p id="resMeta" class="font-bold text-slate-800 text-base mt-0.5">
-                -
-              </p>
-            </div>
-            <div
-              id="consistencyBadgeContainer"
-              class="p-4 rounded-xl border bg-blue-50 border-blue-200"
-            >
-              <span class="text-xs font-semibold text-blue-600 uppercase"
-                >Tingkat Konsistensi (Consistency)</span
-              >
-              <p
-                id="resConsistency"
-                class="font-bold text-blue-900 text-base mt-0.5"
-              >
-                0 / 15 (Validasi: Valid)
-              </p>
-            </div>
-          </div>
-
-          <!-- Visual Chart -->
-          <div class="pt-4">
-            <h3 class="font-bold text-slate-800 text-lg mb-4">
-              Grafik Skor 15 Variable EPPS
-            </h3>
-            <div
-              class="bg-slate-50 p-4 rounded-xl border border-slate-200 relative h-80 sm:h-96"
-            >
-              <canvas id="eppsChart"></canvas>
-            </div>
-          </div>
-
-          <!-- Table Detail Score -->
-          <div class="pt-4">
-            <h3 class="font-bold text-slate-800 text-lg mb-4">
-              Detail Rincian Variabel Kebutuhan
-            </h3>
-            <div class="overflow-x-auto rounded-xl border border-slate-200">
-              <table class="w-full text-left border-collapse text-sm">
-                <thead>
-                  <tr
-                    class="bg-slate-100 text-slate-700 uppercase font-semibold text-xs border-b border-slate-200"
-                  >
-                    <th class="p-3.5">Kode</th>
-                    <th class="p-3.5">Nama Skala / Variabel</th>
-                    <th class="p-3.5 text-center">Skor Mentah (Raw)</th>
-                    <th class="p-3.5">Deskripsi Singkat Kecenderungan</th>
-                  </tr>
-                </thead>
-                <tbody
-                  id="resultTableBody"
-                  class="divide-y divide-slate-200 bg-white"
-                >
-                  <!-- Populated dynamically -->
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </section>
-    </main>
-
-    <!-- INSTRUCTIONS MODAL (Pop-up saat di section Ujian) -->
-    <div
-      id="instructionsModal"
-      class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-200"
-    >
-      <div
-        class="bg-white rounded-2xl max-w-xl w-full p-6 sm:p-8 shadow-2xl space-y-5 transform scale-95 transition-transform duration-200"
-        id="instructionsModalBox"
-      >
-        <div
-          class="flex items-center justify-between border-b border-slate-100 pb-3"
-        >
-          <h3
-            class="font-bold text-lg text-slate-900 flex items-center space-x-2"
-          >
-            <svg
-              class="w-5 h-5 text-blue-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              ></path>
-            </svg>
-            <span>Petunjuk Pengerjaan Tes EPPS</span>
-          </h3>
-          <button
-            onclick="toggleInstructionsModal(false)"
-            class="text-slate-400 hover:text-slate-600 p-1 rounded-lg"
-          >
-            <svg
-              class="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M6 18L18 6M6 6l12 12"
-              ></path>
-            </svg>
-          </button>
-        </div>
-
-        <div
-          class="space-y-3 text-sm text-slate-600 leading-relaxed max-h-80 overflow-y-auto custom-scrollbar pr-2"
-        >
-          <p>
-            1. Tes ini terdiri dari **225 pasangan pernyataan**. Pada setiap
-            nomor terdapat dua pilihan: **A** dan **B**.
-          </p>
-          <p>
-            2. Anda diminta untuk memilih **satu** dari dua pernyataan yang
-            lebih menggambarkan kebiasaan, perasaan, atau kecenderungan diri
-            Anda.
-          </p>
-          <p>
-            3. Jika kedua pernyataan terasa sama-sama menggambarkan diri Anda,
-            atau keduanya terasa kurang sesuai, **tetap pilihlah satu yang
-            paling mendekati**.
-          </p>
-          <p>
-            4. Tidak ada jawaban yang dianggap **benar** atau **salah**.
-            Kejujuran Anda sangat penting agar hasil asesmen ini akurat.
-          </p>
-          <p>
-            5. Gunakan waktu 40 menit secara efisien. Jangan menghabiskan
-            terlalu banyak waktu pada satu nomor.
-          </p>
-        </div>
-
-        <div class="pt-3 border-t border-slate-100 flex justify-end">
-          <button
-            onclick="toggleInstructionsModal(false)"
-            class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm rounded-xl transition"
-          >
-            Mengerti & Lanjutkan Soal
-          </button>
-        </div>
+      
+      <div id="header-exam-actions" class="hidden">
+        <button onclick="toggleModal('modal-instruction', true)" class="text-sm font-medium text-brand-600 hover:text-brand-800 bg-brand-50 hover:bg-brand-100 px-3 py-1.5 rounded-lg transition-colors flex items-center space-x-1">
+          <i class="fa-solid fa-circle-info"></i>
+          <span>Petunjuk</span>
+        </button>
       </div>
     </div>
+  </header>
 
-    <!-- FOOTER -->
-    <footer
-      class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-400"
-    >
-      <div class="max-w-6xl mx-auto px-4">
-        &copy; 2026 Aplikasi Tes EPPS Online. Platform Asesmen Psikologi
-        Mandiri.
+  <!-- MAIN CONTAINER -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full">
+
+    <!-- PETUNJUK & BIODATA -->
+    <section id="sec-instruction" class="space-y-6">
+      <div class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200 space-y-6">
+        <div>
+          <h2 class="text-2xl font-bold text-slate-800 mb-2 border-b pb-3">Petunjuk Pengerjaan Tes EPPS</h2>
+          <p class="text-slate-600 text-sm leading-relaxed mt-4">
+            Pada halaman berikut, Anda akan membaca sejumlah pernyataan mengenai berbagai hal yang mungkin menggambarkan diri Anda. Pernyataan selalu disajikan berpasangan (A dan B).
+            Pilihlah <strong>satu pernyataan</strong> yang paling menggambarkan diri Anda, <strong>bukan</strong> yang dianggap ideal atau wajar oleh lingkungan Anda.
+            Jika keduanya sesuai, pilih yang lebih khas; jika tidak ada yang sesuai, pilih yang ketidaktepatannya paling sedikit. Jangan ada soal yang dilewati.
+          </p>
+        </div>
+
+        <div class="bg-slate-50 border-l-4 border-brand-600 p-4 rounded-r-lg space-y-2">
+          <h3 class="font-semibold text-slate-800 text-sm">Contoh Soal:</h3>
+          <div class="space-y-1 text-sm text-slate-700">
+            <p><strong>A.</strong> Saya suka berbicara tentang diri saya dengan orang lain.</p>
+            <p><strong>B.</strong> Saya suka bekerja untuk suatu tujuan yang telah saya tentukan bagi diri saya.</p>
+            <p class="pt-2 text-slate-500">Contoh perasaan: A. Saya bersusah hati bila gagal dalam sesuatu. / B. Saya merasa gugup bila harus bicara di depan orang banyak.</p>
+          </div>
+        </div>
+
+        <div class="space-y-3 text-sm text-slate-600">
+          <h3 class="font-semibold text-slate-800">Catatan Penting:</h3>
+          <ul class="list-disc list-inside space-y-1">
+            <li>Tes ini terdiri dari <strong>225 nomor soal</strong>.</li>
+            <li>Ini bukan tes; tidak ada jawaban benar atau salah. Jawablah sesuai keadaan Anda sekarang.</li>
+            <li>Waktu acuan <strong>40-60 menit</strong> (tidak mutlak); yang terpenting teliti dan lengkap.</li>
+          </ul>
+        </div>
       </div>
-    </footer>
 
-    <script>
-      /* ==========================================================================
-           1. DATA SET EPPS (225 ITEM PAIRS)
-           ========================================================================== */
-      const eppsVariables = [
-        {
-          code: "ach",
-          name: "Achievement (Dorongan Berprestasi)",
-          desc: "Keinginan untuk sukses, menyelesaikan tugas sulit, dan unggul.",
-        },
-        {
-          code: "def",
-          name: "Deference (Kepatuhan / Penghormatan)",
-          desc: "Kecenderungan mengikuti petunjuk, menghormati otoritas, dan menerima pendapat orang lain.",
-        },
-        {
-          code: "ord",
-          name: "Order (Keteraturan)",
-          desc: "Kebutuhan akan keteraturan, kerapian, perencanaan, dan sistem dalam bekerja.",
-        },
-        {
-          code: "exh",
-          name: "Exhibition (Penampilan / Menampilkan Diri)",
-          desc: "Keinginan menjadi pusat perhatian, menceritakan pengalaman, dan didengarkan.",
-        },
-        {
-          code: "aut",
-          name: "Autonomy (Kemandirian)",
-          desc: "Keinginan bebas dari aturan, mandiri membuat keputusan, dan tidak bergantung.",
-        },
-        {
-          code: "aff",
-          name: "Affiliation (Afiliasi / Bersetia Kawan)",
-          desc: "Kebutuhan membangun persahabatan, setia kawan, dan berbagi pertemanan.",
-        },
-        {
-          code: "int",
-          name: "Intraception (Empati / Memahami Orang)",
-          desc: "Keinginan memahami perasaan orang lain, empati, dan menganalisis dorongan orang lain.",
-        },
-        {
-          code: "suc",
-          name: "Succorance (Ketergantungan / Dukungan)",
-          desc: "Kebutuhan menerima bantuan, simpati, dan dorongan dari orang lain.",
-        },
-        {
-          code: "dom",
-          name: "Dominance (Dominasi / Kepemimpinan)",
-          desc: "Keinginan memimpin, mengendalikan, membimbing, dan mempengaruhi orang lain.",
-        },
-        {
-          code: "aba",
-          name: "Abasement (Kandungan Diri / Rasa Bersalah)",
-          desc: "Kecenderungan merasa bersalah, menerima kritik, dan mengakui kesalahan.",
-        },
-        {
-          code: "nur",
-          name: "Nurturance (Menolong / Mengayomi)",
-          desc: "Kebutuhan membantu orang lain yang kesusahan, bersikap murah hati, dan merawat.",
-        },
-        {
-          code: "chg",
-          name: "Change (Perubahan / Variasi)",
-          desc: "Kebutuhan akan hal-hal baru, variasi suasana, perjalanan, dan mencoba hal baru.",
-        },
-        {
-          code: "end",
-          name: "Endurance (Ketahanan / Ketekunan)",
-          desc: "Ketekunan menyelesaikan pekerjaan hingga tuntas tanpa menyerah.",
-        },
-        {
-          code: "het",
-          name: "Heterosexuality (Heteroseksualitas)",
-          desc: "Kebutuhan berinteraksi, menarik perhatian, dan membina hubungan lawan jenis.",
-        },
-        {
-          code: "agg",
-          name: "Aggression (Agresi / Ketegasan)",
-          desc: "Kecenderungan mengkritik, menentang pendapat, atau bersikap sangat tegas.",
-        },
-      ];
+      <!-- FORM BIODATA -->
+      <div class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200 space-y-6">
+        <h2 class="text-xl font-bold text-slate-800 border-b pb-3">Data Diri Peserta</h2>
+        <form id="form-biodata" onsubmit="startExam(event)" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1">Nama Lengkap <span class="text-red-500">*</span></label>
+            <input type="text" id="bio-name" required class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-brand-500 outline-none" placeholder="Masukkan nama lengkap">
+          </div>
 
-      // Sample representatif 225 item EPPS
-      const rawEppsQuestions = [
-        {
-          a: "Saya suka menolong teman-teman saya bila mereka dalam kesulitan.",
-          b: "Saya ingin melakukan pekerjaan apa saja sebaik mungkin.",
-          catA: "nur",
-          catB: "ach",
-        },
-        {
-          a: "Saya ingin mengetahui bagaimana pandangan orang-orang besar mengenai berbagai hal.",
-          b: "Saya ingin dapat menyatakan pendapat saya secara bebas.",
-          catA: "def",
-          catB: "aut",
-        },
-        {
-          a: "Saya suka membuat rencana sebelum memulai pekerjaan yang penting.",
-          b: "Saya suka menceritakan cerita-cerita yang lucu dalam pertemuan.",
-          catA: "ord",
-          catB: "exh",
-        },
-        {
-          a: "Saya ingin menulis novel atau drama.",
-          b: "Saya suka bersahabat dengan orang lain.",
-          catA: "ach",
-          catB: "aff",
-        },
-        {
-          a: "Saya ingin memahami bagaimana perasaan orang lain dalam situasi tertentu.",
-          b: "Saya ingin orang lain merasa kasihan bila saya sedang sakit.",
-          catA: "int",
-          catB: "suc",
-        },
-        {
-          a: "Saya ingin menjadi pimpinan dalam kelompok saya.",
-          b: "Saya merasa bersalah bila saya melakukan sesuatu yang salah.",
-          catA: "dom",
-          catB: "aba",
-        },
-        {
-          a: "Saya suka melakukan hal-hal yang sifatnya baru dan berbeda.",
-          b: "Saya suka menyelesaikan tugas yang telah saya mulai.",
-          catA: "chg",
-          catB: "end",
-        },
-        {
-          a: "Saya suka bergaul dengan lawan jenis.",
-          b: "Saya suka mengkritik orang yang memegang kekuasaan.",
-          catA: "het",
-          catB: "agg",
-        },
-        {
-          a: "Saya ingin sukses dalam pekerjaan saya.",
-          b: "Saya suka mengikuti arahan pimpinan saya.",
-          catA: "ach",
-          catB: "def",
-        },
-        {
-          a: "Saya suka menyusun barang-barang saya dengan teratur.",
-          b: "Saya suka menjadi pusat perhatian dalam kelompok.",
-          catA: "ord",
-          catB: "exh",
-        },
-      ];
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1">Jenis Kelamin <span class="text-red-500">*</span></label>
+            <select id="bio-gender" required class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-brand-500 outline-none">
+              <option value="">-- Pilih Jenis Kelamin --</option>
+              <option value="L">Laki-Laki</option>
+              <option value="P">Perempuan</option>
+            </select>
+          </div>
 
-      // Duplikasikan sampel secara prosedural hingga tepat 225 item pasangan
-      const eppsQuestions = [];
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1">Usia (Tahun) <span class="text-red-500">*</span></label>
+            <input type="number" id="bio-age" min="10" max="99" required class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-brand-500 outline-none" placeholder="Contoh: 23">
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1">Pendidikan / Posisi</label>
+            <input type="text" id="bio-education" class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-brand-500 outline-none" placeholder="Contoh: S1 Psikologi">
+          </div>
+
+          <div class="md:col-span-2 pt-4 flex justify-end">
+            <button type="submit" class="w-full sm:w-auto px-8 py-3 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl shadow-md transition-all flex items-center justify-center space-x-2">
+              <span>Mulai Ujian</span>
+              <i class="fa-solid fa-arrow-right"></i>
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- SECTION UJIAN -->
+    <section id="sec-exam" class="hidden space-y-6">
+      <div class="bg-white rounded-xl p-4 shadow-sm border border-slate-200 flex flex-wrap gap-4 items-center justify-between">
+        <div class="text-sm font-medium text-slate-600">
+          Peserta: <span id="exam-user-name" class="font-semibold text-slate-800">-</span>
+        </div>
+
+        <div class="flex items-center space-x-6">
+          <div class="text-sm font-medium text-slate-600">
+            Terjawab: <span id="exam-answered-count" class="font-bold text-brand-600">0</span> / 225
+          </div>
+          <div class="flex items-center space-x-2 bg-amber-50 text-amber-700 px-3 py-1.5 rounded-lg border border-amber-200">
+            <i class="fa-regular fa-clock"></i>
+            <span id="exam-timer" class="font-mono font-bold text-base">60:00</span><span class="text-xs">(batas acuan)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <div class="lg:col-span-3 space-y-6">
+          <div class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200 min-h-[360px] flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between border-b pb-4 mb-6">
+                <span class="text-xs font-bold uppercase tracking-wider text-brand-600 bg-brand-50 px-3 py-1 rounded-full">
+                  Soal Nomor <span id="q-number">1</span>
+                </span>
+                <span class="text-xs text-slate-400">Pilih salah satu (A atau B)</span>
+              </div>
+
+              <div class="space-y-4">
+                <label id="label-opt-a" onclick="selectAnswer('A')" class="flex items-start p-4 rounded-xl border-2 border-slate-200 hover:border-brand-300 bg-slate-50/50 cursor-pointer transition-all">
+                  <input type="radio" name="epps-option" value="A" id="opt-a" class="hidden">
+                  <div class="w-6 h-6 rounded-full border-2 border-slate-300 flex items-center justify-center font-bold text-xs mr-3 mt-0.5 text-slate-500 bg-white">A</div>
+                  <div id="text-opt-a" class="text-slate-700 font-medium text-base leading-relaxed"></div>
+                </label>
+
+                <label id="label-opt-b" onclick="selectAnswer('B')" class="flex items-start p-4 rounded-xl border-2 border-slate-200 hover:border-brand-300 bg-slate-50/50 cursor-pointer transition-all">
+                  <input type="radio" name="epps-option" value="B" id="opt-b" class="hidden">
+                  <div class="w-6 h-6 rounded-full border-2 border-slate-300 flex items-center justify-center font-bold text-xs mr-3 mt-0.5 text-slate-500 bg-white">B</div>
+                  <div id="text-opt-b" class="text-slate-700 font-medium text-base leading-relaxed"></div>
+                </label>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between pt-8 border-t mt-6">
+              <button onclick="navigateQuestion(-1)" id="btn-prev" class="px-5 py-2.5 rounded-lg border border-slate-300 text-slate-600 hover:bg-slate-100 font-medium text-sm transition-all flex items-center space-x-2">
+                <i class="fa-solid fa-chevron-left"></i>
+                <span>Sebelumnya</span>
+              </button>
+
+              <button onclick="navigateQuestion(1)" id="btn-next" class="px-5 py-2.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-medium text-sm transition-all flex items-center space-x-2">
+                <span>Selanjutnya</span>
+                <i class="fa-solid fa-chevron-right"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-1 space-y-4">
+          <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 space-y-4">
+            <h3 class="font-bold text-slate-800 text-sm border-b pb-2">Navigasi Soal</h3>
+            <div id="grid-questions" class="grid grid-cols-5 gap-1.5 max-h-[380px] overflow-y-auto custom-scrollbar p-1"></div>
+            <button onclick="confirmSubmitExam()" class="w-full mt-4 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-sm text-sm flex items-center justify-center space-x-2">
+              <i class="fa-solid fa-paper-plane"></i>
+              <span>Selesai Ujian</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HASIL & ANALISIS -->
+    <section id="sec-result" class="hidden space-y-8">
+      <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-wrap justify-between items-center no-print">
+        <h2 class="text-xl font-bold text-slate-800">Laporan Hasil Tes EPPS</h2>
+        <button onclick="window.print()" class="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white text-sm font-semibold rounded-lg flex items-center space-x-2">
+          <i class="fa-solid fa-print"></i>
+          <span>Cetak / Simpan PDF</span>
+        </button>
+      </div>
+
+      <div class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200 space-y-6">
+        <div class="flex flex-wrap justify-between items-start border-b pb-4 gap-4">
+          <div>
+            <h2 class="text-2xl font-bold text-slate-800" id="res-name">Nama Peserta</h2>
+            <p class="text-sm text-slate-500 mt-1">
+              <span id="res-gender">Jenis Kelamin</span> | <span id="res-age">Usia</span> Tahun | <span id="res-education">Pendidikan</span>
+            </p>
+          </div>
+          <div class="text-right">
+            <span class="text-xs text-slate-400 block">Tanggal Tes</span>
+            <span id="res-date" class="text-sm font-semibold text-slate-700">-</span>
+          </div>
+        </div>
+
+        <div id="consistency-banner" class="p-4 rounded-xl flex items-center space-x-4 border">
+          <div id="consistency-icon" class="text-2xl"></div>
+          <div>
+            <h3 id="consistency-title" class="font-bold text-base">Status Konsistensi (CONS): -</h3>
+            <p id="consistency-desc" class="text-xs mt-0.5">Penjelasan status konsistensi...</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200 space-y-4">
+        <h3 class="text-lg font-bold text-slate-800">Grafik Profil Skor EPPS</h3>
+        <div class="relative w-full h-[380px]">
+          <canvas id="chart-epps"></canvas>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200 space-y-4">
+        <h3 class="text-lg font-bold text-slate-800">Tabel Skor Variabel EPPS</h3>
+        <p id="total-check" class="text-xs text-slate-500"></p>
+        <p class="text-xs text-slate-500">Skala ebook: s 1-14 = &lt; 50%, 15-21 = 75%, 22-28 = 100%. Ini bukan norma baku; persentil resmi memerlukan tabel norma terpisah.</p>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="bg-slate-100 text-slate-700 border-b">
+                <th class="p-2.5 font-bold">Variabel EPPS</th>
+                <th class="p-2.5 font-bold text-center">Baris (r)</th>
+                <th class="p-2.5 font-bold text-center">Kolom (c)</th>
+                <th class="p-2.5 font-bold text-center">Jumlah (s)</th>
+                <th class="p-2.5 font-bold text-center">Skala ebook</th>
+                <th class="p-2.5 font-bold text-center">Tren vs mean 14</th>
+                <th class="p-2.5 font-bold">Kategori</th>
+              </tr>
+            </thead>
+            <tbody id="table-score-body" class="divide-y divide-slate-200 text-slate-700"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="bg-white border-t border-slate-200 py-4 no-print mt-auto">
+    <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-400">
+      &copy; Tes EPPS Online System - Edwards Personal Preference Schedule.
+    </div>
+  </footer>
+
+  <script>
+    const EPPS_VARIABLES = [
+      { code: 'ach', name: 'Achievement (Ach)', desc: 'Berbuat sebaik mungkin menyelesaikan tugas yang sukar dan menarik.' },
+      { code: 'def', name: 'Deference (Def)', desc: 'Menyerahkan keputusan pada orang lain dan menyesuaikan diri dengan harapan orang lain.' },
+      { code: 'ord', name: 'Order (Ord)', desc: 'Berbuat teratur dan rapi dengan perencanaan sebelumnya.' },
+      { code: 'exh', name: 'Exhibition (Exh)', desc: 'Menjadi pusat perhatian dan menonjolkan prestasi.' },
+      { code: 'aut', name: 'Autonomy (Aut)', desc: 'Berdiri sendiri dalam mengambil keputusan, menghindari campur tangan orang lain.' },
+      { code: 'aff', name: 'Affiliation (Aff)', desc: 'Baik hati, ikut serta dan bekerja sama dengan teman-teman.' },
+      { code: 'int', name: 'Intraception (Int)', desc: 'Menganalisis motif dan perasaan sendiri/orang lain, memahami orang lain.' },
+      { code: 'suc', name: 'Succorance (Suc)', desc: 'Menerima bantuan dan afeksi, agar orang lain bersimpati pada dirinya.' },
+      { code: 'dom', name: 'Dominance (Dom)', desc: 'Mengatasi dan mempengaruhi orang lain, memimpin.' },
+      { code: 'aba', name: 'Abasement (Aba)', desc: 'Merasa bersalah, menerima hukuman, merasa takut dan rendah diri.' },
+      { code: 'nur', name: 'Nurturance (Nur)', desc: 'Menolong teman dan orang yang kesulitan, mengampuni, dermawan.' },
+      { code: 'chg', name: 'Change (Chg)', desc: 'Melakukan hal baru dan berbeda, mengikuti perubahan.' },
+      { code: 'end', name: 'Endurance (End)', desc: 'Bertekun dalam tugas, tidak ingin diganggu saat bertugas.' },
+      { code: 'het', name: 'Heterosexuality (Het)', desc: 'Bergaul bebas dengan lawan jenis, aktif dalam pertemuan bersama lawan jenis.' },
+      { code: 'agg', name: 'Aggression (Agg)', desc: 'Menyerang pendapat yang berbeda, suka mempermainkan orang lain.' }
+    ];
+
+    // BANK SOAL: 225 pasangan pernyataan, disalin dari ebook EPPS (A = indeks 0, B = indeks 1)
+    const EPPS_QUESTIONS = [["Saya suka menolong teman-teman saya, apabila mereka dalam kesulitan.","Saya ingin melakukan apa saja sebaik mungkin."],
+      ["Saya ingin mengetahui bagaimana pandangan orang-orang besar, mengenai berbagai masalah yang menarik perhatian saya.","Saya ingin menyelesaikan sesuatu yang sangat penting artinya."],
+      ["Saya menghendaki bahwa setiap pekerjaan tulis saya teliti, rapi dan tersusun dengan baik.","Saya ingin menjadi seorang ahli yang diakui dalam suatu pekerjaan, jabatan atau bidang yang khusus."],
+      ["Saya suka menceritakan cerita-cerita yang lucu dan lelucon-lelucon waktu pesta.","Saya ingin menulis roman atau sandiwara yang hebat."],
+      ["Saya ingin dapat berbuat sekehendak hati saya.","Saya ingin bisa mengatakan bahwa saya telah melakukan dengan baik suatu pekerjaan yang sulit."],
+      ["Saya ingin dapat memecahkan teka-teki dan persoalan-persoalan yang sukar bagi orang lain.","Saya suka mengikuti petunjuk-petunjuk dan melakukan apa yang diharapkan orang lain dari saya."],
+      ["Saya ingin mengalami pembaharuan dan perubahan dalam kehidupan saya sehari- hari.","Saya suka menyatakan kepada atasan saya bahwa mereka telah melakukan sesuatu pekerjaan yang baik, apabila menurut pendapat saya memang demikian adanya."],
+      ["Saya suka merencanakan dan mengatur detail-detail dari setiap pekerjaan yang harus saya lakukan.","Saya suka mengikuti petunjuk-petunjuk dan melakukan apa yang diharapkan orang dari diri saya."],
+      ["Saya ingin orang-orang memperhatikan dan memberikan komentar mengenai penampilan saya di depan umum.","Saya suka membaca riwayat hidup orang-orang besar."],
+      ["Saya suka mengelakkan situasi-situasi yang mengharapkan saya melakukan hal-hal dengan cara konvensional (kebiasaan yang umum dilakukan orang).","Saya suka membaca riwayat hidup orang-orang besar."],
+      ["Saya ingin menjadi seorang ahli yang diakui dalam suatu pekerjaan, jabatan atau bidang khusus.","Sebelum memulai sesuatu pekerjaan saya ingin pekerjaan itu teratur dan terencanakan."],
+      ["Saya ingin mengetahui bagaimana pandangan orang-orang besar/ahli, mengenai berbagai masalah yang menarik perhatian saya.","Jika saya akan bepergian, saya senang apabila segala sesuatunya telah direncanakan sebelumnya."],
+      ["Saya suka menyelesaikan setiap pekerjaan atau tugas yang telah saya mulai.","Saya ingin barang-barang saya tersusun rapi dan teratur di atas meja atau di dalam ruang kerja saya."],
+      ["Saya suka bercerita kepada orang-orang lain tentang petualangan-petualangan saya dan hal-hal aneh yang pernah saya alami.","Saya suka makan saya teratur dan ada waktu-waktu tertentu untuk makan."],
+      ["Saya ingin tidak tergantung dari orang lain dalam menentukan apa yang akan saya lakukan.","Saya ingin barang-barang saya tersusun rapi dan teratur di atas meja atau di dalam ruang kerja saya."],
+      ["Saya ingin bisa mengerjakan segala sesuatu lebih baik daripada orang-orang lain.","Saya suka menceritakan cerita-cerita lucu dan lelucon-lelucon waktu pesta."],
+      ["Saya suka mengikuti adat-istiadat dan menghindarkan melakukan hal-hal yang mungkin dianggap tidak wajar oleh orang-orang yang saya hormati.","Saya suka berbicara tentang hal-hal yang telah saya capai."],
+      ["Saya ingin agar hidup saya teratur sedemikian rupa, sehingga berjalan lancar dan tanpa banyak perubahan-perubahan dalam rencana saya.","Saya suka bercerita kepada orang-orang lain tentang petualangan-petualangan saya dan hal-hal aneh yang pernah saya alami."],
+      ["Saya suka membaca buku-buku dan sandiwara, terutama yang berkisar sekitar masalah seks.","Saya suka menjadi pusat perhatian, apabila saya ada di dalam suatu kelompok."],
+      ["Saya suka mengecam orang-orang yang kedudukannya memegang kekuasaan.","Saya suka menggunakan kata-kata yang maknanya seringkali tidak diketahui oleh orang lain."],
+      ["Saya suka menyelesaikan tugas-tugas yang dianggap orang lain sebagai tugas yang membutuhkan keterampilan dan usaha.","Saya ingin dapat berbuat sekehendak hati saya."],
+      ["Saya suka memuji orang yang saya kagumi.","Saya ingin merasa bebas untuk melakukan apa yang saya kehendaki."],
+      ["Saya suka menyimpan surat-surat, bon-bon, dan kertas-kertas lain secara tersusun rapi dan menurut sistem tertentu.","Saya ingin tidak tergantung dari orang lain dalam menentukan apa yang akan saya lakukan."],
+      ["Saya suka mengajukan pertanyaan-pertanyaan yang menurut saya tidak seorangpun akan dapat menjawabnya.","Saya suka mengecam orang-orang yang kedudukannya memegang kekuasaan."],
+      ["Saya menjadi sedemikian marahnya, sehingga rasanya ingin melemparkan dan merusak barang-barang.","Saya suka mengelakkan tanggung jawab dan kewajiban-kewajiban."],
+      ["Saya ingin berhasil dalam apa yang saya lakukan.","Saya suka membuat teman-teman baru."],
+      ["Saya suka mengikuti petunjuk-petunjuk dan melakukan apa yang diharapkan orang dari diri saya.","Saya ingin mempunyai ikatan perasaan yang kuat dengan teman teman saya."],
+      ["Saya menghendaki bahwa setiap pekerjaan tulis saya teliti, rapi dan tersusun dengan baik.","Saya ingin membuat teman sebanyak mungkin."],
+      ["Saya suka menceritakan cerita-cerita lucu dan lelucon-lelucon waktu pesta.","Saya suka berkirim surat pada teman-teman saya."],
+      ["Saya ingin berbuat sekehendak hati saya.","Saya suka dalam melakukan atau menjalani segala sesuatu bersama-sama dengan teman-teman."],
+      ["Saya ingin dapat memecahkan teka teki dan persoalan-persoalan yang sukar bagi orang lain.","Saya suka menilai orang berdasarkan sebab-sebab mengapa mereka melakukan sesuatu, bukan berdasar apa yang sesungguhnya mereka lakukan."],
+      ["Saya suka menerima pimpinan dari orang-orang yang saya kagumi.","Saya ingin memahami bagaimana perasaan teman-teman saya dalam menghadapi berbagai masalah."],
+      ["Saya suka makan saya teratur dan ada waktu-waktu tertentu untuk makan.","Saya suka mempelajari dan menganalisa tingkah laku orang-orang lain."],
+      ["Saya suka mengatakan hal yang dianggap lucu dan cerdas oleh orang lain.","Saya suka untuk menempatkan diri saya ditempat orang lain, dan membayangkan bagaimana perasaan saya apabila saya dalam keadaan atau situasi yang sama."],
+      ["Saya ingin merasa bebas untuk melakukan apa yang saya kehendaki.","Saya suka mengamat-amati bagaimana perasaan orang lain dalam satu keadaan tertentu."],
+      ["Saya suka menyelesaikan tugas-tugas yang dianggap orang lain sebagai tugas yang membutuhkan keterampilan dan usaha.","Saya ingin teman-teman saya memberi dorongan-dorongan kepada saya bila saya menghadapi kegagalan."],
+      ["Dalam merencanakan sesuatu, saya ingin mendapat saran-saran dari orang-orang yang pendapatnya saya hormati.","Saya ingin diperlakukan dengan ramah oleh teman-teman saya."],
+      ["Saya ingin agar hidup saya teratur sedemikian rupa sehingga berjalan lancar dan tanpa banyak perubahan-perubahan dalam rencana saya.","Saya ingin teman-teman saya merasa kasihan pada saya apabila saya sedang sakit."],
+      ["Saya suka menjadi pusat perhatian, apabila syaa ada dalam suatu kelompok.","Saya ingin agar teman-teman saya meributkan tentang diri saya, apabila mendapatkan cedera atau sakit."],
+      ["Saya suka mengelakkan situasi-situasi yang mengharapkan saya melakukan hal-hal dengan konvensional (kebiasaan yang umum dilakukan orang).","Saya ingin agar teman-teman saya bersimpati terhadap saya dan menghibur saya bila saya bersusah hati."],
+      ["Saya ingin menulis roman atau sandiwara yang hebat.","Apabila saya bekerja dalam suatu panitia, saya ingin ditunjuk atau dipilih sebagai ketuanya."],
+      ["Apabila saya berada dalam kelompok saya suka menerima pimpinan orang lain dalam memutuskan apa yang akan dilakukan oleh kelompok tersebut.","Sedapat mungkin saya ingin membimbing dan mengarahkan tindakan atau perbuatan orang lain."],
+      ["Saya suka menyimpan surat-surat, bon-bon, dan kertas-kertas lainnya secara tersusun rapi dan menurut sistem tertentu.","Saya ingin menjadi salah seorang pemimpin dalam organisasi-organisasi atau kelompok-kelompok dimana saya menjadi anggotanya."],
+      ["Saya suka mengajukan pertanyaan-pertanyaan yang menurut saya tidak seorangpun akan dapat menjawabnya.","Saya suka mengatakan pada orang-orang lain bagaimana mereka harus melakukan pekerjaan mereka."],
+      ["Saya suka mengelakkan tanggung jawab dan kewajiban-kewajiban.","Saya senang untuk diminta menyelesaikan pertentangan-pertentangan atau perselisihan-perselisihan."],
+      ["Saya ingin menjadi ahli yang diakui dalam pekerjaan, jabatan atau bidang khusus.","Saya merasa bersalah, apabila saya telah melakukan sesuatu yang saya ketahui keliru."],
+      ["Saya suka membaca riwayat orang-orang besar.","Saya merasa bahwa saya harus mengakui hal-hal yang telah saya lakukan dan saya anggap salah."],
+      ["Saya suka merencanakan dan mengatur detail-detail dari setiap pekerjaan yang harus saya lakukan.","Bila keadaan kurang menguntungkan bagi saya, maka saya merasa bahwa saya harus lebih disalahkan daripada orang lain."],
+      ["Saya suka menggunakan kata-kata yang maknanya seringkali tidak diketahui oleh orang lain.","Saya merasa bahwa dalam banyak hal, saya kalah bila dibandingkan dengan orang- orang lain."],
+      ["Saya suka mengecam orang-orang yang kedudukannya memegang kekuasaan.","Saya merasa canggung ditengah-tengah orang-orang lain yang saya anggap sebagai atasan saya."],
+      ["Saya suka melakukan pekerjaan apa saja terbaik mungkin.","Saya suka menolong orang-orang lain, yang tidak begitu beruntung apabila dibandingkan dengan keadaan saya."],
+      ["Saya ingin mengetahui bagaimana pandangan orang-orang besar mengenai berbagai masalah yang menarik perhatian saya.","Saya suka bermurah hati terhadap teman teman saya."],
+      ["Saya suka membuat rencana sebelum memulai pekerjaan yang sulit.","Saya suka memberi pertolongan-pertolongan kecil kepada teman-teman saya."],
+      ["Saya suka bercerita kepada orang-orang lain tentang petualangan-petualangan saya dan hal-hal aneh yang pernah saya alami.","Saya ingin teman-teman saya mempercayai saya dan menceritakan kesulitan-kesulitan mereka kepada saya."],
+      ["Saya suka menyatakan pendapat saya tentang berbagai hal.","Saya suka memaafkan teman-teman saya yang menyakiti hati saya."],
+      ["Saya ingin bisa mengerjakan segala sesuatu lebih baik daripada orang-orang lain.","Saya suka makan di restoran-restoran yang baru atau asing."],
+      ["Saya suka mengikuti adat-istiadat dan menghindarkan melakukan hal-hal yang mungkin dianggap tidak wajar oleh orang-orang yang saya hormati.","Saya suka mengikuti mode-mode baru."],
+      ["Sebelum memulai sesuatu pekerjaan saya ingin pekerjaan itu teratur dan terencanakan.","Saya suka bepergian melihat-lihat daerah pedalaman."],
+      ["Saya ingin orang-orang memperhatikan dan memberikan komentar mengenai penampilan saya di depan umum.","Saya suka berkeliling di pedalaman dan tinggal di berbagai tempat."],
+      ["Saya ingin tidak tergantung dari orang lain dalam menentukan apa yang akan saya lakukan.","Saya suka mengerjakan hal-hal yang baru dan berbeda-beda."],
+      ["Saya ingin bisa mengatakan bahwa saya telah melakukan dengan baik suatu pekerjaan yang sulit.","Saya suka bekerja keras pada tiap pekerjaan yang saya hadapi."],
+      ["Saya suka menyatakan kepada atasan saya bahwa mereka telah melakukan sesuatu pekerjaan yang baik, apabila menurut pendapat saya memang demikian keadaannya.","Saya ingin menyelesaikan pekerjaan satu-persatu sebelum memulai yang lainnya."],
+      ["Jika saya akan bepergian, saya senang apabila segala sesuatunya telah direncanakan sebelumnya.","Saya suka mengerjakan teka-teki atau memecahkan persoalan-persoalan sampai selesai."],
+      ["Saya kadang-kadang suka melakukan hal-hal hanya untuk melihat bagaimana pengaruhnya terhadap orang lain.","Saya suka bertahan menghadapi suatu pekerjaan atau masalah, sekalipun tampaknya seolah-olah saya tak akan berhasil."],
+      ["Saya suka melakukan hal-hal yang dianggap orang lain tidak sesuai dengan adat kebiasaan.","Saya ingin bekerja berjam-jam tanpa diganggu."],
+      ["Saya ingin menyelesaikan sesuatu yang sangat penting artinya.","Saya mempunyai keinginan untuk mencium orang yang menarik dari lawan jenis saya."],
+      ["Saya suka memuji orang yang saya kagumi.","Saya ingin dianggap punya daya tarik fisik oleh orang-orang dari lawan jenis saya."],
+      ["Saya ingin barang-barang saya tersusun rapi dan teratur di atas meja atau di dalam ruang kerja saya.","Saya mudah jatuh cinta pada seseorang dari lawan jenis saya."],
+      ["Saya suka berbicara tentang hal-hal yang saya capai.","Saya suka mendengarkan atau menceritakan lelucon-lelucon yang terutama berkisar soal seks."],
+      ["Saya ingin melakukan hal-hal dengan cara saya sendiri tanpa menghiraukan apa yang mungkin dipikirkan orang lain.","Saya suka membaca buku-buku dan sandiwara, terutama yang berkisar sekitar masalah seks."],
+      ["Saya ingin menulis roman atau sandiwara yang hebat.","Saya suka menyerang pendirian-pendirian yang bertentangan dengan pendirian saya."],
+      ["Apabila saya berada dalam kelompok saya suka menerima pimpinan orang lain dalam memutuskan apa yang akan dilakukan oleh kelompok tersebut.","Saya rasanya ingin mengecam seseorang di muka umum bila orang itu patut menerimanya."],
+      ["Saya ingin agar hidup saya teratur sedemikian rupa, sehingga berjalan lancar dan tanpa banyak perubahan-perubahan dalam rencana saya.","Saya menjadi sedemikian marahnya, sehingga rasanya ingin melemparkan dan merusak barang-barang."],
+      ["Saya suka mengajukan pertanyaan-pertanyaan yang menurut saya tidak seorangpun akan dapat menjawabnya.","Saya suka mengatakan kepada orang-orang lain bagaimana pendapat saya mengenai mereka."],
+      ["Saya suka mengelakkan tanggung jawab dan kewajiban-kewajiban.","Saya rasanya ingin memperolok-olok orang-orang yang melakukan hal-hal yang saya anggap bodoh."],
+      ["Saya ingin loyal terhadap teman-teman saya.","Saya ingin melakukan pekerjaan apa saja sebaik mungkin."],
+      ["Saya suka mengamat-amati bagaimana perasaan orang lain dalam suatu keadaan tertentu.","Saya ingin bisa mengatakan bahwa saya telah melakukan dengan baik sesuatu pekerjaan yang sulit."],
+      ["Saya ingin teman-teman memberi dorongan kepada saya bila saya menghadapi kegagalan.","Saya ingin berhasil dalam apa yang saya lakukan."],
+      ["Saya ingin menjadi salah seorang pemimpin dalam organisasi-organisasi atau kelompok-kelompok dimana saya menjadi anggotanya.","Saya ingin bisa mengerjakan segala sesuatu lebih baik daripada orang-orang lain."],
+      ["Bila keadaan kurang menguntungkan bagi saya, maka saya merasa bahwa saya harus lebih disalahkan daripada orang lain.","Saya suka memecahkan teka teki dan persoalan-persoalan yang sukar bagi orang lain."],
+      ["Saya suka melakukan sesuatu untuk teman-teman saya.","Dalam merencanakan sesuatu, saya ingin mendapat saran-saran dari orang-orang yang pendapatnya saya hormati."],
+      ["Saya suka untuk menempatkan diri saya ditempat orang lain, dan membayangkan bagaimana perasaan saya apabila saya dalam keadaan atau situasi yang sama.","Saya suka menyatakan kepada atasan saya bahwa mereka telah melakukan sesuatu pekerjaan yang baik, apabila menurut pendapat saya memang demikian adanya."],
+      ["Saya ingin agar teman-teman saya menunjukkan simpati dan pengertian bila saya mengalami kesukaran-kesukaran.","Saya suka menerima pimpinan dari orang-orang yang saya kagumi."],
+      ["Apabila saya bekerja dalam suatu panitia, saya ingin ditunjuk atau dipilih sebagai ketuanya.","Apabila saya berada dalam kelompok saya suka menerima pimpinan orang lain dalam memutuskan apa yang akan dilakukan oleh kelompok tersebut."],
+      ["Apabila saya melakukan sesuatu hal yang salah, saya merasa bahwa untuk itu saya harus dihukum.","Saya suka mengikuti adat-istiadat dan menghindarkan melakukan hal-hal yang mungkin dianggap tidak wajar oleh orang-orang yang saya hormati."],
+      ["Saya suka dalam melakukan atau menjalani segala sesuatu bersama-sama dengan teman-teman.","Saya suka membuat perencanaan sebelum mulai pekerjaan yang sulit."],
+      ["Saya ingin memahami bagaimana perasaan teman-teman saya dalam menghadapi berbagai masalah.","Jika saya akan bepergian, saya senang apabila segala sesuatunya telah direncanakan sebelumnya."],
+      ["Saya ingin diperlakukan dengan ramah oleh teman-teman saya.","Sebelum memulai sesuatu pekerjaan saya ingin pekerjaan itu teratur dan terencanakan."],
+      ["Saya ingin dianggap sebagai pemimpin oleh orang-orang lain.","Saya suka menyimpan surat-surat, bon-bon, dan kertas-kertas lain secara tersusun rapi dan menurut sistem tertentu."],
+      ["Saya merasa bahwa pilu hati dan kesusahan yang telah saya alami, lebih banyak membawa kebaikan daripada kerugian bagi saya.","Saya ingin agar hidup saya teratur sedemikian rupa, sehingga berjalan lancar dan tanpa banyak perubahan-perubahan dalam rencana saya."],
+      ["Saya ingin mempunyai ikatan perasaan yang kuat dengan teman teman saya.","Saya suka mengatakan hal yang dianggap lucu dan cerdas oleh orang lain."],
+      ["Saya suka merenungkan kepribadian teman-teman saya dan mencoba mengerti apa yang menyebabkan mereka mempunyai kepribadian yang demikian.","Saya kadang-kadang suka melakukan hal-hal hanya untuk melihat bagaimana pengaruhnya terhadap orang lain."],
+      ["Saya ingin agar teman-teman saya meributkan tentang diri saya, apabila mendapatkan cedera atau sakit.","Saya suka berbicara tentang hal-hal yang telah saya capai."],
+      ["Saya suka mengatakan pada orang-orang lain bagaimana mereka harus melakukan pekerjaan mereka.","Saya suka menjadi pusat perhatian, apabila saya ada di dalam suatu kelompok."],
+      ["Saya merasa canggung ditengah-tengah orang-orang lain yang saya anggap sebagai atasan saya.","Saya suka menggunakan kata-kata yang maknanya seringkali tidak diketahui oleh orang lain."],
+      ["Saya lebih suka mengerjakan sesuatu bersama-sama dengan teman-teman saya daripada sendirian.","Saya suka menyatakan pendapat saya tentang berbagai hal."],
+      ["Saya suka mempelajari dan menganalisa tingkah laku orang-orang lain.","Saya suka melakukan hal-hal yang dianggap orang lain tidak sesuai dengan adat kebiasaan."],
+      ["Saya ingin teman-teman saya merasa kasihan pada saya apabila saya sedang sakit.","Saya suka mengelakkan situasi-situasi yang mengharapkan saya melakukan hal-hal dengan cara konvensional (kebiasaan yang umum dilakukan orang)."],
+      ["Sedapat mungkin saya ingin membimbing dan mengarahkan tindakan atau perbuatan orang lain.","Saya ingin melakukan hal-hal dengan cara saya sendiri tanpa menghiraukan apa yang mungkin dipikirkan orang lain."],
+      ["Saya merasa bahwa dalam banyak hal, saya kalah bila dibandingkan dengan orang- orang lain.","Saya suka mengelakkan tanggung jawab dan kewajiban-kewajiban."],
+      ["Saya ingin berhasil dalam apa yang saya lakukan.","Saya suka membuat teman-teman baru."],
+      ["Saya suka menganalisa perasaan-perasaan saya dan sebab-sebab mengapa saya melakukan sesuatu.","Saya ingin melakukan sesuatu untuk teman-teman saya."],
+      ["Saya ingin agar teman-teman saya membantu saya bila saya mengalami kesulitan.","Saya suka melakukan sesuatu untuk teman-teman saya."],
+      ["Saya suka memperdebatkan pendirian saya bila diserang oleh orang-orang lain.","Saya suka berkirim surat kepada teman-teman saya."],
+      ["Saya merasa bersalah, apabila saya telah melakukan sesuatu yang saya ketahui keliru.","Saya ingin mempunyai ikatan perasaan yang kuat dengan teman teman saya."],
+      ["Saya suka dalam melakukan atau menjalani segala sesuatu bersama-sama dengan teman- teman.","Saya suka menganalisa perasaan-perasaan saya dan sebab-sebab mengapa saya melakukan sesuatu."],
+      ["Saya suka menerima pimpinan dari orang-orang yang saya kagumi.","Saya ingin memahami bagaimana perasaan teman-teman saya dalam menghadapi berbagai masalah."],
+      ["Saya ingin agar teman-teman saya dengan gembira memberikan pertolongan- pertolongan kecil kepada saya.","Saya suka menilai orang berdasarkan sebab-sebab mengapa mereka melakukan sesuatu, bukan berdasar apa yang sesungguhnya mereka lakukan."],
+      ["Bila saya berada dalam suatu kelompok, saya ingin menentukan apa yang akan kami kerjakan.","Saya suka meramalkan bagaimana teman-teman saya akan bertindak dalam berbagai situasi."],
+      ["Saya lebih suka mengalah dan menghindarkan perkelahian daripada memaksakan kemauan saya.","Saya suka menganalisa perasaan-perasaan orang lain dan sebab-sebab mengapa mereka melakukan sesuatu."],
+      ["Saya suka membuat teman-teman baru.","Saya ingin agar teman-teman saya membantu saya bila saya mengalami kesulitan."],
+      ["Saya suka menilai orang berdasarkan sebab-sebab mengapa mereka melakukan sesuatu, bukan berdasar apa yang sesungguhnya mereka lakukan.","Saya ingin teman-teman saya banyak menunjukkan rasa sayang mereka terhadap saya."],
+      ["Saya ingin agar hidup saya teratur sedemikian rupa, sehingga berjalan lancar dan tanpa banyak perubahan-perubahan dalam rencana saya.","Saya ingin teman-teman saya merasa kasihan pada saya apabila saya sedang sakit."],
+      ["Saya senang untuk diminta menyelesaikan pertentangan-pertentangan atau perselisihan-perselisihan.","Saya ingin agar teman-teman saya dengan gembira memberikan pertolongan- pertolongan kecil kepada saya."],
+      ["Saya merasa bahwa saya harus mengakui hal-hal yang telah saya lakukan dan saya anggap salah.","Saya ingin agar teman-teman saya bersimpati terhadap saya dan menghibur saya bila saya bersusah hati."],
+      ["Saya lebih suka mengerjakan sesuatu bersama-sama dengan teman-teman saya daripada sendirian.","Saya suka memperdebatkan pendirian saya bila diserang oleh orang-orang lain."],
+      ["Saya suka merenungkan kepribadian teman-teman saya dan mencoba mengerti apa yang menyebabkan mereka mempunyai kepribadian yang demikian.","Saya ingin dapat membujuk dan mempengaruhi orang lain untuk melakukan apa yang saya kehendaki."],
+      ["Saya ingin agar teman-teman saya bersimpati terhadap saya dan menghibur saya bila saya bersusah hati.","Bila saya berada dalam suatu kelompok, saya ingin menentukan apa yang akan kami kerjakan."],
+      ["Saya suka mengajukan pertanyaan-pertanyaan yang menurut saya tidak seorangpun akan dapat menjawabnya.","Saya suka menyatakan kepada orang lain bagaimana mereka harus melakukan pekerjaan mereka."],
+      ["Saya merasa canggung ditengah-tengah orang-orang lain yang saya anggap sebagai atasan saya.","Sedapat mungkin saya ingin membimbing dan mengarahkan tindakan atau perbuatan orang lain."],
+      ["Saya suka bergaul dalam kelompok yang para anggotanya akrab dan bersahabat satu sama lainnya.","Saya merasa bersalah, apabila saya telah melakukan sesuatu yang saya ketahui keliru."],
+      ["Saya suka menganalisa perasaan-perasaan orang lain dan sebab-sebab mengapa mereka melakukan sesuatu.","Saya merasa sedih akan ketidakmampuan saya untuk menghadapi berbagai macam keadaan."],
+      ["Saya ingin teman-teman saya merasa kasihan pada saya apabila saya sedang sakit.","Saya lebih suka mengalah dan menghindarkan perkelahian daripada memaksakan kemauan saya."],
+      ["Saya ingin dapat membujuk dan mempengaruhi orang lain untuk melakukan apa yang saya kehendaki.","Saya merasa sedih akan ketidakmampuan saya untuk menghadapi berbagai macam keadaan."],
+      ["Saya suka mengecam orang-orang yang kedudukannya memegang kekuasaan.","Saya merasa canggung ditengah-tengah orang-orang lain yang saya anggap sebagai atasan saya."],
+      ["Saya suka bergaul dalam kelompok yang para anggotanya akrab dan bersahabat satu sama lainnya.","Saya suka menolong teman-teman saya, apabila mereka dalam kesulitan."],
+      ["Saya suka menganalisa perasaan-perasaan saya dan sebab-sebab mengapa saya melakukan sesuatu.","Saya suka menunjukkan simpati saya kepada teman-teman saya bila mereka mendapat cedera atau sakit."],
+      ["Saya ingin agar teman-teman saya membantu saya bila saya mengalami kesulitan.","Saya suka memperlakukan orang lain dengan ramah dan simpatik."],
+      ["Saya ingin menjadi salah seorang pemimpin dalam organisasi-organisasi kelompok yang saya masuki.","Saya suka menunjukkan simpati saya kepada teman-teman saya bila mereka mendapat cedera atau sakit."],
+      ["Saya merasa bahwa pilu hati dan kesusahan yang telah saya alami, lebih banyak membawa kebaikan daripada kerugian bagi saya.","Saya suka berlaku ramah terhadap teman-teman saya."],
+      ["Saya lebih suka mengerjakan sesuatu bersama-sama dengan teman-teman saya daripada sendirian.","Saya suka bereksperimen dalam mencoba hal-hal yang baru."],
+      ["Saya suka merenungkan kepribadian teman-teman saya dan mencoba mengerti apa yang menyebabkan mereka mempunyai kepribadian yang demikian.","Saya suka mencoba pekerjaan yang baru dan berbeda-beda, daripada melakukan pekerjaan yang sama dan terus menerus."],
+      ["Saya ingin agar teman-teman saya menunjukkan simpati dan pengertian bila saya mengalami kesukaran-kesukaran.","Saya suka bertemu dengan orang-orang baru."],
+      ["Saya suka memperdebatkan pendirian saya bila diserang oleh orang-orang lain.","Saya ingin mengalami pembaharuan dan perubahan dalam kehidupan saya sehari hari."],
+      ["Saya lebih suka mengalah dan menghindarkan perkelahian daripada memaksakan kemauan saya.","Saya suka berkeliling di pedalaman dan tinggal di berbagai tempat."],
+      ["Saya suka melakukan sesuatu untuk teman-teman saya.","Bila saya harus melakukan suatu tugas, saya ingin mengerjakannya sampai selesai."],
+      ["Saya suka menganalisa perasaan-perasaan orang lain dan sebab-sebab mengapa mereka melakukan sesuatu.","Saya ingin menghindarkan gangguan bila saya sedang bekerja."],
+      ["Saya suka memberi pertolongan-pertolongan kecil kepada teman-teman saya.","Saya suka bekerja sampai jauh malam untuk menyelesaikan suatu pekerjaan."],
+      ["Saya ingin dianggap sebagai pemimpin oleh orang-orang lain.","Saya ingin bekerja berjam-jam tanpa diganggu."],
+      ["Apabila saya melakukan sesuatu hal yang salah, saya merasa bahwa untuk itu saya harus dihukum.","Saya suka bertahan menghadapi suatu pekerjaan atau masalah, sekalipun tampaknya seolah-olah saya tak akan berhasil."],
+      ["Saya ingin loyal terhadap teman-teman saya.","Saya suka bepergian dengan lawan jenis saya yang menarik (bagi laki-laki dengan wanita;bagi wanita dengan laki-laki)."],
+      ["Saya suka meramalkan bagaimana teman-teman saya akan bertindak dalam berbagai situasi.","Saya suka ikut serta dalam diskusi-diskusi tentang seks dan aktifitas seksuil."],
+      ["Saya ingin teman teman saya menunjukkan rasa sayang mereka terhadap saya.","Saya suka nafsu saya terangsang."],
+      ["Bila saya berada dalam suatu kelompok, saya ingin menentukan apa yang akan kami kerjakan.","Saya suka ikut dalam aktivitas-aktivitas sosial bersama-sama dengan orang-orang dari lawan jenis saya."],
+      ["Saya merasa sedih akan ketidakmampuan saya untuk menghadapi berbagai macam keadaan.","Saya suka membaca buku-buku dan sandiwara, terutama yang berkisar sekitar masalah seks."],
+      ["Saya suka berkirim surat kepada teman-teman saya.","Saya suka membaca berita-berita surat kabar tentang pembunuhan-pembunuhan dan lain-lain perbuatan kekerasan."],
+      ["Saya suka meramalkan bagaimana teman-teman saya akan bertindak dalam berbagai situasi.","Saya suka menyerang pendirian-pendirian yang bertentangan dengan pendirian saya."],
+      ["Saya ingin agar teman-teman saya meributkan tentang diri saya, apabila mendapatkan cedera atau sakit.","Saya rasanya ingin menyalahkan orang lain bila keadaannya kurang menguntungkan saya."],
+      ["Saya suka menyatakan kepada orang lain bagaimana mereka harus melakukan pekerjaan mereka.","Rasanya ingin membalas dendam bila seseorang menghina saya."],
+      ["Saya merasa bahwa dalam banyak hal, saya kalah bila dibandingkan dengan orang- orang lain.","Saya rasanya ingin menghardik orang lain bila saya berbeda pendapat dengan mereka."],
+      ["Saya suka menolong teman-teman saya, apabila mereka dalam kesulitan.","Saya suka melakukan pekerjaan apa saja sebaik mungkin."],
+      ["Saya suka bepergian melihat-lihat daerah pedalaman.","Saya suka menyelesaikan tugas-tugas yang dianggap orang lain sebagai tugas yang membutuhkan keterampilan dan usaha."],
+      ["Saya suka bekerja keras pada tiap pekerjaan yang saya hadapi.","Saya ingin menyelesaikan sesuatu yang sangat penting artinya."],
+      ["Saya suka bepergian dengan lawan jenis saya yang menarik (bagi laki-laki dengan wanita;bagi wanita dengan laki-laki).","Saya ingin berhasil dalam apa yang saya lakukan."],
+      ["Saya suka membaca berita-berita surat kabar tentang pembunuhan-pembunuhan dan lain-lain perbuatan kekerasan.","Saya ingin menulis roman atau sandiwara yang hebat."],
+      ["Saya suka memberi pertolongan-pertolongan kecil kepada teman-teman saya.","Dalam merencanakan sesuatu, saya ingin mendapat saran-saran dari orang-orang yang pendapatnya saya hormati."],
+      ["Saya ingin mengalami pembaharuan dan perubahan dalam kehidupan saya sehari- hari.","Saya suka menyatakan kepada atasan saya bahwa mereka telah melakukan sesuatu pekerjaan yang baik, apabila menurut pendapat saya memang demikian adanya."],
+      ["Saya suka bekerja sampai jauh malam untuk menyelesaikan suatu pekerjaan.","Saya suka memuji orang yang saya kagumi."],
+      ["Saya suka nafsu saya terangsang.","Saya suka menerima pimpinan dari orang-orang yang saya kagumi."],
+      ["Rasanya ingin membalas dendam bila seseorang menghina saya.","Apabila saya berada dalam kelompok saya suka menerima pimpinan orang lain dalam memutuskan apa yang akan dilakukan oleh kelompok tersebut."],
+      ["Saya suka bermurah hati terhadap teman-teman saya.","Saya suka membuat rencana sebelum memulai pekerjaan yang sulit."],
+      ["Saya suka bertemu dengan orang-orang baru.","Saya menghendaki bahwa setiap pekerjaan tulis saya teliti, rapi dan tersusun dengan baik."],
+      ["Saya suka menyelesaikan setiap pekerjaan atau tugas yang telah saya mulai.","Saya ingin barang-barang saya tersusun rapi dan teratur di atas meja atau di dalam ruang kerja saya."],
+      ["Saya ingin dianggap punya daya tarik fisik oleh orang-orang dari lawan jenis saya.","Saya suka merencanakan dan mengatur detail-detail dari setiap pekerjaan yang harus saya lakukan."],
+      ["Saya suka mengatakan kepada orang-orang lain bagaimana pendapat saya mengenai mereka.","Saya suka makan saya teratur dan ada waktu-waktu tertentu untuk makan."],
+      ["Saya suka berlaku ramah terhadap teman-teman saya.","Saya suka mengatakan hal yang dianggap lucu dan cerdas oleh orang lain."],
+      ["Saya suka mencoba pekerjaan yang baru dan berbeda-beda, daripada melakukan pekerjaan yang sama dan terus menerus.","Saya kadang-kadang suka melakukan hal-hal hanya untuk melihat bagaimana pengaruhnya terhadap orang lain."],
+      ["Saya suka bertahan menghadapi suatu pekerjaan atau masalah, sekalipun tampaknya seolah-olah saya tak akan berhasil.","Saya ingin orang-orang memperhatikan dan memberikan komentar mengenai penampilan saya di depan umum."],
+      ["Saya suka membaca buku-buku dan sandiwara, terutama yang berkisar sekitar masalah seks.","Saya suka menjadi pusat perhatian, apabila saya ada di dalam suatu kelompok."],
+      ["Saya rasanya ingin menyalahkan orang lain bila keadaannya kurang menguntungkan saya.","Saya suka mengajukan pertanyaan-pertanyaan yang menurut saya tidak seorangpun akan dapat menjawabnya."],
+      ["Saya suka menunjukkan simpati saya kepada teman-teman saya bila mereka mendapat cedera atau sakit.","Saya suka mengatakan pendapat saya tentang berbagai hal."],
+      ["Saya suka makan di restoran-restoran yang baru atau asing.","Saya suka melakukan hal-hal yang dianggap orang lain tidak sesuai dengan adat kebiasaan."],
+      ["Saya ingin menyelesaikan pekerjaan satu persatu sebelum memulai yang lain.","Saya ingin merasa bebas untuk melakukan apa yang saya kehendaki."],
+      ["Saya suka ikut serta dalam diskusi-diskusi tentang seks dan aktifitas seksuil.","Saya ingin melakukan hal-hal dengan cara saya sendiri tanpa menghiraukan apa yang mungkin dipikirkan orang lain."],
+      ["Saya menjadi sedemikian marahnya, sehingga rasanya ingin melemparkan dan merusak barang-barang.","Saya suka mengelakkan tanggung jawab dan kewajiban-kewajiban."],
+      ["Saya suka menolong teman-teman saya, apabila mereka dalam kesulitan.","Saya ingin loyal terhadap teman-teman saya."],
+      ["Saya suka mengerjakan hal-hal yang baru dan berbeda-beda.","Saya suka membuat teman teman baru."],
+      ["Bila saya harus melakukan suatu tugas, saya ingin mengerjakannya sampai selesai.","Saya suka bergaul dalam kelompok yang para anggotanya akrab dan bersahabat satu sama lainnya."],
+      ["Saya suka bepergian dengan lawan jenis saya yang menarik (bagi laki-laki dengan wanita;bagi wanita dengan laki-laki).","Saya ingin membuat teman sebanyak mungkin."],
+      ["Saya suka menyerang pendirian-pendirian yang bertentangan dengan pendirian saya.","Saya suka berkirim surat pada teman-teman saya."],
+      ["Saya suka bermurah hati terhadap teman teman saya.","Saya suka mengamat-amati bagaimana perasaan orang lain dalam satu keadaan tertentu."],
+      ["Saya suka makan di restoran-restoran yang baru atau asing.","Saya suka untuk menempatkan diri saya ditempat orang lain, dan membayangkan bagaimana perasaan saya apabila saya dalam keadaan atau situasi yang sama."],
+      ["Saya suka bekerja sampai jauh malam untuk menyelesaikan suatu pekerjaan.","Saya ingin memahami bagaimana perasaan teman-teman saya dalam menghadapi berbagai masalah."],
+      ["Saya suka nafsu saya terangsang.","Saya suka mempelajari dan menganalisa tingkah laku orang-orang lain."],
+      ["Saya rasanya ingin memperolok-olok orang-orang yang melakukan hal-hal yang saya anggap bodoh.","Saya suka meramalkan bagaimana teman-teman saya akan bertindak dalam berbagai situasi."],
+      ["Saya suka memaafkan teman-teman saya yang menyakiti hati saya.","Saya ingin teman-teman saya memberi dorongan-dorongan kepada saya bila saya menghadapi kegagalan."],
+      ["Saya suka bereksperimen dalam mencoba hal-hal yang baru.","Saya ingin agar teman-teman saya menunjukkan simpati dan pengertian bila saya mengalami kesukaran-kesukaran."],
+      ["Saya suka mengerjakan teka-teki atau memecahkan persoalan-persoalan sampai selesai.","Saya ingin diperlakukan dengan ramah oleh teman-teman saya."],
+      ["Saya ingin dianggap punya daya tarik fisik oleh orang-orang dari lawan jenis saya.","Saya ingin teman-teman saya banyak menunjukkan rasa sayang mereka terhadap saya."],
+      ["Saya rasanya ingin mengecam seseorang di muka umum bila orang itu patut menerimanya.","Saya ingin agar teman-teman saya meributkan tentang diri saya, apabila mendapatkan cedera atau sakit."],
+      ["Saya suka berlaku ramah terhadap teman-teman saya.","Saya ingin dianggap sebagai pemimpin oleh orang-orang lain."],
+      ["Saya lebih suka mencoba pekerjaan-pekerjaan yang baru dan lain daripada terus menerus melakukan pekerjaan yang sama.","Apabila saya bekerja dalam suatu panitia, saya ingin ditunjuk atau dipilih sebagai ketuanya."],
+      ["Saya suka menyelesaikan setiap pekerjaan atau tugas yang telah saya mulai.","Saya ingin dapat membujuk dan mempengaruhi orang lain untuk melakukan apa yang saya kehendaki."],
+      ["Saya suka ikut serta dalam diskusi-diskusi tentang seks dan aktifitas seksuil.","Saya senang untuk diminta menyelesaikan pertentangan-pertentangan atau perselisihan-perselisihan."],
+      ["Saya menjadi sedemikian marahnya, sehingga rasanya ingin melemparkan dan merusak barang-barang.","Saya suka menyatakan kepada orang lain bagaimana mereka harus melakukan pekerjaan mereka."],
+      ["Saya suka berlaku sangat ramah terhadap teman teman saya.","Bila keadaan kurang menguntungkan bagi saya, maka saya merasa bahwa saya harus lebih disalahkan daripada orang lain."],
+      ["Saya suka berkeliling di pedalaman dan tinggal di berbagai tempat.","Apabila saya melakukan sesuatu hal yang salah, saya merasa bahwa untuk itu saya harus dihukum."],
+      ["Saya suka bertahan menghadapi suatu pekerjaan atau masalah, sekalipun tampaknya seolah-olah saya tak akan berhasil.","Saya merasa bahwa pilu hati dan kesusahan yang telah saya alami, lebih banyak membawa kebaikan daripada kerugian bagi saya."],
+      ["Saya suka membaca buku-buku dan sandiwara, terutama yang berkisar sekitar masalah seks.","Saya merasa bahwa saya harus mengakui hal-hal yang telah saya lakukan dan saya anggap salah."],
+      ["Saya rasanya ingin menyalahkan orang lain bila keadaannya kurang menguntungkan saya.","Saya merasa bahwa dalam banyak hal, saya kalah bila dibandingkan dengan orang- orang lain."],
+      ["Saya suka melakukan pekerjaan apa saja terbaik mungkin.","Saya suka menolong orang-orang lain, yang tidak begitu beruntung apabila dibandingkan dengan keadaan saya."],
+      ["Saya suka mengerjakan hal-hal yang baru dan berbeda-beda.","Saya suka memperlakukan orang lain dengan ramah dan simpatik."],
+      ["Bila saya harus melakukan suatu tugas, saya ingin mengerjakannya sampai selesai.","Saya suka menolong orang-orang lain, yang tidak begitu beruntung apabila dibandingkan dengan keadaan saya."],
+      ["Saya suka ikut dalam aktivitas-aktivitas sosial bersama-sama dengan orang-orang dari lawan jenis saya.","Saya suka memaafkan teman-teman saya yang menyakiti hati saya."],
+      ["Saya suka menyerang pendirian-pendirian yang bertentangan dengan pendirian saya.","Saya ingin teman-teman saya mempercayai saya dan menceritakan kesulitan-kesulitan mereka kepada saya."],
+      ["Saya suka memperlakukan orang lain dengan ramah dan simpatik.","Saya suka bepergian melihat-lihat daerah pedalaman."],
+      ["Saya suka mengikuti adat-istiadat dan menghindarkan melakukan hal-hal yang mungkin dianggap tidak wajar oleh orang-orang yang saya hormati.","Saya suka mengikuti mode baru."],
+      ["Saya suka bekerja keras pada tiap pekerjaan yang saya hadapi.","Saya ingin mengalami pembaharuan dan perubahan dalam kehidupan saya sehari- hari."],
+      ["Saya mempunyai keinginan untuk mencium orang yang menarik dari lawan jenis saya.","Saya suka bereksperimen dalam mencoba hal-hal yang baru."],
+      ["Saya rasanya ingin menghardik orang lain bila saya berbeda pendapat dengan mereka.","Saya suka mengikuti mode-mode baru."],
+      ["Saya suka menolong orang-orang lain, yang tidak begitu beruntung apabila dibandingkan dengan keadaan saya.","Saya suka menyelesaikan setiap pekerjaan atau tugas yang telah saya mulai."],
+      ["Saya suka berkeliling di pedalaman dan tinggal di berbagai tempat.","Saya ingin bekerja berjam-jam tanpa diganggu."],
+      ["Jika saya akan bepergian, saya senang apabila segala sesuatunya telah direncanakan sebelumnya.","Saya suka mengerjakan teka-teki dan memecahkan persoalan-persoalan sampai selesai."],
+      ["Saya mudah jatuh cinta pada seseorang dari lawan jenis saya.","Saya ingin menyelesaikan pekerjaan satu persatu sebelum memulai yang lain."],
+      ["Saya suka mengatakan kepada orang-orang lain bagaimana pendapat saya mengenai mereka.","Saya ingin menghindarkan diganggu bila saya sedang bekerja."],
+      ["Saya suka memberi pertolongan-pertolongan kecil kepada teman-teman saya.","Saya suka ikut dalam aktivitas-aktivitas sosial bersama-sama dengan orang-orang dari lawan jenis saya."],
+      ["Saya suka bertemu dengan orang-orang baru.","Saya mempunyai keinginan untuk mencium orang yang menarik dari lawan jenis saya."],
+      ["Saya ingin mengerjakan teka-teki atau memecahkan persoalan-persoalan sampai selesai.","Saya mudah jatuh cinta pada seseorang dari lawan jenis saya."],
+      ["Saya suka berbicara tentang hal-hal yang telah saya capai.","Saya suka mendengarkan atau menceritakan lelucon-lelucon yang terutama berkisar soal seks."],
+      ["Saya rasanya ingin memperolok orang-orang yang melakukan hal-hal yang saya anggap bodoh.","Saya suka mendengarkan atau menceritakan lelucon-lelucon yang terutama berkisar soal seks."],
+      ["Saya ingin teman-teman saya mempercayai saya dan menceritakan kesulitan-kesulitan mereka kepada saya.","Saya suka membaca berita-berita surat kabar tentang pembunuhan-pembunuhan dan lain-lain perbuatan kekerasan."],
+      ["Saya suka mengikuti mode baru.","Saya rasanya ingin mengecam seseorang di muka umum bila orang itu patut menerimanya."],
+      ["Saya ingin menghindarkan diganggu bila saya sedang bekerja.","Saya rasanya ingin menghardik orang lain bila saya berbeda pendapat dengan mereka."],
+      ["Saya suka mendengarkan atau menceritakan lelucon-lelucon yang terutama berkisar soal seks.","Rasanya ingin membalas dendam bila seseorang menghina saya."],
+      ["Saya suka mengelakkan tanggung jawab dan kewajiban-kewajiban.","Saya rasanya ingin memperolok-olok orang-orang yang melakukan hal-hal yang saya anggap bodoh."]];
+
+    // Kunci skoring (sesuai lembar kerja ebook): soal n berada di baris/kolom lembar kerja.
+    // Jawaban A dihitung ke variabel BARIS (r), jawaban B ke variabel KOLOM (c).
+    // 15 soal diagonal tidak dihitung (total s = 210, maks per variabel = 28); dipakai untuk CONS.
+    const DIAGONAL = [1,7,13,19,25,101,107,113,119,125,201,207,213,219,225];
+    const CONS_PAIRS = [[1,151],[26,101],[51,201],[7,157],[32,107],[57,207],[13,163],[38,113],[63,213],[19,169],[44,119],[69,219],[25,175],[50,125],[75,225]];
+    function rowColVar(n) {
+      const p = (n - 1) % 75;
+      return { row: Math.floor((n - 1) / 75) * 5 + (p % 5), col: Math.floor(p / 5) };
+    }
+    // Ebook tidak memuat tabel norma lengkap. Skala di bawah hanya tabel sederhana dari ebook (bukan norma baku).
+    function skalaEbook(s) { return s >= 22 ? '100%' : s >= 15 ? '75%' : '< 50%'; }
+    const MEAN_PROFIL = 14; // 210 / 15
+
+    let userData = {};
+    let userAnswers = new Array(225).fill(null);
+    let currentQuestionIndex = 0;
+    let examEndTime = 0;
+    let timerInterval = null;
+    let timeUpShown = false;
+    const EXAM_MINUTES = 40; // ebook: 40-60 menit
+    let chartInstance = null;
+
+    window.addEventListener('keydown', (e) => {
+      const isExamVisible = !document.getElementById('sec-exam').classList.contains('hidden');
+      const isTyping = ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName);
+      if (!isExamVisible || isTyping) return;
+
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        navigateQuestion(-1);
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        navigateQuestion(1);
+      }
+    });
+
+    function startExam(e) {
+      if (e) e.preventDefault();
+      
+      userData = {
+        name: document.getElementById('bio-name').value,
+        gender: document.getElementById('bio-gender').value,
+        age: document.getElementById('bio-age').value,
+        education: document.getElementById('bio-education').value || '-',
+        date: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
+      };
+
+      document.getElementById('sec-instruction').classList.add('hidden');
+      document.getElementById('sec-exam').classList.remove('hidden');
+      document.getElementById('header-exam-actions').classList.remove('hidden');
+      document.getElementById('exam-user-name').innerText = userData.name;
+
+      examEndTime = Date.now() + EXAM_MINUTES * 60 * 1000; timeUpShown = false;
+      updateTimerDisplay();
+      timerInterval = setInterval(updateTimerDisplay, 1000);
+
+      renderGrid();
+      renderQuestion();
+    }
+
+    function updateTimerDisplay() {
+      // Hitung mundur. Ebook: batas waktu tidak mutlak, jadi saat habis peserta hanya diberi peringatan.
+      const el = document.getElementById('exam-timer');
+      const remainingSec = Math.max(0, Math.ceil((examEndTime - Date.now()) / 1000));
+      const m = Math.floor(remainingSec / 60);
+      const s = remainingSec % 60;
+      el.innerText = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+      if (remainingSec === 0) {
+        el.classList.add('text-red-600');
+        if (!timeUpShown) {
+          timeUpShown = true;
+          alert("Waktu acuan telah habis. Selesaikan pernyataan yang tersisa dengan teliti, lalu tekan Selesai Ujian.");
+        }
+      }
+    }
+
+    function renderQuestion() {
+      const q = EPPS_QUESTIONS[currentQuestionIndex];
+      document.getElementById('q-number').innerText = currentQuestionIndex + 1;
+      document.getElementById('text-opt-a').innerText = q[0];
+      document.getElementById('text-opt-b').innerText = q[1];
+
+      const labelA = document.getElementById('label-opt-a');
+      const labelB = document.getElementById('label-opt-b');
+      labelA.className = "flex items-start p-4 rounded-xl border-2 border-slate-200 hover:border-brand-300 bg-slate-50/50 cursor-pointer transition-all";
+      labelB.className = "flex items-start p-4 rounded-xl border-2 border-slate-200 hover:border-brand-300 bg-slate-50/50 cursor-pointer transition-all";
+
+      const ans = userAnswers[currentQuestionIndex];
+      if (ans === 'A') {
+        labelA.className = "flex items-start p-4 rounded-xl border-2 border-brand-600 bg-brand-50 cursor-pointer transition-all";
+      } else if (ans === 'B') {
+        labelB.className = "flex items-start p-4 rounded-xl border-2 border-brand-600 bg-brand-50 cursor-pointer transition-all";
+      }
+
+      document.getElementById('btn-prev').disabled = currentQuestionIndex === 0;
+      document.getElementById('btn-next').disabled = currentQuestionIndex === 224;
+
+      updateGridHighlight();
+    }
+
+    // MEMILIH JAWABAN TANPA PINDAH OTOMATIS
+    function selectAnswer(ans) {
+      userAnswers[currentQuestionIndex] = ans;
+      renderQuestion();
+
+      const answeredCount = userAnswers.filter(a => a !== null).length;
+      document.getElementById('exam-answered-count').innerText = answeredCount;
+    }
+
+    function navigateQuestion(dir) {
+      const newIndex = currentQuestionIndex + dir;
+      if (newIndex >= 0 && newIndex < 225) {
+        currentQuestionIndex = newIndex;
+        renderQuestion();
+      }
+    }
+
+    function jumpToQuestion(idx) {
+      currentQuestionIndex = idx;
+      renderQuestion();
+    }
+
+    function renderGrid() {
+      const grid = document.getElementById('grid-questions');
+      grid.innerHTML = '';
       for (let i = 0; i < 225; i++) {
-        const template = rawEppsQuestions[i % rawEppsQuestions.length];
-        eppsQuestions.push({
-          id: i + 1,
-          a: template.a,
-          b: template.b,
-          catA: template.catA,
-          catB: template.catB,
-        });
+        const btn = document.createElement('button');
+        btn.id = `grid-btn-${i}`;
+        btn.innerText = i + 1;
+        btn.className = "w-full aspect-square text-xs font-semibold rounded border border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-200 flex items-center justify-center cursor-pointer";
+        btn.onclick = () => jumpToQuestion(i);
+        grid.appendChild(btn);
       }
+    }
 
-      /* ==========================================================================
-           2. STATE UTAMA APLIKASI
-           ========================================================================== */
-      let currentQuestionIndex = 0;
-      let userAnswers = new Array(225).fill(null); // 'A' or 'B'
-      let participantInfo = {};
+    function updateGridHighlight() {
+      for (let i = 0; i < 225; i++) {
+        const btn = document.getElementById(`grid-btn-${i}`);
+        if (!btn) continue;
+        const isAns = userAnswers[i] !== null;
+        const isCurr = i === currentQuestionIndex;
 
-      // Timer globals
-      let totalDurationSeconds = 40 * 60; // 40 menit
-      let endTimeTimestamp = null;
-      let timerInterval = null;
-      let chartInstance = null;
-
-      /* ==========================================================================
-           3. TIMER ENGINE WITH REAL TIMESTAMP CORRECTION (Fix Tab Switching)
-           ========================================================================== */
-      function startTimer() {
-        // Hitung timestamp waktu selesai absolut
-        endTimeTimestamp = Date.now() + totalDurationSeconds * 1000;
-
-        // Perbarui timer secara berkala setiap 500ms
-        updateTimerDisplay();
-        if (timerInterval) clearInterval(timerInterval);
-        timerInterval = setInterval(updateTimerDisplay, 500);
-
-        // Tambahkan listener untuk event visibilitas / fokus window
-        document.removeEventListener(
-          "visibilitychange",
-          handleVisibilityOrFocus,
-        );
-        window.removeEventListener("focus", handleVisibilityOrFocus);
-
-        document.addEventListener("visibilitychange", handleVisibilityOrFocus);
-        window.addEventListener("focus", handleVisibilityOrFocus);
-      }
-
-      function handleVisibilityOrFocus() {
-        // Langsung rekalkulasi sisa waktu secara akurat berdasarkan Date.now()
-        if (endTimeTimestamp) {
-          updateTimerDisplay();
-        }
-      }
-
-      function updateTimerDisplay() {
-        if (!endTimeTimestamp) return;
-
-        const now = Date.now();
-        const remainingMs = endTimeTimestamp - now;
-        const remainingSeconds = Math.max(0, Math.floor(remainingMs / 1000));
-
-        const mins = Math.floor(remainingSeconds / 60);
-        const secs = remainingSeconds % 60;
-
-        const formattedTime = `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
-        const timerElem = document.getElementById("timerDisplay");
-        if (timerElem) {
-          timerElem.textContent = formattedTime;
-        }
-
-        // Jika waktu habis
-        if (remainingSeconds <= 0) {
-          clearInterval(timerInterval);
-          alert(
-            "Waktu pengerjaan ujian telah habis. Jawaban Anda akan dikirimkan otomatis.",
-          );
-          submitExam();
-        }
-      }
-
-      /* ==========================================================================
-           4. NAVIGATION & SECTION CONTROLLER
-           ========================================================================== */
-      function showSection(sectionId) {
-        document.getElementById("secPetunjuk").classList.add("hidden");
-        document.getElementById("secUjian").classList.add("hidden");
-        document.getElementById("secHasil").classList.add("hidden");
-
-        document.getElementById(sectionId).classList.remove("hidden");
-
-        // Toggle "Petunjuk" button on top header depending on section
-        const btnInstructions = document.getElementById(
-          "btnOpenInstructionsModal",
-        );
-        if (sectionId === "secUjian") {
-          btnInstructions.classList.remove("hidden");
-          btnInstructions.classList.add("flex");
+        if (isCurr) {
+          btn.className = "w-full aspect-square text-xs font-bold rounded border-2 border-brand-600 bg-brand-100 text-brand-800 flex items-center justify-center cursor-pointer";
+        } else if (isAns) {
+          btn.className = "w-full aspect-square text-xs font-semibold rounded border border-brand-600 bg-brand-600 text-white flex items-center justify-center cursor-pointer";
         } else {
-          btnInstructions.classList.add("hidden");
-          btnInstructions.classList.remove("flex");
-        }
-
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      }
-
-      function toggleInstructionsModal(show) {
-        const modal = document.getElementById("instructionsModal");
-        const box = document.getElementById("instructionsModalBox");
-        if (show) {
-          modal.classList.remove("opacity-0", "pointer-events-none");
-          box.classList.remove("scale-95");
-          box.classList.add("scale-100");
-        } else {
-          modal.classList.add("opacity-0", "pointer-events-none");
-          box.classList.remove("scale-100");
-          box.classList.add("scale-95");
+          btn.className = "w-full aspect-square text-xs font-semibold rounded border border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-200 flex items-center justify-center cursor-pointer";
         }
       }
+    }
 
-      /* ==========================================================================
-           5. EXAM LOGIC
-           ========================================================================== */
-      function startExam() {
-        // Ambil data biodata
-        participantInfo = {
-          name: document.getElementById("participantName").value,
-          gender: document.getElementById("participantGender").value,
-          age: document.getElementById("participantAge").value || "-",
-          role: document.getElementById("participantRole").value || "-",
-        };
+    function confirmSubmitExam() {
+      const first = userAnswers.findIndex(a => a === null);
+      if (first !== -1) {
+        const left = userAnswers.filter(a => a === null).length;
+        alert(`Masih ada ${left} soal belum dijawab. Sesuai petunjuk, tidak boleh ada pernyataan yang terlewat. Anda akan diarahkan ke soal nomor ${first + 1}.`);
+        jumpToQuestion(first);
+        return;
+      }
+      if (!confirm("Apakah Anda yakin telah selesai mengerjakan seluruh soal?")) return;
+      processResults();
+    }
 
-        // Switch UI ke section Ujian
-        showSection("secUjian");
+    function processResults() {
+      clearInterval(timerInterval);
+      document.getElementById('sec-exam').classList.add('hidden');
+      document.getElementById('header-exam-actions').classList.add('hidden');
+      document.getElementById('sec-result').classList.remove('hidden');
 
-        // Inisialisasi Navigasi Grid & Soal
-        currentQuestionIndex = 0;
-        renderQuestionGrid();
-        loadQuestion(currentQuestionIndex);
+      document.getElementById('res-name').innerText = userData.name;
+      document.getElementById('res-gender').innerText = userData.gender === 'L' ? 'Laki-Laki' : 'Perempuan';
+      document.getElementById('res-age').innerText = userData.age;
+      document.getElementById('res-education').innerText = userData.education;
+      document.getElementById('res-date').innerText = userData.date;
 
-        // Jalankan Timer Akurat
-        startTimer();
+      const rawScores = {};
+      EPPS_VARIABLES.forEach(v => { rawScores[v.code] = { r: 0, c: 0, s: 0, pct: '-', trend: '0', category: '' }; });
+
+      for (let n = 1; n <= 225; n++) {
+        if (DIAGONAL.includes(n)) continue;
+        const ans = userAnswers[n - 1];
+        const { row, col } = rowColVar(n);
+        if (ans === 'A') rawScores[EPPS_VARIABLES[row].code].r += 1;
+        else if (ans === 'B') rawScores[EPPS_VARIABLES[col].code].c += 1;
       }
 
-      function loadQuestion(index) {
-        currentQuestionIndex = index;
-        const q = eppsQuestions[index];
+      let total = 0;
+      EPPS_VARIABLES.forEach(v => {
+        const item = rawScores[v.code];
+        item.s = item.r + item.c;
+        total += item.s;
+        item.pct = skalaEbook(item.s);
+        if (item.s > MEAN_PROFIL) { item.trend = '+'; item.category = 'Di atas mean: kecenderungan/kekuatan'; }
+        else if (item.s < MEAN_PROFIL) { item.trend = '-'; item.category = 'Di bawah mean: lemah/tidak menonjol'; }
+        else { item.trend = '0'; item.category = 'Pada mean: wajar'; }
+      });
+      document.getElementById('total-check').innerText = `Total s = ${total} (seharusnya 210) ${total === 210 ? '- OK' : '- ADA KESALAHAN'}`;
 
-        // Set badge & text
-        document.getElementById("questionNumBadge").textContent =
-          `Soal #${q.id} dari 225`;
-        document.getElementById("textOptionA").textContent = q.a;
-        document.getElementById("textOptionB").textContent = q.b;
+      // CONS: bandingkan jawaban pada 15 pasang soal yang sama
+      let cons = 0;
+      CONS_PAIRS.forEach(([a, b]) => { if (userAnswers[a - 1] === userAnswers[b - 1]) cons += 1; });
 
-        // Reset inputs & styles
-        const radioA = document.getElementById("optA");
-        const radioB = document.getElementById("optB");
-        const cardA = document.getElementById("cardOptionA");
-        const cardB = document.getElementById("cardOptionB");
+      renderConsistencyBanner(cons);
+      renderChart(rawScores);
+      renderTableScore(rawScores);
+    }
 
-        radioA.checked = userAnswers[index] === "A";
-        radioB.checked = userAnswers[index] === "B";
+    function renderConsistencyBanner(cons) {
+      const banner = document.getElementById('consistency-banner');
+      const icon = document.getElementById('consistency-icon');
+      const title = document.getElementById('consistency-title');
+      const desc = document.getElementById('consistency-desc');
 
-        updateOptionCardStyle(cardA, userAnswers[index] === "A");
-        updateOptionCardStyle(cardB, userAnswers[index] === "B");
+      if (cons >= 10) {
+        banner.className = "p-4 rounded-xl flex items-center space-x-4 border border-emerald-200 bg-emerald-50 text-emerald-800";
+        icon.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600"></i>';
+        title.innerText = `Status Konsistensi (CONS): ${cons} / 15 - VALID`;
+        desc.innerText = "Konsistensi jawaban memenuhi syarat (10 atau lebih). Hasil tes dapat diinterpretasi.";
+      } else {
+        banner.className = "p-4 rounded-xl flex items-center space-x-4 border border-amber-200 bg-amber-50 text-amber-800";
+        icon.innerHTML = '<i class="fa-solid fa-triangle-exclamation text-amber-600"></i>';
+        title.innerText = `Status Konsistensi (CONS): ${cons} / 15 - MERAGUKAN`;
+        desc.innerText = "Konsistensi di bawah 10: hasil meragukan dan tidak perlu diinterpretasi (subjek tidak konsisten atau kelelahan).";
+      }
+    }
 
-        // Button visibility
-        document.getElementById("btnPrev").disabled = index === 0;
-
-        if (index === eppsQuestions.length - 1) {
-          document.getElementById("btnNext").classList.add("hidden");
-          document.getElementById("btnFinishExam").classList.remove("hidden");
-        } else {
-          document.getElementById("btnNext").classList.remove("hidden");
-          document.getElementById("btnFinishExam").classList.add("hidden");
+    function renderChart(scores) {
+      const ctx = document.getElementById('chart-epps').getContext('2d');
+      const labels = EPPS_VARIABLES.map(v => v.code.toUpperCase());
+      const data = EPPS_VARIABLES.map(v => scores[v.code].s);
+      if (chartInstance) chartInstance.destroy();
+      chartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [
+            { label: 'Skor (s)', data, borderColor: '#0284c7', backgroundColor: 'rgba(2,132,199,0.1)', borderWidth: 3, fill: true, tension: 0.2, pointRadius: 5 },
+            { label: 'Mean profil (14)', data: labels.map(() => MEAN_PROFIL), borderColor: '#94a3b8', borderDash: [6, 6], borderWidth: 2, pointRadius: 0, fill: false }
+          ]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          scales: { y: { min: 0, max: 28, ticks: { stepSize: 4 }, grid: { color: '#f1f5f9' } }, x: { grid: { display: false } } },
+          plugins: { legend: { display: true } }
         }
+      });
+    }
 
-        // Update grid highlight
-        highlightCurrentGridItem();
-      }
+    function renderTableScore(scores) {
+      const tbody = document.getElementById('table-score-body');
+      tbody.innerHTML = '';
+      EPPS_VARIABLES.forEach(v => {
+        const item = scores[v.code];
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="p-2.5 font-semibold text-slate-800">${v.name}<div class="font-normal text-slate-500">${v.desc}</div></td>
+          <td class="p-2.5 text-center">${item.r}</td>
+          <td class="p-2.5 text-center">${item.c}</td>
+          <td class="p-2.5 text-center font-bold">${item.s}</td>
+          <td class="p-2.5 text-center font-bold text-brand-600">${item.pct}</td>
+          <td class="p-2.5 text-center font-bold ${item.trend === '+' ? 'text-emerald-600' : item.trend === '-' ? 'text-red-500' : 'text-slate-400'}">${item.trend}</td>
+          <td class="p-2.5 font-medium">${item.category}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
 
-      function updateOptionCardStyle(cardElem, isSelected) {
-        if (isSelected) {
-          cardElem.classList.add(
-            "border-blue-600",
-            "bg-blue-50/80",
-            "ring-2",
-            "ring-blue-500/20",
-          );
-          cardElem.classList.remove("border-slate-200", "bg-slate-50");
-        } else {
-          cardElem.classList.remove(
-            "border-blue-600",
-            "bg-blue-50/80",
-            "ring-2",
-            "ring-blue-500/20",
-          );
-          cardElem.classList.add("border-slate-200", "bg-slate-50");
-        }
-      }
-
-      function selectAnswer(choice) {
-        userAnswers[currentQuestionIndex] = choice;
-        loadQuestion(currentQuestionIndex);
-        updateProgress();
-        renderQuestionGrid();
-      }
-
-      function navigateQuestion(delta) {
-        const nextIdx = currentQuestionIndex + delta;
-        if (nextIdx >= 0 && nextIdx < eppsQuestions.length) {
-          loadQuestion(nextIdx);
-        }
-      }
-
-      function updateProgress() {
-        const answeredCount = userAnswers.filter((a) => a !== null).length;
-        const percent = Math.round(
-          (answeredCount / eppsQuestions.length) * 100,
-        );
-
-        document.getElementById("progressBar").style.width = `${percent}%`;
-        document.getElementById("progressText").textContent =
-          `${answeredCount} / 225 (${percent}%)`;
-        document.getElementById("gridSummary").textContent =
-          `Terjawab: ${answeredCount}`;
-      }
-
-      function renderQuestionGrid() {
-        const gridContainer = document.getElementById("questionGrid");
-        gridContainer.innerHTML = "";
-
-        eppsQuestions.forEach((q, idx) => {
-          const btn = document.createElement("button");
-          btn.type = "button";
-          btn.textContent = idx + 1;
-          btn.className =
-            "py-1.5 rounded-lg text-xs font-bold transition flex items-center justify-center border ";
-
-          if (userAnswers[idx] !== null) {
-            btn.classList.add("bg-blue-600", "text-white", "border-blue-600");
-          } else {
-            btn.classList.add(
-              "bg-slate-100",
-              "text-slate-600",
-              "border-slate-200",
-              "hover:bg-slate-200",
-            );
-          }
-
-          if (idx === currentQuestionIndex) {
-            btn.classList.add("ring-2", "ring-amber-400", "ring-offset-1");
-          }
-
-          btn.onclick = () => loadQuestion(idx);
-          gridContainer.appendChild(btn);
-        });
-      }
-
-      function highlightCurrentGridItem() {
-        const gridContainer = document.getElementById("questionGrid");
-        const buttons = gridContainer.querySelectorAll("button");
-        buttons.forEach((btn, idx) => {
-          if (idx === currentQuestionIndex) {
-            btn.classList.add("ring-2", "ring-amber-400", "ring-offset-1");
-          } else {
-            btn.classList.remove("ring-2", "ring-amber-400", "ring-offset-1");
-          }
-        });
-      }
-
-      function confirmSubmitExam() {
-        const answeredCount = userAnswers.filter((a) => a !== null).length;
-        if (answeredCount < eppsQuestions.length) {
-          const confirmUnfinished = confirm(
-            `Anda baru menjawab ${answeredCount} dari 225 soal. Yakin ingin mengakhiri tes?`,
-          );
-          if (!confirmUnfinished) return;
-        } else {
-          const confirmFinish = confirm(
-            "Apakah Anda yakin ingin menyelesaikan dan mengirim jawaban tes Anda?",
-          );
-          if (!confirmFinish) return;
-        }
-        submitExam();
-      }
-
-      /* ==========================================================================
-           6. CALCULATIONS & RESULTS
-           ========================================================================== */
-      function submitExam() {
-        if (timerInterval) clearInterval(timerInterval);
-
-        // Hitung Skor
-        const scores = calculateEPPSScores();
-        renderResults(scores);
-
-        showSection("secHasil");
-      }
-
-      function calculateEPPSScores() {
-        // Inisialisasi skor 15 skala
-        const rawScores = {};
-        eppsVariables.forEach((v) => (rawScores[v.code] = 0));
-
-        // Hitung akumulasi pilihan berdasarkan kategori A/B
-        userAnswers.forEach((ans, idx) => {
-          if (!ans) return;
-          const q = eppsQuestions[idx];
-          if (ans === "A" && q.catA) {
-            rawScores[q.catA] = (rawScores[q.catA] || 0) + 1;
-          } else if (ans === "B" && q.catB) {
-            rawScores[q.catB] = (rawScores[q.catB] || 0) + 1;
-          }
-        });
-
-        // Simulasi hitung skor konsistensi (Consistency Check)
-        // Di standar EPPS, terdapat 15 pasang soal identik terulang untuk cek keajegan
-        let consistencyScore = 0;
-        for (let i = 0; i < 15; i++) {
-          if (userAnswers[i] && userAnswers[i] === userAnswers[i + 15]) {
-            consistencyScore++;
-          }
-        }
-
-        return { rawScores, consistencyScore };
-      }
-
-      function renderResults(results) {
-        const { rawScores, consistencyScore } = results;
-
-        // Render Meta Info
-        document.getElementById("resName").textContent =
-          participantInfo.name || "Peserta";
-        document.getElementById("resMeta").textContent =
-          `${participantInfo.gender === "L" ? "Laki-Laki" : "Perempuan"} / ${participantInfo.age}`;
-
-        const isConsistent = consistencyScore >= 9;
-        const consContainer = document.getElementById(
-          "consistencyBadgeContainer",
-        );
-        const consText = document.getElementById("resConsistency");
-
-        if (isConsistent) {
-          consContainer.className =
-            "p-4 rounded-xl border bg-emerald-50 border-emerald-200";
-          consText.className = "font-bold text-emerald-900 text-base mt-0.5";
-          consText.textContent = `${consistencyScore} / 15 (Status: Valid & Konsisten)`;
-        } else {
-          consContainer.className =
-            "p-4 rounded-xl border bg-amber-50 border-amber-200";
-          consText.className = "font-bold text-amber-900 text-base mt-0.5";
-          consText.textContent = `${consistencyScore} / 15 (Status: Cenderung Tidak Konsisten)`;
-        }
-
-        // Render Table Rows
-        const tbody = document.getElementById("resultTableBody");
-        tbody.innerHTML = "";
-
-        eppsVariables.forEach((v) => {
-          const score = rawScores[v.code] || 0;
-          const tr = document.createElement("tr");
-          tr.className = "hover:bg-slate-50 transition";
-          tr.innerHTML = `
-                    <td class="p-3.5 font-bold text-blue-700">${v.code.toUpperCase()}</td>
-                    <td class="p-3.5 font-semibold text-slate-800">${v.name}</td>
-                    <td class="p-3.5 text-center font-bold text-slate-900 bg-slate-50">${score}</td>
-                    <td class="p-3.5 text-xs text-slate-600 leading-relaxed">${v.desc}</td>
-                `;
-          tbody.appendChild(tr);
-        });
-
-        // Render Chart.js
-        renderChart(rawScores);
-      }
-
-      function renderChart(rawScores) {
-        const ctx = document.getElementById("eppsChart").getContext("2d");
-        const labels = eppsVariables.map((v) => v.code.toUpperCase());
-        const dataValues = eppsVariables.map((v) => rawScores[v.code] || 0);
-
-        if (chartInstance) {
-          chartInstance.destroy();
-        }
-
-        chartInstance = new Chart(ctx, {
-          type: "bar",
-          data: {
-            labels: labels,
-            datasets: [
-              {
-                label: "Skor Mentah (Raw Score)",
-                data: dataValues,
-                backgroundColor: "rgba(37, 99, 235, 0.8)",
-                borderColor: "rgba(37, 99, 235, 1)",
-                borderWidth: 1.5,
-                borderRadius: 6,
-              },
-            ],
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-              y: {
-                beginAtZero: true,
-                max: 28,
-                ticks: { font: { family: "Inter", size: 11 } },
-              },
-              x: {
-                ticks: { font: { family: "Inter", weight: "bold", size: 11 } },
-              },
-            },
-            plugins: {
-              legend: { display: false },
-              tooltip: {
-                callbacks: {
-                  label: function (context) {
-                    const variable = eppsVariables[context.dataIndex];
-                    return `${variable.name}: ${context.raw} Poin`;
-                  },
-                },
-              },
-            },
-          },
-        });
-      }
-
-      function restartExam() {
-        if (
-          confirm(
-            "Apakah Anda ingin mengulang tes dari awal? Data jawaban saat ini akan dihapus.",
-          )
-        ) {
-          userAnswers = new Array(225).fill(null);
-          showSection("secPetunjuk");
-        }
-      }
-    </script>
-  </body>
+    function toggleModal(id, show) {
+      const modal = document.getElementById(id);
+      if (show) modal.classList.remove('hidden');
+      else modal.classList.add('hidden');
+    }
+  </script>
+</body>
 </html>
