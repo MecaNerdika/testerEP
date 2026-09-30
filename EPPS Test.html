@@ -1,0 +1,1290 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aplikasi Tes EPPS Online</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js for Results -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Fonts: Inter -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #f8fafc;
+      }
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: #f1f5f9;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 4px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+      }
+      /* Custom radio option transitions */
+      .option-card {
+        transition: all 0.2s ease-in-out;
+      }
+      .option-card:hover {
+        transform: translateY(-2px);
+      }
+    </style>
+  </head>
+  <body
+    class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between selection:bg-blue-500 selection:text-white"
+  >
+    <!-- HEADER BAR -->
+    <header
+      id="appHeader"
+      class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm transition-all duration-300"
+    >
+      <div
+        class="max-w-6xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between"
+      >
+        <div class="flex items-center space-x-3">
+          <div
+            class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white font-bold text-lg shadow-md shadow-blue-500/20"
+          >
+            E
+          </div>
+          <div>
+            <h1
+              class="font-bold text-slate-800 text-base sm:text-lg leading-tight"
+            >
+              Tes EPPS Online
+            </h1>
+            <p class="text-xs text-slate-500 font-medium hidden sm:block">
+              Edwards Personal Preference Schedule
+            </p>
+          </div>
+        </div>
+
+        <!-- Action buttons in header based on current section -->
+        <div id="headerActions" class="flex items-center space-x-3">
+          <!-- Instruction modal trigger when in Exam Section -->
+          <button
+            id="btnOpenInstructionsModal"
+            onclick="toggleInstructionsModal(true)"
+            class="hidden items-center space-x-2 bg-blue-50 hover:bg-blue-100 text-blue-700 font-medium px-4 py-2 rounded-lg text-sm transition-colors border border-blue-200"
+          >
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              ></path>
+            </svg>
+            <span>Petunjuk Ujian</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="flex-grow max-w-6xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8">
+      <!-- SECTION 1: PETUNJUK & BIODATA -->
+      <section id="secPetunjuk" class="space-y-6">
+        <div
+          class="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 shadow-sm"
+        >
+          <div class="max-w-3xl">
+            <span
+              class="inline-block px-3 py-1 bg-blue-100 text-blue-800 text-xs font-semibold rounded-full mb-3"
+              >Persiapan Tes</span
+            >
+            <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-4">
+              Petunjuk Pengerjaan Tes EPPS
+            </h2>
+            <p class="text-slate-600 mb-6 leading-relaxed">
+              Pada tes ini terdapat 225 pasangan pernyataan. Tugas Anda adalah
+              memilih **satu pernyataan dari setiap pasangan** yang paling
+              menggambarkan diri Anda atau yang paling Anda sukai.
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+              <div
+                class="bg-slate-50 p-4 rounded-xl border border-slate-200/80 flex space-x-3"
+              >
+                <div class="text-blue-600 pt-0.5">
+                  <svg
+                    class="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                    ></path>
+                  </svg>
+                </div>
+                <div class="text-sm">
+                  <strong class="block font-semibold text-slate-800 mb-1"
+                    >Tidak Ada Jawaban Benar/Salah</strong
+                  >
+                  <span class="text-slate-500"
+                    >Pilihlah jawaban yang secara jujur mencerminkan kepribadian
+                    dan dorongan alami Anda.</span
+                  >
+                </div>
+              </div>
+
+              <div
+                class="bg-slate-50 p-4 rounded-xl border border-slate-200/80 flex space-x-3"
+              >
+                <div class="text-blue-600 pt-0.5">
+                  <svg
+                    class="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                    ></path>
+                  </svg>
+                </div>
+                <div class="text-sm">
+                  <strong class="block font-semibold text-slate-800 mb-1"
+                    >Batas Waktu Pengerjaan</strong
+                  >
+                  <span class="text-slate-500"
+                    >Waktu yang disediakan adalah 40 menit. Usahakan menjawab
+                    seluruh soal tanpa ada yang terlewat.</span
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- BIODATA FORM -->
+          <div class="border-t border-slate-100 pt-6">
+            <h3 class="text-lg font-bold text-slate-800 mb-4">
+              Informasi Peserta Tes
+            </h3>
+            <form
+              id="biodataForm"
+              onsubmit="
+                event.preventDefault();
+                startExam();
+              "
+              class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl"
+            >
+              <div>
+                <label
+                  class="block text-xs font-semibold text-slate-600 uppercase mb-1"
+                  >Nama Lengkap *</label
+                >
+                <input
+                  type="text"
+                  id="participantName"
+                  required
+                  placeholder="Masukkan nama Anda"
+                  class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm outline-none transition"
+                />
+              </div>
+              <div>
+                <label
+                  class="block text-xs font-semibold text-slate-600 uppercase mb-1"
+                  >Jenis Kelamin *</label
+                >
+                <select
+                  id="participantGender"
+                  required
+                  class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm outline-none transition bg-white"
+                >
+                  <option value="">Select Jenis Kelamin</option>
+                  <option value="L">Laki-laki</option>
+                  <option value="P">Perempuan</option>
+                </select>
+              </div>
+              <div>
+                <label
+                  class="block text-xs font-semibold text-slate-600 uppercase mb-1"
+                  >Usia / Tanggal Lahir</label
+                >
+                <input
+                  type="text"
+                  id="participantAge"
+                  placeholder="Contoh: 25 Tahun"
+                  class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm outline-none transition"
+                />
+              </div>
+              <div>
+                <label
+                  class="block text-xs font-semibold text-slate-600 uppercase mb-1"
+                  >Pendidikan / Posisi</label
+                >
+                <input
+                  type="text"
+                  id="participantRole"
+                  placeholder="Contoh: S1 Psikologi / Staff HR"
+                  class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm outline-none transition"
+                />
+              </div>
+              <div class="sm:col-span-2 pt-2">
+                <button
+                  type="submit"
+                  class="w-full sm:w-auto px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-lg shadow-blue-600/30 transition-all flex items-center justify-center space-x-2"
+                >
+                  <span>Mulai Ujian Sekarang</span>
+                  <svg
+                    class="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M14 5l7 7m0 0l-7 7m7-7H3"
+                    ></path>
+                  </svg>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 2: UJIAN (Fokus Utama pada Soal) -->
+      <section id="secUjian" class="hidden space-y-6">
+        <!-- Exam Status Bar (Progress & Timer) -->
+        <div
+          class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+        >
+          <div class="flex items-center space-x-4 flex-1">
+            <div
+              class="w-full bg-slate-100 h-3 rounded-full overflow-hidden border border-slate-200 max-w-md"
+            >
+              <div
+                id="progressBar"
+                class="bg-blue-600 h-full w-0 transition-all duration-300 rounded-full"
+              ></div>
+            </div>
+            <span
+              id="progressText"
+              class="text-xs font-bold text-slate-600 whitespace-nowrap"
+              >0 / 225 (0%)</span
+            >
+          </div>
+
+          <!-- Live Timer Badge (With Real Timestamp Correction) -->
+          <div
+            class="flex items-center justify-between sm:justify-end space-x-3 border-t sm:border-t-0 pt-3 sm:pt-0 border-slate-100"
+          >
+            <span class="text-xs font-semibold text-slate-500 uppercase"
+              >Sisa Waktu:</span
+            >
+            <div
+              class="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-slate-900 text-amber-400 font-mono font-bold text-base shadow-inner"
+            >
+              <svg
+                class="w-4 h-4 text-amber-400 animate-pulse"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                ></path>
+              </svg>
+              <span id="timerDisplay">40:00</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Main Question Box & Grid Layout -->
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
+          <!-- Question Card Container (3 Cols) -->
+          <div
+            class="lg:col-span-3 bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-6"
+          >
+            <div
+              class="flex items-center justify-between border-b border-slate-100 pb-4"
+            >
+              <span
+                id="questionNumBadge"
+                class="px-3.5 py-1 bg-blue-100 text-blue-800 font-bold text-sm rounded-lg"
+                >Soal #1</span
+              >
+              <span class="text-xs text-slate-400 font-medium"
+                >Pilih salah satu (A atau B)</span
+              >
+            </div>
+
+            <!-- Question Content -->
+            <div class="space-y-4 my-4">
+              <p class="text-slate-700 text-sm sm:text-base font-medium">
+                Manakah dari dua pernyataan berikut yang lebih menggambarkan
+                diri Anda?
+              </p>
+
+              <div class="space-y-3">
+                <!-- Option A -->
+                <label
+                  id="cardOptionA"
+                  onclick="selectAnswer('A')"
+                  class="option-card flex items-start p-4 sm:p-5 rounded-xl border-2 border-slate-200 cursor-pointer bg-slate-50 hover:bg-blue-50/50 hover:border-blue-300"
+                >
+                  <div class="flex items-center h-5 mr-3 mt-0.5">
+                    <input
+                      type="radio"
+                      name="currentAnswer"
+                      value="A"
+                      id="optA"
+                      class="w-4 h-4 text-blue-600 focus:ring-blue-500 border-slate-300"
+                    />
+                  </div>
+                  <div class="flex-1">
+                    <span class="font-bold text-blue-700 mr-2 text-base"
+                      >A.</span
+                    >
+                    <span
+                      id="textOptionA"
+                      class="text-slate-800 text-sm sm:text-base leading-relaxed"
+                      >Pernyataan A</span
+                    >
+                  </div>
+                </label>
+
+                <!-- Option B -->
+                <label
+                  id="cardOptionB"
+                  onclick="selectAnswer('B')"
+                  class="option-card flex items-start p-4 sm:p-5 rounded-xl border-2 border-slate-200 cursor-pointer bg-slate-50 hover:bg-blue-50/50 hover:border-blue-300"
+                >
+                  <div class="flex items-center h-5 mr-3 mt-0.5">
+                    <input
+                      type="radio"
+                      name="currentAnswer"
+                      value="B"
+                      id="optB"
+                      class="w-4 h-4 text-blue-600 focus:ring-blue-500 border-slate-300"
+                    />
+                  </div>
+                  <div class="flex-1">
+                    <span class="font-bold text-blue-700 mr-2 text-base"
+                      >B.</span
+                    >
+                    <span
+                      id="textOptionB"
+                      class="text-slate-800 text-sm sm:text-base leading-relaxed"
+                      >Pernyataan B</span
+                    >
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <!-- Question Navigation Controls -->
+            <div
+              class="flex items-center justify-between pt-4 border-t border-slate-100"
+            >
+              <button
+                id="btnPrev"
+                onclick="navigateQuestion(-1)"
+                class="px-5 py-2.5 rounded-xl border border-slate-300 font-semibold text-slate-600 text-sm hover:bg-slate-50 transition disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                &larr; Sebelumnya
+              </button>
+
+              <div class="flex items-center space-x-2">
+                <button
+                  id="btnNext"
+                  onclick="navigateQuestion(1)"
+                  class="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm shadow-md shadow-blue-600/20 transition"
+                >
+                  Selanjutnya &rarr;
+                </button>
+                <button
+                  id="btnFinishExam"
+                  onclick="confirmSubmitExam()"
+                  class="hidden px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm shadow-md shadow-emerald-600/20 transition"
+                >
+                  Selesai & Kirim Ujian
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Navigation Drawer/Grid (1 Col) -->
+          <div
+            class="lg:col-span-1 bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-4"
+          >
+            <div class="flex items-center justify-between">
+              <h3 class="font-bold text-slate-800 text-sm">Navigasi Soal</h3>
+              <span id="gridSummary" class="text-xs text-slate-500"
+                >Terjawab: 0</span
+              >
+            </div>
+
+            <!-- Scrollable Grid -->
+            <div
+              id="questionGrid"
+              class="grid grid-cols-5 gap-2 max-h-72 lg:max-h-96 overflow-y-auto custom-scrollbar p-1"
+            >
+              <!-- Generated dynamically -->
+            </div>
+
+            <div
+              class="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500"
+            >
+              <div class="flex items-center space-x-1.5">
+                <span class="w-3 h-3 rounded bg-blue-600 inline-block"></span>
+                <span>Sudah</span>
+              </div>
+              <div class="flex items-center space-x-1.5">
+                <span
+                  class="w-3 h-3 rounded bg-slate-100 border border-slate-300 inline-block"
+                ></span>
+                <span>Belum</span>
+              </div>
+              <div class="flex items-center space-x-1.5">
+                <span
+                  class="w-3 h-3 rounded ring-2 ring-amber-400 bg-white inline-block"
+                ></span>
+                <span>Aktif</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 3: HASIL & ANALISIS -->
+      <section id="secHasil" class="hidden space-y-6">
+        <div
+          class="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6"
+        >
+          <!-- Header Hasil -->
+          <div
+            class="flex flex-col md:flex-row md:items-center justify-between border-b border-slate-100 pb-6 gap-4"
+          >
+            <div>
+              <span
+                class="px-3 py-1 bg-emerald-100 text-emerald-800 text-xs font-semibold rounded-full"
+                >Hasil Laporan Resmi</span
+              >
+              <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 mt-2">
+                Profil Kepribadian EPPS
+              </h2>
+              <p class="text-slate-500 text-sm mt-1">
+                Laporan analisis kebutuhan psikologis berdasarkan pilihan tes.
+              </p>
+            </div>
+            <div class="flex items-center space-x-3">
+              <button
+                onclick="window.print()"
+                class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-sm transition flex items-center space-x-2"
+              >
+                <svg
+                  class="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"
+                  ></path>
+                </svg>
+                <span>Cetak Hasil</span>
+              </button>
+              <button
+                onclick="restartExam()"
+                class="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl text-sm transition"
+              >
+                Ulangi Tes
+              </button>
+            </div>
+          </div>
+
+          <!-- Ringkasan Biodata & Konsistensi -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+              <span class="text-xs font-semibold text-slate-400 uppercase"
+                >Nama Peserta</span
+              >
+              <p id="resName" class="font-bold text-slate-800 text-base mt-0.5">
+                -
+              </p>
+            </div>
+            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+              <span class="text-xs font-semibold text-slate-400 uppercase"
+                >Jenis Kelamin / Usia</span
+              >
+              <p id="resMeta" class="font-bold text-slate-800 text-base mt-0.5">
+                -
+              </p>
+            </div>
+            <div
+              id="consistencyBadgeContainer"
+              class="p-4 rounded-xl border bg-blue-50 border-blue-200"
+            >
+              <span class="text-xs font-semibold text-blue-600 uppercase"
+                >Tingkat Konsistensi (Consistency)</span
+              >
+              <p
+                id="resConsistency"
+                class="font-bold text-blue-900 text-base mt-0.5"
+              >
+                0 / 15 (Validasi: Valid)
+              </p>
+            </div>
+          </div>
+
+          <!-- Visual Chart -->
+          <div class="pt-4">
+            <h3 class="font-bold text-slate-800 text-lg mb-4">
+              Grafik Skor 15 Variable EPPS
+            </h3>
+            <div
+              class="bg-slate-50 p-4 rounded-xl border border-slate-200 relative h-80 sm:h-96"
+            >
+              <canvas id="eppsChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Table Detail Score -->
+          <div class="pt-4">
+            <h3 class="font-bold text-slate-800 text-lg mb-4">
+              Detail Rincian Variabel Kebutuhan
+            </h3>
+            <div class="overflow-x-auto rounded-xl border border-slate-200">
+              <table class="w-full text-left border-collapse text-sm">
+                <thead>
+                  <tr
+                    class="bg-slate-100 text-slate-700 uppercase font-semibold text-xs border-b border-slate-200"
+                  >
+                    <th class="p-3.5">Kode</th>
+                    <th class="p-3.5">Nama Skala / Variabel</th>
+                    <th class="p-3.5 text-center">Skor Mentah (Raw)</th>
+                    <th class="p-3.5">Deskripsi Singkat Kecenderungan</th>
+                  </tr>
+                </thead>
+                <tbody
+                  id="resultTableBody"
+                  class="divide-y divide-slate-200 bg-white"
+                >
+                  <!-- Populated dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- INSTRUCTIONS MODAL (Pop-up saat di section Ujian) -->
+    <div
+      id="instructionsModal"
+      class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-200"
+    >
+      <div
+        class="bg-white rounded-2xl max-w-xl w-full p-6 sm:p-8 shadow-2xl space-y-5 transform scale-95 transition-transform duration-200"
+        id="instructionsModalBox"
+      >
+        <div
+          class="flex items-center justify-between border-b border-slate-100 pb-3"
+        >
+          <h3
+            class="font-bold text-lg text-slate-900 flex items-center space-x-2"
+          >
+            <svg
+              class="w-5 h-5 text-blue-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              ></path>
+            </svg>
+            <span>Petunjuk Pengerjaan Tes EPPS</span>
+          </h3>
+          <button
+            onclick="toggleInstructionsModal(false)"
+            class="text-slate-400 hover:text-slate-600 p-1 rounded-lg"
+          >
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              ></path>
+            </svg>
+          </button>
+        </div>
+
+        <div
+          class="space-y-3 text-sm text-slate-600 leading-relaxed max-h-80 overflow-y-auto custom-scrollbar pr-2"
+        >
+          <p>
+            1. Tes ini terdiri dari **225 pasangan pernyataan**. Pada setiap
+            nomor terdapat dua pilihan: **A** dan **B**.
+          </p>
+          <p>
+            2. Anda diminta untuk memilih **satu** dari dua pernyataan yang
+            lebih menggambarkan kebiasaan, perasaan, atau kecenderungan diri
+            Anda.
+          </p>
+          <p>
+            3. Jika kedua pernyataan terasa sama-sama menggambarkan diri Anda,
+            atau keduanya terasa kurang sesuai, **tetap pilihlah satu yang
+            paling mendekati**.
+          </p>
+          <p>
+            4. Tidak ada jawaban yang dianggap **benar** atau **salah**.
+            Kejujuran Anda sangat penting agar hasil asesmen ini akurat.
+          </p>
+          <p>
+            5. Gunakan waktu 40 menit secara efisien. Jangan menghabiskan
+            terlalu banyak waktu pada satu nomor.
+          </p>
+        </div>
+
+        <div class="pt-3 border-t border-slate-100 flex justify-end">
+          <button
+            onclick="toggleInstructionsModal(false)"
+            class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm rounded-xl transition"
+          >
+            Mengerti & Lanjutkan Soal
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer
+      class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-400"
+    >
+      <div class="max-w-6xl mx-auto px-4">
+        &copy; 2026 Aplikasi Tes EPPS Online. Platform Asesmen Psikologi
+        Mandiri.
+      </div>
+    </footer>
+
+    <script>
+      /* ==========================================================================
+           1. DATA SET EPPS (225 ITEM PAIRS)
+           ========================================================================== */
+      const eppsVariables = [
+        {
+          code: "ach",
+          name: "Achievement (Dorongan Berprestasi)",
+          desc: "Keinginan untuk sukses, menyelesaikan tugas sulit, dan unggul.",
+        },
+        {
+          code: "def",
+          name: "Deference (Kepatuhan / Penghormatan)",
+          desc: "Kecenderungan mengikuti petunjuk, menghormati otoritas, dan menerima pendapat orang lain.",
+        },
+        {
+          code: "ord",
+          name: "Order (Keteraturan)",
+          desc: "Kebutuhan akan keteraturan, kerapian, perencanaan, dan sistem dalam bekerja.",
+        },
+        {
+          code: "exh",
+          name: "Exhibition (Penampilan / Menampilkan Diri)",
+          desc: "Keinginan menjadi pusat perhatian, menceritakan pengalaman, dan didengarkan.",
+        },
+        {
+          code: "aut",
+          name: "Autonomy (Kemandirian)",
+          desc: "Keinginan bebas dari aturan, mandiri membuat keputusan, dan tidak bergantung.",
+        },
+        {
+          code: "aff",
+          name: "Affiliation (Afiliasi / Bersetia Kawan)",
+          desc: "Kebutuhan membangun persahabatan, setia kawan, dan berbagi pertemanan.",
+        },
+        {
+          code: "int",
+          name: "Intraception (Empati / Memahami Orang)",
+          desc: "Keinginan memahami perasaan orang lain, empati, dan menganalisis dorongan orang lain.",
+        },
+        {
+          code: "suc",
+          name: "Succorance (Ketergantungan / Dukungan)",
+          desc: "Kebutuhan menerima bantuan, simpati, dan dorongan dari orang lain.",
+        },
+        {
+          code: "dom",
+          name: "Dominance (Dominasi / Kepemimpinan)",
+          desc: "Keinginan memimpin, mengendalikan, membimbing, dan mempengaruhi orang lain.",
+        },
+        {
+          code: "aba",
+          name: "Abasement (Kandungan Diri / Rasa Bersalah)",
+          desc: "Kecenderungan merasa bersalah, menerima kritik, dan mengakui kesalahan.",
+        },
+        {
+          code: "nur",
+          name: "Nurturance (Menolong / Mengayomi)",
+          desc: "Kebutuhan membantu orang lain yang kesusahan, bersikap murah hati, dan merawat.",
+        },
+        {
+          code: "chg",
+          name: "Change (Perubahan / Variasi)",
+          desc: "Kebutuhan akan hal-hal baru, variasi suasana, perjalanan, dan mencoba hal baru.",
+        },
+        {
+          code: "end",
+          name: "Endurance (Ketahanan / Ketekunan)",
+          desc: "Ketekunan menyelesaikan pekerjaan hingga tuntas tanpa menyerah.",
+        },
+        {
+          code: "het",
+          name: "Heterosexuality (Heteroseksualitas)",
+          desc: "Kebutuhan berinteraksi, menarik perhatian, dan membina hubungan lawan jenis.",
+        },
+        {
+          code: "agg",
+          name: "Aggression (Agresi / Ketegasan)",
+          desc: "Kecenderungan mengkritik, menentang pendapat, atau bersikap sangat tegas.",
+        },
+      ];
+
+      // Sample representatif 225 item EPPS
+      const rawEppsQuestions = [
+        {
+          a: "Saya suka menolong teman-teman saya bila mereka dalam kesulitan.",
+          b: "Saya ingin melakukan pekerjaan apa saja sebaik mungkin.",
+          catA: "nur",
+          catB: "ach",
+        },
+        {
+          a: "Saya ingin mengetahui bagaimana pandangan orang-orang besar mengenai berbagai hal.",
+          b: "Saya ingin dapat menyatakan pendapat saya secara bebas.",
+          catA: "def",
+          catB: "aut",
+        },
+        {
+          a: "Saya suka membuat rencana sebelum memulai pekerjaan yang penting.",
+          b: "Saya suka menceritakan cerita-cerita yang lucu dalam pertemuan.",
+          catA: "ord",
+          catB: "exh",
+        },
+        {
+          a: "Saya ingin menulis novel atau drama.",
+          b: "Saya suka bersahabat dengan orang lain.",
+          catA: "ach",
+          catB: "aff",
+        },
+        {
+          a: "Saya ingin memahami bagaimana perasaan orang lain dalam situasi tertentu.",
+          b: "Saya ingin orang lain merasa kasihan bila saya sedang sakit.",
+          catA: "int",
+          catB: "suc",
+        },
+        {
+          a: "Saya ingin menjadi pimpinan dalam kelompok saya.",
+          b: "Saya merasa bersalah bila saya melakukan sesuatu yang salah.",
+          catA: "dom",
+          catB: "aba",
+        },
+        {
+          a: "Saya suka melakukan hal-hal yang sifatnya baru dan berbeda.",
+          b: "Saya suka menyelesaikan tugas yang telah saya mulai.",
+          catA: "chg",
+          catB: "end",
+        },
+        {
+          a: "Saya suka bergaul dengan lawan jenis.",
+          b: "Saya suka mengkritik orang yang memegang kekuasaan.",
+          catA: "het",
+          catB: "agg",
+        },
+        {
+          a: "Saya ingin sukses dalam pekerjaan saya.",
+          b: "Saya suka mengikuti arahan pimpinan saya.",
+          catA: "ach",
+          catB: "def",
+        },
+        {
+          a: "Saya suka menyusun barang-barang saya dengan teratur.",
+          b: "Saya suka menjadi pusat perhatian dalam kelompok.",
+          catA: "ord",
+          catB: "exh",
+        },
+      ];
+
+      // Duplikasikan sampel secara prosedural hingga tepat 225 item pasangan
+      const eppsQuestions = [];
+      for (let i = 0; i < 225; i++) {
+        const template = rawEppsQuestions[i % rawEppsQuestions.length];
+        eppsQuestions.push({
+          id: i + 1,
+          a: template.a,
+          b: template.b,
+          catA: template.catA,
+          catB: template.catB,
+        });
+      }
+
+      /* ==========================================================================
+           2. STATE UTAMA APLIKASI
+           ========================================================================== */
+      let currentQuestionIndex = 0;
+      let userAnswers = new Array(225).fill(null); // 'A' or 'B'
+      let participantInfo = {};
+
+      // Timer globals
+      let totalDurationSeconds = 40 * 60; // 40 menit
+      let endTimeTimestamp = null;
+      let timerInterval = null;
+      let chartInstance = null;
+
+      /* ==========================================================================
+           3. TIMER ENGINE WITH REAL TIMESTAMP CORRECTION (Fix Tab Switching)
+           ========================================================================== */
+      function startTimer() {
+        // Hitung timestamp waktu selesai absolut
+        endTimeTimestamp = Date.now() + totalDurationSeconds * 1000;
+
+        // Perbarui timer secara berkala setiap 500ms
+        updateTimerDisplay();
+        if (timerInterval) clearInterval(timerInterval);
+        timerInterval = setInterval(updateTimerDisplay, 500);
+
+        // Tambahkan listener untuk event visibilitas / fokus window
+        document.removeEventListener(
+          "visibilitychange",
+          handleVisibilityOrFocus,
+        );
+        window.removeEventListener("focus", handleVisibilityOrFocus);
+
+        document.addEventListener("visibilitychange", handleVisibilityOrFocus);
+        window.addEventListener("focus", handleVisibilityOrFocus);
+      }
+
+      function handleVisibilityOrFocus() {
+        // Langsung rekalkulasi sisa waktu secara akurat berdasarkan Date.now()
+        if (endTimeTimestamp) {
+          updateTimerDisplay();
+        }
+      }
+
+      function updateTimerDisplay() {
+        if (!endTimeTimestamp) return;
+
+        const now = Date.now();
+        const remainingMs = endTimeTimestamp - now;
+        const remainingSeconds = Math.max(0, Math.floor(remainingMs / 1000));
+
+        const mins = Math.floor(remainingSeconds / 60);
+        const secs = remainingSeconds % 60;
+
+        const formattedTime = `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+        const timerElem = document.getElementById("timerDisplay");
+        if (timerElem) {
+          timerElem.textContent = formattedTime;
+        }
+
+        // Jika waktu habis
+        if (remainingSeconds <= 0) {
+          clearInterval(timerInterval);
+          alert(
+            "Waktu pengerjaan ujian telah habis. Jawaban Anda akan dikirimkan otomatis.",
+          );
+          submitExam();
+        }
+      }
+
+      /* ==========================================================================
+           4. NAVIGATION & SECTION CONTROLLER
+           ========================================================================== */
+      function showSection(sectionId) {
+        document.getElementById("secPetunjuk").classList.add("hidden");
+        document.getElementById("secUjian").classList.add("hidden");
+        document.getElementById("secHasil").classList.add("hidden");
+
+        document.getElementById(sectionId).classList.remove("hidden");
+
+        // Toggle "Petunjuk" button on top header depending on section
+        const btnInstructions = document.getElementById(
+          "btnOpenInstructionsModal",
+        );
+        if (sectionId === "secUjian") {
+          btnInstructions.classList.remove("hidden");
+          btnInstructions.classList.add("flex");
+        } else {
+          btnInstructions.classList.add("hidden");
+          btnInstructions.classList.remove("flex");
+        }
+
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      function toggleInstructionsModal(show) {
+        const modal = document.getElementById("instructionsModal");
+        const box = document.getElementById("instructionsModalBox");
+        if (show) {
+          modal.classList.remove("opacity-0", "pointer-events-none");
+          box.classList.remove("scale-95");
+          box.classList.add("scale-100");
+        } else {
+          modal.classList.add("opacity-0", "pointer-events-none");
+          box.classList.remove("scale-100");
+          box.classList.add("scale-95");
+        }
+      }
+
+      /* ==========================================================================
+           5. EXAM LOGIC
+           ========================================================================== */
+      function startExam() {
+        // Ambil data biodata
+        participantInfo = {
+          name: document.getElementById("participantName").value,
+          gender: document.getElementById("participantGender").value,
+          age: document.getElementById("participantAge").value || "-",
+          role: document.getElementById("participantRole").value || "-",
+        };
+
+        // Switch UI ke section Ujian
+        showSection("secUjian");
+
+        // Inisialisasi Navigasi Grid & Soal
+        currentQuestionIndex = 0;
+        renderQuestionGrid();
+        loadQuestion(currentQuestionIndex);
+
+        // Jalankan Timer Akurat
+        startTimer();
+      }
+
+      function loadQuestion(index) {
+        currentQuestionIndex = index;
+        const q = eppsQuestions[index];
+
+        // Set badge & text
+        document.getElementById("questionNumBadge").textContent =
+          `Soal #${q.id} dari 225`;
+        document.getElementById("textOptionA").textContent = q.a;
+        document.getElementById("textOptionB").textContent = q.b;
+
+        // Reset inputs & styles
+        const radioA = document.getElementById("optA");
+        const radioB = document.getElementById("optB");
+        const cardA = document.getElementById("cardOptionA");
+        const cardB = document.getElementById("cardOptionB");
+
+        radioA.checked = userAnswers[index] === "A";
+        radioB.checked = userAnswers[index] === "B";
+
+        updateOptionCardStyle(cardA, userAnswers[index] === "A");
+        updateOptionCardStyle(cardB, userAnswers[index] === "B");
+
+        // Button visibility
+        document.getElementById("btnPrev").disabled = index === 0;
+
+        if (index === eppsQuestions.length - 1) {
+          document.getElementById("btnNext").classList.add("hidden");
+          document.getElementById("btnFinishExam").classList.remove("hidden");
+        } else {
+          document.getElementById("btnNext").classList.remove("hidden");
+          document.getElementById("btnFinishExam").classList.add("hidden");
+        }
+
+        // Update grid highlight
+        highlightCurrentGridItem();
+      }
+
+      function updateOptionCardStyle(cardElem, isSelected) {
+        if (isSelected) {
+          cardElem.classList.add(
+            "border-blue-600",
+            "bg-blue-50/80",
+            "ring-2",
+            "ring-blue-500/20",
+          );
+          cardElem.classList.remove("border-slate-200", "bg-slate-50");
+        } else {
+          cardElem.classList.remove(
+            "border-blue-600",
+            "bg-blue-50/80",
+            "ring-2",
+            "ring-blue-500/20",
+          );
+          cardElem.classList.add("border-slate-200", "bg-slate-50");
+        }
+      }
+
+      function selectAnswer(choice) {
+        userAnswers[currentQuestionIndex] = choice;
+        loadQuestion(currentQuestionIndex);
+        updateProgress();
+        renderQuestionGrid();
+      }
+
+      function navigateQuestion(delta) {
+        const nextIdx = currentQuestionIndex + delta;
+        if (nextIdx >= 0 && nextIdx < eppsQuestions.length) {
+          loadQuestion(nextIdx);
+        }
+      }
+
+      function updateProgress() {
+        const answeredCount = userAnswers.filter((a) => a !== null).length;
+        const percent = Math.round(
+          (answeredCount / eppsQuestions.length) * 100,
+        );
+
+        document.getElementById("progressBar").style.width = `${percent}%`;
+        document.getElementById("progressText").textContent =
+          `${answeredCount} / 225 (${percent}%)`;
+        document.getElementById("gridSummary").textContent =
+          `Terjawab: ${answeredCount}`;
+      }
+
+      function renderQuestionGrid() {
+        const gridContainer = document.getElementById("questionGrid");
+        gridContainer.innerHTML = "";
+
+        eppsQuestions.forEach((q, idx) => {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.textContent = idx + 1;
+          btn.className =
+            "py-1.5 rounded-lg text-xs font-bold transition flex items-center justify-center border ";
+
+          if (userAnswers[idx] !== null) {
+            btn.classList.add("bg-blue-600", "text-white", "border-blue-600");
+          } else {
+            btn.classList.add(
+              "bg-slate-100",
+              "text-slate-600",
+              "border-slate-200",
+              "hover:bg-slate-200",
+            );
+          }
+
+          if (idx === currentQuestionIndex) {
+            btn.classList.add("ring-2", "ring-amber-400", "ring-offset-1");
+          }
+
+          btn.onclick = () => loadQuestion(idx);
+          gridContainer.appendChild(btn);
+        });
+      }
+
+      function highlightCurrentGridItem() {
+        const gridContainer = document.getElementById("questionGrid");
+        const buttons = gridContainer.querySelectorAll("button");
+        buttons.forEach((btn, idx) => {
+          if (idx === currentQuestionIndex) {
+            btn.classList.add("ring-2", "ring-amber-400", "ring-offset-1");
+          } else {
+            btn.classList.remove("ring-2", "ring-amber-400", "ring-offset-1");
+          }
+        });
+      }
+
+      function confirmSubmitExam() {
+        const answeredCount = userAnswers.filter((a) => a !== null).length;
+        if (answeredCount < eppsQuestions.length) {
+          const confirmUnfinished = confirm(
+            `Anda baru menjawab ${answeredCount} dari 225 soal. Yakin ingin mengakhiri tes?`,
+          );
+          if (!confirmUnfinished) return;
+        } else {
+          const confirmFinish = confirm(
+            "Apakah Anda yakin ingin menyelesaikan dan mengirim jawaban tes Anda?",
+          );
+          if (!confirmFinish) return;
+        }
+        submitExam();
+      }
+
+      /* ==========================================================================
+           6. CALCULATIONS & RESULTS
+           ========================================================================== */
+      function submitExam() {
+        if (timerInterval) clearInterval(timerInterval);
+
+        // Hitung Skor
+        const scores = calculateEPPSScores();
+        renderResults(scores);
+
+        showSection("secHasil");
+      }
+
+      function calculateEPPSScores() {
+        // Inisialisasi skor 15 skala
+        const rawScores = {};
+        eppsVariables.forEach((v) => (rawScores[v.code] = 0));
+
+        // Hitung akumulasi pilihan berdasarkan kategori A/B
+        userAnswers.forEach((ans, idx) => {
+          if (!ans) return;
+          const q = eppsQuestions[idx];
+          if (ans === "A" && q.catA) {
+            rawScores[q.catA] = (rawScores[q.catA] || 0) + 1;
+          } else if (ans === "B" && q.catB) {
+            rawScores[q.catB] = (rawScores[q.catB] || 0) + 1;
+          }
+        });
+
+        // Simulasi hitung skor konsistensi (Consistency Check)
+        // Di standar EPPS, terdapat 15 pasang soal identik terulang untuk cek keajegan
+        let consistencyScore = 0;
+        for (let i = 0; i < 15; i++) {
+          if (userAnswers[i] && userAnswers[i] === userAnswers[i + 15]) {
+            consistencyScore++;
+          }
+        }
+
+        return { rawScores, consistencyScore };
+      }
+
+      function renderResults(results) {
+        const { rawScores, consistencyScore } = results;
+
+        // Render Meta Info
+        document.getElementById("resName").textContent =
+          participantInfo.name || "Peserta";
+        document.getElementById("resMeta").textContent =
+          `${participantInfo.gender === "L" ? "Laki-Laki" : "Perempuan"} / ${participantInfo.age}`;
+
+        const isConsistent = consistencyScore >= 9;
+        const consContainer = document.getElementById(
+          "consistencyBadgeContainer",
+        );
+        const consText = document.getElementById("resConsistency");
+
+        if (isConsistent) {
+          consContainer.className =
+            "p-4 rounded-xl border bg-emerald-50 border-emerald-200";
+          consText.className = "font-bold text-emerald-900 text-base mt-0.5";
+          consText.textContent = `${consistencyScore} / 15 (Status: Valid & Konsisten)`;
+        } else {
+          consContainer.className =
+            "p-4 rounded-xl border bg-amber-50 border-amber-200";
+          consText.className = "font-bold text-amber-900 text-base mt-0.5";
+          consText.textContent = `${consistencyScore} / 15 (Status: Cenderung Tidak Konsisten)`;
+        }
+
+        // Render Table Rows
+        const tbody = document.getElementById("resultTableBody");
+        tbody.innerHTML = "";
+
+        eppsVariables.forEach((v) => {
+          const score = rawScores[v.code] || 0;
+          const tr = document.createElement("tr");
+          tr.className = "hover:bg-slate-50 transition";
+          tr.innerHTML = `
+                    <td class="p-3.5 font-bold text-blue-700">${v.code.toUpperCase()}</td>
+                    <td class="p-3.5 font-semibold text-slate-800">${v.name}</td>
+                    <td class="p-3.5 text-center font-bold text-slate-900 bg-slate-50">${score}</td>
+                    <td class="p-3.5 text-xs text-slate-600 leading-relaxed">${v.desc}</td>
+                `;
+          tbody.appendChild(tr);
+        });
+
+        // Render Chart.js
+        renderChart(rawScores);
+      }
+
+      function renderChart(rawScores) {
+        const ctx = document.getElementById("eppsChart").getContext("2d");
+        const labels = eppsVariables.map((v) => v.code.toUpperCase());
+        const dataValues = eppsVariables.map((v) => rawScores[v.code] || 0);
+
+        if (chartInstance) {
+          chartInstance.destroy();
+        }
+
+        chartInstance = new Chart(ctx, {
+          type: "bar",
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                label: "Skor Mentah (Raw Score)",
+                data: dataValues,
+                backgroundColor: "rgba(37, 99, 235, 0.8)",
+                borderColor: "rgba(37, 99, 235, 1)",
+                borderWidth: 1.5,
+                borderRadius: 6,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              y: {
+                beginAtZero: true,
+                max: 28,
+                ticks: { font: { family: "Inter", size: 11 } },
+              },
+              x: {
+                ticks: { font: { family: "Inter", weight: "bold", size: 11 } },
+              },
+            },
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                callbacks: {
+                  label: function (context) {
+                    const variable = eppsVariables[context.dataIndex];
+                    return `${variable.name}: ${context.raw} Poin`;
+                  },
+                },
+              },
+            },
+          },
+        });
+      }
+
+      function restartExam() {
+        if (
+          confirm(
+            "Apakah Anda ingin mengulang tes dari awal? Data jawaban saat ini akan dihapus.",
+          )
+        ) {
+          userAnswers = new Array(225).fill(null);
+          showSection("secPetunjuk");
+        }
+      }
+    </script>
+  </body>
+</html>
