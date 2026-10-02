@@ -91,6 +91,7 @@
       .question {
         font-size: 38px;
         margin: 24px 0;
+        word-break: break-word;
       }
 
       .feedback {
@@ -129,10 +130,12 @@
       <!-- START -->
       <div id="startScreen">
         <select id="level">
-          <option value="5">Mudah (1–5)</option>
-          <option value="10" selected>Sedang (1–10)</option>
-          <option value="15">Sulit (1–15)</option>
-          <option value="20">Asia (11–20)</option>
+          <option value="mudah">Mudah (1–5)</option>
+          <option value="sedang" selected>Sedang (5–10)</option>
+          <option value="sulit">Sulit (7–15)</option>
+          <option value="asia">Asia (8–20)</option>
+          <option value="besar"> WNI </option>
+          <option value="sangatbesar">WNI Pro max</option>
         </select>
 
         <div class="time-set">
@@ -175,7 +178,21 @@
     </div>
 
     <script>
-      let maxNum, totalSeconds, startSeconds, minNum;
+      // Rentang angka per level.
+      // a = angka pertama (pengali / pembagi), b = angka kedua (pengali / hasil bagi)
+      // Pada pembagian: soal = (a × b) ÷ a, jawabannya b.
+      const LEVELS = {
+        mudah: { aMin: 1, aMax: 5, bMin: 1, bMax: 5 },
+        sedang: { aMin: 5, aMax: 10, bMin: 5, bMax: 10 },
+        sulit: { aMin: 7, aMax: 15, bMin: 7, bMax: 15 },
+        asia: { aMin: 8, aMax: 20, bMin: 8, bMax: 20 },
+        // Contoh hasil: 1175 ÷ 25 = 47, 1224 ÷ 36 = 34
+        besar: { aMin: 11, aMax: 50, bMin: 20, bMax: 99 },
+        // Contoh hasil: 4653 ÷ 47 = 99, 6048 ÷ 56 = 108
+        sangatbesar: { aMin: 12, aMax: 99, bMin: 50, bMax: 199 },
+      };
+
+      let cfg, totalSeconds, startSeconds;
       let total = 0,
         correct = 0,
         wrong = 0;
@@ -199,8 +216,8 @@
       }
 
       function newQuestion() {
-        let A = rand(minNum, maxNum),
-          B = rand(minNum, maxNum),
+        let A = rand(cfg.aMin, cfg.aMax),
+          B = rand(cfg.bMin, cfg.bMax),
           C = A * B;
         if (Math.random() < 0.5) {
           qEl.textContent = `${A} × ${B} = ?`;
@@ -214,31 +231,11 @@
       }
 
       function startTest() {
-        let level = parseInt(document.getElementById("level").value);
-
-        // Semua case wajib berada di dalam kurung kurawal switch
-        switch (level) {
-          case 5:
-            maxNum = 5;
-            minNum = 1;
-            break; // Menghentikan eksekusi agar tidak lanjut ke bawah
-          case 10:
-            maxNum = 10;
-            minNum = 5;
-            break;
-          case 15:
-            maxNum = 15;
-            minNum = 7;
-            break;
-          case 20:
-            maxNum = 20;
-            minNum = 8;
-            break;
-          default:
-            // Antisipasi jika level tidak ada yang cocok
-            maxNum = 5;
-            minNum = 1;
+        cfg = LEVELS[document.getElementById("level").value] || LEVELS.sedang;
+        if (document.getElementById("level").value=="sangatbesar"){
+          alert("Yaaa Tuhan Kenapa Aku WNI......");
         }
+          
 
         let h = parseInt(document.getElementById("h").value) || 0;
         let m = parseInt(document.getElementById("m").value) || 0;
