@@ -172,7 +172,7 @@
         <p>Total Terjawab: <b id="total"></b></p>
         <p>Benar: <b id="correct"></b></p>
         <p>Salah: <b id="wrong"></b></p>
-        <p>Akurasi: <b id="accuarcy"></b></p>
+        <p>Akurasi: <b id="accuracy"></b>%</p>
         <p>Kecepatan: <b id="speed"></b> soal/menit</p>
         <button onclick="location.reload()">Ulangi</button>
       </div>
@@ -307,15 +307,14 @@
         clearInterval(timer);
         document.getElementById("testScreen").classList.add("hidden");
         document.getElementById("resultScreen").classList.remove("hidden");
+	let speed= (total /(startSeconds / 60)).toFixed(2);
+	let accuracy= (correct/total)*100;
 
         document.getElementById("total").textContent = total;
         document.getElementById("correct").textContent = correct;
         document.getElementById("wrong").textContent = wrong;
-        document.getElementById("accuracy").textContent = correct/total * 100;
-        document.getElementById("speed").textContent = (
-          total /
-          (startSeconds / 60)
-        ).toFixed(2);
+        document.getElementById("accuracy").textContent = accuracy;
+        document.getElementById("speed").textContent = speed;
       }
     </script>
   </body>
