@@ -1,321 +1,263 @@
 <!doctype html>
 <html lang="id">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Speed Math</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+<meta charset="UTF-8" />
+<title>Speed Math</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<style>
+:root{--primary:#2e2da4;--danger:#d32f2f;--success:#2e7d32;--bg:#f4f6fb;--card:#fff;--text:#222;--line:#ddd;--mut:#555;--action:#444;--btxt:#fff;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--primary:#8f8ef0;--danger:#ff7a6b;--success:#4cd48a;--bg:#14161f;--card:#1d2030;--text:#e8eaf2;--line:#3a3f55;--mut:#a3a8be;--action:#3a3f55;--btxt:#10112a}}
+:root[data-theme="dark"]{--primary:#8f8ef0;--danger:#ff7a6b;--success:#4cd48a;--bg:#14161f;--card:#1d2030;--text:#e8eaf2;--line:#3a3f55;--mut:#a3a8be;--action:#3a3f55;--btxt:#10112a}
+*{box-sizing:border-box;font-family:"Segoe UI",sans-serif}
+body{background:var(--bg);color:var(--text);display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0;padding:16px}
+.card{background:var(--card);padding:26px;width:100%;max-width:480px;border-radius:22px;box-shadow:0 12px 35px rgba(0,0,0,.12);text-align:center}
+h1{color:var(--primary);margin-top:0}
+select,input{width:100%;padding:16px;font-size:18px;border-radius:14px;border:2px solid var(--line);text-align:center;background:var(--card);color:var(--text)}
+button{width:100%;padding:18px;font-size:20px;border:none;border-radius:16px;background:var(--primary);color:var(--btxt);cursor:pointer}
+button.ghost{background:transparent;color:var(--mut);border:1px solid var(--line);font-size:16px;padding:12px;margin-top:16px}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--primary);outline-offset:2px}
+.hidden{display:none}
+.time-set{display:flex;gap:10px;margin:20px 0}
+.time-box{flex:1}
+.time-box span{display:block;margin-top:6px;font-size:14px;color:var(--mut)}
+.timer{font-size:22px;font-weight:bold}
+.question{font-size:38px;margin:24px 0;word-break:break-word}
+.feedback{font-size:18px;margin-top:12px;min-height:24px}
+.feedback.wrong{color:var(--danger)}
+.feedback.right{color:var(--success)}
+.notice{background:var(--line);border-radius:10px;padding:8px 12px;font-size:14px;margin-bottom:10px}
+.err{color:var(--danger);font-size:15px;min-height:20px;margin-top:10px}
+.keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:20px}
+.keypad button{font-size:24px;padding:22px}
+.keypad .action{background:var(--action);color:#fff}
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>Speed Math</h1>
+  <p>Uji Kecepatan Perkalian &amp; Pembagian</p>
 
-    <style>
-      :root {
-        --primary: #2e2da4;
-        --danger: #d32f2f;
-        --success: #2e7d32;
-        --bg: #f4f6fb;
-        --card: #ffffff;
-      }
-
-      * {
-        box-sizing: border-box;
-        font-family: "Segoe UI", sans-serif;
-      }
-
-      body {
-        background: var(--bg);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh;
-        margin: 0;
-      }
-
-      .card {
-        background: var(--card);
-        padding: 26px;
-        width: 100%;
-        max-width: 480px;
-        border-radius: 22px;
-        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
-        text-align: center;
-      }
-
-      h1 {
-        color: var(--primary);
-        margin-top: 0;
-      }
-
-      select,
-      input {
-        width: 100%;
-        padding: 16px;
-        font-size: 18px;
-        border-radius: 14px;
-        border: 2px solid #ddd;
-        text-align: center;
-      }
-
-      button {
-        width: 100%;
-        padding: 18px;
-        font-size: 20px;
-        border: none;
-        border-radius: 16px;
-        background: var(--primary);
-        color: white;
-        cursor: pointer;
-      }
-
-      .hidden {
-        display: none;
-      }
-
-      .time-set {
-        display: flex;
-        gap: 10px;
-        margin: 20px 0;
-      }
-
-      .time-box {
-        flex: 1;
-      }
-      .time-box span {
-        display: block;
-        margin-top: 6px;
-        font-size: 14px;
-        color: #555;
-      }
-
-      .timer {
-        font-size: 22px;
-        font-weight: bold;
-      }
-      .question {
-        font-size: 38px;
-        margin: 24px 0;
-        word-break: break-word;
-      }
-
-      .feedback {
-        font-size: 18px;
-        margin-top: 12px;
-        min-height: 24px;
-      }
-      .feedback.wrong {
-        color: var(--danger);
-      }
-      .feedback.right {
-        color: var(--success);
-      }
-
-      .keypad {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 14px;
-        margin-top: 20px;
-      }
-      .keypad button {
-        font-size: 24px;
-        padding: 22px;
-      }
-      .keypad .action {
-        background: #444;
-      }
-    </style>
-  </head>
-
-  <body>
-    <div class="card">
-      <h1>Speed Math</h1>
-      <p>Uji Kecepatan Perkalian & Pembagian</p>
-
-      <!-- START -->
-      <div id="startScreen">
-        <select id="level">
-          <option value="mudah">Mudah (1–5)</option>
-          <option value="sedang" selected>Sedang (5–10)</option>
-          <option value="sulit">Sulit (7–15)</option>
-          <option value="asia">Asia (8–20)</option>
-          <option value="besar"> WNI </option>
-          <option value="sangatbesar">WNI Pro max</option>
-        </select>
-
-        <div class="time-set">
-          <div class="time-box">
-            <input type="number" id="h" value="0" min="0" />
-            <span>Jam</span>
-          </div>
-          <div class="time-box">
-            <input type="number" id="m" value="1" min="0" max="59" />
-            <span>Menit</span>
-          </div>
-          <div class="time-box">
-            <input type="number" id="s" value="0" min="0" max="59" />
-            <span>Detik</span>
-          </div>
-        </div>
-
-        <button onclick="startTest()">Mulai</button>
-      </div>
-
-      <!-- TEST -->
-      <div id="testScreen" class="hidden">
-        <div class="timer" id="time"></div>
-        <div class="question" id="question"></div>
-
-        <input type="number" id="answer" placeholder="Jawaban" />
-        <div class="feedback" id="feedback"></div>
-        <div id="keypad" class="keypad hidden"></div>
-      </div>
-
-      <!-- RESULT -->
-      <div id="resultScreen" class="hidden">
-        <h2>Hasil</h2>
-        <p>Total Terjawab: <b id="total"></b></p>
-        <p>Benar: <b id="correct"></b></p>
-        <p>Salah: <b id="wrong"></b></p>
-        <p>Akurasi: <b id="accuracy"></b>%</p>
-        <p>Kecepatan: <b id="speed"></b> soal/menit</p>
-        <button onclick="location.reload()">Ulangi</button>
-      </div>
+  <!-- START -->
+  <div id="startScreen">
+    <select id="level" aria-label="Level">
+      <option value="mudah">Mudah (1–5)</option>
+      <option value="sedang" selected>Sedang (5–10)</option>
+      <option value="sulit">Sulit (7–15)</option>
+      <option value="asia">Asia (8–20)</option>
+      <option value="besar"> WNI </option>
+      <option value="sangatbesar">WNI Pro max</option>
+    </select>
+    <div class="time-set">
+      <div class="time-box"><input type="number" id="h" value="0" min="0" /><span>Jam</span></div>
+      <div class="time-box"><input type="number" id="m" value="1" min="0" max="59" /><span>Menit</span></div>
+      <div class="time-box"><input type="number" id="s" value="0" min="0" max="59" /><span>Detik</span></div>
     </div>
+    <button onclick="startTest()">Mulai</button>
+    <div class="err" id="startErr"></div>
+  </div>
 
-    <script>
-      // Rentang angka per level.
-      // a = angka pertama (pengali / pembagi), b = angka kedua (pengali / hasil bagi)
-      // Pada pembagian: soal = (a × b) ÷ a, jawabannya b.
-      const LEVELS = {
-        mudah: { aMin: 1, aMax: 5, bMin: 1, bMax: 5 },
-        sedang: { aMin: 5, aMax: 10, bMin: 5, bMax: 10 },
-        sulit: { aMin: 7, aMax: 15, bMin: 7, bMax: 15 },
-        asia: { aMin: 8, aMax: 20, bMin: 8, bMax: 20 },
-        // Contoh hasil: 1175 ÷ 25 = 47, 1224 ÷ 36 = 34
-        besar: { aMin: 11, aMax: 50, bMin: 20, bMax: 99 },
-        // Contoh hasil: 4653 ÷ 47 = 99, 6048 ÷ 56 = 108
-        sangatbesar: { aMin: 12, aMax: 99, bMin: 50, bMax: 199 },
-      };
+  <!-- TEST -->
+  <div id="testScreen" class="hidden">
+    <div class="notice hidden" id="restored">Progres dipulihkan. Skor dan sisa waktu Anda tetap tersimpan.</div>
+    <div class="timer" id="time"></div>
+    <div class="question" id="question"></div>
+    <input type="number" id="answer" placeholder="Jawaban" inputmode="numeric" />
+    <div class="feedback" id="feedback" aria-live="polite"></div>
+    <div id="keypad" class="keypad hidden"></div>
+    <button class="ghost" id="restartBtn" onclick="askRestart()">Batalkan &amp; Ulang</button>
+  </div>
 
-      let cfg, totalSeconds, startSeconds;
-      let total = 0,
-        correct = 0,
-        wrong = 0;
-      let currentAnswer = 0,
-        timer;
+  <!-- RESULT -->
+  <div id="resultScreen" class="hidden">
+    <h2>Hasil</h2>
+    <p>Total Terjawab: <b id="total"></b></p>
+    <p>Benar: <b id="correct"></b></p>
+    <p>Salah: <b id="wrong"></b></p>
+    <p>Akurasi: <b id="accuracy"></b>%</p>
+    <p>Kecepatan: <b id="speed"></b> soal/menit</p>
+    <button onclick="restart()">Ulangi</button>
+  </div>
+</div>
 
-      const qEl = document.getElementById("question");
-      const ansEl = document.getElementById("answer");
-      const fb = document.getElementById("feedback");
-      const timeEl = document.getElementById("time");
+<script>
+// a = angka pertama (pengali / pembagi), b = angka kedua (pengali / hasil bagi)
+// Pada pembagian: soal = (a × b) ÷ a, jawabannya b.
+const LEVELS = {
+  mudah: { aMin: 1, aMax: 5, bMin: 1, bMax: 5 },
+  sedang: { aMin: 5, aMax: 10, bMin: 5, bMax: 10 },
+  sulit: { aMin: 7, aMax: 15, bMin: 7, bMax: 15 },
+  asia: { aMin: 8, aMax: 20, bMin: 8, bMax: 20 },
+  besar: { aMin: 11, aMax: 50, bMin: 20, bMax: 99 },
+  sangatbesar: { aMin: 12, aMax: 99, bMin: 50, bMax: 199 },
+};
+const KEY = "speed-math-v1";
+const $ = id => document.getElementById(id);
+const qEl = $("question"), ansEl = $("answer"), fb = $("feedback"), timeEl = $("time");
 
-      function rand(min, max) {
-        return Math.floor(Math.random() * (max - min + 1)) + min;
-      }
+let cfg, levelKey = "sedang", startSeconds = 0, deadline = 0, phase = "setup";
+let total = 0, correct = 0, wrong = 0, currentAnswer = 0, solved = false;
+let timer = null, confirmTimer = null;
 
-      function fmt(sec) {
-        let h = Math.floor(sec / 3600),
-          m = Math.floor((sec % 3600) / 60),
-          s = sec % 60;
-        return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
-      }
+/* ---------- Cache (localStorage, aman bila diblokir) ---------- */
+let memState = null;
+const store = {
+  save(s) { memState = s; try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (e) {} },
+  load() { try { const r = localStorage.getItem(KEY); return r ? JSON.parse(r) : memState; } catch (e) { return memState; } },
+  clear() { memState = null; try { localStorage.removeItem(KEY); } catch (e) {} }
+};
+function persist() {
+  store.save({ phase, levelKey, startSeconds, deadline, total, correct, wrong, solved,
+               q: { text: qEl.textContent, answer: currentAnswer } });
+}
+function validState(s) {
+  return s && (s.phase === "test" || s.phase === "result") && LEVELS[s.levelKey] &&
+    [s.startSeconds, s.deadline, s.total, s.correct, s.wrong].every(Number.isFinite) &&
+    (s.phase === "result" || (s.q && typeof s.q.text === "string" && Number.isFinite(s.q.answer)));
+}
 
-      function newQuestion() {
-        let A = rand(cfg.aMin, cfg.aMax),
-          B = rand(cfg.bMin, cfg.bMax),
-          C = A * B;
-        if (Math.random() < 0.5) {
-          qEl.textContent = `${A} × ${B} = ?`;
-          currentAnswer = C;
-        } else {
-          qEl.textContent = `${C} ÷ ${A} = ?`;
-          currentAnswer = B;
-        }
-        ansEl.value = "";
-        fb.textContent = "";
-      }
+/* ---------- Soal ---------- */
+const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+function fmt(sec) {
+  const h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60), s = sec % 60;
+  return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+}
+function newQuestion() {
+  const A = rand(cfg.aMin, cfg.aMax), B = rand(cfg.bMin, cfg.bMax), C = A * B;
+  if (Math.random() < 0.5) { qEl.textContent = `${A} × ${B} = ?`; currentAnswer = C; }
+  else { qEl.textContent = `${C} ÷ ${A} = ?`; currentAnswer = B; }
+  solved = false;
+  ansEl.value = "";
+  fb.textContent = ""; fb.className = "feedback";
+  persist();
+}
 
-      function startTest() {
-        cfg = LEVELS[document.getElementById("level").value] || LEVELS.sedang;
-        if (document.getElementById("level").value=="sangatbesar"){
-          alert("Yaaa Tuhan Kenapa Aku WNI......");
-        }
-          
+/* ---------- Alur tes ---------- */
+function showTest() {
+  $("startScreen").classList.add("hidden");
+  $("resultScreen").classList.add("hidden");
+  $("testScreen").classList.remove("hidden");
+  resetRestartBtn();
+  if (/Mobi|Android/i.test(navigator.userAgent)) buildKeypad();
+  clearInterval(timer);
+  updateTime();
+  timer = setInterval(updateTime, 500);
+  ansEl.focus();
+}
 
-        let h = parseInt(document.getElementById("h").value) || 0;
-        let m = parseInt(document.getElementById("m").value) || 0;
-        let s = parseInt(document.getElementById("s").value) || 0;
+function startTest() {
+  levelKey = $("level").value; cfg = LEVELS[levelKey] || LEVELS.sedang;
+  if (levelKey === "sangatbesar") alert("Yaaa Tuhan Kenapa Aku WNI......");
+  const h = parseInt($("h").value) || 0, m = parseInt($("m").value) || 0, s = parseInt($("s").value) || 0;
+  startSeconds = h * 3600 + m * 60 + s;
+  if (startSeconds <= 0) { $("startErr").textContent = "Waktu harus lebih dari 0 detik"; return; }
+  $("startErr").textContent = "";
+  total = correct = wrong = 0; phase = "test";
+  deadline = Date.now() + startSeconds * 1000;
+  $("restored").classList.add("hidden");
+  showTest();
+  newQuestion();
+}
 
-        totalSeconds = startSeconds = h * 3600 + m * 60 + s;
-        if (totalSeconds <= 0) {
-          alert("Waktu harus lebih dari 0 detik");
-          return;
-        }
+function updateTime() {
+  const left = Math.max(0, Math.ceil((deadline - Date.now()) / 1000));   // dihitung dari batas waktu
+  timeEl.textContent = fmt(left);
+  if (left <= 0) finish();
+}
 
-        document.getElementById("startScreen").classList.add("hidden");
-        document.getElementById("testScreen").classList.remove("hidden");
+function submit() {
+  if (phase !== "test" || solved || ansEl.value === "") return;
+  total++;
+  if (parseInt(ansEl.value) === currentAnswer) {
+    correct++; solved = true;
+    fb.textContent = "✔ Benar"; fb.className = "feedback right";
+    persist();
+    setTimeout(() => { if (phase === "test") newQuestion(); }, 300);
+  } else {
+    wrong++;
+    fb.textContent = "✖ Jawaban salah, coba lagi"; fb.className = "feedback wrong";
+    ansEl.value = "";
+    persist();
+  }
+}
+ansEl.addEventListener("keydown", e => { if (e.key === "Enter") submit(); });
 
-        timeEl.textContent = fmt(totalSeconds);
-        newQuestion();
-        ansEl.focus();
+function buildKeypad() {
+  const keypad = $("keypad");
+  if (keypad.children.length) { keypad.classList.remove("hidden"); return; }
+  keypad.classList.remove("hidden");
+  ["1","2","3","4","5","6","7","8","9","0","⌫","✔"].forEach(k => {
+    const b = document.createElement("button");
+    b.textContent = k;
+    b.className = k === "✔" || k === "⌫" ? "action" : "";
+    b.onclick = () => {
+      if (k === "⌫") ansEl.value = ansEl.value.slice(0, -1);
+      else if (k === "✔") submit();
+      else ansEl.value += k;
+    };
+    keypad.appendChild(b);
+  });
+}
 
-        if (/Mobi|Android/i.test(navigator.userAgent)) buildKeypad();
+function finish() {
+  if (phase !== "test") return;
+  clearInterval(timer);
+  phase = "result";
+  persist();
+  showResult();
+}
 
-        timer = setInterval(() => {
-          totalSeconds--;
-          timeEl.textContent = fmt(totalSeconds);
-          if (totalSeconds <= 0) finish();
-        }, 1000);
-      }
+function showResult() {
+  $("startScreen").classList.add("hidden");
+  $("testScreen").classList.add("hidden");
+  $("resultScreen").classList.remove("hidden");
+  const speed = (total / (startSeconds / 60)).toFixed(2);
+  const accuracy = total > 0 ? Math.round((correct / total) * 1000) / 10 : 0;   // aman bila belum menjawab
+  $("total").textContent = total;
+  $("correct").textContent = correct;
+  $("wrong").textContent = wrong;
+  $("accuracy").textContent = accuracy;
+  $("speed").textContent = speed;
+}
 
-      function submit() {
-        if (ansEl.value === "") return;
+/* ---------- Ulang ---------- */
+function askRestart() {                      // dua langkah agar tidak terhapus tidak sengaja
+  if (confirmTimer) { restart(); return; }
+  $("restartBtn").textContent = "Yakin? Klik lagi untuk menghapus progres";
+  confirmTimer = setTimeout(resetRestartBtn, 4000);
+}
+function resetRestartBtn() {
+  clearTimeout(confirmTimer); confirmTimer = null;
+  $("restartBtn").textContent = "Batalkan & Ulang";
+}
+function restart() {
+  clearInterval(timer);
+  resetRestartBtn();
+  store.clear();
+  phase = "setup"; total = correct = wrong = 0; solved = false;
+  fb.textContent = ""; fb.className = "feedback";
+  $("testScreen").classList.add("hidden");
+  $("resultScreen").classList.add("hidden");
+  $("startScreen").classList.remove("hidden");
+}
 
-        total++;
-        if (parseInt(ansEl.value) === currentAnswer) {
-          correct++;
-          fb.textContent = "✔ Benar";
-          fb.className = "feedback right";
-          setTimeout(newQuestion, 300);
-        } else {
-          wrong++;
-          fb.textContent = "✖ Jawaban salah, coba lagi";
-          fb.className = "feedback wrong";
-          ansEl.value = "";
-        }
-      }
-
-      ansEl.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") submit();
-      });
-
-      function buildKeypad() {
-        const keypad = document.getElementById("keypad");
-        keypad.classList.remove("hidden");
-        ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "⌫", "✔"].forEach(
-          (k) => {
-            let b = document.createElement("button");
-            b.textContent = k;
-            b.className = k === "✔" || k === "⌫" ? "action" : "";
-            b.onclick = () => {
-              if (k === "⌫") ansEl.value = ansEl.value.slice(0, -1);
-              else if (k === "✔") submit();
-              else ansEl.value += k;
-            };
-            keypad.appendChild(b);
-          },
-        );
-      }
-
-      function finish() {
-        clearInterval(timer);
-        document.getElementById("testScreen").classList.add("hidden");
-        document.getElementById("resultScreen").classList.remove("hidden");
-	let speed= (total /(startSeconds / 60)).toFixed(2);
-	let accuracy= (correct/total)*100;
-
-        document.getElementById("total").textContent = total;
-        document.getElementById("correct").textContent = correct;
-        document.getElementById("wrong").textContent = wrong;
-        document.getElementById("accuracy").textContent = accuracy;
-        document.getElementById("speed").textContent = speed;
-      }
-    </script>
-  </body>
+/* ---------- Pulihkan progres saat halaman dibuka ---------- */
+(function init() {
+  const s = store.load();
+  if (!validState(s)) { store.clear(); return; }
+  levelKey = s.levelKey; cfg = LEVELS[levelKey]; startSeconds = s.startSeconds; deadline = s.deadline;
+  total = s.total; correct = s.correct; wrong = s.wrong;
+  $("level").value = levelKey;
+  $("h").value = Math.floor(startSeconds / 3600);
+  $("m").value = Math.floor((startSeconds % 3600) / 60);
+  $("s").value = startSeconds % 60;
+  if (s.phase === "result" || Date.now() >= deadline) { phase = "result"; persist(); showResult(); return; }
+  phase = "test";
+  qEl.textContent = s.q.text; currentAnswer = s.q.answer; solved = !!s.solved;
+  showTest();
+  if (solved) newQuestion();                 // soal sudah terjawab benar sebelum refresh, lanjut ke soal baru
+  $("restored").classList.remove("hidden");
+})();
+</script>
+</body>
 </html>
