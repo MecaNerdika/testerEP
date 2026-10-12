@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kuis Bahasa Indonesia - SPOK & Fiksi/Fakta</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: #f4f8fb;
+      color: #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      background: #ffffff;
+      width: 100%;
+      max-width: 800px;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0, 102, 204, 0.12);
+      overflow: hidden;
+      border: 1px solid #e1eaf3;
+    }
+
+    header {
+      background-color: #0066cc;
+      color: #ffffff;
+      padding: 25px 20px;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 1.6rem;
+      margin-bottom: 6px;
+    }
+
+    header p {
+      font-size: 0.95rem;
+      opacity: 0.9;
+    }
+
+    .section {
+      padding: 30px;
+      display: none;
+    }
+
+    .active {
+      display: block;
+    }
+
+    /* Form Section */
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #004080;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 12px 15px;
+      border: 2px solid #cce0ff;
+      border-radius: 8px;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+
+    .form-group input:focus {
+      border-color: #0066cc;
+    }
+
+    .btn {
+      width: 100%;
+      background-color: #0066cc;
+      color: white;
+      border: none;
+      padding: 14px;
+      font-size: 1rem;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .btn:hover {
+      background-color: #004e9e;
+    }
+
+    .alert {
+      padding: 12px;
+      background-color: #ffe6e6;
+      color: #cc0000;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      font-size: 0.9rem;
+      display: none;
+    }
+
+    /* Quiz Section */
+    .quiz-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid #e6f0fa;
+    }
+
+    .quiz-category {
+      font-size: 0.85rem;
+      background-color: #e6f2ff;
+      color: #0066cc;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-weight: bold;
+    }
+
+    .question-text {
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+      line-height: 1.5;
+      color: #1a1a1a;
+    }
+
+    .options-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 25px;
+    }
+
+    .option-btn {
+      background-color: #f8fbfe;
+      border: 2px solid #d0e3ff;
+      padding: 12px 16px;
+      border-radius: 8px;
+      text-align: left;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .option-btn:hover {
+      background-color: #e6f0fa;
+      border-color: #0066cc;
+    }
+
+    .option-btn.selected {
+      background-color: #0066cc;
+      color: white;
+      border-color: #0066cc;
+    }
+
+    .quiz-footer {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .btn-nav {
+      width: 48%;
+      padding: 12px;
+    }
+
+    .btn-secondary {
+      background-color: #a0aec0;
+    }
+
+    .btn-secondary:hover {
+      background-color: #718096;
+    }
+
+    /* Result Section */
+    .result-card {
+      text-align: center;
+      padding: 20px;
+      background-color: #e6f2ff;
+      border-radius: 10px;
+      margin-bottom: 25px;
+    }
+
+    .score-display {
+      font-size: 3rem;
+      font-weight: bold;
+      color: #0066cc;
+      margin: 10px 0;
+    }
+
+    .review-section {
+      margin-top: 20px;
+      max-height: 350px;
+      overflow-y: auto;
+      text-align: left;
+      border-top: 1px solid #e1eaf3;
+      padding-top: 15px;
+    }
+
+    .review-item {
+      padding: 12px;
+      border-bottom: 1px solid #edf2f7;
+      font-size: 0.9rem;
+    }
+
+    .review-item.correct {
+      border-left: 4px solid #38a169;
+    }
+
+    .review-item.incorrect {
+      border-left: 4px solid #e53e3e;
+    }
+
+    .teacher-badge {
+      font-size: 0.85rem;
+      background: #004080;
+      color: white;
+      padding: 4px 12px;
+      border-radius: 20px;
+      display: inline-block;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>Kuis Bahasa Indonesia</h1>
+    <p>Kalimat Tunggal SPOK(a) & Fiksi - Fakta</p>
+    <div class="teacher-badge">Guru Pengampu: Velinarola vitona</div>
+  </header>
+
+  <!-- SECTION FORM -->
+  <div id="section-form" class="section active">
+    <div id="alert-msg" class="alert"></div>
+    <form id="quiz-form">
+      <div class="form-group">
+        <label for="student-name">Nama Lengkap Siswa</label>
+        <input type="text" id="student-name" placeholder="Masukkan nama lengkap Anda" required>
+      </div>
+      <div class="form-group">
+        <label for="quiz-token">Token Kuis</label>
+        <input type="text" id="quiz-token" placeholder="Masukkan kode token" required>
+        <small style="color: #666; font-size: 0.8rem; margin-top: 4px; display: block;">
+          *Gunakan salah satu token valid: 
+        </small>
+      </div>
+      <button type="submit" class="btn">Mulai Kuis</button>
+    </form>
+  </div>
+
+  <!-- SECTION KUIS -->
+  <div id="section-quiz" class="section">
+    <div class="quiz-header">
+      <span id="question-number" style="font-weight: bold; color: #0066cc;">Soal 1 dari 40</span>
+      <span id="question-category" class="quiz-category">SPOK</span>
+    </div>
+    <div id="question-text" class="question-text">Teks pertanyaan akan tampil di sini...</div>
+    <div id="options-container" class="options-container">
+      <!-- Pilihan jawaban di-generate via JavaScript -->
+    </div>
+    <div class="quiz-footer">
+      <button id="btn-prev" class="btn btn-secondary btn-nav" onclick="prevQuestion()" disabled>Sebelumnya</button>
+      <button id="btn-next" class="btn btn-nav" onclick="nextQuestion()">Selanjutnya</button>
+    </div>
+  </div>
+
+  <!-- SECTION RESULT -->
+  <div id="section-result" class="section">
+    <div class="result-card">
+      <h2>Hasil Kuis</h2>
+      <p id="result-student-name" style="font-weight: 600; margin-top: 5px;"></p>
+      <div class="score-display" id="final-score">0</div>
+      <p id="score-summary">Jawaban Benar: 0 / 40</p>
+    </div>
+
+    <h3>Evaluasi Jawaban</h3>
+    <div id="review-container" class="review-section">
+      <!-- Hasil evaluasi per soal akan ditampilkan di sini -->
+    </div>
+  </div>
+</div>
+
+<script>
+  // Daftar Token Resmi & Status Penggunaannya (disimpan ke localStorage agar persistent)
+  const validTokens = ["V2ENP", "ABC123"];
+
+  function getUsedTokens() {
+    return JSON.parse(localStorage.getItem("usedTokens")) || [];
+  }
+
+  function markTokenAsUsed(token) {
+    const used = getUsedTokens();
+    used.push(token);
+    localStorage.setItem("usedTokens", JSON.stringify(used));
+  }
+
+  // Bank Soal (20 Soal SPOK & 20 Soal Fiksi/Fakta)
+  const questions = [
+    // --- 20 SOAL KALIMAT TUNGGAL SPOK ---
+    { cat: "SPOK", q: "Manakah unsur Subjek (S) dalam kalimat: 'Ibu memasak rendang di dapur kemarin'?", options: ["A. Ibu", "B. Memasak", "C. Rendang", "D. Di dapur"], answer: 0 },
+    { cat: "SPOK", q: "Kalimat 'Adik membaca buku cerita di kamar' memiliki pola...", options: ["A. S - P - O", "B. S - P - O - K", "C. S - P - K", "D. S - P - O - Pel"], answer: 1 },
+    { cat: "SPOK", q: "Kata 'di lapangan' pada kalimat 'Siswa bermain bola di lapangan' menduduki fungsi...", options: ["A. Objek", "B. Predikat", "C. Keterangan Tempat", "D. Keterangan Waktu"], answer: 2 },
+    { cat: "SPOK", q: "Manakah kalimat berikut yang mengandung unsur Keterangan Alat (Ka)?", options: ["A. Ayah memotong kayu dengan gergaji.", "B. Kakak belajar dengan tekun.", "C. Budi pergi bersama rekannya.", "D. Ibu membeli sayur besok."], answer: 0 },
+    { cat: "SPOK", q: "Pola kalimat 'Kucing itu menangkap tikus dengan cepat' adalah...", options: ["A. S - P - O - K.Waktu", "B. S - P - O - K.Cara", "C. S - P - O - K.Tempat", "D. S - P - O - K.Tujuan"], answer: 1 },
+    { cat: "SPOK", q: "Manakah yang merupakan Objek (O) dari kalimat 'Paman mengendarai sepeda motor baru'?", options: ["A. Paman", "B. Mengendarai", "C. Sepeda motor baru", "D. Baru"], answer: 2 },
+    { cat: "SPOK", q: "Manakah di bawah ini yang termasuk kalimat tunggal berpola S-P-O?", options: ["A. Burung terbang di udara.", "B. Ani menulis surat.", "C. Ayah tidur siang.", "D. Kami berangkat pagi-pagi."], answer: 1 },
+    { cat: "SPOK", q: "Fungsi kata 'tadi pagi' pada kalimat 'Kakek minum kopi tadi pagi' adalah...", options: ["A. Keterangan Cara", "B. Keterangan Alat", "C. Keterangan Waktu", "D. Keterangan Tempat"], answer: 2 },
+    { cat: "SPOK", q: "Kalimat 'Rani melukis pemandangan dengan cat air' mengandung Keterangan...", options: ["A. Alat", "B. Tempat", "C. Waktu", "D. Tujuan"], answer: 0 },
+    { cat: "SPOK", q: "Fungsi Predikat (P) dalam kalimat 'Petani memanen padi di sawah' terletak pada kata...", options: ["A. Petani", "B. Memanen", "C. Padi", "D. Di sawah"], answer: 1 },
+    { cat: "SPOK", q: "Kalimat 'Dokter memeriksa pasien di rumah sakit' memiliki pola...", options: ["A. S - P - K", "B. S - P - O - K", "C. S - P - O", "D. S - P - Pel"], answer: 1 },
+    { cat: "SPOK", q: "Manakah kalimat yang menggunakan Keterangan Tujuan?", options: ["A. Budi belajar agar lulus ujian.", "B. Budi belajar di perpustakaan.", "C. Budi belajar pukul delapan.", "D. Budi belajar menggunakan laptop."], answer: 0 },
+    { cat: "SPOK", q: "Kata 'sepatu roda' dalam 'Doni membeli sepatu roda di toko' berkedudukan sebagai...", options: ["A. Subjek", "B. Predikat", "C. Objek", "D. Keterangan"], answer: 2 },
+    { cat: "SPOK", q: "Manakah yang BUKAN merupakan kalimat tunggal?", options: ["A. Budi membaca buku.", "B. Ibu menyiram bunga di taman.", "C. Saya ingin makan tetapi makanan sudah habis.", "D. Ayah bekerja di kantor."], answer: 2 },
+    { cat: "SPOK", q: "Unsur 'S-P-K.Tempat' ditunjukkan oleh kalimat...", options: ["A. Kakek beristirahat di teras.", "B. Bibi membeli buah manis.", "C. Kakak belajar matematika.", "D. Adik menangis keras."], answer: 0 },
+    { cat: "SPOK", q: "Kalimat 'Nelayan menangkap ikan menggunakan jala' memiliki unsur Keterangan...", options: ["A. Tempat", "B. Waktu", "C. Alat", "D. Suasana"], answer: 2 },
+    { cat: "SPOK", q: "Pernyataan mana yang benar mengenai kalimat tunggal?", options: ["A. Memiliki dua klausa atau lebih", "B. Memiliki hanya satu klausa utama (satu S dan satu P)", "C. Selalu dihubungkan dengan kata sambung 'dan'", "D. Memiliki minimal dua predikat"], answer: 1 },
+    { cat: "SPOK", q: "Pada kalimat 'Lani menyapu halaman dengan sapu lidi', kata 'menyapu' menduduki posisi...", options: ["A. Subjek", "B. Predikat", "C. Objek", "D. Keterangan"], answer: 1 },
+    { cat: "SPOK", q: "Identifikasi pola dari 'Polisi menangkap pencuri di pasar kemarin':", options: ["A. S - P - O - K.Tempat - K.Waktu", "B. S - P - K.Tempat - K.Waktu", "C. S - P - O - K.Cara", "D. S - P - O - Pel - K"], answer: 0 },
+    { cat: "SPOK", q: "Di antara kalimat berikut, yang memuat Keterangan Cara adalah...", options: ["A. Pelari itu berlari dengan sangat cepat.", "B. Ibu membeli baju di mall.", "C. Ayah pulang pada malam hari.", "D. Adik menggambar memakai pensil warna."], answer: 0 },
+
+    // --- 20 SOAL FIKSI & FAKTA ---
+    { cat: "Fiksi/Fakta", q: "Manakah dari kalimat berikut yang merupakan kalimat FAKTA?", options: ["A. Indonesia adalah negara kepulauan terbesar di dunia.", "B. Pantai Kuta adalah tempat terindah di bumi.", "C. Semua orang pasti menyukai buah durian.", "D. Es krim rasa cokelat adalah makanan paling lezat."], answer: 0 },
+    { cat: "Fiksi/Fakta", q: "Kalimat 'Naga api bertanduk emas itu terbang menembus awan' tergolong ke dalam kalimat...", options: ["A. Fakta", "B. Fiksi", "C. Ilmiah", "D. Berita"], answer: 1 },
+    { cat: "Fiksi/Fakta", q: "Ciri utama dari kalimat fakta adalah...", options: ["A. Bersifat rekaan atau imajinasi", "B. Menggunakan kata-kata kiasan", "C. Dapat dibuktikan kebenarannya secara nyata", "D. Berisi pendapat pribadi"], answer: 2 },
+    { cat: "Fiksi/Fakta", q: "Manakah yang merupakan kalimat FIKSI?", options: ["A. Air mendidih pada suhu 100 derajat Celsius.", "B. Pohon tua itu berbisik lembut memberi nasihat kepada musafir.", "C. Jakarta adalah ibu kota negara Indonesia.", "D. Manusia membutuhkan oksigen untuk bernapas."], answer: 1 },
+    { cat: "Fiksi/Fakta", q: "Kalimat 'Matahari terbit dari sebelah timur' merupakan jenis kalimat...", options: ["A. Opini fiksi", "B. Fakta", "C. Fiksi imajinatif", "D. Mitos"], answer: 1 },
+    { cat: "Fiksi/Fakta", q: "Manakah kalimat fakta yang mengandung data akurat?", options: ["A. Mungkin esok hari akan turun hujan deras.", "B. Candi Borobudur terletak di Kabupaten Magelang, Jawa Tengah.", "C. Kota Bandung terasa sangat dingin malam ini.", "D. Makanan buatan ibu adalah yang paling enak."], answer: 1 },
+    { cat: "Fiksi/Fakta", q: "Manakah pernyataan yang BENAR mengenai kalimat fiksi?", options: ["A. Ditulis berdasarkan data statistik resmi", "B. Bersifat imajinatif dan belum tentu terjadi di alam nyata", "C. Selalu didukung oleh hasil penelitian ilmiah", "D. Berisi informasi nyata dari kejadian sehari-hari"], answer: 1 },
+    { cat: "Fiksi/Fakta", q: "Kalimat 'Pancasilan terdiri dari lima sila' termasuk ke dalam...", options: ["A. Fiksi", "B. Opini", "C. Fakta", "D. Khayalan"], answer: 2 },
+    { cat: "Fiksi/Fakta", q: "Kalimat 'Sepatu ajaib itu bisa membawa pemakainya terbang ke luar angkasa' adalah...", options: ["A. Fakta sejarah", "B. Fiksi / Imajinasi", "C. Fakta ilmiah", "D. Opini publik"], answer: 1 },
+    { cat: "Fiksi/Fakta", q: "Manakah kelompok kalimat berikut yang SELURUHNYA berupa fakta?", options: ["A. Kucing berdarah panas; Burung bisa terbang; Bintang jatuh membuat permohonan terwujud.", "B. Presiden pertama RI adalah Soekarno; Harimau termasuk karnivora; 1 tahun terdiri dari 12 bulan.", "C. Putri duyung hidup di laut; Ikan bernapas dengan insang; Kera suka pisang.", "D. Sapu terbang sangat cepat; Air mengalir ke tempat rendah; Mobil membutuhkan bahan bakar."], answer: 1 },
+    { cat: "Fiksi/Fakta", q: "Kalimat mana yang menunjukkan kalimat FAKTA?", options: ["A. Ibu guru adalah orang paling sabar di dunia.", "B. Lagu itu sangat membosankan untuk didengar.", "C. Bendera negara Indonesia berwarna merah dan putih.", "D. Matematika adalah pelajaran paling sulit."], answer: 2 },
+    { cat: "Fiksi/Fakta", q: "Kalimat 'Cermin ajaib itu bisa berbicara dan menebak pikiran orang' tergolong...", options: ["A. Fakta Ilmiah", "B. Kalimat Fiksi", "C. Informasi Resmi", "D. Berita Utama"], answer: 1 },
+    { cat: "Fiksi/Fakta", q: "Ciri kalimat fiksi dapat ditemukan pada teks...", options: ["A. Berita koran", "B. Laporan hasil observasi", "C. Dongeng dan cerpen", "D. Jurnal penelitian"], answer: 2 },
+    { cat: "Fiksi/Fakta", q: "Manakah contoh kalimat fakta di bidang sains?", options: ["A. Manusia dapat hidup tanpa jantung.", "B. Tumbuhan memerlukan cahaya matahari untuk fotosintesis.", "C. Pohon pisang bisa berjalan di malam hari.", "D. Pelangi adalah selendang bidadari."], answer: 1 },
+    { cat: "Fiksi/Fakta", q: "Kalimat 'Kancil yang cerdik berhasil menipu buaya sungai' adalah...", options: ["A. Fakta biologi", "B. Fiksi", "C. Berita nyata", "D. Opini hukum"], answer: 1 },
+    { cat: "Fiksi/Fakta", q: "Kalimat yang berupa rekaan pengarang dan bertujuan menghibur adalah...", options: ["A. Kalimat Fakta", "B. Kalimat Fiksi", "C. Kalimat Berita", "D. Kalimat Instruksi"], answer: 1 },
+    { cat: "Fiksi/Fakta", q: "Manakah yang BUKAN contoh kalimat fakta?", options: ["A. Ibu kota Provinsi Jawa Barat adalah Bandung.", "B. Jam dinding itu berdetak setiap detik.", "C. Bintang di langit tersenyum menyapa malam.", "D. Mamalia adalah hewan yang menyusui anaknya."], answer: 2 },
+    { cat: "Fiksi/Fakta", q: "Kalimat 'Bumi mengelilingi matahari dalam lintasan orbitnya' merupakan...", options: ["A. Fiksi astronomi", "B. Fakta ilmiah", "C. Mitos antik", "D. Opini personal"], answer: 1 },
+    { cat: "Fiksi/Fakta", q: "Kalimat mana yang memuat unsur fiksi dongeng?", options: ["A. Burung elang memiliki penglihatan tajam.", "B. Karpet terbang itu membawa Pangeran melintasi benua.", "C. Pesawat terbang melayani rute antarkota.", "D. Kereta api berjalan di atas rel besi."], answer: 1 },
+    { cat: "Fiksi/Fakta", q: "Manakah kalimat fakta yang berkaitan dengan geografi?", options: ["A. Gunung Merapi terletak di Pulau Jawa.", "B. Gunung itu terlihat sangat angker dan menakutkan.", "C. Awannya berbentuk seperti raksasa.", "D. Mendaki gunung adalah hobi terbaik."], answer: 0 }
+  ];
+
+  // State Aplikasi
+  let currentQuestionIndex = 0;
+  let userAnswers = new Array(questions.length).fill(null);
+  let studentName = "";
+
+  // DOM Elements
+  const formSection = document.getElementById("section-form");
+  const quizSection = document.getElementById("section-quiz");
+  const resultSection = document.getElementById("section-result");
+  const alertMsg = document.getElementById("alert-msg");
+
+  // Handle Submit Form Login
+  document.getElementById("quiz-form").addEventListener("submit", function(e) {
+    e.preventDefault();
+    const nameInput = document.getElementById("student-name").value.trim();
+    const tokenInput = document.getElementById("quiz-token").value.trim().toUpperCase();
+
+    const usedTokens = getUsedTokens();
+
+    if (usedTokens.includes(tokenInput)) {
+      showAlert("Token ini sudah pernah digunakan dan tidak dapat dipakai lagi!");
+      return;
+    }
+
+    if (!validTokens.includes(tokenInput)) {
+      showAlert("Token tidak valid! Silakan masukkan token yang benar.");
+      return;
+    }
+
+    // Token Valid & Belum Terpakai
+    markTokenAsUsed(tokenInput);
+    studentName = nameInput;
+
+    // Transisi ke Kuis
+    formSection.classList.remove("active");
+    quizSection.classList.add("active");
+    loadQuestion();
+  });
+
+  function showAlert(message) {
+    alertMsg.textContent = message;
+    alertMsg.style.display = "block";
+  }
+
+  // Render Soal
+  function loadQuestion() {
+    const q = questions[currentQuestionIndex];
+    document.getElementById("question-number").textContent = `Soal ${currentQuestionIndex + 1} dari ${questions.length}`;
+    document.getElementById("question-category").textContent = q.cat;
+    document.getElementById("question-text").textContent = q.q;
+
+    const optionsContainer = document.getElementById("options-container");
+    optionsContainer.innerHTML = "";
+
+    q.options.forEach((opt, index) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "option-btn";
+      if (userAnswers[currentQuestionIndex] === index) {
+        btn.classList.add("selected");
+      }
+      btn.textContent = opt;
+      btn.onclick = () => selectOption(index);
+      optionsContainer.appendChild(btn);
+    });
+
+    // Navigation buttons state
+    document.getElementById("btn-prev").disabled = currentQuestionIndex === 0;
+    
+    const nextBtn = document.getElementById("btn-next");
+    if (currentQuestionIndex === questions.length - 1) {
+      nextBtn.textContent = "Selesai & Kirim";
+    } else {
+      nextBtn.textContent = "Selanjutnya";
+    }
+  }
+
+  function selectOption(index) {
+    userAnswers[currentQuestionIndex] = index;
+    loadQuestion();
+  }
+
+  function nextQuestion() {
+    if (currentQuestionIndex < questions.length - 1) {
+      currentQuestionIndex++;
+      loadQuestion();
+    } else {
+      finishQuiz();
+    }
+  }
+
+  function prevQuestion() {
+    if (currentQuestionIndex > 0) {
+      currentQuestionIndex--;
+      loadQuestion();
+    }
+  }
+
+  // Selesai Kuis & Hitung Nilai
+  function finishQuiz() {
+    let scoreCount = 0;
+    questions.forEach((q, index) => {
+      if (userAnswers[index] === q.answer) {
+        scoreCount++;
+      }
+    });
+
+    const finalScore = Math.round((scoreCount / questions.length) * 100);
+
+    // Tampilkan Result
+    quizSection.classList.remove("active");
+    resultSection.classList.add("active");
+
+    document.getElementById("result-student-name").textContent = `Siswa: ${studentName}`;
+    document.getElementById("final-score").textContent = finalScore;
+    document.getElementById("score-summary").textContent = `Jawaban Benar: ${scoreCount} dari ${questions.length} Soal`;
+
+    // Render Evaluasi Jawaban
+    const reviewContainer = document.getElementById("review-container");
+    reviewContainer.innerHTML = "";
+
+    questions.forEach((q, index) => {
+      const isCorrect = userAnswers[index] === q.answer;
+      const item = document.createElement("div");
+      item.className = `review-item ${isCorrect ? 'correct' : 'incorrect'}`;
+
+      const userAnsText = userAnswers[index] !== null ? q.options[userAnswers[index]] : "Tidak dijawab";
+      const correctAnsText = q.options[q.answer];
+
+      item.innerHTML = `
+        <strong>Soal ${index + 1} (${q.cat}):</strong> ${q.q}<br>
+        <small style="color: ${isCorrect ? '#2e7d32' : '#c62828'};">Jawaban Anda: ${userAnsText}</small><br>
+        ${!isCorrect ? `<small style="color: #2e7d32;">Jawaban Benar: ${correctAnsText}</small>` : ''}
+      `;
+      reviewContainer.appendChild(item);
+    });
+  }
+</script>
+
+</body>
+</html>
